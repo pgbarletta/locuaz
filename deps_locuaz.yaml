@@ -1,0 +1,44 @@
+name: locuaz
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python==3.7.12
+  - pdb2pqr>=3.4
+  - ipykernel
+  - jupyterlab
+  - black
+  - mypy
+  - mypy_extensions
+  - pytest
+  - flake8
+  - flake8-bugbear
+  - sphinx
+  - yaml
+  - types-pyyaml
+  - cerberus
+  - pocl
+  - pip
+  - pip:
+    - wemake-python-styleguide
+    - flake8-bandit
+    - flake8-broken-line
+    - flake8-commas
+    - flake8-comprehensions
+    - flake8-debugger
+    - flake8-docstrings
+    - flake8-eradicate
+    - flake8-isort
+    - flake8-polyfill
+    - flake8-quotes
+    - flake8-rst-docstrings
+    - flake8-string-format
+    - biobb_analysis==3.7.0
+    - biobb_io==3.7.0
+    - biobb_md==3.7.1
+    - biobb_model==3.7.0
+    - biobb_structure_utils==3.7.1
+    - biobb_pmx==3.7.0
+    - biobb_amber==3.7.1
+    - biobb_chemistry==3.7.0
+    - biobb_vs==3.7.0

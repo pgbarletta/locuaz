@@ -1,0 +1,205 @@
+paths:
+    type: dict
+    required: true
+    schema:
+        gmxrc:
+            type: string
+            required: true
+        root:
+            type: string
+            required: false
+        input:
+            type: string
+            required: false
+        data:
+            type: string
+            required: false
+        starting_iterations:
+            type: list
+            minlength: 1
+            maxlength: 12
+            required: false
+            schema:
+                type: string
+        scoring_functions:
+            type: string
+            required: true
+               
+main:
+    type: dict
+    required: true
+    schema:
+        name:
+            type: string
+            required: true
+        mode:
+            type: string 
+            default: "start"
+            required: true
+            allowed: ["start", "restart", "score"]
+
+md:
+    type: dict
+    required: true
+    schema:
+        gmx_bin:
+            type: string
+            required: false
+            default: "gmx"
+        mdp_names:
+            type: dict
+            required: true
+            schema:
+                min_water_mdp:
+                    type: string
+                    default: min_water.mdp
+                min_environment_mdp:
+                    type: string
+                    default: min_environment.mdp
+                min_mdp:
+                    type: string
+                    default: min.mdp
+                nvt_mdp:
+                    type: string
+                    default: nvt.mdp
+                npt_mdp:
+                    type: string
+                    default: npt.mdp
+        topology:
+            type: string 
+            required: true
+        target_topology:
+            type: list
+            minlength: 1
+            maxlength: 10
+            required: false
+            schema:
+                type: string
+        binder_topology:
+            type: list
+            minlength: 1
+            maxlength: 10
+            required: false
+            schema:
+                type: string
+        ngpus:
+            type: integer
+            min: 1
+            max: 12
+            default: 1
+        mpi_procs:
+            type: integer
+            min: 1
+            max: 48
+            default: 1
+        omp_procs:
+            type: integer
+            min: 1
+            max: 48
+            default: 1
+
+target:
+    type: dict
+    required: true
+    schema:
+        chainID:
+            type: list
+            minlength: 1
+            maxlength: 10
+            required: true
+            schema:
+                type: string
+
+binder:
+    type: dict
+    required: true
+    schema:
+        chainID:
+            type: list
+            minlength: 1
+            maxlength: 10
+            required: true
+            schema:
+                type: string
+                allowed: [A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z]
+                required: true
+        mutating_chainID:
+            type: list
+            minlength: 1
+            maxlength: 10
+            required: true
+            schema:
+                type: string
+                allowed: [A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z]
+                required: true
+        peptide_reference:
+            type: list
+            minlength: 1
+            maxlength: 10
+            required: true
+            schema:
+                type: list
+                minlength: 1
+                maxlength: 20
+                required: true
+                schema:
+                    type: string
+                    allowed: [A,C,D,E,F,G,H,I,K,L,M,N,P,Q,R,S,T,V,W,Y]
+                    required: true
+        residues_mod:
+            type: list
+            minlength: 1
+            maxlength: 10
+            required: true
+            schema:
+                type: list
+                minlength: 1
+                maxlength: 20
+                required: true
+                schema:
+                    type: integer
+                    min: 1
+                    max: 999999
+                    required: true
+mutation:
+    type: dict
+    required: true
+    schema:
+        num_mutations:
+            type: integer
+            min: 1
+            max: 500
+            required: true
+        try_mutations:
+            type: integer
+            min: 1
+            max: 50
+            required: true
+        mutation_method:
+            type: string
+            allowed: [faspr, scwrl4]
+            required: true
+
+scoring:
+    type: dict
+    required: true
+    schema:
+        functions:
+            type: list
+            minlength: 1
+            maxlength: 20
+            required: true
+            schema:
+                type: string
+                allowed: [bach, pisa, zrank, irad, bmf-bluues, firedock, evoef2]
+        consensus_threshold:
+            type: integer
+            min: 1
+            max: 20
+            required: true
+        nprocs:
+            type: integer
+            min: 1
+            max: 256
+            default: 1
+

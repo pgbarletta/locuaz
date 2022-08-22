@@ -1,5 +1,5 @@
 from pathlib import Path
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
 from typing import List
 from fileutils import FileHandle, DirHandle
 from collections import Sequence
@@ -16,10 +16,16 @@ class AbstractScoringFunction(metaclass=ABCMeta):
     max_concurrent_jobs: int
     CPU_TO_MEM_RATIO: int = 5
 
+    @abstractmethod
     def __init__(
         self, sf_dir, nprocs=2, *, target_chains: Sequence, binder_chains: Sequence
     ):
         pass
 
+    @abstractmethod
     def __call__(self, *, nframes: int, frames_path: Path) -> List:
         pass
+
+    # TODO:
+    # def __parse_output__:
+    #     pass

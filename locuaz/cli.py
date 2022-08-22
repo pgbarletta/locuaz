@@ -1,11 +1,10 @@
 import argparse
-import sys
+import os
 from typing import Dict
 import yaml
 from pathlib import Path
-from enum import Enum
-from cerberus import Validator  # type: ignore
-from fileutils import DirHandle  # type: ignore
+from cerberus import Validator
+import subprocess as sp
 
 
 def validate_config(config: Dict) -> Dict:
@@ -25,7 +24,7 @@ def validate_config(config: Dict) -> Dict:
         config = validator.normalized(config)
 
     # Perform extra checks on the input config file.
-    config["scoring"]["sf_cnt"] = len(config["scoring"]["scoring_functions"])
+    config["scoring"]["sf_cnt"] = len(config["scoring"]["functions"])
     if config["scoring"]["sf_cnt"] < config["scoring"]["consensus_threshold"]:
         print(
             f"Wrong input config file. `consensus_threshold` is higher than the number of scoring functions.",
@@ -33,12 +32,45 @@ def validate_config(config: Dict) -> Dict:
         )
         raise ValueError
 
-    for seq_a, seq_b in zip(
-        config["binder"]["peptide_reference"], config["binder"]["residues_mod"]
-    ):
-        if len(seq_a) != len(seq_a):
+    #
+    nchains_chainID = len(config["binder"]["mutating_chainID"])
+    nchains_resSeq = len(config["binder"]["mutating_resSeq"])
+    if nchains_chainID != nchains_resSeq:
+        print(
+            f"Wrong input config file. `mutating_chainID` has {nchains_chainID} "
+            f"chains, while `mutating_resSeq` has {nchains_resSeq}.  "
+            f"They should all have the same length.",
+            flush=True,
+        )
+        raise ValueError
+
+    # If `nprocs` is not set, use as many threads as available
+    if config["scoring"]["nprocs"] == 0:
+        config["scoring"]["nprocs"] = os.sched_getaffinity(0)
+    # If `ngpus` is not set, use as many gpus as available
+    if config["md"]["ngpus"] == 0:
+        config["md"]["ngpus"] = int(
+            sp.run(
+                "nvidia-smi --query-gpu=name --format=csv,noheader | wc -l",
+                stdout=sp.PIPE,
+                stderr=sp.PIPE,
+                shell=True,
+                text=True,
+            ).stdout.strip()
+        )
+
+    # If `branches` is not set, used as many as GPUs are
+    if config["main"]["branches"] == 0:
+        config["main"]["branches"] = config["md"]["ngpus"]
+
+    # This is not strictly necessary yet, but it might eventually be.
+    for segment in config["binder"]["mutating_resSeq"]:
+        sorted_and_continuous = list(range(segment[0], segment[-1] + 1))
+        if sorted_and_continuous != segment:
             print(
-                f"Wrong input config file. `peptide_reference` and `residues_mod` should have the same length.",
+                "Wrong input config file. Each list in `mutating_resSeq` "
+                "should be a list of contiguous sorted resSeq numbers. Eg: "
+                "[ [86, 87, 88], [90, 91, 92] ]",
                 flush=True,
             )
             raise ValueError
@@ -54,22 +86,29 @@ def assert_dir(dir: str):
 
 def set_start_or_restart(config: Dict) -> Dict:
 
-    if config["paths"]["iteration"] == "start":
-        for name, input_str in config["paths"].items():
-            if name == "iteration":
-                continue
+    # check that the folders actually exist
+    for name, input_str in config["paths"].items():
+        if name == "input":
+            # This one is a list
+            for each_input_str in input_str:
+                assert_dir(each_input_str)
+        else:
             assert_dir(input_str)
-    else:
-        dir_path = assert_dir(config["paths"]["iteration"])
-        try:
-            # I'm assuming the iteration folder's name wasn't changed and starts
-            # as `i-...`, where `i` is the number of the last ran iteration.
-            config["epoch_nbr"] = int(dir_path.name.split("-")[0])
-            config["paths"]["data"] = config["paths"]["iteration"]
-            config["paths"]["input"] = config["paths"]["iteration"]
-        except ValueError as e:
-            print(f"{dir_path} is not a valid starting iteration folder. ", flush=True)
-            raise e
+    if config["main"]["mode"] != "start":
+        epoch_nbrs = []
+        for iteration_str in config["paths"]["input"]:
+            try:
+                # I'm assuming the iteration folder's name wasn't changed and starts
+                # as `i-...`, where `i` is the number of the last ran iteration.
+                epoch_nbrs.append(int(Path(iteration_str).name.split("-")[0]))
+            except ValueError as e:
+                print(
+                    f"{iteration_str} is not a valid starting iteration folder. ",
+                    flush=True,
+                )
+                raise e
+        config["epoch_nbr"] = max(epoch_nbrs)
+    config["md"]["gmx"] = Path.joinpath(Path(config["paths"]["gmxrc"]), "gmx")
 
     return config
 
@@ -88,7 +127,8 @@ def main() -> Dict:
             raw_config = yaml.load(file, yaml.SafeLoader)
     except Exception as e:
         print(
-            "Bad .yaml file. Check one of the included configuration files for a YAML format example.",
+            "Bad .yaml file. Check one of the included configuration files "
+            "for a YAML format example.",
             flush=True,
         )
         raise e

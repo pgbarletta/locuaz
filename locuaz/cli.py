@@ -70,17 +70,20 @@ def validate_config(config: Dict) -> Dict:
         config["main"]["branches"] = config["md"]["ngpus"]
 
     # Check that
-    necessary_procs = config["md"]["ngpus"] * config["md"]["omp_procs"]
+    necessary_procs = (
+        config["md"]["ngpus"] * {config["md"]["mpi_procs"]} * config["md"]["omp_procs"]
+    )
     try:
         available_procs = int(os.getenv("SLURM_CPUS_ON_NODE"))  # type: ignore
     except TypeError as e:
+        # TODO: also try to check TORQUE PBS environmental variable.
         available_procs = len(os.sched_getaffinity(0))
     if available_procs < necessary_procs:
         print(
-            f"Warning, {config['md']['ngpus']} gpus and {config['md']['omp_procs']} "
-            f"OMP threads requested. {necessary_procs} threads are necessary, but only "
-            f"{available_procs} are available.\n"
-            "Continue, only if you know what you're doing.",
+            f"Warning, {config['md']['ngpus']} gpus, {config['md']['mpi_procs']} MPI "
+            f"processors and {config['md']['omp_procs']} OMP threads requested. "
+            f"{necessary_procs} threads are necessary, but only {available_procs} "
+            f"are available.\n Continue only if you know what you're doing.",
             flush=True,
         )
 

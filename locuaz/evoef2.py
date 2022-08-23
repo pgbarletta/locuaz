@@ -1,7 +1,5 @@
 from pathlib import Path
-from operator import itemgetter
-from abc import ABC, ABCMeta
-from typing import Any, List
+from typing import List
 import subprocess as sp
 from fileutils import FileHandle, DirHandle
 from collections import Sequence
@@ -11,7 +9,6 @@ from abstractscoringfunction import AbstractScoringFunction
 class evoef2(AbstractScoringFunction):
 
     CPU_TO_MEM_RATIO: int = 1000
-    parameters_handle: FileHandle
 
     def __init__(
         self, sf_dir, nprocs=2, *, target_chains: Sequence, binder_chains: Sequence
@@ -54,7 +51,6 @@ class evoef2(AbstractScoringFunction):
         return scores
 
     def __call__(self, *, nframes: int, frames_path: Path):
-        print(" -- EVOEF2 scoring -- ")
         DirHandle(Path(frames_path, "evoef2"), make=True)
         steps = list(range(0, nframes + 1, self.max_concurrent_jobs))
         scores: List = []

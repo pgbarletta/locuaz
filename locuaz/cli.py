@@ -49,6 +49,12 @@ def validate_config(config: Dict) -> Dict:
         config["scoring"]["nprocs"] = os.sched_getaffinity(0)
     # If `ngpus` is not set, use as many gpus as available
     if config["md"]["ngpus"] == 0:
+        print(
+            "Warning: `ngpus` was not set, using `nvidia-smi` to set this "
+            "variable, this number may be different that the actual GPUs available "
+            "if BinDesigner was launched using a job scheduler.",
+            flush=True,
+        )
         config["md"]["ngpus"] = int(
             sp.run(
                 "nvidia-smi --query-gpu=name --format=csv,noheader | wc -l",
@@ -62,6 +68,21 @@ def validate_config(config: Dict) -> Dict:
     # If `branches` is not set, used as many as GPUs are
     if config["main"]["branches"] == 0:
         config["main"]["branches"] = config["md"]["ngpus"]
+
+    # Check that
+    necessary_procs = config["md"]["ngpus"] * config["md"]["omp_procs"]
+    try:
+        available_procs = int(os.getenv("SLURM_CPUS_ON_NODE"))  # type: ignore
+    except TypeError as e:
+        available_procs = len(os.sched_getaffinity(0))
+    if available_procs < necessary_procs:
+        print(
+            f"Warning, {config['md']['ngpus']} gpus and {config['md']['omp_procs']} "
+            f"OMP threads requested. {necessary_procs} threads are necessary, but only "
+            f"{available_procs} are available.\n"
+            "Continue, only if you know what you're doing.",
+            flush=True,
+        )
 
     # This is not strictly necessary yet, but it might eventually be.
     for segment in config["binder"]["mutating_resSeq"]:

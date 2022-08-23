@@ -71,7 +71,7 @@ def validate_config(config: Dict) -> Dict:
 
     # Check that
     necessary_procs = (
-        config["md"]["ngpus"] * {config["md"]["mpi_procs"]} * config["md"]["omp_procs"]
+        config["md"]["ngpus"] * config["md"]["mpi_procs"] * config["md"]["omp_procs"]
     )
     try:
         available_procs = int(os.getenv("SLURM_CPUS_ON_NODE"))  # type: ignore

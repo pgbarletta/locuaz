@@ -1,64 +1,68 @@
-from projectutils import Epoch, Iteration
-from biobb_md.gromacs.pdb2gmx import Pdb2gmx
-from biobb_md.gromacs.solvate import Solvate
-from molecules import (
-    GROComplex,
-    ZipTopology,
-    GROStructure,
-    PDBStructure,
-)
-from typing import Dict
-from primitives import launch_biobb
+from asyncio import as_completed
+import logging
 
-# DEPRECATED
-def minimize_iterations(work_dir: WorkProject, iter_name: str, maxsol: int = 1):
-    if maxsol == 0:
-        print(
-            "prepare_for_mdrun(): Warning, maxsol == 0, gmx solvate "
-            "we'll add as many waters as it wants."
-        )
+# from queue import Queue, SimpleQueue, Empty
+from multiprocessing import Queue, SimpleQueue
+import queue
+from concurrent.futures import ProcessPoolExecutor
+import concurrent.futures as cf
 
-    config = work_dir.config
-    this_iter = work_dir.epochs[-1][iter_name]
-    system_name = this_iter.complex.pdb.file.name
-    current_dir = this_iter.dir_handle.dir_path
+from projectutils import Epoch, Iteration, WorkProject
+from runutils import MDrun
 
-    # PDB2GMX
-    dry_gro = str(current_dir / ("dry_" + system_name + ".gro"))
-    dry_top_zip = str(current_dir / "dry_topol.zip")
-    props = {
-        "gmx_path": str(config["md"]["gmx_bin"]),
-        "water_type": "tip3p",
-        "force_field": "amber99sb-ildn",
-        "ignh": True,
-    }
-    pdb_to_gro_zip = Pdb2gmx(
-        input_pdb_path=str(this_iter.complex.pdb.file.path),
-        output_gro_path=dry_gro,
-        output_top_zip_path=dry_top_zip,
-        properties=props,
-    )
-    launch_biobb(pdb_to_gro_zip)
 
-    # SOLVATE
-    wet_gro = str(current_dir / ("wet_" + system_name + ".gro"))
-    wet_top_zip = str(current_dir / "wet_topol.zip")
-    props = {"gmx_path": str(config["md"]["gmx_bin"]), "dev": f"-maxsol {maxsol}"}
-    solvatador = Solvate(
-        input_solute_gro_path=dry_gro,
-        output_gro_path=wet_gro,
-        input_top_zip_path=dry_top_zip,
-        output_top_zip_path=wet_top_zip,
-        properties=props,
-    )
-    launch_biobb(solvatador)
+def worker(task_queue: Queue, results_queue: SimpleQueue):
+    while True:
+        try:
+            task = task_queue.get(block=False)
+        except queue.Empty:
+            print("Queue is empty! My work here is done. Exiting.")
+            return
+        engine, input_complex = task["engine"], task["complex"]
 
-    a = ZipTopology.from_path_with_chains(
-        wet_top_zip,
-        target_chains=work_dir.config["target"]["chainID"],
-        binder_chains=work_dir.config["binder"]["chainID"],
-    )
-    b = GROStructure.from_path(wet_gro)
-    c = PDBStructure.from_path(this_iter.complex.pdb.file.path)
-    this_iter.complex = GROComplex(system_name, current_dir, c, a, b)
-    this_iter.complex.update_all_ndxs()
+        complex = engine(input_complex)
+        results_queue.put(complex)
+        task_queue.task_done()
+
+
+# def minimize_iterations(work_pjct: WorkProject):
+#     epoch = work_pjct.epochs[-1]
+#     ngpus = work_pjct.config["md"]["ngpus"]
+
+#     work_to_do: Queue = Queue()
+#     for iter_name, iter in epoch.items():
+#         logging.info(f"Queing minimization of the iteration {iter_name}.")
+
+#         min = MDrun.min(
+#             iter.dir_handle, work_pjct=work_pjct, out_name="min_" + work_pjct.name
+#         )
+#         task = {"engine": min, "complex": iter.complex}
+#         work_to_do.put(task)
+
+#     work_done: SimpleQueue = SimpleQueue()
+#     with ProcessPoolExecutor(max_workers=ngpus) as ex:
+
+#         futuros = [ex.submit(worker, work_to_do, work_done) for _ in range(ngpus)]
+#         for futu in cf.as_completed(futuros):
+#             print(f"{futu}")
+
+def minimize_iterations(work_pjct: WorkProject):
+    epoch = work_pjct.epochs[-1]
+    ngpus = work_pjct.config["md"]["ngpus"]
+
+    with ProcessPoolExecutor(max_workers=ngpus) as ex:
+        futuros = []
+        for iter_name, iter in epoch.items():
+            logging.info(f"Queing minimization of the iteration {iter_name}.")
+
+            min = MDrun.min(
+                iter.dir_handle, work_pjct=work_pjct, out_name="min_" + work_pjct.name
+            )
+            futuros.append(ex.submit(min, iter.complex))
+    
+        for futu in cf.as_completed(futuros):
+            if futu.exception():
+                logging.error(f"")
+            print(f"{futu}")
+
+        

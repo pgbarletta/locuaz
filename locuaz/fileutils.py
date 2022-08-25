@@ -3,6 +3,8 @@ import shutil as sh
 from attrs import define, field
 from typing import List, Set, Dict, Tuple, Optional
 import itertools
+from functools import singledispatch
+import logging
 
 
 @define
@@ -14,7 +16,7 @@ class FileHandle:
     @path.validator
     def file_exists(self, attribute, value: Path):
         if not value.is_file():
-            raise ValueError(f"File: {value} doesn't exist.")
+            raise FileNotFoundError(f"File: {value} doesn't exist.")
 
     def __attrs_post_init__(self):
         try:
@@ -38,6 +40,9 @@ class FileHandle:
     def __fspath__(self) -> str:
         return self.__str__()
 
+    def unlink(self) -> None:
+        self.path.unlink()
+
 
 @define
 class DirHandle:
@@ -50,7 +55,7 @@ class DirHandle:
     @dir_path.validator
     def file_exists(self, attribute, value: Path):
         if not self.make and not value.is_dir():
-            raise ValueError(f"Directory: {value} doesn't exist.")
+            raise FileNotFoundError(f"Directory: {value} doesn't exist.")
 
     def __attrs_post_init__(self):
         self.name = self.dir_path.name
@@ -70,7 +75,6 @@ class DirHandle:
                             continue
                         else:
                             self.name = self.dir_path.name
-                            print(f"Created dir: {self.dir_path}")
                             break
                     else:
                         print(f"[1:99]-{self.dir_path.name} exist. Can't mkdir.")
@@ -96,7 +100,7 @@ class DirHandle:
         elif new_path.is_dir():
             return DirHandle(new_path, make=False)
         else:
-            raise ValueError(f"{new_path} doesn't exist.")
+            raise FileNotFoundError(f"{new_path} doesn't exist.")
 
 
 def update_header(file_obj: FileHandle, new_header: str):
@@ -112,11 +116,15 @@ def update_header(file_obj: FileHandle, new_header: str):
         [file.write(linea) for linea in texto]
 
 
-def catenate(out_path: Path, *file_objs: FileHandle):
+def catenate(
+    out_path: Path, *file_objs: FileHandle, newline_between_files: bool = True
+):
     lineas = []
     for file_obj in file_objs:
         with open(file_obj.path, "r") as file:
             lineas.append(file.readlines())
+        if newline_between_files:
+            lineas.append(["\n"])
 
     texto = itertools.chain.from_iterable(lineas)
     with open(out_path, "w") as file:
@@ -124,9 +132,15 @@ def catenate(out_path: Path, *file_objs: FileHandle):
     return FileHandle(out_path)
 
 
-def generate_iteration_ID(chainIDs, sequences):
-    iter_ID = "".join(
-        [f"-{chainID}_{''.join(seq)}" for chainID, seq in zip(chainIDs, sequences)]
-    )
-    # Drop the leading -:
-    return iter_ID[1:]
+@singledispatch
+def copy_to(obj, dir_path: Path, name=None):
+    raise NotImplementedError
+
+
+@copy_to.register
+def _(obj: FileHandle, path: Path, name=None):
+    if name is None:
+        name = obj.path.name
+    new_file = Path(path) / name
+    sh.copy(obj.path, new_file)
+    return FileHandle(new_file)

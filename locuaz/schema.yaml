@@ -5,26 +5,22 @@ paths:
         gmxrc:
             type: string
             required: true
-        root:
-            type: string
-            required: false
-        input:
-            type: string
-            required: false
-        data:
-            type: string
-            required: false
-        starting_iterations:
-            type: list
-            minlength: 1
-            maxlength: 12
-            required: false
-            schema:
-                type: string
         scoring_functions:
             type: string
             required: true
-               
+        data:
+            type: string
+            required: true
+        input:
+            type: list
+            minlength: 1
+            maxlength: 12
+            required: true
+            schema:
+                type: string
+        root:
+            type: string
+            required: false
 main:
     type: dict
     required: true
@@ -32,11 +28,21 @@ main:
         name:
             type: string
             required: true
+        prefix:
+            type: string
+            required: true
+            default: "npt_"
         mode:
             type: string 
             default: "start"
             required: true
             allowed: ["start", "restart", "score"]
+        branches:
+            type: integer
+            default: 0
+            required: false
+            min: 0
+            max: 24
 
 md:
     type: dict
@@ -86,7 +92,7 @@ md:
             type: integer
             min: 1
             max: 12
-            default: 1
+            default: 0
         mpi_procs:
             type: integer
             min: 1
@@ -132,21 +138,7 @@ binder:
                 type: string
                 allowed: [A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z]
                 required: true
-        peptide_reference:
-            type: list
-            minlength: 1
-            maxlength: 10
-            required: true
-            schema:
-                type: list
-                minlength: 1
-                maxlength: 20
-                required: true
-                schema:
-                    type: string
-                    allowed: [A,C,D,E,F,G,H,I,K,L,M,N,P,Q,R,S,T,V,W,Y]
-                    required: true
-        residues_mod:
+        mutating_resSeq:
             type: list
             minlength: 1
             maxlength: 10
@@ -191,7 +183,7 @@ scoring:
             required: true
             schema:
                 type: string
-                allowed: [bach, pisa, zrank, irad, bmf-bluues, firedock, evoef2]
+                allowed: [bach, bluues, evoef2, haddock, pisa, rosetta, zrank, irad, firedock]
         consensus_threshold:
             type: integer
             min: 1
@@ -201,5 +193,5 @@ scoring:
             type: integer
             min: 1
             max: 256
-            default: 1
+            default: 0
 

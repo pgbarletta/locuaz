@@ -91,9 +91,20 @@ def write_non_overlapping_ndx(
 
 def remove_overlapping_waters(
     config: Dict, complex: AbstractComplex, overlapped_resSeq: int
-):
-    # TODO: get a ndx for the waters and use that for genion
+) -> AbstractComplex:
+    """remove_overlapping_waters takes a complex and removes all the waters that
+    are within a certain cutoff from `overlapped_resSeq`. Then it replaces them.
+    It does a lot of gymnastics to deal with Gromacs weirdness.
 
+    Args:
+        config (Dict): work project's config file
+        complex (AbstractComplex): a Gromacs complex
+        overlapped_resSeq (int): assumes that this residue belongs to 'binder'
+
+    Returns:
+        AbstractComplex: fully loaded complex with no overlaps between water
+        and `overlapped_resSeq`
+    """
     # Get the index file with all the atoms except the waters that overlap
     # with the newly mutated residue
     ndx, wat_count = write_non_overlapping_ndx(
@@ -136,16 +147,12 @@ def remove_overlapping_waters(
 
     # Re-add waters to keep the N of the system constant
     wet_pdb_fn = Path(complex.dir_handle) / ("wet_" + config["main"]["name"] + ".pdb")
-    # wet_gro_fn = Path(complex.dir_handle) / ("wet_" + config["main"]["name"] + ".gro")
-    # wet_top_fn = Path(complex.dir_handle) / ("wet_" + config["main"]["name"] + ".zip")
     if wat_count != 0:
         logging.info(f"Adding {wat_count} water molecules.")
 
         solvatador = Solvate(
-            # input_solute_gro_path=str(nonwat_gro),
             input_solute_gro_path=str(nonwat_pdb),
             input_top_zip_path=str(nonwat_top),
-            # output_gro_path=str(wet_gro_fn),
             output_gro_path=str(wet_pdb_fn),
             # actually, the top file is modified inplace by gmx solvent, so this
             # parameter doesn't make much sense.
@@ -157,19 +164,9 @@ def remove_overlapping_waters(
         )
         launch_biobb(solvatador)
     else:
-        # TODO: fix, sólo necesita de PDB
-        try:
-            copy_mol_to(nonwat_gro, complex.dir_handle, wet_gro_fn.name)
-        except SameFileError as e:
-            pass
-        try:
-            copy_mol_to(nonwat_top, complex.dir_handle, wet_top_fn.name)
-        except SameFileError as e:
-            pass
+        copy_to(nonwat_pdb.file, complex.dir_handle, wet_pdb_fn.name)
         logging.info(
-            f"Not addying any water molecules. "
-            f"{nonwat_gro} and {wet_gro_fn} are the same files. "
-            f"{nonwat_top} and {wet_top_fn} are the same files."
+            f"Not addying any water molecules.{nonwat_pdb} and {wet_pdb_fn} are the same files."
         )
 
     # Get .gro and .top for ion addition
@@ -184,24 +181,15 @@ def remove_overlapping_waters(
     )
 
     # Build a temporary .tpr for genion
-    wet_tpr_fn = Path(complex.dir_handle) / (
-        "genion_" + config["main"]["name"] + ".tpr"
-    )
-    grompepe = Grompp(
-        input_gro_path=str(wet_gro_fn),
-        input_top_zip_path=str(wet_top_fn),
-        output_tpr_path=str(wet_tpr_fn),
-        properties={"gmx_path": config["md"]["gmx_bin"], "maxwarn": 2},
-    )
-    launch_biobb(grompepe)
+    wet_tpr = get_tpr(gro=wet_gro, top=wet_top, gmx_bin=config["md"]["gmx_bin"])
 
     # Re-add ions as necessary. SOL group will be continous, so gmx genion
     # won't complain.
     gro_fn = Path(complex.dir_handle) / (config["main"]["name"] + ".gro")
     top_fn = Path(complex.dir_handle) / (config["main"]["name"] + ".zip")
     genio = Genion(
-        input_tpr_path=str(wet_tpr_fn),
-        input_top_zip_path=str(wet_top_fn),
+        input_tpr_path=str(wet_tpr),
+        input_top_zip_path=str(wet_top),
         output_gro_path=str(gro_fn),
         output_top_zip_path=str(top_fn),
         properties={

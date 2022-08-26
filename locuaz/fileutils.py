@@ -43,6 +43,13 @@ class FileHandle:
     def unlink(self) -> None:
         self.path.unlink()
 
+    def replace_text(self, text_0: str, text_1: str) -> None:
+        with open(self.path, "r") as f:
+            lineas = f.read()
+        lineas = lineas.replace(text_0, text_1)
+        with open(self.path, "w") as f:
+            f.write(lineas)
+
 
 @define
 class DirHandle:

@@ -103,6 +103,14 @@ md:
             min: 1
             max: 48
             default: 1
+        water_type:
+            type: string
+            default: "tip3p"
+            required: true
+        force_field:
+            type: string
+            default: "amber99sb-ildn"
+            required: true
 
 target:
     type: dict

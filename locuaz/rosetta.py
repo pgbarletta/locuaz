@@ -86,20 +86,28 @@ class rosetta(AbstractScoringFunction):
                 )
             )
 
-        scores_rosetta = []
+        scores = []
         for i, proc in enumerate(processos):
             sal, err = proc.communicate()
             output_rosetta_file = Path(
                 self.results_dir, "output_rosetta_" + str(i) + str(".out")
             )
-            with open(output_rosetta_file, "r") as f:
-                lineas = f.readlines()
-                scores_rosetta.append(float(lineas[2].split()[3]))
+            score_rosetta = self.__parse_output__(score_file=output_rosetta_file)
+            scores.append(score_rosetta)
 
-        return scores_rosetta
+        return scores
+
+    def __parse_output__(self, *, score_stdout=None, score_file=None) -> float:
+        try:
+            with open(score_file, "r") as f:
+                lineas = f.readlines()
+            score_rosetta = float(lineas[2].split()[3])
+        except ValueError as e:
+            raise ValueError(f"{self} couldn't parse {score_file}.") from e
+
+        return score_rosetta
 
     def __call__(self, *, nframes: int, frames_path: Path):
-        print(" -- ROSETTA scoring -- ")
 
         self.results_dir = DirHandle(Path(frames_path, "rosetta"), make=True)
         steps = list(range(0, nframes + 1, self.max_concurrent_jobs))

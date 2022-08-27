@@ -28,7 +28,6 @@ class bluues(AbstractScoringFunction):
         self.binder_chains = tuple(binder_chains)
 
     def __call__(self, *, nframes: int, frames_path: Path):
-        print(" -- BLUUES scoring -- ")
 
         DirHandle(Path(frames_path, "bluues"), make=True)
         steps = list(range(0, nframes + 1, self.max_concurrent_jobs))
@@ -47,7 +46,7 @@ class bluues(AbstractScoringFunction):
         )
         scores_bluues += step_scores_bluues
         scores_bmf += step_scores_bmf
-        
+
         return scores_bluues, scores_bmf
 
     def __submit_batch_pqr__(
@@ -108,15 +107,23 @@ class bluues(AbstractScoringFunction):
 
         return
 
+    def __parse_output__(self, *, score_stdout=None, score_file=None) -> float:
+        try:
+            with open(str(score_file) + ".solv_nrg", "r") as f:
+                for linea in f:
+                    if linea[0:26] == "Total              energy:":
+                        bluues_raw = float(linea.split()[2])
+                        break
+        except ValueError as e:
+            raise ValueError(f"{self} couldn't parse {score_file}.") from e
+
+        return bluues_raw
+
     def __get_bluues_bmf_score__(self, results_dir: DirHandle, molecule: str, i: int):
         bluues_file = Path(results_dir, "bluues_" + molecule + "-" + str(i) + ".out")
         bmf_file = Path(results_dir, "bmf_" + molecule + "-" + str(i) + ".out")
 
-        with open(str(bluues_file) + ".solv_nrg", "r") as f:
-            for linea in f:
-                if linea[0:26] == "Total              energy:":
-                    bluues_raw = float(linea.split()[2])
-                    break
+        bluues_raw = self.__parse_output__(score_file=bluues_file)
         bluues = bluues_raw * 15 / (abs(bluues_raw) + 15)
 
         with open(bmf_file, "r") as f:

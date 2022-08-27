@@ -1,6 +1,4 @@
 from pathlib import Path
-from operator import itemgetter
-from abc import ABC, ABCMeta
 from typing import Any, List
 import subprocess as sp
 from fileutils import FileHandle, DirHandle
@@ -60,12 +58,21 @@ class pisa(AbstractScoringFunction):
         scores: List = []
         for proc in processos:
             raw_score, _ = proc.communicate()
-            scores.append(float(raw_score))
+            pisa_score = self.__parse_output__(score_stdout=raw_score)
+            scores.append(pisa_score)
 
         return scores
 
+    def __parse_output__(self, *, score_stdout=None, score_file=None) -> float:
+        try:
+            pisa_score = float(score_stdout)
+        except ValueError as e:
+            raise ValueError(f"{self} couldn't parse {score_stdout}.") from e
+
+        return pisa_score
+
     def __call__(self, *, nframes: int, frames_path: Path):
-        print(" -- PISA scoring -- ")
+
         DirHandle(Path(frames_path, "pisa"), make=True)
         steps = list(range(0, nframes + 1, self.max_concurrent_jobs))
         scores: List = []

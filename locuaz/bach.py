@@ -57,12 +57,21 @@ class bach(AbstractScoringFunction):
         scores_bach: List = []
         for proc in processos:
             raw_score, _ = proc.communicate()
-            scores_bach.append(float(raw_score.split()[-1]))
+            bach_score = self.__parse_output__(score_stdout=raw_score)
+            scores_bach.append(bach_score)
 
         return scores_bach
 
+    def __parse_output__(self, *, score_stdout=None, score_file=None) -> float:
+        try:
+            bach_score = float(score_stdout.split()[-1])
+        except ValueError as e:
+            raise ValueError(f"{self} couldn't parse {score_stdout}.") from e
+
+        return bach_score
+
     def __call__(self, *, nframes: int, frames_path: Path):
-        print(" -- BACH scoring -- ")
+
         DirHandle(Path(frames_path, "bach"), make=True)
         steps = list(range(0, nframes + 1, self.max_concurrent_jobs))
         scores: List = []

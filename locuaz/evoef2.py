@@ -46,9 +46,18 @@ class evoef2(AbstractScoringFunction):
         scores: List = []
         for proc in processos:
             raw_score, _ = proc.communicate()
-            scores.append(float(raw_score.split()[-4]))
+            evoef2_score = self.__parse_output__(score_stdout=raw_score)
+            scores.append(evoef2_score)
 
         return scores
+
+    def __parse_output__(self, *, score_stdout=None, score_file=None) -> float:
+        try:
+            evoef2_score = float(score_stdout.split()[-4])
+        except ValueError as e:
+            raise ValueError(f"{self} couldn't parse {score_stdout}.") from e
+
+        return evoef2_score
 
     def __call__(self, *, nframes: int, frames_path: Path):
         DirHandle(Path(frames_path, "evoef2"), make=True)

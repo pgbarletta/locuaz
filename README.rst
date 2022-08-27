@@ -65,6 +65,10 @@ Features
 Credits
 -------
 
+- Biobb:
+    https://mmb.irbbarcelona.org/biobb/documentation/source
+    https://mmb.irbbarcelona.org/biobb/workflows/tutorials/md_setup
+
 This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
 
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter

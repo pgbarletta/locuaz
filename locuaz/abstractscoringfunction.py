@@ -26,6 +26,6 @@ class AbstractScoringFunction(metaclass=ABCMeta):
     def __call__(self, *, nframes: int, frames_path: Path) -> List:
         pass
 
-    # TODO:
-    # def __parse_output__:
-    #     pass
+    @abstractmethod
+    def __parse_output__(self, *, score_stdout=None, score_file=None) -> float:
+        pass

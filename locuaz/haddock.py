@@ -1,7 +1,7 @@
 from pathlib import Path
 from collections import Sequence
 import subprocess as sp
-from fileutils import FileHandle, DirHandle
+from fileutils import FileHandle, DirHandle, copy_to
 from abstractscoringfunction import AbstractScoringFunction
 from collections import Sequence
 from shutil import copyfile
@@ -96,6 +96,16 @@ class haddock(AbstractScoringFunction):
 
         return scorin_inp_file
 
+    def __parse_output__(self, *, score_stdout=None, score_file=None) -> float:
+        try:
+            with open(score_file, "r") as f:
+                lineas = f.readlines()
+                score_haddock = float(lineas[8].split()[1][0:-1])
+        except ValueError as e:
+            raise ValueError(f"{self} couldn't parse {score_file}.") from e
+
+        return score_haddock
+
     def __submit_batch__(
         self,
         start: int,
@@ -128,63 +138,60 @@ class haddock(AbstractScoringFunction):
                 )
             )
 
-        scores_haddock = []
+        scores = []
         for i, proc in enumerate(processos):
             _, _ = proc.communicate()
             output_haddock_file = Path(
                 self.results_dir, "mod_complex-" + str(i) + "_conv.psf"
             )
-            with open(output_haddock_file, "r") as f:
-                lineas = f.readlines()
-                scores_haddock.append(float(lineas[8].split()[1][0:-1]))
+            score_haddock = self.__parse_output__(score_file=output_haddock_file)
+            scores.append(score_haddock)
 
-        return scores_haddock
+        return scores
 
     def __initialize_scoring_dir__(self) -> None:
-        copyfile(
-            Path(self.rescoring_scripts_dir, "ligand.param"),
-            Path(self.results_dir, "ligand.param"),
-        )
-        copyfile(
-            Path(self.rescoring_scripts_dir, "ligand.top"),
-            Path(self.results_dir, "ligand.top"),
-        )
 
-        copyfile(
-            Path(self.rescoring_scripts_dir, "calc_free-ene.cns"),
-            Path(self.results_dir, "calc_free-ene.cns"),
+        copy_to(
+            FileHandle(Path(self.rescoring_scripts_dir, "ligand.param")),
+            self.results_dir,
         )
-        copyfile(
-            Path(self.rescoring_scripts_dir, "def_solv_param.cns"),
-            Path(self.results_dir, "def_solv_param.cns"),
+        copy_to(
+            FileHandle(Path(self.rescoring_scripts_dir, "ligand.top")), self.results_dir
         )
-        copyfile(
-            Path(self.rescoring_scripts_dir, "flex_segment_back.cns"),
-            Path(self.results_dir, "flex_segment_back.cns"),
+        copy_to(
+            FileHandle(Path(self.rescoring_scripts_dir, "calc_free-ene.cns")),
+            self.results_dir,
         )
-        copyfile(
-            Path(self.rescoring_scripts_dir, "print_coorheader.cns"),
-            Path(self.results_dir, "print_coorheader.cns"),
+        copy_to(
+            FileHandle(Path(self.rescoring_scripts_dir, "def_solv_param.cns")),
+            self.results_dir,
         )
-        copyfile(
-            Path(self.rescoring_scripts_dir, "scale_inter_only.cns"),
-            Path(self.results_dir, "scale_inter_only.cns"),
+        copy_to(
+            FileHandle(Path(self.rescoring_scripts_dir, "flex_segment_back.cns")),
+            self.results_dir,
         )
-        copyfile(
-            Path(self.rescoring_scripts_dir, "scale_intra_only.cns"),
-            Path(self.results_dir, "scale_intra_only.cns"),
+        copy_to(
+            FileHandle(Path(self.rescoring_scripts_dir, "print_coorheader.cns")),
+            self.results_dir,
         )
-        copyfile(
-            Path(self.rescoring_scripts_dir, "separate.cns"),
-            Path(self.results_dir, "separate.cns"),
+        copy_to(
+            FileHandle(Path(self.rescoring_scripts_dir, "scale_inter_only.cns")),
+            self.results_dir,
         )
-        copyfile(
-            Path(self.rescoring_scripts_dir, "symmultimer.cns"),
-            Path(self.results_dir, "symmultimer.cns"),
+        copy_to(
+            FileHandle(Path(self.rescoring_scripts_dir, "scale_intra_only.cns")),
+            self.results_dir,
+        )
+        copy_to(
+            FileHandle(Path(self.rescoring_scripts_dir, "separate.cns")),
+            self.results_dir,
+        )
+        copy_to(
+            FileHandle(Path(self.rescoring_scripts_dir, "symmultimer.cns")),
+            self.results_dir,
         )
 
     def __call__(self, *, nframes: int, frames_path: Path):
-        print(" -- HADDOCK scoring -- ")
 
         self.results_dir = DirHandle(Path(frames_path, "haddock"), make=True)
         self.__initialize_scoring_dir__()

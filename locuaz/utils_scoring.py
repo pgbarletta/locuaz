@@ -2,6 +2,9 @@ import re
 import zipfile
 from pathlib import Path
 
+from Bio.PDB import PDBParser
+from Bio.PDB.PDBIO import PDBIO
+
 
 def extract_pdbs(zip_file: Path, out_prefix: str, delete_zip_file: bool = True):
     """
@@ -22,11 +25,9 @@ def extract_pdbs(zip_file: Path, out_prefix: str, delete_zip_file: bool = True):
     with zipped_pdbs as sipesipe:
         sipesipe.extractall(current_dir)
 
-    proto_pdb = str(current_dir / "output")
-    fixed_pdb = str(current_dir / (out_prefix + "-"))
     for i in range(0, nframes + 1):
-        old_pdb = Path(proto_pdb + str(i) + ".pdb")
-        new_pdb = fixed_pdb + str(i) + ".pdb"
+        old_pdb = Path(current_dir / (f"output{i}.pdb"))
+        new_pdb = Path(current_dir / (f"{out_prefix}-{i}.pdb"))
         fix_gromacs_pdb(old_pdb, new_pdb)
         old_pdb.unlink()
 
@@ -36,32 +37,30 @@ def extract_pdbs(zip_file: Path, out_prefix: str, delete_zip_file: bool = True):
     return nframes
 
 
-# It'd be nice to replace this with a proper PDB library
-def fix_gromacs_pdb(file_in_str, file_out_str):
-    with open(file_in_str, "r") as sources:
-        lines = sources.readlines()
-    with open(file_out_str, "w") as sources:
-        prev_line = "ATOM      X  XX  XYZ A"
-        for line in lines:
-            if line[0:6] == "TITLE " or line[0:6] == "REMARK" or line[0:6] == "CRYST1":
-                continue
-            # Add 'TER' between chains.
-            if line[0:4] == "ATOM" and prev_line[0:5] != "MODEL":
-                # Needs chainID to be present
-                if line[21:22] != prev_line[21:22]:
-                    sources.write("TER\n")
+def fix_gromacs_pdb(pdb_in_fn: Path, pdb_out_fn: Path) -> None:
+    """fix_gromacs_pdb uses Bio to add TER between chains, END at the end,
+    and manually make the resSeq numbers continuous.
+    Since this changes the PBD numbering it should only be used for structures
+    to be used for scoring.
+    Specifically, Haddock, that requires chains to have unique resSeq numbers.
 
-            linea = re.sub(
-                r"CD  ILE",
-                "CD1 ILE",
-                re.sub(
-                    r"OC2", "OXT", re.sub(r"OC1", "O  ", re.sub(r"HI.", "HIS", line))
-                ),
-            )
-            sources.write(linea)
+    Args:
+        pdb_in_fn (Path): Path to input PDB.
+        pdb_out_fn (Path): Path to output PDB.
+    """
 
-            prev_line = line
-        sources.write("END")
+    parsero = PDBParser()
+    pdb = parsero.get_structure("a", file=pdb_in_fn)
+
+    resSeq = 1
+    for resi in pdb.get_residues():
+        a, _, c = resi._id
+        resi._id = (a, resSeq, c)
+        resSeq += 1
+
+    io = PDBIO()
+    io.set_structure(pdb)
+    io.save(str(pdb_out_fn))
 
 
 def pdb_chain_segid(file_in_str, file_out_str):

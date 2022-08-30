@@ -1,10 +1,9 @@
-from pathlib import Path
-from molecules import PDBStructure, GROStructure, ZipTopology, GROComplex
 from typing import List, Tuple
 from projectutils import Iteration
-from biobb_model.model.mutate import mutate
-from random import choice
-from Bio.SeqUtils import seq1, seq3
+from random import choice, sample
+from mututils import Mutation
+import logging
+
 
 # fmt: off
 AA3_LIST = ("Ala", "Art", "Asn", "Asp", "Cys", "Glu", "Gln", "Gly", "His", "Ile",
@@ -20,89 +19,65 @@ CAT_AA1_LIST = (NEG_AA1_LIST, POS_AA1_LIST, PHO_AA1_LIST, MIS_AA1_LIST)
 # fmt: on
 
 
-def generate_new_binders(
-    iteration: Iteration, *, width: int
-) -> Tuple[int, List[str], List[str], List[List[str]]]:
+def generate_mutations(iteration: Iteration, *, branches: int) -> List[Mutation]:
+    if branches > 19:
+        logging.warning(
+            f"{branches} is over 19 but this mutator generates "
+            "mutations for 1 position, hence, 19 mutations is the maximum number "
+            "of possible mutations. "
+        )
+        branches = 19
     # First, choose the position to mutate:
     n_chains = len(iteration.chainIDs)
     idx_chain = choice(range(0, n_chains))
     n_residues = len(iteration.resSeqs[idx_chain])
-    # idx_residue = choice(range(0, n_residues))
-    # TODO: remove this when trying out an appropiate system:
-    idx_residue = choice(range(2, n_residues - 2))
-    old_aa1 = iteration.resnames[idx_chain][idx_residue]
-    # mutated resSeq:
-    mut_resSeq = iteration.resSeqs[idx_chain][idx_residue]
+    idx_residue = choice(range(0, n_residues))
+    # Then, save the current AA
+    old_aa = iteration.resnames[idx_chain][idx_residue]
 
     n_cat = len(CAT_AA1_LIST)
-    new_aas1 = set()
-    categories = list(range(n_cat))
-    while width != 0:
-        # Choose a category
-        i = choice(categories)
-        # Choose an AA from said category
-        new_aa1 = choice(CAT_AA1_LIST[i])
-        # Make sure it's actually new.
-        if (new_aa1 != old_aa1) and (new_aa1 not in new_aas1):
-            new_aas1.add(new_aa1)
-            # Make sure this category of AA is not chosen again.
-            categories = [cat for cat in categories if cat != i]
-            if len(categories) == 0:
-                # Renew the available categories to choose from when they
-                # get exhausted
-                categories = list(range(n_cat))
-            width -= 1
+    categories = set(range(n_cat))
+    new_aas = {old_aa}
+    while branches != 0:
+        cat_idx = choice(tuple(categories))
+        categories.difference_update({cat_idx})
 
-    # Now, each mutation will result in a new iteration. For each one of them:
-    ##### 1_ construct the string to perform the mutation,
-    ##### 2_ generate the new iteration name,
-    ##### 3_ generate the new resname, featuring the new amino acid.
-    mut_texts = []
-    new_iterations_names = []
-    new_iterations_resnames = []
-    for aa in new_aas1:
-        mut_chainID = iteration.chainIDs[idx_chain]
-        # Build the string that will go to biobb_model.model.mutate
-        mut_texts.append(f"{mut_chainID}:{seq3(old_aa1)}{mut_resSeq}{seq3(aa)}")
+        shuffled_aas = sample(CAT_AA1_LIST[cat_idx], len(CAT_AA1_LIST[cat_idx]))
+        for new_aa in shuffled_aas:
+            if new_aa not in new_aas:
+                new_aas.add(new_aa)
+                branches -= 1
+                break
+        else:
+            raise RuntimeError(
+                "Can't generate new binder. This is a logic error. "
+                "This shouldn't happen."
+            )
 
-        # Now, generate the new names for each iteration and resnames:
-        iter_name = ""
-        new_iteration_resnames = []
-        for chainID, resname in zip(iteration.chainIDs, iteration.resnames):
-            if chainID == mut_chainID:
-                # This is the mutated chainID
-                new_resname = resname[:idx_residue] + aa + resname[idx_residue + 1 :]
+        if len(categories) == 0:
+            # All categories have already been chosen from `N` times.
+            # Allow all of them again for the `N+1` iteration, except those
+            # that are exhausted already
+            categories = set(range(n_cat))
+            for i in range(n_cat):
+                if set(CAT_AA1_LIST[i]).issubset(new_aas):
+                    # All AAs from thise category have already been chosen
+                    categories.difference_update({i})
 
-            else:
-                # This one remains the same
-                new_resname = "".join([residue for residue in resname])
-            iter_name += f"-{chainID}_{new_resname}"
-            new_iteration_resnames.append(new_resname)
-        new_iterations_resnames.append(new_iteration_resnames)
-        # Drop the leading '-'
-        new_iterations_names.append(iter_name[1:])
+    # Finally, build the list of mutation objects
+    new_aas.difference_update({old_aa})
+    mut_chainID = iteration.chainIDs[idx_chain]
+    mut_resSeq = iteration.resSeqs[idx_chain][idx_residue]
+    mutations = [
+        Mutation(
+            chainID=mut_chainID,
+            resSeq=mut_resSeq,
+            old_aa=old_aa,
+            new_aa=aa,
+            chainID_idx=idx_chain,
+            resSeq_idx=idx_residue,
+        )
+        for aa in new_aas
+    ]
 
-    return mut_resSeq, mut_texts, new_iterations_names, new_iterations_resnames
-
-
-# def build_grocomplex(
-#     name: str, iter_path: Path, target_chains: List, binder_chains: List
-# ) -> "GROComplex":
-#     try:
-#         str_pdb = PDBStructure.from_path(iter_path / ("npt_" + name + ".pdb"))
-#         str_gro = GROStructure.from_path(iter_path / ("npt_" + name + ".gro"))
-#         top = ZipTopology.from_path(iter_path / ("wet_topol.zip"))
-#         top.update_chains(target_chains=target_chains, binder_chains=binder_chains)
-#         # traj = XtcTrajectory.from_path(iter_path / ("npt_" + name + ".xtc"))
-#         # tpr = TPRFile.from_path(iter_path / ("npt_" + name + ".tpr"))
-#     except Exception as e:
-#         print(
-#             f"Could not get input files from: {iter_path}",
-#             flush=True,
-#         )
-#         raise e
-#     else:
-#         cpx = GROComplex(name, iter_path, str_pdb, top, str_gro)
-#         # cpx.tra = traj
-#         # cpx.tpr = tpr
-#         return cpx
+    return mutations

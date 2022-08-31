@@ -65,6 +65,13 @@ def validate_config(config: Dict) -> Dict:
             ).stdout.strip()
         )
 
+    if config["scoring"]["nprocs"] > 64:
+        print(
+            f'Warning: {config["scoring"]["nprocs"]} are going to be used for '
+            "scoring. Make sure you have enough RAM for running as many parallel jobs. ",
+            flush=True,
+        )
+
     # If `branches` is not set, used as many as GPUs are
     if config["main"]["branches"] == 0:
         config["main"]["branches"] = config["md"]["ngpus"]

@@ -71,23 +71,6 @@ md:
                 npt_mdp:
                     type: string
                     default: npt.mdp
-        topology:
-            type: string 
-            required: true
-        target_topology:
-            type: list
-            minlength: 1
-            maxlength: 10
-            required: false
-            schema:
-                type: string
-        binder_topology:
-            type: list
-            minlength: 1
-            maxlength: 10
-            required: false
-            schema:
-                type: string
         ngpus:
             type: integer
             min: 1
@@ -107,8 +90,12 @@ md:
             type: string
             default: "tip3p"
             required: true
+            allowed: [tip3p, tip4p, tip4pew, tip5p, spc, spce]
         force_field:
             type: string
+            allowed: [amber03, amber94, amber96, amber99, amber99sb-ildn,
+                        amber99sb, amberGS, charmm27, gromos43a1, gromos43a2,
+                        gromos45a3, gromos53a5, gromos53a6, gromos54a7, oplsaa]
             default: "amber99sb-ildn"
             required: true
 

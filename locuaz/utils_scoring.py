@@ -49,7 +49,7 @@ def fix_gromacs_pdb(pdb_in_fn: Path, pdb_out_fn: Path) -> None:
         pdb_out_fn (Path): Path to output PDB.
     """
 
-    parsero = PDBParser()
+    parsero = PDBParser(QUIET=True)
     pdb = parsero.get_structure("a", file=pdb_in_fn)
 
     resSeq = 1

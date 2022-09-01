@@ -37,12 +37,24 @@ main:
             default: "start"
             required: true
             allowed: ["start", "restart", "score"]
+        epochs:
+            type: integer
+            default: 0
+            required: false
+            min: 0
+            max: 48
         branches:
             type: integer
             default: 0
             required: false
             min: 0
             max: 24
+        prune:
+            type: integer
+            default: 1
+            required: false
+            min: 1
+            max: 4
 
 md:
     type: dict
@@ -148,24 +160,6 @@ binder:
                     min: 1
                     max: 999999
                     required: true
-mutation:
-    type: dict
-    required: true
-    schema:
-        num_mutations:
-            type: integer
-            min: 1
-            max: 500
-            required: true
-        try_mutations:
-            type: integer
-            min: 1
-            max: 50
-            required: true
-        mutation_method:
-            type: string
-            allowed: [faspr, scwrl4]
-            required: true
 
 scoring:
     type: dict

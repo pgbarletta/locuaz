@@ -1,14 +1,19 @@
+from asyncio import as_completed
+import os
+import logging
 from pathlib import Path
-from typing import Any, List
+from socket import timeout
+from typing import Tuple, List
 import subprocess as sp
+from collections.abc import Sequence
+import concurrent.futures as cf
+
 from fileutils import FileHandle, DirHandle
 from abstractscoringfunction import AbstractScoringFunction
-from collections import Sequence
-import os
 
 
 class rosetta(AbstractScoringFunction):
-    CPU_TO_MEM_RATIO: int = 8
+    TIMEOUT_PER_FRAME: int = 30
 
     def __init__(
         self, sf_dir, nprocs=2, *, target_chains: Sequence, binder_chains: Sequence
@@ -27,7 +32,6 @@ class rosetta(AbstractScoringFunction):
         )
 
         self.nprocs = nprocs
-        self.max_concurrent_jobs = self.CPU_TO_MEM_RATIO * self.nprocs
 
         # Set up environment:
         parameters_dir = DirHandle(
@@ -53,50 +57,6 @@ class rosetta(AbstractScoringFunction):
             + str(parameters_external_dir)
         )
 
-    def __submit_batch__(
-        self,
-        start: int,
-        stop: int,
-        frames_path: Path,
-    ):
-        processos = []
-        for i in range(start, stop):
-            pdb_frame = Path(frames_path, "complex-" + str(i) + ".pdb")
-            output_rosetta_file = Path(
-                self.results_dir, "output_rosetta_" + str(i) + str(".out")
-            )
-
-            comando_rosetta = (
-                self.executable
-                + " --in:file:s "
-                + str(pdb_frame)
-                + " -out:file:score_only "
-                + str(output_rosetta_file)
-                + " -add_regular_scores_to_scorefile true"
-                + " -overwrite -pack_input true -pack_separated true"
-            )
-
-            processos.append(
-                sp.Popen(
-                    comando_rosetta,
-                    stdout=sp.PIPE,
-                    stderr=sp.PIPE,
-                    shell=True,
-                    text=True,
-                )
-            )
-
-        scores = []
-        for i, proc in enumerate(processos):
-            sal, err = proc.communicate()
-            output_rosetta_file = Path(
-                self.results_dir, "output_rosetta_" + str(i) + str(".out")
-            )
-            score_rosetta = self.__parse_output__(score_file=output_rosetta_file)
-            scores.append(score_rosetta)
-
-        return scores
-
     def __parse_output__(self, *, score_stdout=None, score_file=None) -> float:
         try:
             with open(score_file, "r") as f:
@@ -107,17 +67,43 @@ class rosetta(AbstractScoringFunction):
 
         return score_rosetta
 
-    def __call__(self, *, nframes: int, frames_path: Path):
+    def __rosetta_worker__(self, frames_path: Path, i: int) -> Tuple[int, float]:
+        pdb_frame = Path(frames_path, f"complex-{i}.pdb")
+        out_rosetta = Path(self.results_dir, f"output_rosetta_{i}.out")
+
+        comando_rosetta = (
+            f"{self.executable} --in:file:s {pdb_frame} "
+            f"-out:file:score_only {out_rosetta} "
+            "-add_regular_scores_to_scorefile true "
+            "-overwrite -pack_input true -pack_separated true"
+        )
+
+        sp.run(comando_rosetta, stdout=sp.PIPE, stderr=sp.PIPE, shell=True, text=True)
+        score_rosetta = self.__parse_output__(score_file=out_rosetta)
+
+        return i, score_rosetta
+
+    def __call__(self, *, nframes: int, frames_path: Path) -> List[float]:
 
         self.results_dir = DirHandle(Path(frames_path, "rosetta"), make=True)
-        steps = list(range(0, nframes + 1, self.max_concurrent_jobs))
-        scores = []
-        for start, stop in zip(steps[0::1], steps[1::1]):
-            step_scores = self.__submit_batch__(start, stop, frames_path)
-            scores += step_scores
+        scores: List[float] = [0] * (nframes + 1)
 
-        # Remaining frames:
-        step_scores = self.__submit_batch__(steps[-1], nframes + 1, frames_path)
-        scores += step_scores
+        with cf.ProcessPoolExecutor(max_workers=self.nprocs) as exe:
+            futuros: List[cf.Future] = []
+            for i in range(nframes + 1):
+                futuros.append(exe.submit(self.__rosetta_worker__, frames_path, i))
 
+            timeout = self.TIMEOUT_PER_FRAME * nframes
+            try:
+                for futu in cf.as_completed(futuros, timeout=timeout):
+                    if futu.exception():
+                        logging.error(
+                            f"Exception while running rosetta: {futu.exception()}"
+                        )
+                        raise futu.exception()  # type: ignore
+                    j, score = futu.result()
+                    scores[j] = score
+            except cf.TimeoutError as e:
+                logging.error("rosetta subprocess timed out.")
+                raise e
         return scores

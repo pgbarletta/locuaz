@@ -1,14 +1,19 @@
+from asyncio import as_completed
+import logging
 from pathlib import Path
-from typing import List
+from typing import List, Tuple
 import subprocess as sp
+from collections.abc import Sequence
+import concurrent.futures as cf
+
 from fileutils import FileHandle, DirHandle
-from collections import Sequence
 from abstractscoringfunction import AbstractScoringFunction
 
 
 class evoef2(AbstractScoringFunction):
 
     CPU_TO_MEM_RATIO: int = 1000
+    TIMEOUT_PER_FRAME: int = 1
 
     def __init__(
         self, sf_dir, nprocs=2, *, target_chains: Sequence, binder_chains: Sequence
@@ -19,37 +24,23 @@ class evoef2(AbstractScoringFunction):
 
         self.bin_path = FileHandle(self.root_dir / "EvoEF2")
 
-    def __submit_batch__(self, start: int, stop: int, frames_path: Path):
-        results_dir = DirHandle(Path(frames_path, "evoef2"), make=False)
-        processos: List = []
+    def __evoef2_worker__(self, frames_path: Path, i: int) -> Tuple[int, float]:
+        pdb_frame = Path(frames_path, f"complex-{i}.pdb")
 
-        for i in range(start, stop):
-            pdb_frame = Path(frames_path, "complex-" + str(i) + ".pdb")
+        comando_evoef2 = (
+            str(self.bin_path)
+            + " --command=ComputeBinding"
+            + " --pdb="
+            + str(pdb_frame)
+        )
 
-            comando_evoef2 = (
-                str(self.bin_path)
-                + " --command=ComputeBinding"
-                + " --pdb="
-                + str(pdb_frame)
-            )
+        p = sp.run(
+            comando_evoef2, stdout=sp.PIPE, stderr=sp.PIPE, shell=True, text=True
+        )
 
-            processos.append(
-                sp.Popen(
-                    comando_evoef2,
-                    stdout=sp.PIPE,
-                    stderr=sp.PIPE,
-                    shell=True,
-                    text=True,
-                )
-            )
+        evoef2_score = self.__parse_output__(score_stdout=p.stdout)
 
-        scores: List = []
-        for proc in processos:
-            raw_score, _ = proc.communicate()
-            evoef2_score = self.__parse_output__(score_stdout=raw_score)
-            scores.append(evoef2_score)
-
-        return scores
+        return i, evoef2_score
 
     def __parse_output__(self, *, score_stdout=None, score_file=None) -> float:
         try:
@@ -59,17 +50,27 @@ class evoef2(AbstractScoringFunction):
 
         return evoef2_score
 
-    def __call__(self, *, nframes: int, frames_path: Path):
-        DirHandle(Path(frames_path, "evoef2"), make=True)
-        steps = list(range(0, nframes + 1, self.max_concurrent_jobs))
-        scores: List = []
-        for start, stop in zip(steps[0::1], steps[1::1]):
-            scores += self.__submit_batch__(start, stop, frames_path)
+    def __call__(self, *, nframes: int, frames_path: Path) -> List[float]:
+        self.results_dir = DirHandle(Path(frames_path, "evoef2"), make=True)
+        scores: List[float] = [0] * (nframes + 1)
 
-        # Remaining frames:
-        scores += self.__submit_batch__(steps[-1], nframes + 1, frames_path)
+        with cf.ProcessPoolExecutor(max_workers=self.nprocs) as exe:
+            futuros: List[cf.Future] = []
 
-        # clean-up  bach's output file.
-        # (Path.cwd() / "output.bss").unlink()
+            for i in range(nframes + 1):
+                futuros.append(exe.submit(self.__evoef2_worker__, frames_path, i))
+            timeout = self.TIMEOUT_PER_FRAME * nframes
+            try:
+                for futu in cf.as_completed(futuros, timeout=timeout):
+                    if futu.exception():
+                        logging.error(
+                            f"Exception while running evoef2: {futu.exception()}"
+                        )
+                        raise futu.exception()  # type: ignore
+                    j, score = futu.result()
+                    scores[j] = score
+            except cf.TimeoutError as e:
+                logging.error("evoef2 subprocess timed out.")
+                raise e
 
         return scores

@@ -1,25 +1,27 @@
 from pathlib import Path
 from operator import itemgetter
-from typing import List
+from typing import Tuple, List
 import subprocess as sp
+import logging
+from collections.abc import Sequence
+import concurrent.futures as cf
+
 from fileutils import FileHandle, DirHandle
-from collections import Sequence
 from abstractscoringfunction import AbstractScoringFunction
 
 
 class bluues(AbstractScoringFunction):
-    CPU_TO_MEM_RATIO: int = 4
     bmf_bin_path: FileHandle
     pdb2pqr_bin_path: str = "pdb2pqr30"
     target_chains: tuple
     binder_chains: tuple
+    TIMEOUT_PER_FRAME: int = 60
 
     def __init__(
         self, sf_dir, nprocs=2, *, target_chains: Sequence, binder_chains: Sequence
     ):
         self.root_dir = DirHandle(Path(sf_dir, "bluues"), make=False)
         self.nprocs = nprocs
-        self.max_concurrent_jobs = self.CPU_TO_MEM_RATIO * self.nprocs
 
         self.bin_path = FileHandle(self.root_dir / "bluues_new_2")
         self.bmf_bin_path = FileHandle(self.root_dir / "score_bmf_3")
@@ -27,222 +29,148 @@ class bluues(AbstractScoringFunction):
         self.target_chains = tuple(target_chains)
         self.binder_chains = tuple(binder_chains)
 
-    def __call__(self, *, nframes: int, frames_path: Path):
+    def __pdb2pqr_worker__(self, frames_path: Path, i: int) -> int:
 
-        DirHandle(Path(frames_path, "bluues"), make=True)
-        steps = list(range(0, nframes + 1, self.max_concurrent_jobs))
-        scores_bluues = []
-        scores_bmf = []
-        for start, stop in zip(steps[0::1], steps[1::1]):
-            step_scores_bluues, step_scores_bmf = self.__submit_batch__(
-                start, stop, frames_path
-            )
-            scores_bluues += step_scores_bluues
-            scores_bmf += step_scores_bmf
+        pdb_frame = Path(frames_path, "complex-" + str(i) + ".pdb")
+        pqr_frame = Path(self.results_dir, "complex-" + str(i) + ".pqr")
 
-        # Remaining frames:
-        step_scores_bluues, step_scores_bmf = self.__submit_batch__(
-            steps[-1], nframes + 1, frames_path
+        comando_pdb2pqr = (
+            self.pdb2pqr_bin_path
+            + " --ff=AMBER "
+            + str(pdb_frame)
+            + " "
+            + str(pqr_frame)
+            + " --keep-chain"
         )
-        scores_bluues += step_scores_bluues
-        scores_bmf += step_scores_bmf
+        sp.run(comando_pdb2pqr, stdout=sp.PIPE, stderr=sp.PIPE, shell=True, text=True)
+        complex_pqr_frame = Path(self.results_dir, "complex-" + str(i) + ".pqr")
+        target_pqr_frame = Path(self.results_dir, "target-" + str(i) + ".pqr")
+        binder_pqr_frame = Path(self.results_dir, "binder-" + str(i) + ".pqr")
 
-        return scores_bluues, scores_bmf
+        # Split the complex .pqr file into target and binder .pqr files.
+        f_target = open(target_pqr_frame, "w")
+        f_binder = open(binder_pqr_frame, "w")
+        with open(complex_pqr_frame, "r") as f_complex:
+            for linea in f_complex:
+                if linea[0:4] == "ATOM":
+                    if linea[21:22] in self.target_chains:
+                        f_target.write(linea)
+                    elif linea[21:22] in self.binder_chains:
+                        f_binder.write(linea)
+        f_target.write("TER\n")
+        f_target.write("END")
+        f_target.close()
 
-    def __submit_batch_pqr__(
-        self,
-        start: int,
-        stop: int,
-        frames_path: Path,
-    ) -> None:
-        processos: List = []
-        results_dir = DirHandle(Path(frames_path, "bluues"), make=False)
-        for i in range(start, stop):
-            pdb_frame = Path(frames_path, "complex-" + str(i) + ".pdb")
-            pqr_frame = Path(results_dir, "complex-" + str(i) + ".pqr")
+        f_binder.write("TER\n")
+        f_binder.write("END")
+        f_binder.close()
 
-            comando_pdb2pqr = (
-                self.pdb2pqr_bin_path
-                + " --ff=AMBER "
-                + str(pdb_frame)
-                + " "
-                + str(pqr_frame)
-                + " --keep-chain"
-            )
+        return i
 
-            processos.append(
-                sp.Popen(
-                    comando_pdb2pqr,
-                    stdout=sp.PIPE,
-                    stderr=sp.PIPE,
-                    shell=True,
-                    text=True,
-                )
-            )
-
-        for i, proc in enumerate(processos):
-            proc.communicate()
-
-            complex_pqr_frame = Path(results_dir, "complex-" + str(i) + ".pqr")
-            target_pqr_frame = Path(results_dir, "target-" + str(i) + ".pqr")
-            binder_pqr_frame = Path(results_dir, "binder-" + str(i) + ".pqr")
-
-            f_target = open(target_pqr_frame, "w")
-            f_binder = open(binder_pqr_frame, "w")
-
-            with open(complex_pqr_frame, "r") as f_complex:
-                for linea in f_complex:
-                    if linea[0:4] == "ATOM":
-                        if linea[21:22] in self.target_chains:
-                            f_target.write(linea)
-                        elif linea[21:22] in self.binder_chains:
-                            f_binder.write(linea)
-            f_target.write("TER\n")
-            f_target.write("END")
-            f_target.close()
-
-            f_binder.write("TER\n")
-            f_binder.write("END")
-            f_binder.close()
-
-        return
-
-    def __parse_output__(self, *, score_stdout=None, score_file=None) -> float:
+    def __parse_output__(
+        self, *, score_stdout=None, score_file=None
+    ) -> Tuple[float, float]:
         try:
-            with open(str(score_file) + ".solv_nrg", "r") as f:
+            with open(str(score_file[0]) + ".solv_nrg", "r") as f:
                 for linea in f:
                     if linea[0:26] == "Total              energy:":
                         bluues_raw = float(linea.split()[2])
                         break
         except ValueError as e:
-            raise ValueError(f"{self} couldn't parse {score_file}.") from e
-
-        return bluues_raw
-
-    def __get_bluues_bmf_score__(self, results_dir: DirHandle, molecule: str, i: int):
-        bluues_file = Path(results_dir, "bluues_" + molecule + "-" + str(i) + ".out")
-        bmf_file = Path(results_dir, "bmf_" + molecule + "-" + str(i) + ".out")
-
-        bluues_raw = self.__parse_output__(score_file=bluues_file)
+            raise ValueError(f"{self} couldn't parse {score_file[0]}.") from e
         bluues = bluues_raw * 15 / (abs(bluues_raw) + 15)
 
-        with open(bmf_file, "r") as f:
-            lineas = f.readlines()
-        bmf, bumps, tors = tuple(map(float, itemgetter(1, 3, 7)(lineas[0].split())))
-        gab = 0.17378 * bmf + 0.25789 * bumps + 0.26624 * tors + 0.16446 * bluues
+        try:
+            with open(score_file[1], "r") as f:
+                lineas = f.readlines()
+            bmf, bumps, tors = tuple(map(float, itemgetter(1, 3, 7)(lineas[0].split())))
+            gab = 0.17378 * bmf + 0.25789 * bumps + 0.26624 * tors + 0.16446 * bluues
+        except ValueError as e:
+            raise ValueError(f"{self} couldn't parse {score_file[1]}.") from e
 
         return bluues_raw, gab
 
-    def __submit_bluues_molecule__(self, results_dir: Path, molecule: str, i: int):
-        pqr_frame = Path(results_dir, molecule + "-" + str(i) + ".pqr")
-        bluues_output_frame = Path(
-            results_dir, "bluues_" + molecule + "-" + str(i) + ".out"
-        )
-        bmf_output_frame = Path(results_dir, "bmf_" + molecule + "-" + str(i) + ".out")
+    def __bluues_bmf_molecule__(self, mol: str, i: int) -> Tuple[float, float]:
+        pqr_mol = Path(self.results_dir, f"{mol}-{i}.pqr")
+        blu_mol_out = Path(self.results_dir, f"bluues_{mol}-{i}.out")
 
-        comando_bluues = (
-            str(self.bin_path) + " " + str(pqr_frame) + " " + str(bluues_output_frame)
-        )
-        comando_bmf = (
-            str(self.bmf_bin_path)
-            + " "
-            + str(pqr_frame)
-            + " "
-            + str(bmf_output_frame)
-            + " -x"
-        )
-
-        proc_bluues = sp.Popen(
+        # BLUUES on complex
+        comando_bluues = f"{self.bin_path} {pqr_mol} {blu_mol_out}"
+        sp.run(
             comando_bluues,
             stdout=sp.PIPE,
             stderr=sp.PIPE,
             shell=True,
             text=True,
         )
-        proc_bmf = sp.Popen(
+
+        bmf_mol_out = Path(self.results_dir, f"bmf_{mol}-{i}.out")
+        comando_bmf = f"{self.bmf_bin_path} {pqr_mol} {bmf_mol_out} -x"
+        sp.run(
             comando_bmf,
             stdout=sp.PIPE,
             stderr=sp.PIPE,
             shell=True,
             text=True,
         )
+        bluues, bmf = self.__parse_output__(score_file=(blu_mol_out, bmf_mol_out))
 
-        return proc_bluues, proc_bmf
+        return bluues, bmf
 
-    def __submit_batch__(
-        self,
-        start: int,
-        stop: int,
-        frames_path: Path,
-    ):
-        self.__submit_batch_pqr__(start, stop, frames_path)
+    def __bluues_bmf_worker__(self, i: int) -> Tuple[int, float, float]:
 
-        results_dir = DirHandle(Path(frames_path, "bluues"), make=False)
-        processos_bluues_cpx: List = []
-        processos_bmf_cpx: List = []
-        processos_bluues_tar: List = []
-        processos_bmf_tar: List = []
-        processos_bluues_bin: List = []
-        processos_bmf_bin: List = []
-        for i in range(start, stop):
-            # Complex
-            proc_bluues_cpx, proc_bmf_cpx = self.__submit_bluues_molecule__(
-                results_dir, "complex", i
-            )
-            processos_bluues_cpx.append(proc_bluues_cpx)
-            processos_bmf_cpx.append(proc_bmf_cpx)
+        bluues_tar, bmf_tar = self.__bluues_bmf_molecule__("target", i)
+        bluues_bin, bmf_bin = self.__bluues_bmf_molecule__("binder", i)
+        bluues_cpx, bmf_cpx = self.__bluues_bmf_molecule__("complex", i)
 
-            # Target
-            proc_bluues_tar, proc_bmf_tar = self.__submit_bluues_molecule__(
-                results_dir, "target", i
-            )
-            processos_bluues_tar.append(proc_bluues_tar)
-            processos_bmf_tar.append(proc_bmf_tar)
+        bluues = bluues_cpx - bluues_tar - bluues_bin
+        bmf = bmf_cpx - bmf_tar - bmf_bin
 
-            # Binder
-            proc_bluues_bin, proc_bmf_bin = self.__submit_bluues_molecule__(
-                results_dir, "binder", i
-            )
-            processos_bluues_bin.append(proc_bluues_bin)
-            processos_bmf_bin.append(proc_bmf_bin)
+        return i, bluues, bmf
 
-        scores_bluues = []
-        scores_bmf = []
-        for i, (
-            proc_bluues_cpx,
-            proc_bmf_cpx,
-            proc_bluues_tar,
-            proc_bmf_tar,
-            proc_bluues_bin,
-            proc_bmf_bin,
-        ) in enumerate(
-            zip(
-                processos_bluues_cpx,
-                processos_bmf_cpx,
-                processos_bluues_tar,
-                processos_bmf_tar,
-                processos_bluues_bin,
-                processos_bmf_bin,
-            )
-        ):
-            proc_bluues_cpx.communicate()
-            proc_bmf_cpx.communicate()
-            bluues_complex, bmf_complex = self.__get_bluues_bmf_score__(
-                results_dir, "complex", i
-            )
+    def __call__(
+        self, *, nframes: int, frames_path: Path
+    ) -> Tuple[List[float], List[float]]:
 
-            proc_bluues_tar.communicate()
-            proc_bmf_tar.communicate()
-            bluues_target, bmf_target = self.__get_bluues_bmf_score__(
-                results_dir, "target", i
-            )
-            proc_bluues_bin.communicate()
-            proc_bluues_bin.communicate()
-            bluues_binder, bmf_binder = self.__get_bluues_bmf_score__(
-                results_dir, "binder", i
-            )
+        self.results_dir = DirHandle(Path(frames_path, "bluues"), make=True)
+        scores_bluues: List[float] = [0] * (nframes + 1)
+        scores_bmf: List[float] = [0] * (nframes + 1)
+        # TODO: check bluues doesn't do anything weird.
+        with cf.ProcessPoolExecutor(max_workers=self.nprocs) as exe:
+            futuros_pdb2pqr: List[cf.Future] = []
+            futuros_bluues_bmf: List[cf.Future] = []
+            for i in range(nframes + 1):
+                futuros_pdb2pqr.append(
+                    exe.submit(self.__pdb2pqr_worker__, frames_path, i)
+                )
+            try:
+                timeout = (self.TIMEOUT_PER_FRAME * nframes) // 2
+                for futu_pdb2pqr in cf.as_completed(futuros_pdb2pqr, timeout=timeout):
+                    if futu_pdb2pqr.exception():
+                        logging.error(
+                            f"Exception while running pdb2pqr: {futu_pdb2pqr.exception()}"
+                        )
+                        raise futu_min.exception()  # type: ignore
 
-            scores_bluues.append(bluues_complex - bluues_target - bluues_binder)
-            scores_bmf.append(bmf_complex - bmf_target - bmf_binder)
+                    j = futu_pdb2pqr.result()
+                    futuros_bluues_bmf.append(exe.submit(self.__bluues_bmf_worker__, j))
+            except cf.TimeoutError as e:
+                logging.error("pdb2pqr subprocess timed out.")
+                raise e
 
+            try:
+                timeout = self.TIMEOUT_PER_FRAME * nframes
+                for futu in cf.as_completed(futuros_bluues_bmf, timeout=timeout):
+                    if futu.exception():
+                        logging.error(
+                            f"Exception while running pdb2pqr: " f"{futu.exception()}"
+                        )
+                        raise futu.exception()  # type: ignore
+
+                    k, bluues, bmf = futu.result()
+                    scores_bluues[k] = bluues
+                    scores_bmf[k] = bmf
+            except cf.TimeoutError as e:
+                logging.error("bluues/bmf subprocess timed out.")
+                raise e
         return scores_bluues, scores_bmf

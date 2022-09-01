@@ -1,28 +1,30 @@
-from pathlib import Path
-from collections import Sequence
-import subprocess as sp
-from fileutils import FileHandle, DirHandle, copy_to
-from abstractscoringfunction import AbstractScoringFunction
-from collections import Sequence
-from shutil import copyfile
+from asyncio import as_completed
+import logging
 import os
 import re
+from pathlib import Path
+from collections.abc import Sequence
+import subprocess as sp
+import concurrent.futures as cf
+from typing import Tuple, List
+
+from fileutils import FileHandle, DirHandle, copy_to
+from abstractscoringfunction import AbstractScoringFunction
 
 
 class haddock(AbstractScoringFunction):
-    CPU_TO_MEM_RATIO: int = 8
     template_scoring_inp_handle: FileHandle
     haddock_protocols_dir: DirHandle
     haddock_toppar_dir: DirHandle
     rescoring_scripts_dir: DirHandle
+    TIMEOUT_PER_FRAME: int = 30
 
     def __init__(
         self, sf_dir, nprocs=2, *, target_chains: Sequence, binder_chains: Sequence
     ):
         self.root_dir = DirHandle(Path(sf_dir, "haddock"), make=False)
         self.nprocs = nprocs
-        self.max_concurrent_jobs = self.CPU_TO_MEM_RATIO * self.nprocs
-
+        
         self.bin_path = FileHandle(
             Path(self.root_dir, "cns_solve_1.3/ibm-ppc64le-linux/bin/cns")
         )
@@ -78,7 +80,8 @@ class haddock(AbstractScoringFunction):
             linea_ncomponents = re.sub(
                 "ncomponents=2", f"ncomponents={ncomponents}", lines[1]
             )
-            # TODO: check con Miguel
+            # TODO: hablar con los demás y contarles cómo se hace p/ evaluar
+            # multímeros
             segid_1 = "".join(self.target_chains)
             linea_prot_segid_1 = re.sub(
                 'prot_segid_1="A"', f'prot_segid_1="{segid_1}"', lines[2]
@@ -106,48 +109,48 @@ class haddock(AbstractScoringFunction):
 
         return score_haddock
 
-    def __submit_batch__(
-        self,
-        start: int,
-        stop: int,
-        frames_path: Path,
-    ):
-        processos = []
-        for i in range(start, stop):
-            pdb_frame = Path(frames_path, "complex-" + str(i) + ".pdb")
-            mod_pdb_frame = Path(self.results_dir, "mod_complex-" + str(i) + ".pdb")
-            self.__pdb_chain_segid__(pdb_frame, mod_pdb_frame)
-            scorin_inp_file = self.__init_frame_scoring__(i, mod_pdb_frame)
+    def __haddock_worker__(self, frames_path: Path, i: int) -> Tuple[int, float]:
+        
+        pdb_frame = Path(frames_path, f"complex-{i}.pdb")
+        mod_pdb_frame = Path(self.results_dir, f"mod_complex-{i}.pdb")
+        self.__pdb_chain_segid__(pdb_frame, mod_pdb_frame)
+        scorin_inp_file = self.__init_frame_scoring__(i, mod_pdb_frame)
+        output = Path(self.results_dir, f"log_{i}.out")
 
-            comando_haddock = (
-                str(self.bin_path)
-                + " < "
-                + str(scorin_inp_file)
-                + " > "
-                + str(Path(self.results_dir, "log_" + str(i) + ".out"))
-            )
+        comando_haddock = f"{self.bin_path} <  {scorin_inp_file} > {output}"
+        sp.run(comando_haddock,stdout=sp.PIPE,stderr=sp.PIPE,cwd=self.results_dir,shell=True,text=True)
 
-            processos.append(
-                sp.Popen(
-                    comando_haddock,
-                    stdout=sp.PIPE,
-                    stderr=sp.PIPE,
-                    cwd=self.results_dir,
-                    shell=True,
-                    text=True,
-                )
-            )
+        output_haddock_file = Path(self.results_dir, f"mod_complex-{i}_conv.psf")
+        score_haddock = self.__parse_output__(score_file=output_haddock_file)        
 
-        scores = []
-        for i, proc in enumerate(processos):
-            _, _ = proc.communicate()
-            output_haddock_file = Path(
-                self.results_dir, "mod_complex-" + str(i) + "_conv.psf"
-            )
-            score_haddock = self.__parse_output__(score_file=output_haddock_file)
-            scores.append(score_haddock)
+        return i, score_haddock
+
+    def __call__(self, *, nframes: int, frames_path: Path) -> List[float]:
+
+        self.results_dir = DirHandle(Path(frames_path, "haddock"), make=True)
+        self.__initialize_scoring_dir__()
+        scores: List[float] = [0] * (nframes + 1)
+        with cf.ProcessPoolExecutor(max_workers=self.nprocs) as exe:
+            futuros: List[cf.Future] = []
+            for i in range(nframes+1):
+                futuros.append(exe.submit(self.__haddock_worker__, frames_path, i))
+
+            timeout = self.TIMEOUT_PER_FRAME * nframes
+            try:
+                for futu in cf.as_completed(futuros, timeout=timeout):
+                    if futu.exception():
+                        logging.error(
+                            f"Exception while running hadock: {futu.exception()}"
+                        )
+                        raise futu.exception()  # type: ignore
+                    j, score = futu.result()
+                    scores[j] = score
+            except cf.TimeoutError as e:
+                logging.error("haddock subprocess timed out.")
+                raise e
 
         return scores
+
 
     def __initialize_scoring_dir__(self) -> None:
 
@@ -191,18 +194,4 @@ class haddock(AbstractScoringFunction):
             self.results_dir,
         )
 
-    def __call__(self, *, nframes: int, frames_path: Path):
-
-        self.results_dir = DirHandle(Path(frames_path, "haddock"), make=True)
-        self.__initialize_scoring_dir__()
-        steps = list(range(0, nframes + 1, self.max_concurrent_jobs))
-        scores = []
-        for start, stop in zip(steps[0::1], steps[1::1]):
-            step_scores = self.__submit_batch__(start, stop, frames_path)
-            scores += step_scores
-
-        # Remaining frames:
-        step_scores = self.__submit_batch__(steps[-1], nframes + 1, frames_path)
-        scores += step_scores
-
-        return scores
+    

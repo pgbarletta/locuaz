@@ -98,11 +98,6 @@ md:
             min: 1
             max: 48
             default: 1
-        water_type:
-            type: string
-            default: "tip3p"
-            required: true
-            allowed: [tip3p, tip4p, tip4pew, tip5p, spc, spce]
         force_field:
             type: string
             allowed: [amber03, amber94, amber96, amber99, amber99sb-ildn,
@@ -110,6 +105,17 @@ md:
                         gromos45a3, gromos53a5, gromos53a6, gromos54a7, oplsaa]
             default: "amber99sb-ildn"
             required: true
+        box_type:
+            type: string
+            default: "cubic"
+            required: true
+            allowed: [cubic, dodecahedron, octahedron]
+        water_type:
+            type: string
+            default: "tip3p"
+            required: true
+            allowed: [tip3p, tip4p, tip4pew, tip5p, spc, spce]
+
 
 target:
     type: dict

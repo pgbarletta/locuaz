@@ -1,5 +1,5 @@
 from pathlib import Path
-from collections import Sequence
+from collections.abc import Sequence
 from shutil import SameFileError
 from typing import Dict
 from fileutils import FileHandle, update_header, copy_to
@@ -115,9 +115,7 @@ def remove_overlapping_waters(
     )
 
     # Now, write the PDB without the overlapped waters
-    nonwat_pdb_fn = Path(complex.dir_handle) / (
-        "nonwat_" + config["main"]["name"] + ".pdb"
-    )
+    nonwat_pdb_fn = Path(complex.dir) / ("nonwat_" + config["main"]["name"] + ".pdb")
 
     trjconv = GMXTrjConvStr(
         input_structure_path=str(complex.pdb.file.path),
@@ -146,7 +144,7 @@ def remove_overlapping_waters(
     # nonwat_gro.file.replace_text("HOH", "SOL")
 
     # Re-add waters to keep the N of the system constant
-    wet_pdb_fn = Path(complex.dir_handle) / ("wet_" + config["main"]["name"] + ".pdb")
+    wet_pdb_fn = Path(complex.dir) / ("wet_" + config["main"]["name"] + ".pdb")
     if wat_count != 0:
         logging.info(f"Adding {wat_count} water molecules.")
 
@@ -159,12 +157,13 @@ def remove_overlapping_waters(
             output_top_zip_path=str(nonwat_top),
             properties={
                 "gmx_path": config["md"]["gmx_bin"],
+                "box_type": config["md"]["box_type"],
                 "dev": f"-maxsol {wat_count}",
             },
         )
         launch_biobb(solvatador)
     else:
-        copy_to(nonwat_pdb.file, complex.dir_handle, wet_pdb_fn.name)
+        copy_to(nonwat_pdb.file, complex.dir, wet_pdb_fn.name)
         logging.info(
             f"Not addying any water molecules.{nonwat_pdb} and {wet_pdb_fn} are the same files."
         )
@@ -185,8 +184,8 @@ def remove_overlapping_waters(
 
     # Re-add ions as necessary. SOL group will be continous, so gmx genion
     # won't complain.
-    gro_fn = Path(complex.dir_handle) / (config["main"]["name"] + ".gro")
-    top_fn = Path(complex.dir_handle) / (config["main"]["name"] + ".zip")
+    gro_fn = Path(complex.dir) / (config["main"]["name"] + ".gro")
+    top_fn = Path(complex.dir) / (config["main"]["name"] + ".zip")
     genio = Genion(
         input_tpr_path=str(wet_tpr),
         input_top_zip_path=str(wet_top),
@@ -203,7 +202,7 @@ def remove_overlapping_waters(
     # Finally, build the Complex
     new_complex = GROComplex.from_gro_zip(
         name=config["main"]["name"],
-        input_dir=complex.dir_handle,
+        input_dir=complex.dir,
         target_chains=complex.top.target_chains,
         binder_chains=complex.top.binder_chains,
         gmx_bin=config["md"]["gmx_bin"],

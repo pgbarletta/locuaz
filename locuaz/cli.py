@@ -167,4 +167,7 @@ def main() -> Dict:
     config = validate_config(raw_config)
     config = set_start_or_restart(config)
 
+    # Set up environment
+    os.environ["OMP_PLACES"] = "threads"
+
     return config

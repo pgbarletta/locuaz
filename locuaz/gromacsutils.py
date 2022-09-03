@@ -157,7 +157,6 @@ def remove_overlapping_waters(
             output_top_zip_path=str(nonwat_top),
             properties={
                 "gmx_path": config["md"]["gmx_bin"],
-                "box_type": config["md"]["box_type"],
                 "dev": f"-maxsol {wat_count}",
             },
         )

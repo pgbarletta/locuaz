@@ -105,11 +105,6 @@ md:
                         gromos45a3, gromos53a5, gromos53a6, gromos54a7, oplsaa]
             default: "amber99sb-ildn"
             required: true
-        box_type:
-            type: string
-            default: "cubic"
-            required: true
-            allowed: [cubic, dodecahedron, octahedron]
         water_type:
             type: string
             default: "tip3p"

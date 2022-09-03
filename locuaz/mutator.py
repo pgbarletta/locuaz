@@ -43,11 +43,12 @@ class Mutation:
 
         return FileHandle(output_path)
 
+    # This is a horrible way to do this, I'll do it properly later.
     def new_name_resname(self, iter: Iteration) -> Tuple[str, List[str]]:
         iter_name = ""
         new_iteration_resnames = []
-        for chainID, resname in zip(iter.chainIDs, iter.resnames):
-            if chainID == self.chainID:
+        for idx, (chainID, resname) in enumerate(zip(iter.chainIDs, iter.resnames)):
+            if idx == self.chainID_idx:
                 # This is the mutated chainID
                 new_resname = (
                     resname[: self.resSeq_idx]
@@ -89,13 +90,11 @@ class MutatorEvoEF2(AbstractMutator):
         input_mutlist_fn = wrk_dir / "mutlist.txt"
         mutation.evoef2_file(input_mutlist_fn)
 
+        # Using relative paths to keep them short.
         comando_evoef2 = (
-            str(self.bin_path)
-            + " --command=BuildMutant"
-            + " --pdb="
-            + str(input_pdb.file.path)
-            + " --mutant_file="
-            + str(input_mutlist_fn)
+            f"{self.bin_path} --command=BuildMutant --pdb={input_pdb.file.path.name} "
+            "--mutant_file=mutlist.txt"
+            # + str(input_mutlist_fn.name)
         )
 
         sp.run(

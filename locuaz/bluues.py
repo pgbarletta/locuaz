@@ -94,7 +94,7 @@ class bluues(AbstractScoringFunction):
         pqr_mol = Path(self.results_dir, f"{mol}-{i}.pqr")
         blu_mol_out = Path(self.results_dir, f"bluues_{mol}-{i}.out")
 
-        # BLUUES on complex
+        # BLUUES
         comando_bluues = f"{self.bin_path} {pqr_mol} {blu_mol_out}"
         sp.run(
             comando_bluues,
@@ -104,6 +104,7 @@ class bluues(AbstractScoringFunction):
             text=True,
         )
 
+        # BMF
         bmf_mol_out = Path(self.results_dir, f"bmf_{mol}-{i}.out")
         comando_bmf = f"{self.bmf_bin_path} {pqr_mol} {bmf_mol_out} -x"
         sp.run(

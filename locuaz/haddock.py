@@ -67,34 +67,21 @@ class haddock(AbstractScoringFunction):
         # .list file with the path to the PDB
         mutant_file_list = Path(self.results_dir, "pdb_to_haddock_" + str(i) + ".list")
         with open(mutant_file_list, "w") as f:
-            f.write('"' + str(mod_pdb_frame) + '"')
+            # Writing only the name of `mod_pdb_frame` because haddock can't deal
+            # with long filenames. The subprocess will be run from the same cwd dir
+            #(`results_dir``), so haddock will see it.
+            f.write('"' + str(mod_pdb_frame.name) + '"')
 
         # .inp config file for haddock.
         scorin_inp_file = Path(self.results_dir, "scoring_" + str(i) + ".inp")
         with open(self.template_scoring_inp_handle, "r") as f:
             lines = f.readlines()
         with open(scorin_inp_file, "w") as f:
-            linea_system_name = re.sub("XYZ", str(mutant_file_list), lines[0])
-
-            ncomponents = len(self.target_chains) + len(self.binder_chains)
-            linea_ncomponents = re.sub(
-                "ncomponents=2", f"ncomponents={ncomponents}", lines[1]
-            )
-            # TODO: hablar con los demás y contarles cómo se hace p/ evaluar
-            # multímeros
-            segid_1 = "".join(self.target_chains)
-            linea_prot_segid_1 = re.sub(
-                'prot_segid_1="A"', f'prot_segid_1="{segid_1}"', lines[2]
-            )
-            segid_2 = "".join(self.binder_chains)
-            linea_prot_segid_2 = re.sub(
-                'prot_segid_2="B"', f'prot_segid_2="{segid_2}"', lines[3]
-            )
+            # Idem., writing only the relative path to the .pdb file.
+            linea_system_name = re.sub("XYZ", str(mutant_file_list.name), lines[0])
             f.write(linea_system_name)
-            f.write(linea_ncomponents)
-            f.write(linea_prot_segid_1)
-            f.write(linea_prot_segid_2)
-            for i in range(4, len(lines)):
+            
+            for i in range(1, len(lines)):
                 f.write(lines[i])
 
         return scorin_inp_file
@@ -116,7 +103,7 @@ class haddock(AbstractScoringFunction):
         self.__pdb_chain_segid__(pdb_frame, mod_pdb_frame)
         scorin_inp_file = self.__init_frame_scoring__(i, mod_pdb_frame)
         output = Path(self.results_dir, f"log_{i}.out")
-
+        
         comando_haddock = f"{self.bin_path} <  {scorin_inp_file} > {output}"
         sp.run(comando_haddock,stdout=sp.PIPE,stderr=sp.PIPE,cwd=self.results_dir,shell=True,text=True)
 

@@ -31,11 +31,17 @@ class evoef2(AbstractScoringFunction):
             str(self.bin_path)
             + " --command=ComputeBinding"
             + " --pdb="
-            + str(pdb_frame)
+            + str(pdb_frame.name)
         )
 
+        # Using relative path to `pdb_frame` to shorten path to input PDB.
         p = sp.run(
-            comando_evoef2, stdout=sp.PIPE, stderr=sp.PIPE, shell=True, text=True
+            comando_evoef2,
+            stdout=sp.PIPE,
+            stderr=sp.PIPE,
+            cwd=str(pdb_frame.parent),
+            shell=True,
+            text=True,
         )
 
         evoef2_score = self.__parse_output__(score_stdout=p.stdout)

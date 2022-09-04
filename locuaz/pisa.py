@@ -44,11 +44,17 @@ class pisa(AbstractScoringFunction):
         target = "".join(self.target_chains)
         binder = "".join(self.binder_chains)
 
-        comando_pisa = (
-            f"{self.bin_path} {pdb_frame} {target} {binder} {self.parameters_handle}"
-        )
+        # As in haddock, using relative path to `pdb_frame` to shorten path to input PDB.
+        comando_pisa = f"{self.bin_path} {pdb_frame.name} {target} {binder} {self.parameters_handle}"
 
-        p = sp.run(comando_pisa, stdout=sp.PIPE, stderr=sp.PIPE, shell=True, text=True)
+        p = sp.run(
+            comando_pisa,
+            stdout=sp.PIPE,
+            stderr=sp.PIPE,
+            cwd=frames_path,
+            shell=True,
+            text=True,
+        )
         pisa_score = self.__parse_output__(score_stdout=p.stdout)
 
         return i, pisa_score

@@ -113,17 +113,6 @@ class Topology(AbstractFileObject):
     target_chains: Tuple[str] = field(init=False)
     binder_chains: Tuple[str] = field(init=False)
 
-    # TODO: DEPRECATE
-    # def update_chains(self, *, target_chains: List, binder_chains: List):
-    #     self.target_chains = {chainID: None for chainID in target_chains}
-    #     self.binder_chains = {chainID: None for chainID in binder_chains}
-
-    # @classmethod
-    # def from_config(cls, config: Dict):
-    #     top_path = Path(config["paths"]["input"], config["md"]["topology"])
-    #     self = cls.from_path(top_path)
-    #     return self
-
     @classmethod
     def from_path_with_chains(
         cls, path: Path, *, target_chains: Sequence, binder_chains: Sequence
@@ -142,14 +131,6 @@ class AmberTopology(Topology):
 @define
 class ZipTopology(Topology):
     pass
-    # TODO: DEPRECATE
-    # @classmethod
-    # def from_config(cls, config: Dict) -> "ZipTopology":
-    #     self = super().from_config(config)
-    #     self.target_chains = tuple(config["target"]["chainID"])
-    #     self.binder_chains = tuple(config["binder"]["chainID"])
-
-    #     return self
 
 
 @define
@@ -162,64 +143,14 @@ class XtcTrajectory(Trajectory):
     pass
 
 
-# TODO: deprecate
-@define
-class GROTopology(Topology):
-    dir_path: Path = field(init=False)
-    # TODO: This overrides topology's attributes?
-    target_chains_files: Dict[str, FileHandle] = field(init=False)
-    binder_chains_files: Dict[str, FileHandle] = field(init=False)
-
-    def add_chain_tops(
-        self,
-        target_chainid: List[str],
-        target_top: List[str],
-        binder_chainid: List[str],
-        binder_top: List[str],
-    ):
-        self.dir_path = self.file.path.parent
-        self.target_chains_files = dict()
-        for chainID, top in zip(target_chainid, target_top):
-            self.target_chains_files[chainID] = FileHandle(self.dir_path / top)
-
-        self.binder_chains_files = dict()
-        for chainID, top in zip(binder_chainid, binder_top):
-            self.binder_chains_files[chainID] = FileHandle(self.dir_path / top)
-
-    # TODO: DEPRECATE
-    # @classmethod
-    # def from_config(cls, config: Dict) -> "GROTopology":
-    #     # top_path = Path(config["paths"]["input"], config["md"]["topology"])
-    #     # self = cls.from_path(top_path)
-    #     self = super().from_config(config)
-    #     self.add_chain_tops(
-    #         config["target"]["chainID"],
-    #         config["md"]["target_topology"],
-    #         config["binder"]["chainID"],
-    #         config["md"]["binder_topology"],
-    #     )
-    #     return self
-
-    @classmethod
-    def from_topology(
-        cls, top_file: FileHandle, target_chains_files: Dict, binder_chains_files: Dict
-    ):
-        self = cls(top_file)
-        self.target_chains_files = target_chains_files
-        self.binder_chains_files = binder_chains_files
-
-        return self
-
-
 @define
 class AbstractComplex(metaclass=ABCMeta):
     name: str = field(converter=str)
-    dir_handle: DirHandle = field(converter=DirHandle)  # type: ignore
-    pdb: PDBStructure = field()
-    top: Topology = field()
-    tra: Trajectory = field(init=False, default=None)
+    dir: DirHandle = field(converter=DirHandle, kw_only=True)  # type: ignore
+    pdb: PDBStructure = field(kw_only=True)
+    top: Topology = field(kw_only=True, default=None)
+    tra: Trajectory = field(kw_only=False, default=None)
 
-    
     @classmethod
     @abstractmethod
     def from_pdb(
@@ -235,7 +166,6 @@ class AbstractComplex(metaclass=ABCMeta):
     ) -> "AbstractComplex":
         raise NotImplementedError
 
-    # TODO: `from_gro_zip`'s is GROMACS specific.
     @classmethod
     @abstractmethod
     def from_gro_zip(
@@ -263,15 +193,14 @@ class AbstractComplex(metaclass=ABCMeta):
         raise NotImplementedError
 
     def __str__(self) -> str:
-        return str(self.dir_handle)
+        return str(self.dir)
 
 
-# TODO: make frozen, put all attributes as init = true and kw_only
-@define
+@define(frozen=True)
 class GROComplex(AbstractComplex):
-    gro: GROStructure = field()
-    tpr: TPRFile = field(init=False, default=None)
-    ndx: FileHandle = field(init=False, default=None)
+    gro: GROStructure = field(kw_only=True, default=None)
+    tpr: TPRFile = field(kw_only=False, default=None)
+    ndx: FileHandle = field(kw_only=False, default=None)
 
     @classmethod
     def from_pdb(
@@ -287,44 +216,52 @@ class GROComplex(AbstractComplex):
     ) -> "GROComplex":
         try:
             in_pdb = input_dir / (name + ".pdb")
-            logging.info(
-                f"Creating GROComplex from: {in_pdb}. This PDB will be"
-                "backed up and replaced with a fixed up PDB."
-            )
-
+            # This PDB will be backed up and replaced with a fixed up PDB.
             temp_pdb = PDBStructure.from_path(in_pdb)
         except Exception as e:
-            print(
-                f"Could not get input PDB file from: {str(input_dir)}",
-                flush=True,
+            logging.error(
+                f"Could not get input PDB file from: {input_dir}",
             )
             raise e
-        else:
+        try:
+            pdb, gro, top = get_gro_ziptop_from_pdb(
+                pdb=temp_pdb,
+                target_chains=target_chains,
+                binder_chains=binder_chains,
+                gmx_path=gmx_bin,
+                add_ions=True,
+                water_type=water_type,
+                force_field=force_field,
+            )
+        except Exception as e:
+            logging.error(f"Could not get zip tology .gro files from: {temp_pdb}")
+            raise e
+        try:
+            traj = XtcTrajectory.from_path(input_dir / (name + ".xtc"))
+        except FileNotFoundError as e:
             try:
-                str_pdb, str_gro, top = get_gro_ziptop_from_pdb(
-                    pdb=temp_pdb,
-                    target_chains=target_chains,
-                    binder_chains=binder_chains,
-                    gmx_path=gmx_bin,
-                    add_ions=True,
-                    water_type=water_type,
-                    force_field=force_field,
-                )
-                tpr = get_tpr(gro=str_gro, top=top, gmx_bin=gmx_bin)
+                traj = TrrTrajectory.from_path(input_dir / (name + ".trr"))
+            except FileNotFoundError as ee:
+                traj = None
+        tpr = get_tpr(gro=gro, top=top, gmx_bin=gmx_bin)
+        ndx = generate_ndx(
+            name,
+            pdb=pdb,
+            target_chains=target_chains,
+            binder_chains=binder_chains,
+            gmx_bin=gmx_bin,
+        )
 
-            except Exception as e:
-                print(
-                    f"Could not get zip tology .gro or TPR files from: "
-                    f"{temp_pdb.file.path}",
-                    flush=True,
-                )
-                raise e
-            else:
-                self = GROComplex(name, input_dir, str_pdb, top, str_gro)
-                self.tpr = tpr
-                self.update_all_ndxs(gmx_bin=gmx_bin)
-
-                return self
+        return GROComplex(
+            name,
+            dir=input_dir,
+            pdb=pdb,
+            top=top,
+            tra=traj,
+            gro=gro,
+            tpr=tpr,
+            ndx=ndx,
+        )
 
     @classmethod
     def from_gro_zip(
@@ -343,28 +280,37 @@ class GROComplex(AbstractComplex):
             top.target_chains = tuple(target_chains)
             top.binder_chains = tuple(binder_chains)
         except Exception as e:
-            print(
-                f"Could not get input .gro and .zip files from: {str(input_dir)}",
-                flush=True,
+            logging.error(
+                f"Could not get input .gro and .zip files from: {input_dir}",
             )
             raise e
-        else:
+
+        pdb, tpr = get_pdb_tpr(gro=gro, top=top, gmx_bin=gmx_bin)
+        try:
+            traj = XtcTrajectory.from_path(input_dir / (name + ".xtc"))
+        except FileNotFoundError as e:
             try:
-                pdb, tpr = get_pdb_tpr(gro=gro, top=top, gmx_bin=gmx_bin)
+                traj = TrrTrajectory.from_path(input_dir / (name + ".trr"))
+            except FileNotFoundError as ee:
+                traj = None
+        ndx = generate_ndx(
+            name,
+            pdb=pdb,
+            target_chains=target_chains,
+            binder_chains=binder_chains,
+            gmx_bin=gmx_bin,
+        )
 
-            except Exception as e:
-                print(
-                    f"Could not get PDB and TPR files from: "
-                    f"{gro.file.path} and {top.file.path}",
-                    flush=True,
-                )
-                raise e
-            else:
-                self = GROComplex(name, input_dir, pdb, top, gro)
-                self.tpr = tpr
-                self.update_all_ndxs(gmx_bin=gmx_bin)
-
-                return self
+        return GROComplex(
+            name,
+            dir=input_dir,
+            pdb=pdb,
+            top=top,
+            tra=traj,
+            gro=gro,
+            tpr=tpr,
+            ndx=ndx,
+        )
 
     @classmethod
     def from_complex(
@@ -377,15 +323,18 @@ class GROComplex(AbstractComplex):
         gmx_bin: str = "gmx",
     ) -> "GROComplex":
         try:
-            str_pdb = PDBStructure.from_path(iter_path / (name + ".pdb"))
-            str_gro = GROStructure.from_path(iter_path / (name + ".gro"))
+            pdb = PDBStructure.from_path(iter_path / (name + ".pdb"))
+            gro = GROStructure.from_path(iter_path / (name + ".gro"))
             top = ZipTopology.from_path(iter_path / (name + ".zip"))
             top.target_chains = tuple(target_chains)
             top.binder_chains = tuple(binder_chains)
             try:
                 traj = XtcTrajectory.from_path(iter_path / (name + ".xtc"))
             except FileNotFoundError as e:
-                traj = TrrTrajectory.from_path(iter_path / (name + ".trr"))
+                try:
+                    traj = TrrTrajectory.from_path(iter_path / (name + ".trr"))
+                except FileNotFoundError as ee:
+                    traj = None
             tpr = TPRFile.from_path(iter_path / (name + ".tpr"))
         except Exception as e:
             logging.error(
@@ -395,96 +344,24 @@ class GROComplex(AbstractComplex):
                 f"\n\t{target_chains}\n\t{binder_chains}"
             )
             raise e
-        else:
-            self = GROComplex(name, iter_path, str_pdb, top, str_gro)
-            self.tra = traj
-            self.tpr = tpr
-            self.update_all_ndxs(gmx_bin=gmx_bin)
-
-            return self
-
-    def update_all_ndxs(self, gmx_bin: str = "gmx"):
-        try:
-            # First, get the target and binder chains
-            target_ndx = self.write_target_ndx()
-            binder_ndx = self.write_binder_ndx()
-
-            # Then, cat them into 1 file
-            target_and_binder = catenate(
-                self.dir_handle.dir_path / "target_and_binder.ndx",
-                target_ndx,
-                binder_ndx,
-            )
-
-            # Use `target_and_binder` to get a selection of both
-            target_and_binder_both = (
-                Path(self.dir_handle) / "target_and_binder_both.ndx"
-            )
-            selector = MakeNdx(
-                input_structure_path=str(self.pdb.file.path),
-                input_ndx_path=str(target_and_binder.path),
-                output_ndx_path=str(target_and_binder_both),
-                properties={"selection": '"target" | "binder"'},
-            )
-            launch_biobb(selector)
-
-            # Finally, also add the negation of target+binder
-            complex_ndx_fn = Path(self.dir_handle) / f"{self.name}.ndx"
-            selector = MakeNdx(
-                input_structure_path=str(self.pdb.file.path),
-                input_ndx_path=str(target_and_binder_both),
-                output_ndx_path=str(complex_ndx_fn),
-                properties={"selection": '! "target_binder"'},
-            )
-            launch_biobb(selector)
-
-            # Save the final ndx file.
-            self.ndx = FileHandle(complex_ndx_fn)
-
-            # Clean-up
-            target_ndx.unlink()
-            binder_ndx.unlink()
-            target_and_binder.unlink()
-            target_and_binder_both.unlink()
-
-        except Exception as e:
-            raise e
-
-    def write_target_ndx(self, *, selname: str = "target") -> FileHandle:
-        selection = " or ".join(
-            [f"chain {chainID}" for chainID in self.top.target_chains]
+        ndx = generate_ndx(
+            name,
+            pdb=pdb,
+            target_chains=target_chains,
+            binder_chains=binder_chains,
+            gmx_bin=gmx_bin,
         )
-        ndx_fn = Path(self.dir_handle) / f"{selname}.ndx"
 
-        selector = Gmxselect(
-            input_structure_path=str(self.pdb.file.path),
-            output_ndx_path=str(ndx_fn),
-            properties={"selection": selection},
+        return GROComplex(
+            name,
+            dir=iter_path,
+            pdb=pdb,
+            top=top,
+            tra=traj,
+            gro=gro,
+            tpr=tpr,
+            ndx=ndx,
         )
-        launch_biobb(selector)
-
-        ndx = FileHandle(ndx_fn)
-        update_header(ndx, f"[ {selname} ]\n")
-
-        return ndx
-
-    def write_binder_ndx(self, *, selname: str = "binder") -> FileHandle:
-        selection = " or ".join(
-            [f"chain {chainID}" for chainID in self.top.binder_chains]
-        )
-        ndx_fn = Path(self.dir_handle) / f"{selname}.ndx"
-
-        selector = Gmxselect(
-            input_structure_path=str(self.pdb.file.path),
-            output_ndx_path=str(ndx_fn),
-            properties={"selection": selection},
-        )
-        launch_biobb(selector)
-
-        ndx = FileHandle(ndx_fn)
-        update_header(ndx, f"[ {selname} ]\n")
-
-        return ndx
 
 
 def get_gro_ziptop_from_pdb(
@@ -522,7 +399,7 @@ def get_gro_ziptop_from_pdb(
         "water_type": water_type,
         "force_field": force_field,
         "ignh": True,
-        "dev": "-renum",
+        # "dev": "-renum",
     }
     pre_gro_fn = local_dir / ("pre" + name + ".gro")
     pre_top_fn = local_dir / "pre_topol.zip"
@@ -646,7 +523,7 @@ def split_solute_and_solvent(complex: GROComplex) -> Tuple[PDBStructure, PDBStru
     """
 
     # Protein
-    nonwat_pdb_fn = Path(complex.dir_handle) / ("nonwat_" + complex.name + ".pdb")
+    nonwat_pdb_fn = Path(complex.dir) / ("nonwat_" + complex.name + ".pdb")
     get_protein = GMXTrjConvStr(
         input_structure_path=str(complex.pdb.file.path),
         input_top_path=str(complex.tpr.file.path),
@@ -658,7 +535,7 @@ def split_solute_and_solvent(complex: GROComplex) -> Tuple[PDBStructure, PDBStru
     nonwat_pdb = PDBStructure.from_path(nonwat_pdb_fn)
 
     # Water and ions
-    wation_pdb_fn = Path(complex.dir_handle) / ("wation_" + complex.name + ".pdb")
+    wation_pdb_fn = Path(complex.dir) / ("wation_" + complex.name + ".pdb")
     get_water_ions = GMXTrjConvStr(
         input_structure_path=str(complex.pdb.file.path),
         input_top_path=str(complex.tpr.file.path),
@@ -750,6 +627,86 @@ def catenate_pdbs(*pdbs: PDBStructure, pdb_out_path: Path, gmx_bin: str = "gmx")
     return out_pdb
 
 
+def write_chain_ndx(
+    *, pdb: PDBStructure, chains: Sequence, selname: str, gmx_bin: str = "gmx"
+) -> FileHandle:
+    selection = " or ".join([f"chain {chainID}" for chainID in chains])
+
+    wrk_dir = pdb.file.path.parent
+    ndx_fn = Path(wrk_dir) / f"{selname}.ndx"
+    selector = Gmxselect(
+        input_structure_path=str(pdb),
+        output_ndx_path=str(ndx_fn),
+        properties={"selection": selection},
+    )
+    launch_biobb(selector)
+
+    ndx = FileHandle(ndx_fn)
+    update_header(ndx, f"[ {selname} ]\n")
+
+    return ndx
+
+
+def generate_ndx(
+    name: str,
+    *,
+    pdb: PDBStructure,
+    target_chains: Sequence,
+    binder_chains: Sequence,
+    gmx_bin: str = "gmx",
+) -> FileHandle:
+    try:
+        # First, get the target and binder chains
+        target_ndx = write_chain_ndx(
+            pdb=pdb, chains=target_chains, selname="target", gmx_bin=gmx_bin
+        )
+        binder_ndx = write_chain_ndx(
+            pdb=pdb, chains=binder_chains, selname="binder", gmx_bin=gmx_bin
+        )
+
+        # Then, cat them into 1 file
+        wrk_dir = pdb.file.path.parent
+        target_and_binder = catenate(
+            wrk_dir / "target_and_binder.ndx",
+            target_ndx,
+            binder_ndx,
+        )
+
+        # Use `target_and_binder` to get a selection of both
+        target_and_binder_both = wrk_dir / "target_and_binder_both.ndx"
+        selector = MakeNdx(
+            input_structure_path=str(pdb),
+            input_ndx_path=str(target_and_binder),
+            output_ndx_path=str(target_and_binder_both),
+            properties={"selection": '"target" | "binder"'},
+        )
+        launch_biobb(selector)
+
+        # Finally, also add the negation of target+binder
+        complex_ndx_fn = wrk_dir / f"{name}.ndx"
+        selector = MakeNdx(
+            input_structure_path=str(pdb),
+            input_ndx_path=str(target_and_binder_both),
+            output_ndx_path=str(complex_ndx_fn),
+            properties={"selection": '! "target_binder"'},
+        )
+        launch_biobb(selector)
+
+        # Save the final ndx file.
+        complex_ndx = FileHandle(complex_ndx_fn)
+
+        # Clean-up
+        target_ndx.unlink()
+        binder_ndx.unlink()
+        target_and_binder.unlink()
+        target_and_binder_both.unlink()
+
+        return complex_ndx
+
+    except Exception as e:
+        raise e
+
+
 @singledispatch
 def copy_mol_to(obj, dir_path: Path, name=None):
     raise NotImplementedError
@@ -759,21 +716,6 @@ def copy_mol_to(obj, dir_path: Path, name=None):
 def _(obj: Structure, dir_path: Path, name=None):
     new_file = copy_to(obj.file, dir_path, name=name)
     return Structure(new_file)
-
-
-@copy_mol_to.register
-def _(obj: GROTopology, dir_path: Path, name=None):
-    new_file = copy_to(obj.file, dir_path, name=name)
-    target_chains = {
-        chainID: copy_to(chain_file, dir_path)
-        for chainID, chain_file in obj.target_chains_files.items()
-    }
-    binder_chains = {
-        chainID: copy_to(chain_file, dir_path)
-        for chainID, chain_file in obj.binder_chains_files.items()
-    }
-
-    return GROTopology.from_topology(new_file, target_chains, binder_chains)
 
 
 @copy_mol_to.register
@@ -793,16 +735,21 @@ def _(obj: Trajectory, dir_path: Path, name=None):
 @copy_mol_to.register
 def _(obj: GROComplex, dir_path: Path, name=None):
     str_pdb = copy_to(obj.pdb, dir_path, name)
-    str_gro = copy_to(obj.gro, dir_path, name)
-    top = copy_to(obj.top, dir_path, name)
+    top = try_copy_to(obj.top, dir_path, name)
+    tra = try_copy_to(obj.tra, dir_path, name)
+    gro = try_copy_to(obj.gro, dir_path, name)
+    tpr = try_copy_to(obj.tpr, dir_path, name)
+    ndx = try_copy_to(obj.ndx, dir_path, name)
 
-    new_cpx = GROComplex(obj.name, dir_path, str_pdb, top, str_gro)
+    return GROComplex(
+        obj.name, dir=dir_path, pdb=str_pdb, top=top, tra=tra, gro=gro, tpr=tpr, ndx=ndx
+    )
 
-    if obj.tra:
-        traj = copy_to(obj.tra, dir_path, name)
-        GROComplex.tra = traj
-    if obj.ndx:
-        ndx = copy_to(obj.ndx, dir_path, name)
-        GROComplex.ndx = ndx
 
-    return new_cpx
+def try_copy_to(obj, dir_path: Path, name=None):
+    try:
+        new_obj = copy_to(obj, dir_path, name)
+    except FileNotFoundError as e:
+        new_obj = None
+
+    return new_obj

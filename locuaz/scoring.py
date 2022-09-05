@@ -40,7 +40,7 @@ def initialize_scoring_folder(work_pjct: WorkProject, iter_name: str):
     ens_of_pdbs = Path(
         this_iter.score_dir, "ensemble_" + this_iter.complex.name + ".zip"
     )
-    # TODO: this only works when there're no lipids or glyco-stuff
+    # this only works when there're no lipids or glyco-stuff
     # IDK why this works. The input TPR has waters, but the input traj doesn't
     get_complex = GMXTrjConvStrEns(
         input_traj_path=str(pbc_trj),
@@ -86,7 +86,7 @@ def score(work_pjct: WorkProject, iter_name: str, nframes: int) -> None:
 
     for sf_name, scorer in work_pjct.scorers.items():
         scores = scorer(nframes=nframes, frames_path=this_iter.score_dir)
-        if sf_name == "bluues_scorer":
+        if sf_name == "bluues":
             promedio = this_iter.set_score("bluues", scores[0])
             logging.info(f"{sf_name} average score: {promedio}")
             promedio = this_iter.set_score("bmf", scores[1])

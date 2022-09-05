@@ -1,12 +1,12 @@
 from attrs import define, field
-from biobb_md.gromacs.grompp import grompp
-from biobb_analysis.gromacs.gmx_trjconv_str import gmx_trjconv_str
-from biobb_md.gromacs.mdrun import mdrun
-from molecules import AbstractComplex, ZipTopology
-from typing import Dict, Tuple
+from biobb_md.gromacs.grompp import Grompp
+from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
+from biobb_md.gromacs.mdrun import Mdrun
+from molecules import AbstractComplex, ZipTopology, copy_mol_to
 from pathlib import Path
 from fileutils import DirHandle, FileHandle
 from projectutils import WorkProject
+from primitives import launch_biobb
 
 
 @define
@@ -14,23 +14,40 @@ class MDrun:
     dir: DirHandle = field(converter=DirHandle)  # type: ignore
     gmx_path: str = field(converter=str, kw_only=True)
     mdp: FileHandle = field(converter=FileHandle, kw_only=True)  # type: ignore
+    cpt: FileHandle = field(converter=FileHandle, kw_only=True, default=None)  # type: ignore
     gpu_id: int = field(converter=int, kw_only=True, default=0)
+    pin_offset: int = field(converter=int, kw_only=True, default=8)
     num_threads_omp: int = field(converter=int, kw_only=True)
     num_threads_mpi: int = field(converter=int, kw_only=True)
     dev: str = field(converter=str, kw_only=True)
     out_name: str = field(converter=str, kw_only=False)
 
-    tpr: FileHandle = field(converter=FileHandle, init=False)  # type: ignore
+    # pinoffset starts at 8 because in M100, for some reason, this is convenient.
+    # I'm assuming that I always have access to threads starting on 8 to whatever
+    # is necessary. This is hard to no hard-code.
 
     @classmethod
-    def min(cls, root_dir: Path, *, work_pjct: WorkProject, out_name="min") -> "MDrun":
+    def min(
+        cls,
+        root_dir: Path,
+        *,
+        work_pjct: WorkProject,
+        gpu_id: int = 0,
+        out_name="min",
+        cpt: Path = None,
+    ) -> "MDrun":
+
+        pin_offset = (gpu_id + 1) * work_pjct.config["md"]["omp_procs"]
         obj = cls(
             root_dir,
             gmx_path=work_pjct.config["md"]["gmx_bin"],
             mdp=Path(work_pjct.mdps["min_mdp"]),
+            cpt=cpt,
+            gpu_id=gpu_id,
+            pin_offset=pin_offset,
             num_threads_omp=work_pjct.config["md"]["omp_procs"],
             num_threads_mpi=work_pjct.config["md"]["mpi_procs"],
-            dev="-nb gpu -pin on -pinoffset 0 -pinstride 1",
+            dev=f"-nb gpu -pin on -pinoffset {pin_offset}",
             out_name=out_name,
         )
 
@@ -38,16 +55,26 @@ class MDrun:
 
     @classmethod
     def nvt(
-        cls, root_dir: Path, *, work_pjct: WorkProject, gpu_id: int = 0, out_name="nvt"
+        cls,
+        root_dir: Path,
+        *,
+        work_pjct: WorkProject,
+        gpu_id: int = 0,
+        out_name="nvt",
+        cpt: Path = None,
     ) -> "MDrun":
+
+        pin_offset = (gpu_id + 1) * work_pjct.config["md"]["omp_procs"]
         obj = cls(
             root_dir,
             gmx_path=work_pjct.config["md"]["gmx_bin"],
             mdp=Path(work_pjct.mdps["nvt_mdp"]),
+            cpt=cpt,
             gpu_id=gpu_id,
+            pin_offset=pin_offset,
             num_threads_omp=work_pjct.config["md"]["omp_procs"],
             num_threads_mpi=work_pjct.config["md"]["mpi_procs"],
-            dev="-nb gpu -pme gpu -bonded gpu -pin on -pinoffset 0 -pinstride 1 -pmefft gpu",
+            dev=f"-nb gpu -pme gpu -bonded gpu -pmefft gpu -pin on -pinoffset {pin_offset}",
             out_name=out_name,
         )
 
@@ -55,16 +82,26 @@ class MDrun:
 
     @classmethod
     def npt(
-        cls, root_dir: Path, *, work_pjct: WorkProject, gpu_id: int = 0, out_name="npt"
+        cls,
+        root_dir: Path,
+        *,
+        work_pjct: WorkProject,
+        gpu_id: int = 0,
+        out_name="npt",
+        cpt: Path = None,
     ) -> "MDrun":
+
+        pin_offset = (gpu_id + 1) * work_pjct.config["md"]["omp_procs"]
         obj = cls(
             root_dir,
             gmx_path=work_pjct.config["md"]["gmx_bin"],
             mdp=Path(work_pjct.mdps["npt_mdp"]),
+            cpt=cpt,
             gpu_id=gpu_id,
+            pin_offset=pin_offset,
             num_threads_omp=work_pjct.config["md"]["omp_procs"],
             num_threads_mpi=work_pjct.config["md"]["mpi_procs"],
-            dev="-nb gpu -pme gpu -bonded gpu -pin on -pinoffset 0 -pinstride 1 -pmefft gpu",
+            dev=f"-nb gpu -pme gpu -bonded gpu -pmefft gpu -pin on -pinoffset {pin_offset}",
             out_name=out_name,
         )
 
@@ -75,21 +112,24 @@ class MDrun:
         self.__check_input__(complex)
 
         # Build .tpr file for the run
-        min_tpr = Path(str(self.dir)) / (self.out_name + ".tpr")
-        grompp(
+        run_tpr = Path(str(self.dir)) / (self.out_name + ".tpr")
+        grompepe = Grompp(
             input_mdp_path=str(self.mdp),
             input_gro_path=str(complex.gro.file.path),
             input_top_zip_path=str(complex.top.file.path),
-            output_tpr_path=str(min_tpr),
+            input_cpt_path=self.cpt,
+            output_tpr_path=str(run_tpr),
             properties={"gmx_path": str(self.gmx_path)},
         )
+        launch_biobb(grompepe)
 
         # Run
-        min_trr = Path(self.dir) / (self.out_name + ".trr")
-        min_xtc = Path(self.dir) / (self.out_name + ".xtc")
-        min_gro = Path(self.dir) / (self.out_name + ".gro")
-        min_edr = Path(self.dir) / (self.out_name + ".edr")
-        min_log = Path(self.dir) / (self.out_name + ".log")
+        run_trr = Path(self.dir) / (self.out_name + ".trr")
+        run_xtc = Path(self.dir) / (self.out_name + ".xtc")
+        run_gro = Path(self.dir) / (self.out_name + ".gro")
+        run_edr = Path(self.dir) / (self.out_name + ".edr")
+        run_log = Path(self.dir) / (self.out_name + ".log")
+        run_cpt = Path(self.dir) / (self.out_name + ".cpt")
         props = {
             "gmx_path": str(self.gmx_path),
             "num_threads_omp": self.num_threads_omp,
@@ -98,25 +138,40 @@ class MDrun:
             "dev": self.dev,
         }
 
-        mdrun(
-            input_tpr_path=str(min_tpr),
-            output_trr_path=str(min_trr),
-            output_xtc_path=str(min_xtc),
-            output_gro_path=str(min_gro),
-            output_edr_path=str(min_edr),
-            output_log_path=str(min_log),
+        runner = Mdrun(
+            input_tpr_path=str(run_tpr),
+            input_cpt_path=self.cpt,
+            output_trr_path=str(run_trr),
+            output_xtc_path=str(run_xtc),
+            output_gro_path=str(run_gro),
+            output_edr_path=str(run_edr),
+            output_log_path=str(run_log),
+            output_cpt_path=str(run_cpt),
             properties=props,
+        )
+        launch_biobb(runner)
+
+        # Finally, build the Complex.
+
+        copy_mol_to(complex.top, self.dir, self.out_name + ".zip")
+        new_complex = type(complex).from_gro_zip(
+            name=self.out_name,
+            input_dir=self.dir,
+            target_chains=complex.top.target_chains,
+            binder_chains=complex.top.binder_chains,
+            gmx_bin=self.gmx_path,
         )
 
         # Convert output .gro to PDB.
-        min_pdb = Path(self.dir) / (self.out_name + ".pdb")
+        run_pdb = Path(self.dir) / (self.out_name + ".pdb")
         props = {"gmx_path": str(self.gmx_path), "selection": "System"}
-        gmx_trjconv_str(
-            input_structure_path=str(min_gro),
-            input_top_path=str(min_tpr),
-            output_str_path=str(min_pdb),
+        gro_to_pdb = GMXTrjConvStr(
+            input_structure_path=str(run_gro),
+            input_top_path=str(run_tpr),
+            output_str_path=str(run_pdb),
             properties=props,
         )
+        launch_biobb(gro_to_pdb)
 
         # Build the new complex
         new_complex = type(complex).from_complex(
@@ -130,8 +185,8 @@ class MDrun:
 
     def __check_input__(self, complex: AbstractComplex) -> None:
 
-        assert complex.dir_handle == self.dir, f"Input complex directory: "
-        f"{complex.dir_handle}, does not match {type(self)}'s directory: {self.dir}"
+        assert complex.dir == self.dir, f"Input complex directory: "
+        f"{complex.dir}, does not match {type(self)}'s directory: {self.dir}"
 
         assert isinstance(complex.top, ZipTopology), f"Topology from  input complex "
         f"should be in zip format. Current topology: {complex.top}."

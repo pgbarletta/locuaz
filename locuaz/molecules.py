@@ -188,6 +188,7 @@ class AbstractComplex(metaclass=ABCMeta):
         iter_path: Path,
         target_chains: Sequence,
         binder_chains: Sequence,
+        ignore_cpt: bool = True,
         gmx_bin: str = "gmx",
     ) -> "AbstractComplex":
         raise NotImplementedError
@@ -200,6 +201,7 @@ class AbstractComplex(metaclass=ABCMeta):
 class GROComplex(AbstractComplex):
     gro: GROStructure = field(kw_only=True, default=None)
     tpr: TPRFile = field(kw_only=False, default=None)
+    cpt: FileHandle = field(kw_only=False, default=None)
     ndx: FileHandle = field(kw_only=False, default=None)
 
     @classmethod
@@ -320,6 +322,7 @@ class GROComplex(AbstractComplex):
         iter_path: Path,
         target_chains: Sequence,
         binder_chains: Sequence,
+        ignore_cpt: bool = True,
         gmx_bin: str = "gmx",
     ) -> "GROComplex":
         try:
@@ -330,20 +333,28 @@ class GROComplex(AbstractComplex):
             top.binder_chains = tuple(binder_chains)
             try:
                 traj = XtcTrajectory.from_path(iter_path / (name + ".xtc"))
-            except FileNotFoundError as e:
+            except FileNotFoundError:
                 try:
                     traj = TrrTrajectory.from_path(iter_path / (name + ".trr"))
                 except FileNotFoundError as ee:
                     traj = None
             tpr = TPRFile.from_path(iter_path / (name + ".tpr"))
-        except Exception as e:
+            if ignore_cpt:
+                cpt = None
+            else:
+                try:
+                    cpt = FileHandle(iter_path / (name + ".cpt"))
+                except FileNotFoundError as e:
+                    cpt = None
+                    logging.warning(f"Cannot find checkpoint {name + '.cpt'}.")
+        except Exception as ee:
             logging.error(
                 f"Could not get some file from: {iter_path}\n"
                 f"Input parameters:"
                 f"\n\t{name}\n\t{iter_path}"
                 f"\n\t{target_chains}\n\t{binder_chains}"
             )
-            raise e
+            raise ee
         ndx = generate_ndx(
             name,
             pdb=pdb,
@@ -360,6 +371,7 @@ class GROComplex(AbstractComplex):
             tra=traj,
             gro=gro,
             tpr=tpr,
+            cpt=cpt,
             ndx=ndx,
         )
 

@@ -20,13 +20,7 @@ CAT_AA1_LIST = (NEG_AA1_LIST, POS_AA1_LIST, PHO_AA1_LIST, MIS_AA1_LIST)
 
 
 def generate_mutations(iteration: Iteration, *, branches: int) -> List[Mutation]:
-    if branches > 19:
-        logging.warning(
-            f"{branches} is over 19 but this mutator generates "
-            "mutations for 1 position, hence, 19 mutations is the maximum number "
-            "of possible mutations. "
-        )
-        branches = 19
+
     # First, choose the position to mutate:
     n_chains = len(iteration.chainIDs)
     idx_chain = choice(range(0, n_chains))

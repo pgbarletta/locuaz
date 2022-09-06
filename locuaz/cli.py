@@ -1,10 +1,16 @@
 import argparse
-import os
+import logging
 from typing import Dict
-import yaml
 from pathlib import Path
-from cerberus import Validator
+from functools import singledispatch
 import subprocess as sp
+import os
+from collections.abc import Sequence
+
+from cerberus import Validator
+import yaml
+
+from fileutils import FileHandle
 
 
 def validate_config(config: Dict) -> Dict:
@@ -106,41 +112,82 @@ def validate_config(config: Dict) -> Dict:
             )
             raise ValueError
 
+    # TODO: DEPRECATE
+    # if config["main"]["mode"] == "run_npt":
+    #     for input_str in config["paths"]["input"]:
+    #         filename = config["main"]["prefix"] + config["main"]["name"] + ".cpt"
+    #         try:
+    #             FileHandle(Path(input_str, filename))
+    #         except FileNotFoundError:
+    #             print(f"{filename} couldn't be found at {input_str}", flush=True)
+    #             raise FileNotFoundError
+
+    if ("SPM" in config["main"]["mutator"]) and (config["main"]["branches"] > 19):
+        print(
+            f"{config['main']['branches']} is over 19 but this mutator generates "
+            "mutations for 1 position, hence, 19 mutations is the maximum number "
+            "of possible mutations. Aborting.",
+            flush=True,
+        )
+        raise ValueError
+
     return config
 
 
-def assert_dir(dir: str):
+@singledispatch
+def assert_dir(dir) -> Path:
+    raise NotImplementedError
+
+
+@assert_dir.register
+def _(dir: str) -> Path:
     dir_path = Path(dir)
     assert dir_path.is_dir(), f"Error on input. {dir_path} is not an existing folder."
     return dir_path
 
 
-def set_start_or_restart(config: Dict) -> Dict:
+@assert_dir.register
+def _(dir: Sequence) -> Path:
+    for each_dir_str in dir:
+        dir_path = assert_dir(each_dir_str)
+    return dir_path
+
+
+def check_input_paths(config: Dict) -> Dict:
 
     # check that the folders actually exist
-    for name, input_str in config["paths"].items():
-        if name == "input":
-            # This one is a list
-            for each_input_str in input_str:
-                assert_dir(each_input_str)
-        else:
-            assert_dir(input_str)
-    if config["main"]["mode"] != "start":
-        epoch_nbrs = []
-        for iteration_str in config["paths"]["input"]:
-            try:
-                # I'm assuming the iteration folder's name wasn't changed and starts
-                # as `i-...`, where `i` is the number of the last ran iteration.
-                epoch_nbrs.append(int(Path(iteration_str).name.split("-")[0]))
-            except ValueError as e:
-                print(
-                    f"{iteration_str} is not a valid starting iteration folder. ",
-                    flush=True,
+    for input_str in config["paths"].values():
+        assert_dir(input_str)
+    if "root" in config["paths"]:
+        print(f"Starting in {config['paths']['root']}", flush=True)
+    else:
+        if "previous_iterations" not in config["paths"]:
+            config["paths"]["previous_iterations"] = []
+        if "current_iterations" not in config["paths"]:
+            raise ValueError(
+                "`current_iterations` must be specified " "if there is no `root` path."
+            )
+        print(f"Restarting from {config['paths']['current_iterations']}", flush=True)
+        for iteration_str in (
+            config["paths"]["previous_iterations"]
+            + config["paths"]["current_iterations"]
+        ):
+            nbr, *chains_resnames = Path(iteration_str).name.split("-")
+            if not nbr.isnumeric():
+                logging.error(
+                    f"{iteration_str} is not a valid iteration folder."
+                    f"{nbr} is not a valid epoch number"
                 )
-                raise e
-        config["epoch_nbr"] = max(epoch_nbrs)
-    config["md"]["gmx"] = Path.joinpath(Path(config["paths"]["gmxrc"]), "gmx")
-
+                raise ValueError
+            for chain_resname in chains_resnames:
+                chainID, resname = chain_resname.split("_")
+                if not (len(chainID) == 1 and chainID.isupper()):
+                    logging.error(
+                        f"{iteration_str} is not a valid iteration folder."
+                        f"{chainID} is not a valid chainID number"
+                    )
+                    raise ValueError
+                # Don't have checks for resname yet.
     return config
 
 
@@ -165,7 +212,7 @@ def main() -> Dict:
         raise e
 
     config = validate_config(raw_config)
-    config = set_start_or_restart(config)
+    config = check_input_paths(config)
 
     # Set up environment
     os.environ["OMP_PLACES"] = "threads"

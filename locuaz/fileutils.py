@@ -1,10 +1,9 @@
 from pathlib import Path
 import shutil as sh
 from attrs import define, field
-from typing import List, Set, Dict, Tuple, Optional
+from typing import List, Set, Dict
 import itertools
 from functools import singledispatch
-import logging
 
 
 @define

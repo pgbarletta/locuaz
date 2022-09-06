@@ -1,9 +1,14 @@
+import logging
+from typing import Optional
 from attrs import define, field
+from pathlib import Path
+from shutil import SameFileError
+
 from biobb_md.gromacs.grompp import Grompp
 from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
 from biobb_md.gromacs.mdrun import Mdrun
 from molecules import AbstractComplex, ZipTopology, copy_mol_to
-from pathlib import Path
+
 from fileutils import DirHandle, FileHandle
 from projectutils import WorkProject
 from primitives import launch_biobb
@@ -14,13 +19,12 @@ class MDrun:
     dir: DirHandle = field(converter=DirHandle)  # type: ignore
     gmx_path: str = field(converter=str, kw_only=True)
     mdp: FileHandle = field(converter=FileHandle, kw_only=True)  # type: ignore
-    cpt: FileHandle = field(converter=FileHandle, kw_only=True, default=None)  # type: ignore
     gpu_id: int = field(converter=int, kw_only=True, default=0)
     pin_offset: int = field(converter=int, kw_only=True, default=8)
     num_threads_omp: int = field(converter=int, kw_only=True)
     num_threads_mpi: int = field(converter=int, kw_only=True)
     dev: str = field(converter=str, kw_only=True)
-    out_name: str = field(converter=str, kw_only=False)
+    out_name: str = field(converter=str, kw_only=True)
 
     # pinoffset starts at 8 because in M100, for some reason, this is convenient.
     # I'm assuming that I always have access to threads starting on 8 to whatever
@@ -34,7 +38,6 @@ class MDrun:
         work_pjct: WorkProject,
         gpu_id: int = 0,
         out_name="min",
-        cpt: Path = None,
     ) -> "MDrun":
 
         pin_offset = (gpu_id + 1) * work_pjct.config["md"]["omp_procs"]
@@ -42,7 +45,6 @@ class MDrun:
             root_dir,
             gmx_path=work_pjct.config["md"]["gmx_bin"],
             mdp=Path(work_pjct.mdps["min_mdp"]),
-            cpt=cpt,
             gpu_id=gpu_id,
             pin_offset=pin_offset,
             num_threads_omp=work_pjct.config["md"]["omp_procs"],
@@ -61,7 +63,6 @@ class MDrun:
         work_pjct: WorkProject,
         gpu_id: int = 0,
         out_name="nvt",
-        cpt: Path = None,
     ) -> "MDrun":
 
         pin_offset = (gpu_id + 1) * work_pjct.config["md"]["omp_procs"]
@@ -69,7 +70,6 @@ class MDrun:
             root_dir,
             gmx_path=work_pjct.config["md"]["gmx_bin"],
             mdp=Path(work_pjct.mdps["nvt_mdp"]),
-            cpt=cpt,
             gpu_id=gpu_id,
             pin_offset=pin_offset,
             num_threads_omp=work_pjct.config["md"]["omp_procs"],
@@ -88,7 +88,6 @@ class MDrun:
         work_pjct: WorkProject,
         gpu_id: int = 0,
         out_name="npt",
-        cpt: Path = None,
     ) -> "MDrun":
 
         pin_offset = (gpu_id + 1) * work_pjct.config["md"]["omp_procs"]
@@ -96,7 +95,6 @@ class MDrun:
             root_dir,
             gmx_path=work_pjct.config["md"]["gmx_bin"],
             mdp=Path(work_pjct.mdps["npt_mdp"]),
-            cpt=cpt,
             gpu_id=gpu_id,
             pin_offset=pin_offset,
             num_threads_omp=work_pjct.config["md"]["omp_procs"],
@@ -117,7 +115,7 @@ class MDrun:
             input_mdp_path=str(self.mdp),
             input_gro_path=str(complex.gro.file.path),
             input_top_zip_path=str(complex.top.file.path),
-            input_cpt_path=self.cpt,
+            input_cpt_path=str(complex.cpt),
             output_tpr_path=str(run_tpr),
             properties={"gmx_path": str(self.gmx_path)},
         )
@@ -140,7 +138,7 @@ class MDrun:
 
         runner = Mdrun(
             input_tpr_path=str(run_tpr),
-            input_cpt_path=self.cpt,
+            input_cpt_path=str(complex.cpt),
             output_trr_path=str(run_trr),
             output_xtc_path=str(run_xtc),
             output_gro_path=str(run_gro),
@@ -152,8 +150,13 @@ class MDrun:
         launch_biobb(runner)
 
         # Finally, build the Complex.
+        try:
+            copy_mol_to(complex.top, self.dir, self.out_name + ".zip")
+        except SameFileError:
+            logging.warning(
+                f"Attempted to run MD on a finished run, starting from: {complex.cpt} "
+            )
 
-        copy_mol_to(complex.top, self.dir, self.out_name + ".zip")
         new_complex = type(complex).from_gro_zip(
             name=self.out_name,
             input_dir=self.dir,
@@ -179,6 +182,7 @@ class MDrun:
             iter_path=self.dir,
             target_chains=complex.top.target_chains,
             binder_chains=complex.top.binder_chains,
+            gmx_bin=self.gmx_path,
         )
 
         return new_complex

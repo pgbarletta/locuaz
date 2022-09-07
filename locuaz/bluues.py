@@ -151,7 +151,7 @@ class bluues(AbstractScoringFunction):
                         logging.error(
                             f"Exception while running pdb2pqr: {futu_pdb2pqr.exception()}"
                         )
-                        raise futu_min.exception()  # type: ignore
+                        raise futu_pdb2pqr.exception()  # type: ignore
 
                     j = futu_pdb2pqr.result()
                     futuros_bluues_bmf.append(exe.submit(self.__bluues_bmf_worker__, j))

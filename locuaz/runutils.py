@@ -20,7 +20,7 @@ class MDrun:
     gmx_path: str = field(converter=str, kw_only=True)
     mdp: FileHandle = field(converter=FileHandle, kw_only=True)  # type: ignore
     gpu_id: int = field(converter=int, kw_only=True, default=0)
-    pin_offset: int = field(converter=int, kw_only=True, default=8)
+    pinoffset: int = field(converter=int, kw_only=True, default=8)
     num_threads_omp: int = field(converter=int, kw_only=True)
     num_threads_mpi: int = field(converter=int, kw_only=True)
     dev: str = field(converter=str, kw_only=True)
@@ -37,19 +37,19 @@ class MDrun:
         *,
         work_pjct: WorkProject,
         gpu_id: int = 0,
+        pinoffset: int = 0,
         out_name="min",
     ) -> "MDrun":
 
-        pin_offset = (gpu_id + 1) * work_pjct.config["md"]["omp_procs"]
         obj = cls(
             root_dir,
             gmx_path=work_pjct.config["md"]["gmx_bin"],
             mdp=Path(work_pjct.mdps["min_mdp"]),
             gpu_id=gpu_id,
-            pin_offset=pin_offset,
+            pinoffset=pinoffset,
             num_threads_omp=work_pjct.config["md"]["omp_procs"],
             num_threads_mpi=work_pjct.config["md"]["mpi_procs"],
-            dev=f"-nb gpu -pin on -pinoffset {pin_offset}",
+            dev=f"-nb gpu -pin on -pinoffset {pinoffset}",
             out_name=out_name,
         )
 
@@ -62,19 +62,19 @@ class MDrun:
         *,
         work_pjct: WorkProject,
         gpu_id: int = 0,
+        pinoffset: int = 0,
         out_name="nvt",
     ) -> "MDrun":
 
-        pin_offset = (gpu_id + 1) * work_pjct.config["md"]["omp_procs"]
         obj = cls(
             root_dir,
             gmx_path=work_pjct.config["md"]["gmx_bin"],
             mdp=Path(work_pjct.mdps["nvt_mdp"]),
             gpu_id=gpu_id,
-            pin_offset=pin_offset,
+            pinoffset=pinoffset,
             num_threads_omp=work_pjct.config["md"]["omp_procs"],
             num_threads_mpi=work_pjct.config["md"]["mpi_procs"],
-            dev=f"-nb gpu -pme gpu -bonded gpu -pmefft gpu -pin on -pinoffset {pin_offset}",
+            dev=f"-nb gpu -pme gpu -bonded gpu -pmefft gpu -pin on -pinoffset {pinoffset}",
             out_name=out_name,
         )
 
@@ -87,19 +87,19 @@ class MDrun:
         *,
         work_pjct: WorkProject,
         gpu_id: int = 0,
+        pinoffset: int = 0,
         out_name="npt",
     ) -> "MDrun":
 
-        pin_offset = (gpu_id + 1) * work_pjct.config["md"]["omp_procs"]
         obj = cls(
             root_dir,
             gmx_path=work_pjct.config["md"]["gmx_bin"],
             mdp=Path(work_pjct.mdps["npt_mdp"]),
             gpu_id=gpu_id,
-            pin_offset=pin_offset,
+            pinoffset=pinoffset,
             num_threads_omp=work_pjct.config["md"]["omp_procs"],
             num_threads_mpi=work_pjct.config["md"]["mpi_procs"],
-            dev=f"-nb gpu -pme gpu -bonded gpu -pmefft gpu -pin on -pinoffset {pin_offset}",
+            dev=f"-nb gpu -pme gpu -bonded gpu -pmefft gpu -pin on -pinoffset {pinoffset}",
             out_name=out_name,
         )
 

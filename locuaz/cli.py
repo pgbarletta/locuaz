@@ -12,6 +12,43 @@ import yaml
 
 from fileutils import FileHandle
 
+# TODO: move validate_config() to this class
+class Valida(Validator):
+    def _validate_contains_any_of(self, constraints, field, value):
+        """_validate_contains_any_of
+
+        The rule's arguments are validated against this schema:
+        {'type': 'list'}
+        """
+        if constraints:
+            if len(set(value.keys()).intersection(constraints)) == 0:
+                self._error(field, f"Must contain any of: {constraints}")
+
+    def _validate_step_bigger_than(self, other, field, value):
+        """_validate_step_bigger_than
+
+        The rule's arguments are validated against this schema:
+        {'type': 'string'}
+        """
+        if other:
+            n = self.document[other]
+            if n > value[1]:
+                self._error(
+                    field,
+                    f"step ({value[1]}) is lower than `{other}`({n}). "
+                    "This would dedicate threads to more than 1 run.",
+                )
+
+    def _validate_sorted(self, flag, field, value):
+        """_validate_sorted
+
+        The rule's arguments are validated against this schema:
+        {'type': 'boolean'}
+        """
+        if flag:
+            if sorted(value) != value:
+                self._error(field, "should be an incrementally sorted list.")
+
 
 def validate_config(config: Dict) -> Dict:
 
@@ -22,7 +59,7 @@ def validate_config(config: Dict) -> Dict:
         schema = yaml.load(file, yaml.SafeLoader)
 
     # Use the schema to validate the input configuration yaml
-    validator = Validator(schema)
+    validator = Valida(schema)
     if not validator.validate(config):
         print(f"Wrong input config file.", flush=True)
         raise ValueError(validator.errors)
@@ -73,7 +110,7 @@ def validate_config(config: Dict) -> Dict:
 
     if config["scoring"]["nprocs"] > 64:
         print(
-            f'Warning: {config["scoring"]["nprocs"]} are going to be used for '
+            f'Warning: {config["scoring"]["nprocs"]} threads requested for '
             "scoring. Make sure you have enough RAM for running as many parallel jobs. ",
             flush=True,
         )
@@ -111,16 +148,6 @@ def validate_config(config: Dict) -> Dict:
                 flush=True,
             )
             raise ValueError
-
-    # TODO: DEPRECATE
-    # if config["main"]["mode"] == "run_npt":
-    #     for input_str in config["paths"]["input"]:
-    #         filename = config["main"]["prefix"] + config["main"]["name"] + ".cpt"
-    #         try:
-    #             FileHandle(Path(input_str, filename))
-    #         except FileNotFoundError:
-    #             print(f"{filename} couldn't be found at {input_str}", flush=True)
-    #             raise FileNotFoundError
 
     if ("SPM" in config["main"]["mutator"]) and (config["main"]["branches"] > 19):
         print(
@@ -198,6 +225,15 @@ def main() -> Dict:
         "config_file",
         help="File containing all the necessary parameters to run the protocol",
     )
+    parser.add_argument(
+        "-m",
+        "--mode",
+        help="Wheter to start/restart a protocol or just perform a single task.",
+        default="",
+        type=str,
+        required=False,
+        choices=["protocol", "run", "run_npt", "score"],
+    )
     args = parser.parse_args()
 
     try:
@@ -213,6 +249,13 @@ def main() -> Dict:
 
     config = validate_config(raw_config)
     config = check_input_paths(config)
+
+    if args.mode != "" and args.mode != config["main"]["mode"]:
+        print(
+            f"Warning, CLI input {args.mode} doesn't match "
+            f"{config['main']['mode']}. Overwriting option."
+        )
+        config["main"]["mode"] = args.mode
 
     # Set up environment
     os.environ["OMP_PLACES"] = "threads"

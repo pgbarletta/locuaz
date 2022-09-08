@@ -1,6 +1,7 @@
 paths:
     type: dict
     required: true
+    contains_any_of: [input, root, previous_iterations, current_iterations ]
     schema:
         gmxrc:
             type: string
@@ -8,19 +9,40 @@ paths:
         scoring_functions:
             type: string
             required: true
-        data:
+        mdp:
             type: string
             required: true
         input:
             type: list
             minlength: 1
             maxlength: 12
-            required: true
             schema:
                 type: string
+            required: false
+            excludes: [previous_iterations, current_iterations]
+            dependencies: root 
         root:
             type: string
             required: false
+            excludes: [previous_iterations, current_iterations]
+            dependencies: input
+        previous_iterations:
+            type: list
+            minlength: 1
+            maxlength: 12
+            required: false
+            schema:
+                type: string
+            excludes: [input, root]
+            dependencies: current_iterations
+        current_iterations:
+            type: list
+            minlength: 1
+            maxlength: 12
+            required: false
+            schema:
+                type: string
+            excludes: [input, root]
 main:
     type: dict
     required: true
@@ -28,15 +50,15 @@ main:
         name:
             type: string
             required: true
-        prefix:
+        mode:
             type: string
             required: true
+            default: "protocol"
+            allowed: ["protocol", "run", "run_npt", "score"]
+        prefix:
+            type: string
+            required: false
             default: "npt_"
-        mode:
-            type: string 
-            default: "start"
-            required: true
-            allowed: ["start", "restart", "score"]
         epochs:
             type: integer
             default: 0
@@ -104,13 +126,12 @@ md:
                         amber99sb, amberGS, charmm27, gromos43a1, gromos43a2,
                         gromos45a3, gromos53a5, gromos53a6, gromos54a7, oplsaa]
             default: "amber99sb-ildn"
-            required: true
+            required: false
         water_type:
             type: string
             default: "tip3p"
-            required: true
+            required: false
             allowed: [tip3p, tip4p, tip4pew, tip5p, spc, spce]
-
 
 target:
     type: dict

@@ -120,6 +120,14 @@ md:
             min: 1
             max: 48
             default: 1
+        pinoffset:
+            type: list
+            minlength: 3 
+            maxlength: 3 
+            schema:
+                type: integer
+            default: [0, 4, 8]
+            step_bigger_than: omp_procs
         force_field:
             type: string
             allowed: [amber03, amber94, amber96, amber99, amber99sb-ildn,
@@ -144,6 +152,7 @@ target:
             required: true
             schema:
                 type: string
+                maxlength: 1
 
 binder:
     type: dict

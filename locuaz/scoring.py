@@ -3,7 +3,7 @@ from typing import Dict
 import logging
 from pathlib import Path
 
-from utils_scoring import extract_pdbs
+from utils_scoring import extract_pdbs, join_target_binder
 from projectutils import WorkProject
 from fileutils import DirHandle
 from primitives import launch_biobb
@@ -35,23 +35,11 @@ def initialize_scoring_folder(work_pjct: WorkProject, iter_name: str):
 
     launch_biobb(remove_box)
 
-    # Then, extract complex PDBs
     # Zip filename with the extracted PDBs
     ens_of_pdbs = Path(
         this_iter.score_dir, "ensemble_" + this_iter.complex.name + ".zip"
     )
-    # this only works when there're no lipids or glyco-stuff
-    # IDK why this works. The input TPR has waters, but the input traj doesn't
-    get_complex = GMXTrjConvStrEns(
-        input_traj_path=str(pbc_trj),
-        input_top_path=str(this_iter.complex.tpr.file.path),
-        output_str_ens_path=str(ens_of_pdbs),
-        properties={"gmx_path": gmx_bin, "selection": "Protein"},
-    )
-    launch_biobb(get_complex)
-    nframes_target = extract_pdbs(ens_of_pdbs, "complex")
-
-    # Extract target PDBs
+    # Target
     get_target = GMXTrjConvStrEns(
         input_traj_path=str(pbc_trj),
         input_top_path=str(this_iter.complex.tpr.file.path),
@@ -60,7 +48,7 @@ def initialize_scoring_folder(work_pjct: WorkProject, iter_name: str):
         properties={"gmx_path": gmx_bin, "selection": "target"},
     )
     launch_biobb(get_target)
-    nframes_complex = extract_pdbs(ens_of_pdbs, "target")
+    nframes = extract_pdbs(ens_of_pdbs, "target", new_chainID="X")
 
     # Extract binder PDBs
     get_binder = GMXTrjConvStrEns(
@@ -71,13 +59,13 @@ def initialize_scoring_folder(work_pjct: WorkProject, iter_name: str):
         properties={"gmx_path": gmx_bin, "selection": "binder"},
     )
     launch_biobb(get_binder)
-    nframes_binder = extract_pdbs(ens_of_pdbs, "binder")
+    nframes_binder = extract_pdbs(ens_of_pdbs, "binder", new_chainID="Y")
 
-    assert (
-        nframes_target == nframes_binder == nframes_complex
-    ), f"Number of frames in trajectory don't match. This shouldn't happen."
+    # Complex PDBs
+    assert nframes == nframes_binder
+    join_target_binder(Path(this_iter.score_dir), nframes)
 
-    return nframes_complex
+    return nframes
 
 
 def score(work_pjct: WorkProject, iter_name: str, nframes: int) -> None:

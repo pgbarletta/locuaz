@@ -12,19 +12,17 @@ from fileutils import FileHandle, DirHandle, copy_to
 from abstractscoringfunction import AbstractScoringFunction
 
 
-class haddock(AbstractScoringFunction):
+class Haddock(AbstractScoringFunction):
     template_scoring_inp_handle: FileHandle
     haddock_protocols_dir: DirHandle
     haddock_toppar_dir: DirHandle
     rescoring_scripts_dir: DirHandle
     TIMEOUT_PER_FRAME: int = 30
 
-    def __init__(
-        self, sf_dir, nprocs=2, *, target_chains: Sequence, binder_chains: Sequence
-    ):
+    def __init__(self, sf_dir, nprocs=2):
         self.root_dir = DirHandle(Path(sf_dir, "haddock"), make=False)
         self.nprocs = nprocs
-        
+
         self.bin_path = FileHandle(
             Path(self.root_dir, "cns_solve_1.3/ibm-ppc64le-linux/bin/cns")
         )
@@ -38,8 +36,6 @@ class haddock(AbstractScoringFunction):
         self.rescoring_scripts_dir = DirHandle(
             Path(sf_dir, "rescoring-scripts"), make=False
         )
-        self.target_chains = tuple(target_chains)
-        self.binder_chains = tuple(binder_chains)
 
         # Set up environment:
         os.environ["HADDOCK"] = str(Path(self.root_dir, "haddock2.1"))
@@ -69,7 +65,7 @@ class haddock(AbstractScoringFunction):
         with open(mutant_file_list, "w") as f:
             # Writing only the name of `mod_pdb_frame` because haddock can't deal
             # with long filenames. The subprocess will be run from the same cwd dir
-            #(`results_dir``), so haddock will see it.
+            # (`results_dir``), so haddock will see it.
             f.write('"' + str(mod_pdb_frame.name) + '"')
 
         # .inp config file for haddock.
@@ -80,7 +76,7 @@ class haddock(AbstractScoringFunction):
             # Idem., writing only the relative path to the .pdb file.
             linea_system_name = re.sub("XYZ", str(mutant_file_list.name), lines[0])
             f.write(linea_system_name)
-            
+
             for i in range(1, len(lines)):
                 f.write(lines[i])
 
@@ -97,29 +93,41 @@ class haddock(AbstractScoringFunction):
         return score_haddock
 
     def __haddock_worker__(self, frames_path: Path, i: int) -> Tuple[int, float]:
-        
+
         pdb_frame = Path(frames_path, f"complex-{i}.pdb")
         mod_pdb_frame = Path(self.results_dir, f"mod_complex-{i}.pdb")
         self.__pdb_chain_segid__(pdb_frame, mod_pdb_frame)
         scorin_inp_file = self.__init_frame_scoring__(i, mod_pdb_frame)
         output = Path(self.results_dir, f"log_{i}.out")
-        
+
         comando_haddock = f"{self.bin_path} <  {scorin_inp_file} > {output}"
-        sp.run(comando_haddock,stdout=sp.PIPE,stderr=sp.PIPE,cwd=self.results_dir,shell=True,text=True)
+        sp.run(
+            comando_haddock,
+            stdout=sp.PIPE,
+            stderr=sp.PIPE,
+            cwd=self.results_dir,
+            shell=True,
+            text=True,
+        )
 
         output_haddock_file = Path(self.results_dir, f"mod_complex-{i}_conv.psf")
-        score_haddock = self.__parse_output__(score_file=output_haddock_file)        
+        score_haddock = self.__parse_output__(score_file=output_haddock_file)
 
         return i, score_haddock
 
-    def __call__(self, *, nframes: int, frames_path: Path) -> List[float]:
+    def __call__(
+        self,
+        *,
+        nframes: int,
+        frames_path: Path,
+    ) -> List[float]:
 
         self.results_dir = DirHandle(Path(frames_path, "haddock"), make=True)
         self.__initialize_scoring_dir__()
-        scores: List[float] = [0] * (nframes + 1)
+        scores: List[float] = [0] * (nframes)
         with cf.ProcessPoolExecutor(max_workers=self.nprocs) as exe:
             futuros: List[cf.Future] = []
-            for i in range(nframes+1):
+            for i in range(nframes):
                 futuros.append(exe.submit(self.__haddock_worker__, frames_path, i))
 
             timeout = self.TIMEOUT_PER_FRAME * nframes
@@ -137,7 +145,6 @@ class haddock(AbstractScoringFunction):
                 raise e
 
         return scores
-
 
     def __initialize_scoring_dir__(self) -> None:
 
@@ -180,5 +187,3 @@ class haddock(AbstractScoringFunction):
             FileHandle(Path(self.rescoring_scripts_dir, "symmultimer.cns")),
             self.results_dir,
         )
-
-    

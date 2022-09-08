@@ -10,24 +10,17 @@ from fileutils import FileHandle, DirHandle
 from abstractscoringfunction import AbstractScoringFunction
 
 
-class bluues(AbstractScoringFunction):
+class Bluues(AbstractScoringFunction):
     bmf_bin_path: FileHandle
     pdb2pqr_bin_path: str = "pdb2pqr30"
-    target_chains: tuple
-    binder_chains: tuple
     TIMEOUT_PER_FRAME: int = 60
 
-    def __init__(
-        self, sf_dir, nprocs=2, *, target_chains: Sequence, binder_chains: Sequence
-    ):
+    def __init__(self, sf_dir, nprocs=2):
         self.root_dir = DirHandle(Path(sf_dir, "bluues"), make=False)
         self.nprocs = nprocs
 
         self.bin_path = FileHandle(self.root_dir / "bluues_new_2")
         self.bmf_bin_path = FileHandle(self.root_dir / "score_bmf_3")
-
-        self.target_chains = tuple(target_chains)
-        self.binder_chains = tuple(binder_chains)
 
     def __pdb2pqr_worker__(self, frames_path: Path, i: int) -> int:
 
@@ -53,9 +46,9 @@ class bluues(AbstractScoringFunction):
         with open(complex_pqr_frame, "r") as f_complex:
             for linea in f_complex:
                 if linea[0:4] == "ATOM":
-                    if linea[21:22] in self.target_chains:
+                    if linea[21:22] == "A":
                         f_target.write(linea)
-                    elif linea[21:22] in self.binder_chains:
+                    elif linea[21:22] == "B":
                         f_binder.write(linea)
         f_target.write("TER\n")
         f_target.write("END")
@@ -130,17 +123,20 @@ class bluues(AbstractScoringFunction):
         return i, bluues, bmf
 
     def __call__(
-        self, *, nframes: int, frames_path: Path
+        self,
+        *,
+        nframes: int,
+        frames_path: Path,
     ) -> Tuple[List[float], List[float]]:
 
         self.results_dir = DirHandle(Path(frames_path, "bluues"), make=True)
-        scores_bluues: List[float] = [0] * (nframes + 1)
-        scores_bmf: List[float] = [0] * (nframes + 1)
+        scores_bluues: List[float] = [0] * (nframes)
+        scores_bmf: List[float] = [0] * (nframes)
         # TODO: check bluues doesn't do anything weird.
         with cf.ProcessPoolExecutor(max_workers=self.nprocs) as exe:
             futuros_pdb2pqr: List[cf.Future] = []
             futuros_bluues_bmf: List[cf.Future] = []
-            for i in range(nframes + 1):
+            for i in range(nframes):
                 futuros_pdb2pqr.append(
                     exe.submit(self.__pdb2pqr_worker__, frames_path, i)
                 )

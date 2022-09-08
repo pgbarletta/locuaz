@@ -12,12 +12,10 @@ from fileutils import FileHandle, DirHandle
 from abstractscoringfunction import AbstractScoringFunction
 
 
-class rosetta(AbstractScoringFunction):
+class Rosetta(AbstractScoringFunction):
     TIMEOUT_PER_FRAME: int = 30
 
-    def __init__(
-        self, sf_dir, nprocs=2, *, target_chains: Sequence, binder_chains: Sequence
-    ):
+    def __init__(self, sf_dir, nprocs=2):
         self.root_dir = DirHandle(Path(sf_dir, "rosetta"), make=False)
         self.bin_path = FileHandle(
             Path(
@@ -83,14 +81,19 @@ class rosetta(AbstractScoringFunction):
 
         return i, score_rosetta
 
-    def __call__(self, *, nframes: int, frames_path: Path) -> List[float]:
+    def __call__(
+        self,
+        *,
+        nframes: int,
+        frames_path: Path,
+    ) -> List[float]:
 
         self.results_dir = DirHandle(Path(frames_path, "rosetta"), make=True)
-        scores: List[float] = [0] * (nframes + 1)
+        scores: List[float] = [0] * (nframes)
 
         with cf.ProcessPoolExecutor(max_workers=self.nprocs) as exe:
             futuros: List[cf.Future] = []
-            for i in range(nframes + 1):
+            for i in range(nframes):
                 futuros.append(exe.submit(self.__rosetta_worker__, frames_path, i))
 
             timeout = self.TIMEOUT_PER_FRAME * nframes

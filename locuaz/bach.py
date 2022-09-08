@@ -9,15 +9,13 @@ from fileutils import FileHandle, DirHandle
 from abstractscoringfunction import AbstractScoringFunction
 
 
-class bach(AbstractScoringFunction):
+class Bach(AbstractScoringFunction):
 
     parameters_handle: FileHandle
     atomic_parameters_handle: FileHandle
     TIMEOUT_PER_FRAME: int = 2
 
-    def __init__(
-        self, sf_dir, nprocs=2, *, target_chains: Sequence, binder_chains: Sequence
-    ):
+    def __init__(self, sf_dir, nprocs=2):
         self.root_dir = DirHandle(Path(sf_dir, "bach"), make=False)
         self.nprocs = nprocs
         self.parameters_handle = FileHandle(self.root_dir / "BSS.par")
@@ -55,14 +53,19 @@ class bach(AbstractScoringFunction):
 
         return bach_score
 
-    def __call__(self, *, nframes: int, frames_path: Path) -> List[float]:
+    def __call__(
+        self,
+        *,
+        nframes: int,
+        frames_path: Path,
+    ) -> List[float]:
 
         self.results_dir = DirHandle(Path(frames_path, "bach"), make=True)
-        scores: List[float] = [0] * (nframes + 1)
+        scores: List[float] = [0] * (nframes)
 
         with cf.ProcessPoolExecutor(max_workers=self.nprocs) as exe:
             futuros: List[cf.Future] = []
-            for i in range(nframes + 1):
+            for i in range(nframes):
                 futuros.append(exe.submit(self.__bach_worker__, frames_path, i))
 
             timeout = self.TIMEOUT_PER_FRAME * nframes
@@ -84,6 +87,3 @@ class bach(AbstractScoringFunction):
             logging.warning("Couldn't delete bach's output file, output.bss.")
 
         return scores
-
-    def __str__(self) -> str:
-        return "bach"

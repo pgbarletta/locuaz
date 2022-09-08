@@ -10,14 +10,12 @@ from fileutils import FileHandle, DirHandle
 from abstractscoringfunction import AbstractScoringFunction
 
 
-class evoef2(AbstractScoringFunction):
+class Evoef2(AbstractScoringFunction):
 
     CPU_TO_MEM_RATIO: int = 1000
     TIMEOUT_PER_FRAME: int = 1
 
-    def __init__(
-        self, sf_dir, nprocs=2, *, target_chains: Sequence, binder_chains: Sequence
-    ):
+    def __init__(self, sf_dir, nprocs=2):
         self.root_dir = DirHandle(Path(sf_dir, "evoef2"), make=False)
         self.nprocs = nprocs
         self.max_concurrent_jobs = self.CPU_TO_MEM_RATIO * self.nprocs
@@ -56,14 +54,19 @@ class evoef2(AbstractScoringFunction):
 
         return evoef2_score
 
-    def __call__(self, *, nframes: int, frames_path: Path) -> List[float]:
+    def __call__(
+        self,
+        *,
+        nframes: int,
+        frames_path: Path,
+    ) -> List[float]:
         self.results_dir = DirHandle(Path(frames_path, "evoef2"), make=True)
-        scores: List[float] = [0] * (nframes + 1)
+        scores: List[float] = [0] * (nframes)
 
         with cf.ProcessPoolExecutor(max_workers=self.nprocs) as exe:
             futuros: List[cf.Future] = []
 
-            for i in range(nframes + 1):
+            for i in range(nframes):
                 futuros.append(exe.submit(self.__evoef2_worker__, frames_path, i))
             timeout = self.TIMEOUT_PER_FRAME * nframes
             try:

@@ -11,6 +11,10 @@ paths:
             type: string
             required: true
             is_directory: true
+        mutator:
+            type: string
+            required: true
+            is_directory: true
         mdp:
             type: string
             required: true
@@ -155,9 +159,9 @@ md:
             step_bigger_than: omp_procs
         force_field:
             type: string
-            allowed: ["amber03", "amber94", "amber96", "amber99", "amber99sb-ildn,
-                        amber99sb", "amberGS", "charmm27", "gromos43a1", "gromos43a2,
-                        gromos45a3", "gromos53a5", "gromos53a6", "gromos54a7", "oplsaa"]
+            allowed: ["amber03", "amber94", "amber96", "amber99", "amber99sb-ildn",
+                        "amber99sb", "amberGS", "charmm27", "gromos43a1", "gromos43a2",
+                        "gromos45a3", "gromos53a5", "gromos53a6", "gromos54a7", "oplsaa"]
             default: "amber99sb-ildn"
             required: false
         water_type:

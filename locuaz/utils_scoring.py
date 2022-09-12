@@ -33,7 +33,7 @@ def extract_pdbs(
     with zipped_pdbs as sipesipe:
         sipesipe.extractall(current_dir)
 
-    for i in range(0, nframes):
+    for i in range(nframes):
         old_pdb = Path(current_dir / (f"output{i}.pdb"))
         new_pdb = Path(current_dir / (f"{out_prefix}-{i}.pdb"))
         fix_gromacs_pdb(old_pdb, new_pdb, new_chainID=new_chainID)
@@ -76,6 +76,7 @@ def fix_gromacs_pdb(
     io.set_structure(pdb)
     io.save(str(pdb_out_fn))
 
+
 def join_target_binder(
     pdbs_path: Path,
     nframes: int,
@@ -83,7 +84,7 @@ def join_target_binder(
     bin: str = "binder",
     cpx: str = "complex",
 ) -> None:
-    for i in range(0, nframes):
+    for i in range(nframes):
         tmp_fn = pdbs_path / f"tmp-{i}.pdb"
         catenate_pdbs(
             tmp_fn,
@@ -94,14 +95,8 @@ def join_target_binder(
         tmp_fn.unlink()
 
 
-# TODO: DEPRECATE
-def pdb_chain_segid(file_in_str, file_out_str):
-    with open(file_in_str, "r") as sources:
-        lines = sources.readlines()
-    with open(file_out_str, "w") as sources:
-        for linea in lines:
-            if linea[0:4] == "ATOM":
-                line = linea[0:72] + linea[21] + linea[73:]
-            else:
-                line = linea
-            sources.write(line)
+def rm_frames(frames_path: Path, nframes: int) -> None:
+    for i in range(nframes):
+        Path(frames_path, f"target-{i}.pdb").unlink()
+        Path(frames_path, f"binder-{i}.pdb").unlink()
+        Path(frames_path, f"complex-{i}.pdb").unlink()

@@ -1,10 +1,7 @@
+import os
 import argparse
-import logging
 from typing import Dict
 from pathlib import Path
-from functools import singledispatch
-import os
-from collections.abc import Sequence
 
 import yaml
 
@@ -40,7 +37,7 @@ def validate_input(raw_config: Dict, mode: str, debug: bool):
     else:
         config = validator.normalized(raw_config)
 
-    if mode != "" and mode != config["main"]["mode"]:
+    if mode != config["main"]["mode"]:
         print(
             f"Warning, CLI input {mode} doesn't match "
             f"{config['main']['mode']}. Overwriting option."
@@ -62,7 +59,7 @@ def main() -> Dict:
         "-m",
         "--mode",
         help="Choose wheter to start/restart an evolution protocol or just perform a single task.",
-        default="",
+        default="evolve",
         type=str,
         required=False,
         choices=("evolve", "run", "run_npt", "score"),

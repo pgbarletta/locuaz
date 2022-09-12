@@ -40,7 +40,6 @@ paths:
             minlength: 0
             maxlength: 12
             required: false
-            default: []
             schema:
                 type: string
                 is_directory: true

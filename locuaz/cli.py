@@ -61,11 +61,11 @@ def main() -> Dict:
     parser.add_argument(
         "-m",
         "--mode",
-        help="Choose wheter to start/restart a protocol or just perform a single task.",
+        help="Choose wheter to start/restart an evolution protocol or just perform a single task.",
         default="",
         type=str,
         required=False,
-        choices=("protocol", "run", "run_npt", "score"),
+        choices=("evolve", "run", "run_npt", "score"),
     )
     parser.add_argument(
         "--debug",

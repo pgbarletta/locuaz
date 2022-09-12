@@ -6,43 +6,51 @@ paths:
         gmxrc:
             type: string
             required: true
+            is_directory: true
         scoring_functions:
             type: string
             required: true
+            is_directory: true
         mdp:
             type: string
             required: true
+            is_directory: true
         input:
             type: list
             minlength: 1
             maxlength: 12
             schema:
                 type: string
+                is_directory: true
             required: false
-            excludes: [previous_iterations, current_iterations]
+            excludes: current_iterations
             dependencies: root 
         root:
             type: string
             required: false
-            excludes: [previous_iterations, current_iterations]
+            excludes: current_iterations
             dependencies: input
+            is_directory: true
         previous_iterations:
             type: list
-            minlength: 1
+            minlength: 0
             maxlength: 12
             required: false
+            default: []
             schema:
                 type: string
-            excludes: [input, root]
-            dependencies: current_iterations
+                is_directory: true
+                is_iteration_dir: true
         current_iterations:
             type: list
             minlength: 1
             maxlength: 12
             required: false
+            excludes: [input, root]
             schema:
                 type: string
-            excludes: [input, root]
+                is_directory: true
+                is_iteration_dir: true
 main:
     type: dict
     required: true
@@ -53,23 +61,25 @@ main:
         mode:
             type: string
             required: true
-            default: "protocol"
-            allowed: ["protocol", "run", "run_npt", "score"]
+            default: "evolve"
+            allowed: ["evolve", "run", "run_npt", "score"]
         prefix:
             type: string
             required: false
             default: "npt_"
+protocol:
+    type: dict
+    required: false
+    schema:
         epochs:
             type: integer
             default: 0
-            required: false
             min: 0
             max: 48
-        branches:
+        max_branches:
             type: integer
-            default: 0
-            required: false
-            min: 0
+            default: 1
+            min: 1
             max: 24
         prune:
             type: integer
@@ -77,7 +87,21 @@ main:
             required: false
             min: 1
             max: 4
-
+        prunner:
+            type: string
+            default: "adaptive"
+            required: false
+            allowed: ["adaptive", "top"]
+        generator:
+            type: string 
+            default: "SPM_4"
+            required: false
+            crosscheck: [max_branches] 
+            allowed: ["SPM_4", "SPM_R&B"]
+        mutator:
+            type: string
+            default: "evoef2"
+            allowed: ["evoef2", "biobb"]
 md:
     type: dict
     required: true
@@ -92,24 +116,25 @@ md:
             schema:
                 min_water_mdp:
                     type: string
-                    default: min_water.mdp
+                    default: "min_water.mdp"
                 min_environment_mdp:
                     type: string
-                    default: min_environment.mdp
+                    default: "min_environment.mdp"
                 min_mdp:
                     type: string
-                    default: min.mdp
+                    default: "min.mdp"
                 nvt_mdp:
                     type: string
-                    default: nvt.mdp
+                    default: "nvt.mdp"
                 npt_mdp:
                     type: string
-                    default: npt.mdp
+                    default: "npt.mdp"
         ngpus:
             type: integer
             min: 1
             max: 12
-            default: 0
+            required: true
+            warn_thread_availability: [mpi_procs, omp_procs]
         mpi_procs:
             type: integer
             min: 1
@@ -130,16 +155,16 @@ md:
             step_bigger_than: omp_procs
         force_field:
             type: string
-            allowed: [amber03, amber94, amber96, amber99, amber99sb-ildn,
-                        amber99sb, amberGS, charmm27, gromos43a1, gromos43a2,
-                        gromos45a3, gromos53a5, gromos53a6, gromos54a7, oplsaa]
+            allowed: ["amber03", "amber94", "amber96", "amber99", "amber99sb-ildn,
+                        amber99sb", "amberGS", "charmm27", "gromos43a1", "gromos43a2,
+                        gromos45a3", "gromos53a5", "gromos53a6", "gromos54a7", "oplsaa"]
             default: "amber99sb-ildn"
             required: false
         water_type:
             type: string
             default: "tip3p"
             required: false
-            allowed: [tip3p, tip4p, tip4pew, tip5p, spc, spce]
+            allowed: ["tip3p", "tip4p", "tip4pew", "tip5p", "spc", "spce"]
 
 target:
     type: dict
@@ -181,15 +206,18 @@ binder:
             minlength: 1
             maxlength: 10
             required: true
+            same_length: mutating_chainID
             schema:
                 type: list
                 minlength: 1
                 maxlength: 20
                 required: true
+                sorted: true
+                unique: true
                 schema:
                     type: integer
                     min: 1
-                    max: 999999
+                    max: 99999
                     required: true
 
 scoring:
@@ -203,15 +231,17 @@ scoring:
             required: true
             schema:
                 type: string
-                allowed: [bach, bluues, evoef2, haddock, pisa, rosetta, zrank, irad, firedock]
+                allowed: ["bach", "bluues", "evoef2", "haddock", "pisa", "rosetta", "zrank", "irad", "firedock"]
         consensus_threshold:
             type: integer
             min: 1
             max: 20
             required: true
+            lower_than_length: functions
         nprocs:
             type: integer
             min: 1
             max: 256
-            default: 0
+            required: true
+            warn_when_above: 64
 

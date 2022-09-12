@@ -3,7 +3,7 @@ from typing import Dict
 import logging
 from pathlib import Path
 
-from utils_scoring import extract_pdbs, join_target_binder
+from utils_scoring import extract_pdbs, join_target_binder, rm_frames
 from projectutils import WorkProject
 from fileutils import DirHandle
 from primitives import launch_biobb
@@ -48,7 +48,7 @@ def initialize_scoring_folder(work_pjct: WorkProject, iter_name: str):
         properties={"gmx_path": gmx_bin, "selection": "target"},
     )
     launch_biobb(get_target)
-    nframes = extract_pdbs(ens_of_pdbs, "target", new_chainID="X")
+    nframes = extract_pdbs(ens_of_pdbs, "target", new_chainID="A")
 
     # Extract binder PDBs
     get_binder = GMXTrjConvStrEns(
@@ -59,7 +59,7 @@ def initialize_scoring_folder(work_pjct: WorkProject, iter_name: str):
         properties={"gmx_path": gmx_bin, "selection": "binder"},
     )
     launch_biobb(get_binder)
-    nframes_binder = extract_pdbs(ens_of_pdbs, "binder", new_chainID="Y")
+    nframes_binder = extract_pdbs(ens_of_pdbs, "binder", new_chainID="B")
 
     # Complex PDBs
     assert nframes == nframes_binder
@@ -82,6 +82,12 @@ def score(work_pjct: WorkProject, iter_name: str, nframes: int) -> None:
         else:
             promedio = this_iter.set_score(sf_name, scores)
             logging.info(f"{sf_name} average score: {promedio}")
+
+    if not work_pjct.config["main"]["debug"]:
+        logging.info(
+            "Removing PDB frames. Set `--debug` flag if you don't want this to happen."
+        )
+        rm_frames(this_iter.score_dir, nframes)
 
     this_iter.write_down_scores()
     logging.info(

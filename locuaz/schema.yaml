@@ -240,7 +240,7 @@ scoring:
             min: 1
             max: 20
             required: true
-            lower_than_length: functions
+            lower_than_length_of: functions
         nprocs:
             type: integer
             min: 1

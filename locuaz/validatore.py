@@ -12,8 +12,17 @@ class Validatore(Validator):
         {'type': 'list'}
         """
         if constraints:
-            if len(set(value.keys()).intersection(constraints)) == 0:
+            set_fields = set(value.keys())
+            if len(set_fields.intersection(constraints)) == 0:
                 self._error(field, f"Must contain any of: {constraints}")
+
+            if ("current_iterations" in set_fields) and (
+                "previous_iterations" not in set_fields
+            ):
+                print(
+                    "Warning: `current_iterations` is set, but `previous_iterations` isn't. "
+                    "Won't be able to prune the current iterations. Make sure there're enough branches."
+                )
 
     def _validate_step_bigger_than(self, other, field, value):
         """_validate_step_bigger_than
@@ -50,8 +59,8 @@ class Validatore(Validator):
             if len(value) != len(self.document[other]):
                 self._error(field, f" should have the same length as {other}")
 
-    def _validate_lower_than_length(self, other, field, value):
-        """lower_than_length
+    def _validate_lower_than_length_of(self, other, field, value):
+        """_validate_lower_than_length_of
 
         The rule's arguments are validated against this schema:
         {'type': 'string'}
@@ -59,6 +68,16 @@ class Validatore(Validator):
         if other:
             if value > len(self.document[other]):
                 self._error(field, f"cannot be higher than the length of {other}.")
+
+    def _validate_higher_than_length_of(self, other, field, value):
+        """_validate_higher_than_length_of
+
+        The rule's arguments are validated against this schema:
+        {'type': 'string'}
+        """
+        if other:
+            if value < len(self.document[other]):
+                self._error(field, f"cannot be lower than the length of {other}.")
 
     def _validate_warn_when_above(self, threshold, field, value):
         """_validate_warn_when_above
@@ -115,11 +134,11 @@ class Validatore(Validator):
         {'type': 'list'}
         """
         if others:
-            branches = self.document[others[0]]
-            if ("SPM" in value) and (branches > 19):
+            max_branches = self.document[others[0]]
+            if ("SPM" in value) and (max_branches > 19):
                 self._error(
                     field,
-                    f"{others[0]} set to {branches} but this binder generator outputs "
+                    f"{others[0]} set to {max_branches} but this binder generator outputs "
                     "mutations for a single position, hence, 19 is the maximum number "
                     "of possible mutations.",
                 )

@@ -65,48 +65,4 @@ def initialize_new_epoch(work_pjct: WorkProject) -> None:
 
             current_epoch[iter_name] = this_iter
 
-    # for top_iter_name in old_epoch.top_iterations:
-
-    #     old_iter = old_epoch[top_iter_name]
-    #     mutations = generate_mutations(
-    #         old_iter, max_branches=work_pjct.config["protocol"]["max_branches"]
-    #     )
-
-    #     nonwat_pdb, wation_pdb = split_solute_and_solvent(old_iter.complex)
-
-    #     for mutation in mutations:
-    #         iter_name, iter_resnames = mutation.new_name_resname(old_iter)
-    #         iter_path = Path(
-    #             str(work_pjct.dir_handle), Path(str(old_epoch.id + 1) + "-" + iter_name)
-    #         )
-    #         this_iter = Iteration(
-    #             DirHandle(iter_path, make=True),
-    #             iter_name=iter_name,
-    #             chainIDs=old_iter.chainIDs,
-    #             resnames=iter_resnames,
-    #             resSeqs=old_iter.resSeqs,
-    #         )
-
-    #         # Mutate the complex
-    #         dry_mut_pdb = mutator(nonwat_pdb, mutation)
-    #         # Rejoin the mutated complex with water and ions
-    #         over_name = "overlapped_" + work_pjct.config["main"]["name"]
-    #         mut_pdb_fn = iter_path / (over_name + ".pdb")
-    #         catenate_pdbs(dry_mut_pdb, wation_pdb, pdb_out_path=mut_pdb_fn)
-    #         # Remove the temporary mutated complex that lacks the solvent
-    #         dry_mut_pdb.unlink()
-
-    #         overlapped_cpx = GROComplex.from_pdb(
-    #             name=over_name,
-    #             input_dir=iter_path,
-    #             target_chains=work_pjct.config["target"]["chainID"],
-    #             binder_chains=work_pjct.config["binder"]["chainID"],
-    #             gmx_bin=work_pjct.config["md"]["gmx_bin"],
-    #         )
-    #         #
-    #         this_iter.complex = remove_overlapping_waters(
-    #             work_pjct.config, overlapped_cpx, mutation.resSeq
-    #         )
-
-    #         current_epoch[iter_name] = this_iter
     work_pjct.new_epoch(current_epoch)

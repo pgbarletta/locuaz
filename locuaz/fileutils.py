@@ -1,9 +1,10 @@
 from pathlib import Path
-import shutil as sh
-from attrs import define, field
-from typing import List, Set, Dict
+from typing import List, Union, Set, Dict
 import itertools
 from functools import singledispatch
+
+import shutil as sh
+from attrs import define, field
 
 
 @define
@@ -99,7 +100,17 @@ class DirHandle:
     def __fspath__(self) -> str:
         return self.__str__()
 
-    def __truediv__(self, key):
+    def __truediv__(self, key) -> Union[FileHandle, "DirHandle"]:
+        """__truediv__ analog to Path's __truediv__ function, but it also checks the
+        existence of the resulting path, whether if its file or dir. Use Path(*args...)
+        if you don't want this behaviour
+
+        Raises:
+            FileNotFoundError: _description_
+
+        Returns:
+            _type_: _description_
+        """
         new_path = self.dir_path / key
         if new_path.is_file():
             return FileHandle(new_path)
@@ -135,6 +146,18 @@ def catenate(
     texto = itertools.chain.from_iterable(lineas)
     with open(out_path, "w") as file:
         [file.write(linea) for linea in texto]
+    return FileHandle(out_path)
+
+
+def catenate_pdbs(out_path: Path, *file_objs: FileHandle):
+    lineas = []
+    for file_obj in file_objs:
+        with open(file_obj.path, "r") as file:
+            lineas.append(file.readlines())
+    texto = itertools.chain.from_iterable(lineas)
+    with open(out_path, "w") as file:
+        [file.write(linea) for linea in texto if linea[0:3] != "END"]
+        file.write("END")
     return FileHandle(out_path)
 
 

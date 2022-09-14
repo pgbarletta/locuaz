@@ -40,7 +40,8 @@ def run_epoch(work_pjct: WorkProject) -> None:
             gpu_id[iter_name] = idx % ngpus
             pinoffset[iter_name] = pinoffsets[idx % ngpus]
             
-            logging.info(f"Queuing MIN of the iteration {iter_name} to GPU {gpu_id[iter_name]}.")
+            logging.info(f"Queuing MIN of the iteration {iter_name} to GPU {gpu_id[iter_name]} "
+            "and pinoffset: {pinoffset[iter_name]}.")
 
             min = MDrun.min(iter.dir_handle, work_pjct=work_pjct, gpu_id = gpu_id[iter_name],
                 pinoffset=pinoffset[iter_name], out_name="min_" + work_pjct.name)
@@ -54,7 +55,9 @@ def run_epoch(work_pjct: WorkProject) -> None:
             iter_name = '-'.join(min_complex.dir.dir_path.name.split('-')[1:])
             iter = epoch[iter_name]
             
-            logging.info(f"Queuing NVT of the iteration {iter_name} to GPU {gpu_id[iter_name]}.")
+            logging.info(f"Queuing NVT of the iteration {iter_name} to GPU {gpu_id[iter_name]} "
+            "and pinoffset: {pinoffset[iter_name]}.")
+
             nvt = MDrun.nvt(
                 iter.dir_handle, work_pjct=work_pjct, gpu_id = gpu_id[iter_name],
                 pinoffset=pinoffset[iter_name], out_name="nvt_" + work_pjct.name)
@@ -68,7 +71,8 @@ def run_epoch(work_pjct: WorkProject) -> None:
             iter_name = '-'.join(nvt_complex.dir.dir_path.name.split('-')[1:])
             iter = epoch[iter_name]
             
-            logging.info(f"Queuing NPT of the iteration {iter_name} to GPU {gpu_id[iter_name]}.")
+            logging.info(f"Queuing NPT of the iteration {iter_name} to GPU {gpu_id[iter_name]} "
+            "and pinoffset: {pinoffset[iter_name]}.")
             npt = MDrun.npt(
                 iter.dir_handle, work_pjct=work_pjct, gpu_id = gpu_id[iter_name],
                 pinoffset=pinoffset[iter_name], out_name="npt_" + work_pjct.name)

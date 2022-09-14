@@ -59,6 +59,16 @@ class Validatore(Validator):
             if len(value) != len(self.document[other]):
                 self._error(field, f" should have the same length as {other}")
 
+    def _validate_same_as_length_of(self, other, field, value):
+        """_validate_lower_than_length_of
+
+        The rule's arguments are validated against this schema:
+        {'type': 'string'}
+        """
+        if other:
+            if value != len(self.document[other]):
+                self._error(field, f" and the length of {other} must be the same.")
+
     def _validate_lower_than_length_of(self, other, field, value):
         """_validate_lower_than_length_of
 

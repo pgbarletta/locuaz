@@ -138,6 +138,7 @@ md:
             max: 12
             required: true
             warn_thread_availability: [mpi_procs, omp_procs]
+            same_as_length_of: pinoffsets
         mpi_procs:
             type: integer
             min: 1
@@ -148,14 +149,13 @@ md:
             min: 1
             max: 48
             default: 1
-        pinoffset:
+        pinoffsets:
             type: list
-            minlength: 3 
-            maxlength: 3 
+            minlength: 1
+            maxlength: 12
+            required: true
             schema:
                 type: integer
-            default: [0, 4, 8]
-            step_bigger_than: omp_procs
         force_field:
             type: string
             allowed: ["amber03", "amber94", "amber96", "amber99", "amber99sb-ildn",

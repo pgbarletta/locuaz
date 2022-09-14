@@ -20,15 +20,11 @@ class MDrun:
     gmx_path: str = field(converter=str, kw_only=True)
     mdp: FileHandle = field(converter=FileHandle, kw_only=True)  # type: ignore
     gpu_id: int = field(converter=int, kw_only=True, default=0)
-    pinoffset: int = field(converter=int, kw_only=True, default=8)
+    pinoffset: int = field(converter=int, kw_only=True, default=0)
     num_threads_omp: int = field(converter=int, kw_only=True)
     num_threads_mpi: int = field(converter=int, kw_only=True)
     dev: str = field(converter=str, kw_only=True)
     out_name: str = field(converter=str, kw_only=True)
-
-    # pinoffset starts at 8 because in M100, for some reason, this is convenient.
-    # I'm assuming that I always have access to threads starting on 8 to whatever
-    # is necessary. This is hard to no hard-code.
 
     @classmethod
     def min(

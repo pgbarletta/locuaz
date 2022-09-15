@@ -105,6 +105,39 @@ protocol:
             type: string
             default: "evoef2"
             allowed: ["evoef2", "biobb"]
+        memory_size:
+            type: integer
+            default: 0
+            min: 0
+            max: 12
+            higher_than_length_of: memory_positions
+        memory_positions:
+            type: list
+            required: false
+            minlength: 1
+            maxlength: 12
+            schema:
+                type: list
+                minlength: 1
+                maxlength: 36
+                schema:
+                    type: integer
+                    min: 1
+                    max: 99999
+        memory_aminoacids:
+            type: list
+            required: false
+            minlength: 1
+            maxlength: 12
+            schema:
+                type: list
+                minlength: 1
+                maxlength: 36
+                schema:
+                    type: string
+                    allowed: ['A', 'R', 'N', 'D', 'C', 'E', 'Q', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V']
+                    minlength: 1
+                    maxlength: 1
 md:
     type: dict
     required: true

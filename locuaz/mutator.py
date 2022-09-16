@@ -1,12 +1,11 @@
 from pathlib import Path
 from abc import ABCMeta, abstractmethod
 from attrs import define, field
-from typing import List, Tuple
+from typing import Iterable, List, Sequence, Tuple
 
 
-from projectutils import Iteration
+from projectutils import Iteration, WorkProject
 from molecules import PDBStructure
-from fileutils import FileHandle
 
 
 @define(frozen=True)
@@ -50,3 +49,13 @@ class AbstractMutator(metaclass=ABCMeta):
     @abstractmethod
     def __call__(self, input_pdb: PDBStructure, mutation: Mutation) -> PDBStructure:
         pass
+
+
+def memorize_mutations(work_pjct: WorkProject, mutations: Iterable[Mutation]) -> None:
+    if not work_pjct.has_memory:
+        return
+    mutated_aminoacids = [mutation.new_aa for mutation in mutations]
+    mutated_positions = [mutation.resSeq for mutation in mutations]
+
+    # Don't memorize amino acids
+    work_pjct.mem_positions(mutated_positions)

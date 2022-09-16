@@ -56,8 +56,12 @@ class Validatore(Validator):
         {'type': 'string'}
         """
         if other:
-            if len(value) != len(self.document[other]):
-                self._error(field, f" should have the same length as {other}")
+            try:
+                if len(value) != len(self.document[other]):
+                    self._error(field, f" should have the same length as {other}")
+            except KeyError:
+                # If we've gotten to this point, other must be optional, so this is ok.
+                pass
 
     def _validate_same_as_length_of(self, other, field, value):
         """_validate_lower_than_length_of
@@ -66,8 +70,11 @@ class Validatore(Validator):
         {'type': 'string'}
         """
         if other:
-            if value != len(self.document[other]):
-                self._error(field, f" and the length of {other} must be the same.")
+            try:
+                if value != len(self.document[other]):
+                    self._error(field, f" and the length of {other} must be the same.")
+            except KeyError:
+                pass
 
     def _validate_lower_than_length_of(self, other, field, value):
         """_validate_lower_than_length_of
@@ -76,8 +83,11 @@ class Validatore(Validator):
         {'type': 'string'}
         """
         if other:
-            if value > len(self.document[other]):
-                self._error(field, f"cannot be higher than the length of {other}.")
+            try:
+                if value > len(self.document[other]):
+                    self._error(field, f"cannot be higher than the length of {other}.")
+            except KeyError:
+                pass
 
     def _validate_higher_than_length_of(self, other, field, value):
         """_validate_higher_than_length_of
@@ -86,8 +96,11 @@ class Validatore(Validator):
         {'type': 'string'}
         """
         if other:
-            if value < len(self.document[other]):
-                self._error(field, f"cannot be lower than the length of {other}.")
+            try:
+                if value < len(self.document[other]):
+                    self._error(field, f"cannot be lower than the length of {other}.")
+            except KeyError:
+                pass
 
     def _validate_warn_when_above(self, threshold, field, value):
         """_validate_warn_when_above

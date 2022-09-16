@@ -11,7 +11,14 @@ from mutator import Mutation
 
 class AbstractMutationGenerator(ABC):
     @abstractmethod
-    def __init__(self, epoch: Epoch) -> None:
+    def __init__(
+        self,
+        epoch: Epoch,
+        max_branches: int,
+        *,
+        excluded_aas: Set[str],
+        excluded_pos: Set[int],
+    ) -> None:
         pass
 
     @abstractmethod
@@ -28,7 +35,14 @@ class AbstractMutationGenerator(ABC):
 
 
 class SPM_RB(AbstractMutationGenerator):
-    def __init__(self, epoch: Epoch) -> None:
+    def __init__(
+        self,
+        epoch: Epoch,
+        max_branches: int,
+        *,
+        excluded_aas: Set[str],
+        excluded_pos: Set[int],
+    ) -> None:
         pass
 
     def __getitem__(self, key: Iteration) -> Mutation:
@@ -56,12 +70,72 @@ class SPM_4(AbstractMutationGenerator, Mapping):
     N_CAT = len(CAT_AAS)
     remaining_categories: Set[int]
     excluded_aas: Set[str]
+    excluded_pos: Set[int]
     idx_chain: int
     idx_residue: int
 
     mutations: Dict[str, List[Mutation]]
 
-    def __get_random_aa__(self) -> str:
+    def __init__(
+        self,
+        epoch: Epoch,
+        max_branches: int,
+        *,
+        excluded_aas: Set[str],
+        excluded_pos: Set[int],
+    ) -> None:
+        self.remaining_categories = set(range(0, self.N_CAT))
+        self.mutations = defaultdict(list)
+        self.excluded_aas = excluded_aas
+        self.excluded_pos = excluded_pos
+
+        mut_chainID, mut_resSeq = self.__get_random_pos__(epoch)
+        # Now, generate up to `max_branches` mutations
+        remaining_branches = max_branches
+        remaining_iterations = set(epoch.top_iterations.keys())
+        while remaining_branches != 0:
+            iteration = epoch.top_iterations[remaining_iterations.pop()]
+            old_aa, new_aa = self.__get_random_aa__(iteration)
+            # Build the mutation object for this iteration.
+            # mut_chainID = iteration.chainIDs[self.idx_chain]
+            # mut_resSeq = iteration.resSeqs[self.idx_chain][self.idx_residue]
+            mutation = Mutation(
+                chainID=mut_chainID,
+                resSeq=mut_resSeq,
+                old_aa=old_aa,
+                new_aa=new_aa,
+                chainID_idx=self.idx_chain,
+                resSeq_idx=self.idx_residue,
+            )
+
+            self.mutations[iteration.iter_name].append(mutation)
+            if len(remaining_iterations) == 0:
+                # If all iterations have been mutated at least once and we still
+                # have branches to generate, restart `remaining_iterations`.
+                remaining_iterations = set(epoch.top_iterations.keys())
+            remaining_branches -= 1
+
+    def __get_random_pos__(self, epoch: Epoch) -> Tuple[int, int]:
+        # Get an iteration to read the chainIDs and the resSeqs.
+        any_iteration = next(iter(epoch.top_iterations.values()))
+
+        # Choose the position to mutate. This will be the same for all iterations.
+        max_tries: int = sum([len(resSeq) for resSeq in any_iteration.resSeqs]) * 5
+        for i in range(max_tries):
+            n_chains = len(any_iteration.chainIDs)
+            self.idx_chain = choice(range(0, n_chains))
+            n_residues = len(any_iteration.resSeqs[self.idx_chain])
+            self.idx_residue = choice(range(0, n_residues))
+
+            mut_resSeq = any_iteration.resSeqs[self.idx_chain][self.idx_residue]
+            if mut_resSeq not in self.excluded_pos:
+                mut_chainID = any_iteration.chainIDs[self.idx_chain]
+                return mut_chainID, mut_resSeq
+
+            raise RuntimeError("Can't generate novel position. This shouldn't happen.")
+        return 0, 0
+
+    def __pop_random_aa__(self) -> str:
         cat_idx = choice(tuple(self.remaining_categories))
         self.remaining_categories.difference_update({cat_idx})
 
@@ -70,12 +144,12 @@ class SPM_4(AbstractMutationGenerator, Mapping):
             if new_aa not in self.excluded_aas:
                 self.excluded_aas.add(new_aa)
                 return new_aa
-        raise RuntimeError("Can't generate new binder. This shouldn't happen.")
+        raise RuntimeError("Can't generate novel AA. This shouldn't happen.")
 
-    def __pop_random_aa__(self, iter: Iteration) -> Tuple[str, str]:
+    def __get_random_aa__(self, iter: Iteration) -> Tuple[str, str]:
         old_aa = iter.resnames[self.idx_chain][self.idx_residue]
         self.excluded_aas.add(old_aa)
-        new_aa = self.__get_random_aa__()
+        new_aa = self.__pop_random_aa__()
 
         if len(self.remaining_categories) == 0:
             # All categories have already been chosen from `N` times.
@@ -90,44 +164,6 @@ class SPM_4(AbstractMutationGenerator, Mapping):
 
     def __generate_mutation__(iteration: Iteration) -> Mutation:
         pass
-
-    def __init__(self, epoch: Epoch, max_branches: int) -> None:
-        self.remaining_categories = set(range(0, self.N_CAT))
-        self.mutations = defaultdict(list)
-        self.excluded_aas = set()
-        iteration = epoch[epoch.top_iterations[0]]
-
-        # First, choose the chain and position to mutate. These will be
-        # the same for all iterations.
-        n_chains = len(iteration.chainIDs)
-        self.idx_chain = choice(range(0, n_chains))
-        n_residues = len(iteration.resSeqs[self.idx_chain])
-        self.idx_residue = choice(range(0, n_residues))
-
-        # Now, generate up to `max_branches` mutations
-        remaining_branches = max_branches
-        remaining_iterations = set(epoch.top_iterations)
-        while remaining_branches != 0:
-            iteration = epoch[remaining_iterations.pop()]
-            old_aa, new_aa = self.__pop_random_aa__(iteration)
-            # Build the mutation object for this iteration.
-            mut_chainID = iteration.chainIDs[self.idx_chain]
-            mut_resSeq = iteration.resSeqs[self.idx_chain][self.idx_residue]
-            mutation = Mutation(
-                chainID=mut_chainID,
-                resSeq=mut_resSeq,
-                old_aa=old_aa,
-                new_aa=new_aa,
-                chainID_idx=self.idx_chain,
-                resSeq_idx=self.idx_residue,
-            )
-
-            self.mutations[iteration.iter_name].append(mutation)
-            if len(remaining_iterations) == 0:
-                # If all iterations have been mutated at least once and we still
-                # have branches to generate, restart `remaining_iterations`.
-                remaining_iterations = set(epoch.top_iterations)
-            remaining_branches -= 1
 
     def __getitem__(self, key: Iteration) -> Mutation:
         return self.mutations[key]

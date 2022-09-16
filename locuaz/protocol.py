@@ -3,6 +3,7 @@ from projectutils import WorkProject, Epoch, Iteration
 from fileutils import DirHandle
 from mutationgenerators import mutation_generators
 from mutators import mutators
+from mutator import Mutation, memorize_mutations
 from molecules import split_solute_and_solvent, catenate_pdbs, GROComplex
 from gromacsutils import remove_overlapping_waters
 
@@ -23,17 +24,20 @@ def initialize_new_epoch(work_pjct: WorkProject) -> None:
     )
     # Create required mutation generator and generate mutation.
     mutation_generator = mutation_generators[work_pjct.config["protocol"]["generator"]](
-        old_epoch, work_pjct.config["protocol"]["max_branches"]
+        old_epoch,
+        work_pjct.config["protocol"]["max_branches"],
+        excluded_aas=work_pjct.get_mem_aminoacids(),
+        excluded_pos=work_pjct.get_mem_positions(),
     )
 
     for old_iter_name, mutations in mutation_generator.items():
-        old_iter = old_epoch[old_iter_name]
+        old_iter = old_epoch.top_iterations[old_iter_name]
         nonwat_pdb, wation_pdb = split_solute_and_solvent(old_iter.complex)
 
         for mutation in mutations:
             iter_name, iter_resnames = mutation.new_name_resname(old_iter)
             iter_path = Path(work_pjct.dir_handle, f"{epoch_id}-{iter_name}")
-            # Path(str(epoch_id) + "-" + iter_name)
+
             this_iter = Iteration(
                 DirHandle(iter_path, make=True),
                 iter_name=iter_name,
@@ -65,4 +69,5 @@ def initialize_new_epoch(work_pjct: WorkProject) -> None:
 
             current_epoch[iter_name] = this_iter
 
+    memorize_mutations(work_pjct, mutations)
     work_pjct.new_epoch(current_epoch)

@@ -82,7 +82,7 @@ def score_frames(work_pjct: WorkProject, iteration: Iteration, nframes: int) -> 
 
     if not work_pjct.config["main"]["debug"]:
         logging.info("Removing PDB frames. Set `--debug` flag to skip this.")
-        rm_frames(iteration.score_dir, nframes)
+        rm_frames(iteration.score_dir, work_pjct.scorers.keys(), nframes)
 
     iteration.write_down_scores()
     logging.info(

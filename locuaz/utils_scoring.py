@@ -1,6 +1,8 @@
 import re
+from typing import Iterable
 import zipfile
 from pathlib import Path
+import glob
 
 from Bio.PDB import PDBParser
 from Bio.PDB.PDBIO import PDBIO
@@ -95,8 +97,22 @@ def join_target_binder(
         tmp_fn.unlink()
 
 
-def rm_frames(frames_path: Path, nframes: int) -> None:
+def rm_frames(frames_path: Path, scoring_functions: Iterable, nframes: int) -> None:
     for i in range(nframes):
         Path(frames_path, f"target-{i}.pdb").unlink()
         Path(frames_path, f"binder-{i}.pdb").unlink()
         Path(frames_path, f"complex-{i}.pdb").unlink()
+
+    if "bluues" in scoring_functions:
+        bluues_dir = frames_path.parent / "bluues"
+        for solv_nrg_file in glob.glob(str(bluues_dir / "*solv_nrg")):
+            Path(solv_nrg_file).unlink()
+        for pqr_file in glob.glob(str(bluues_dir / "*pqr")):
+            Path(pqr_file).unlink()
+
+    if "haddock" in scoring_functions:
+        haddock_dir = frames_path.parent / "haddock"
+        for pdb_file in glob.glob(str(haddock_dir / "*pdb")):
+            Path(pdb_file).unlink()
+        for psf_file in glob.glob(str(haddock_dir / "*psf")):
+            Path(psf_file).unlink()

@@ -3,7 +3,7 @@ from attrs import define, field
 from typing import Iterator, List, Sequence, Set, Dict, Tuple, Union, Deque
 import collections
 import logging
-from statistics import mean
+from statistics import mean, stdev
 from collections import deque
 
 from Bio.PDB import PDBParser
@@ -34,7 +34,15 @@ class Iteration:
 
     def set_score(self, sf_name: str, scores: Sequence) -> float:
         self.scores[sf_name] = tuple(scores)
-        self.mean_scores[sf_name] = mean(scores)
+        avg_score = mean(scores)
+        self.mean_scores[sf_name] = avg_score
+
+        std_score = stdev(scores)
+        if abs(avg_score) < std_score:
+            logging.warning(
+                f"{sf_name} score has a mean of {avg_score} and a standard deviation "
+                f"of {std_score}. This is too much variance. You might want to check this run. "
+            )
         return self.mean_scores[sf_name]
 
     def write_down_scores(self):

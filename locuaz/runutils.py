@@ -1,4 +1,5 @@
 import logging
+from textwrap import wrap
 from typing import Optional
 from attrs import define, field
 from pathlib import Path
@@ -7,14 +8,15 @@ from shutil import SameFileError
 from biobb_md.gromacs.grompp import Grompp
 from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
 from biobb_md.gromacs.mdrun import Mdrun
+from biobb_analysis.gromacs.gmx_image import GMXImage
 from molecules import AbstractComplex, ZipTopology, copy_mol_to
 
-from fileutils import DirHandle, FileHandle
+from fileutils import DirHandle, FileHandle, copy_to
 from projectutils import WorkProject
 from primitives import launch_biobb
 
 
-@define
+@define(frozen=True)
 class MDrun:
     dir: DirHandle = field(converter=DirHandle)  # type: ignore
     gmx_path: str = field(converter=str, kw_only=True)
@@ -25,6 +27,7 @@ class MDrun:
     num_threads_mpi: int = field(converter=int, kw_only=True)
     dev: str = field(converter=str, kw_only=True)
     out_name: str = field(converter=str, kw_only=True)
+    nojump: bool = field(converter=bool, kw_only=True, default=False)
 
     @classmethod
     def min(
@@ -85,6 +88,7 @@ class MDrun:
         gpu_id: int = 0,
         pinoffset: int = 0,
         out_name="npt",
+        nojump=True,
     ) -> "MDrun":
 
         obj = cls(
@@ -97,6 +101,7 @@ class MDrun:
             num_threads_mpi=work_pjct.config["md"]["mpi_procs"],
             dev=f"-nb gpu -pme gpu -bonded gpu -pmefft gpu -pin on -pinoffset {pinoffset}",
             out_name=out_name,
+            nojump=nojump,
         )
 
         return obj
@@ -144,6 +149,25 @@ class MDrun:
             properties=props,
         )
         launch_biobb(runner)
+
+        if self.nojump:
+            tmp_xtc = Path(self.dir) / "tmp.xtc"
+
+            wrap_mol = GMXImage(
+                input_traj_path=str(run_xtc),
+                input_top_path=str(complex.gro),
+                output_traj_path=str(tmp_xtc),
+                properties={
+                    "gmx_path": str(self.gmx_path),
+                    "center_selection": "Protein",
+                    "output_selection": "System",
+                    "pbc": "nojump",
+                },
+            )
+            launch_biobb(wrap_mol)
+
+            copy_to(FileHandle(tmp_xtc), Path(self.dir), name=run_xtc.name)
+            tmp_xtc.unlink()
 
         # Finally, build the Complex.
         try:

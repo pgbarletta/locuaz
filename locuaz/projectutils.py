@@ -1,6 +1,6 @@
 from pathlib import Path
 from attrs import define, field
-from typing import Iterator, List, Sequence, Set, Dict, Tuple, Union, Deque
+from typing import Iterator, List, Sequence, Set, Dict, Tuple, Union, Deque, Optional
 import collections
 import logging
 from statistics import mean, stdev
@@ -23,6 +23,8 @@ class Iteration:
     chainIDs: List[str] = field(converter=list, kw_only=True)
     resnames: List[str] = field(converter=list, kw_only=True)
     resSeqs: List[List[int]] = field(converter=list, kw_only=True)
+    npt_started: bool = field(converter=bool, default=False, kw_only=True)
+    npt_finished: bool = field(converter=bool, default=False, kw_only=True)
     complex: AbstractComplex = field(init=False)
     score_dir: DirHandle = field(converter=DirHandle, init=False)  # type: ignore
     scores: Dict[str, tuple] = field(init=False)
@@ -32,14 +34,18 @@ class Iteration:
         self.scores = {}
         self.mean_scores = {}
 
-    def set_score(self, sf_name: str, scores: Sequence) -> float:
+    def set_score(
+        self, sf_name: str, scores: Sequence, log: Optional[logging.Logger] = None
+    ) -> float:
+        if not log:
+            log = logging.getLogger("root")
         self.scores[sf_name] = tuple(scores)
         avg_score = mean(scores)
         self.mean_scores[sf_name] = avg_score
 
         std_score = stdev(scores)
         if abs(avg_score) < std_score:
-            logging.warning(
+            log.warning(
                 f"{sf_name} score has a mean of {avg_score} and a standard deviation "
                 f"of {std_score}. This is too much variance. You might want to check this run. "
             )
@@ -51,7 +57,11 @@ class Iteration:
                 for s in score:
                     f.write(str(round(s, 3)) + "\n")
 
-    def read_scores(self, scoring_functions: Sequence) -> None:
+    def read_scores(
+        self, scoring_functions: Sequence, log: Optional[logging.Logger] = None
+    ) -> None:
+        if not log:
+            log = logging.getLogger("root")
         if not getattr(self, "score_dir", None):
             try:
                 self.score_dir = DirHandle(Path(self.dir_handle, "scoring"), make=False)
@@ -63,9 +73,12 @@ class Iteration:
             try:
                 scores_fn = Path(self.score_dir, "scores_" + SF)
                 with open(scores_fn, "r") as f:
-                    self.set_score(SF, [float(linea.strip()) for linea in f])
+                    self.set_score(SF, [float(linea.strip()) for linea in f], log)
             except FileNotFoundError as e:
-                logging.warning(f"{self.iter_name} was not scored with {SF}.")
+                log.warning(
+                    f"{self.iter_name} was not scored with {SF}. Rescoring iteration."
+                )
+                raise FileNotFoundError from e
 
     def __str__(self) -> str:
         return str(self.dir_handle)
@@ -83,7 +96,9 @@ class Iteration:
 @define
 class Epoch(collections.abc.MutableMapping):
     id: int = field(converter=int)
-    iterations: Dict[str, Iteration] = field()
+    iterations: Dict[str, Iteration] = field(kw_only=True)
+    npt_started: bool = field(converter=bool, default=False, kw_only=True)
+    npt_finished: bool = field(converter=bool, default=False, kw_only=True)
     top_iterations: Dict[str, Iteration] = field(init=False)
 
     def __getitem__(self, key) -> Iteration:
@@ -138,12 +153,10 @@ class WorkProject:
         self.get_mdps(self.config["paths"]["mdp"], self.config["md"]["mdp_names"])
         self.__add_scoring_functions__()
         self.__set_memory__()
-        logging.basicConfig(
-            filename=Path(self.dir_handle, f"{self.name}.log"), level=logging.INFO
-        )
+        self.__set_logger__()
 
     def __start_work__(self):
-        zero_epoch = Epoch(0, {})
+        zero_epoch = Epoch(0, iterations={}, npt_started=False, npt_finished=False)
         for data_str in self.config["paths"]["input"]:
             # First, create working dir
             self.dir_handle = DirHandle(
@@ -164,6 +177,8 @@ class WorkProject:
                 chainIDs=chainIDs,
                 resnames=resnames,
                 resSeqs=resSeqs,
+                npt_started=False,
+                npt_finished=False,
             )
             # Copy the input PDB into the iteration folder
             pdb_handle = FileHandle(input_path / (self.config["main"]["name"] + ".pdb"))
@@ -183,6 +198,7 @@ class WorkProject:
         self.new_epoch(zero_epoch)
 
     def __restart_work__(self):
+        log = logging.getLogger(self.name)
         # Restart from input iterations, but use the most recent epoch's number
         epoch_nbr = max(
             [
@@ -191,7 +207,9 @@ class WorkProject:
             ]
         )
         if "previous_iterations" in self.config["paths"]:
-            prev_epoch = Epoch(epoch_nbr - 1, {})
+            prev_epoch = Epoch(
+                epoch_nbr - 1, iterations={}, npt_started=True, npt_finished=True
+            )
             prev_epoch.top_iterations = {}
             for iter_str in self.config["paths"]["previous_iterations"]:
                 # Get `iter_name` from the input iteration dir
@@ -211,22 +229,34 @@ class WorkProject:
                     chainIDs=chainIDs,
                     resnames=resnames,
                     resSeqs=resSeqs,
+                    npt_started=True,
+                    npt_finished=True,
                 )
-                # Create complex with coordinates (from npt run) and topology (should be zip)
-                this_iter.complex = GROComplex.from_complex(
-                    name=self.config["main"]["prefix"] + self.config["main"]["name"],
-                    iter_path=iter_path,
-                    target_chains=self.config["target"]["chainID"],
-                    binder_chains=self.config["binder"]["chainID"],
-                    ignore_cpt=False,
-                )
-                # Previous iterations should be complete.
+                try:
+                    # Previous iterations should be fully ran.
+                    this_iter.complex = GROComplex.from_complex(
+                        name=self.config["main"]["prefix"]
+                        + self.config["main"]["name"],
+                        iter_path=iter_path,
+                        target_chains=self.config["target"]["chainID"],
+                        binder_chains=self.config["binder"]["chainID"],
+                        ignore_cpt=False,
+                    )
+                except Exception as e:
+                    log.error(
+                        f"Could not build complex from previous iteration: {iter_path}"
+                    )
+                    raise e
+
+                # Previous iterations should be fully scored.
                 this_iter.read_scores(self.config["scoring"]["functions"])
                 prev_epoch[iter_name] = this_iter
                 prev_epoch.top_iterations[iter_name] = this_iter
             self.new_epoch(prev_epoch)
 
-        current_epoch = Epoch(epoch_nbr, {})
+        current_epoch = Epoch(
+            epoch_nbr, iterations={}, npt_started=True, npt_finished=False
+        )
         for iter_str in self.config["paths"]["current_iterations"]:
             # Get `iter_name` from the input iteration dir
             iter_path = Path(iter_str)
@@ -242,16 +272,38 @@ class WorkProject:
                 chainIDs=chainIDs,
                 resnames=resnames,
                 resSeqs=resSeqs,
+                npt_started=True,
+                npt_finished=True,
             )
-
-            # Create complex with coordinates (from npt run) and topology (should be zip)
-            this_iter.complex = GROComplex.from_complex(
-                name=self.config["main"]["prefix"] + self.config["main"]["name"],
-                iter_path=iter_path,
-                target_chains=self.config["target"]["chainID"],
-                binder_chains=self.config["binder"]["chainID"],
-                ignore_cpt=False,
-            )
+            # Create complex with coordinates and topology (should be zip)
+            try:
+                cpx_name = self.config["main"]["prefix"] + self.config["main"]["name"]
+                this_iter.complex = GROComplex.from_complex(
+                    name=cpx_name,
+                    iter_path=iter_path,
+                    target_chains=self.config["target"]["chainID"],
+                    binder_chains=self.config["binder"]["chainID"],
+                    ignore_cpt=False,
+                )
+            except Exception as e:
+                try:
+                    # Current iterations may be fully ran or not.
+                    cpx_name = self.config["main"]["name"]
+                    this_iter.complex = GROComplex.from_complex(
+                        name=cpx_name,
+                        iter_path=iter_path,
+                        target_chains=self.config["target"]["chainID"],
+                        binder_chains=self.config["binder"]["chainID"],
+                        ignore_cpt=False,
+                    )
+                    this_iter.npt_started = False
+                    # If on iteration isn't finished, then the whole epoch isn't either.
+                    current_epoch.npt_started = False
+                except:
+                    log.error(
+                        f"Could not build complex from current iteration: {iter_path}"
+                    )
+                    raise e
 
             current_epoch[iter_name] = this_iter
 
@@ -344,6 +396,28 @@ class WorkProject:
             self.has_memory = True
         except KeyError:
             self.mem_aminoacids([])
+
+    def __set_logger__(self) -> logging.Logger:
+        logger = logging.getLogger(f"{self.name}")
+        logger.setLevel(logging.INFO)
+
+        stream_handler = logging.StreamHandler()
+        stream_handler.setLevel(logging.WARNING)
+
+        file_handler = logging.FileHandler(
+            filename=f"{Path(self.dir_handle, self.name)}.log"
+        )
+        file_handler.setLevel(logging.INFO)
+
+        formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+        stream_handler.setFormatter(formatter)
+        file_handler.setFormatter(formatter)
+
+        # add Handlers to our logger
+        logger.addHandler(stream_handler)
+        logger.addHandler(file_handler)
+
+        return logger
 
     def mem_aminoacids(self, aa_set: Sequence) -> None:
         self.mutated_aminoacids.append(set(aa_set))

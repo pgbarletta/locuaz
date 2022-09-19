@@ -132,8 +132,10 @@ class SPM_4(AbstractMutationGenerator, Mapping):
                 mut_chainID = any_iteration.chainIDs[self.idx_chain]
                 return mut_chainID, mut_resSeq
 
-            raise RuntimeError("Can't generate novel position. This shouldn't happen.")
-        return 0, 0
+        raise RuntimeError(
+            f"Can't generate novel position after {max_tries} tries. This shouldn't happen."
+            f"Excluded positions: {self.excluded_pos}."
+        )
 
     def __pop_random_aa__(self) -> str:
         cat_idx = choice(tuple(self.remaining_categories))

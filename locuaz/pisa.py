@@ -66,13 +66,14 @@ class Pisa(AbstractScoringFunction):
             try:
                 for futu in cf.as_completed(futuros, timeout=timeout):
                     if futu.exception():
-                        logging.error(
-                            f"Exception while running pisa: {futu.exception()}"
+                        print(
+                            f"Exception while running pisa: {futu.exception()}",
+                            flush=True,
                         )
                         raise futu.exception()  # type: ignore
                     j, score = futu.result()
                     scores[j] = score
             except cf.TimeoutError as e:
-                logging.error("pisa subprocess timed out.")
+                print("pisa subprocess timed out.", flush=True)
                 raise e
         return scores

@@ -134,14 +134,17 @@ class Haddock(AbstractScoringFunction):
             try:
                 for futu in cf.as_completed(futuros, timeout=timeout):
                     if futu.exception():
-                        logging.error(
-                            f"Exception while running hadock: {futu.exception()}"
+                        print(
+                            f"Exception while running hadock: {futu.exception()}",
+                            flush=True,
                         )
                         raise futu.exception()  # type: ignore
                     j, score = futu.result()
                     scores[j] = score
             except cf.TimeoutError as e:
-                logging.error("haddock subprocess timed out.")
+                print(
+                    f"haddock subprocess timed out after {timeout} seconds.", flush=True
+                )
                 raise e
 
         return scores

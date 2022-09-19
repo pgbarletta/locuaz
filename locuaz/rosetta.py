@@ -100,13 +100,14 @@ class Rosetta(AbstractScoringFunction):
             try:
                 for futu in cf.as_completed(futuros, timeout=timeout):
                     if futu.exception():
-                        logging.error(
-                            f"Exception while running rosetta: {futu.exception()}"
+                        print(
+                            f"Exception while running rosetta: {futu.exception()}",
+                            flush=True,
                         )
                         raise futu.exception()  # type: ignore
                     j, score = futu.result()
                     scores[j] = score
             except cf.TimeoutError as e:
-                logging.error("rosetta subprocess timed out.")
+                print("rosetta subprocess timed out.", flush=True)
                 raise e
         return scores

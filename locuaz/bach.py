@@ -72,18 +72,19 @@ class Bach(AbstractScoringFunction):
             try:
                 for futu in cf.as_completed(futuros, timeout=timeout):
                     if futu.exception():
-                        logging.error(
-                            f"Exception while running bach: {futu.exception()}"
+                        print(
+                            f"Exception while running bach: {futu.exception()}",
+                            flush=True,
                         )
                         raise futu.exception()  # type: ignore
                     j, score = futu.result()
                     scores[j] = score
             except cf.TimeoutError as e:
-                logging.error("bach subprocess timed out.")
+                print("bach subprocess timed out.", flush=True)
                 raise e
         try:
             (Path.cwd() / "output.bss").unlink()
         except FileNotFoundError:
-            logging.warning("Couldn't delete bach's output file, output.bss.")
+            pass
 
         return scores

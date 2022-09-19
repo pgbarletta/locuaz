@@ -72,14 +72,15 @@ class Evoef2(AbstractScoringFunction):
             try:
                 for futu in cf.as_completed(futuros, timeout=timeout):
                     if futu.exception():
-                        logging.error(
-                            f"Exception while running evoef2: {futu.exception()}"
+                        print(
+                            f"Exception while running evoef2: {futu.exception()}",
+                            flush=True,
                         )
                         raise futu.exception()  # type: ignore
                     j, score = futu.result()
                     scores[j] = score
             except cf.TimeoutError as e:
-                logging.error("evoef2 subprocess timed out.")
+                print("evoef2 subprocess timed out.", flush=True)
                 raise e
 
         return scores

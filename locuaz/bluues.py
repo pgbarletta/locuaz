@@ -144,23 +144,25 @@ class Bluues(AbstractScoringFunction):
                 timeout = (self.TIMEOUT_PER_FRAME * nframes) // 2
                 for futu_pdb2pqr in cf.as_completed(futuros_pdb2pqr, timeout=timeout):
                     if futu_pdb2pqr.exception():
-                        logging.error(
-                            f"Exception while running pdb2pqr: {futu_pdb2pqr.exception()}"
+                        print(
+                            f"Exception while running pdb2pqr: {futu_pdb2pqr.exception()}",
+                            flush=True,
                         )
                         raise futu_pdb2pqr.exception()  # type: ignore
 
                     j = futu_pdb2pqr.result()
                     futuros_bluues_bmf.append(exe.submit(self.__bluues_bmf_worker__, j))
             except cf.TimeoutError as e:
-                logging.error("pdb2pqr subprocess timed out.")
+                print("pdb2pqr subprocess timed out.", flush=True)
                 raise e
 
             try:
                 timeout = self.TIMEOUT_PER_FRAME * nframes
                 for futu in cf.as_completed(futuros_bluues_bmf, timeout=timeout):
                     if futu.exception():
-                        logging.error(
-                            f"Exception while running pdb2pqr: " f"{futu.exception()}"
+                        print(
+                            f"Exception while running pdb2pqr: " f"{futu.exception()}",
+                            flush=True,
                         )
                         raise futu.exception()  # type: ignore
 
@@ -168,6 +170,6 @@ class Bluues(AbstractScoringFunction):
                     scores_bluues[k] = bluues
                     scores_bmf[k] = bmf
             except cf.TimeoutError as e:
-                logging.error("bluues/bmf subprocess timed out.")
+                print("bluues/bmf subprocess timed out.", flush=True)
                 raise e
         return scores_bluues, scores_bmf

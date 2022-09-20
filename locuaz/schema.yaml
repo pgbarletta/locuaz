@@ -1,7 +1,7 @@
 paths:
     type: dict
     required: true
-    contains_any_of: [input, root, previous_iterations, current_iterations ]
+    contains_any_of: [input, root, work, previous_iterations, current_iterations ]
     schema:
         gmxrc:
             type: string
@@ -35,6 +35,12 @@ paths:
             excludes: current_iterations
             dependencies: input
             is_directory: true
+        work:
+            type: string
+            required: false
+            excludes: current_iterations
+            is_directory: true
+            contains_iteration_dirs: true
         previous_iterations:
             type: list
             minlength: 0

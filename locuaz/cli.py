@@ -1,7 +1,9 @@
 import os
 import argparse
-from typing import Dict
+from typing import Dict, List, Tuple
 from pathlib import Path
+from queue import PriorityQueue
+import glob
 
 import yaml
 
@@ -48,6 +50,38 @@ def validate_input(raw_config: Dict, mode: str, debug: bool):
     return config
 
 
+def append_iterations(
+    sorted_iters: PriorityQueue, iterations: List, prev_epoch: int
+) -> str:
+    if sorted_iters.empty():
+        return ""
+
+    epoch_nbr, iter_path = sorted_iters.get()
+    if prev_epoch == 1:
+        iterations.append(str(iter_path))
+    elif epoch_nbr == prev_epoch:
+        iterations.append(str(iter_path))
+    else:
+        return str(iter_path)
+
+    return append_iterations(sorted_iters, iterations, epoch_nbr)
+
+
+def set_iterations(config: Dict) -> None:
+    iters: PriorityQueue = PriorityQueue()
+    for filename in glob.glob(str(Path(config["paths"]["work"], "*"))):
+        iter_path = Path(filename)
+        if iter_path.is_dir():
+            nbr, *_ = Path(iter_path).name.split("-")
+            iters.put((-int(nbr), iter_path))
+    # Iterations are sorted by epoch number now
+    config["paths"]["current_iterations"] = []
+    iter_str = append_iterations(iters, config["paths"]["current_iterations"], 1)
+    if iter_str != "":
+        config["paths"]["previous_iterations"] = [iter_str]
+        append_iterations(iters, config["paths"]["previous_iterations"], 1)
+
+
 def main() -> Dict:
     """Console script for locuaz."""
     parser = argparse.ArgumentParser()
@@ -73,6 +107,8 @@ def main() -> Dict:
 
     raw_config = get_raw_config(args.config_file)
     config = validate_input(raw_config, args.mode, args.debug)
+    if "work" in config["paths"]:
+        set_iterations(config)
 
     # Set up environment
     os.environ["OMP_PLACES"] = "threads"

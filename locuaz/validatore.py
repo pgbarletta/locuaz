@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import glob
 
 from cerberus import Validator
 
@@ -183,7 +184,12 @@ class Validatore(Validator):
         {'type': 'boolean'}
         """
         if flag:
-            nbr, *chains_resnames = Path(value).name.split("-")
+            try:
+                nbr, *chains_resnames = Path(value).name.split("-")
+            except ValueError:
+                self._error(field, f"{value} is not a valid iteration folder.")
+                return
+
             if not nbr.isnumeric():
                 self._error(
                     field,
@@ -191,7 +197,12 @@ class Validatore(Validator):
                     "valid epoch number.",
                 )
             for chain_resname in chains_resnames:
-                chainID, resname = chain_resname.split("_")
+                try:
+                    chainID, resname = chain_resname.split("_")
+                except ValueError:
+                    self._error(field, f"{value} is not a valid iteration folder.")
+                    return
+
                 if not len(chainID) == 1:
                     self._error(
                         field,
@@ -204,3 +215,13 @@ class Validatore(Validator):
                         f"{value} is not a valid iteration folder. {resname} "
                         "is not a valid resname sequence.",
                     )
+
+    def _validate_contains_iteration_dirs(self, flag, field, value):
+        """_validate_contains_iteration_dirs
+
+        The rule's arguments are validated against this schema:
+        {'type': 'boolean'}
+        """
+        for filename in glob.glob(str(Path(value, "*"))):
+            if Path(filename).is_dir():
+                self._validate_is_iteration_dir(flag, field, filename)

@@ -81,10 +81,6 @@ def write_non_overlapping_ndx(
     update_header(ndx, f"[ non_overlapping ]\n")
 
     wat_count = wat_atoms // 3
-    logging.info(
-        f"Removed {wat_count} that were within {dist_threshold}nm from "
-        "the mutated residue. Will replace them later."
-    )
 
     return ndx, wat_count
 
@@ -105,6 +101,7 @@ def remove_overlapping_waters(
         AbstractComplex: fully loaded complex with no overlaps between water
         and `overlapped_resSeq`
     """
+    log = logging.getLogger(config["main"]["name"])
     # Get the index file with all the atoms except the waters that overlap
     # with the newly mutated residue
     ndx, wat_count = write_non_overlapping_ndx(
@@ -112,6 +109,11 @@ def remove_overlapping_waters(
         complex.ndx,
         overlapped_resSeq,
         gmx_bin=config["md"]["gmx_bin"],
+    )
+
+    log.info(
+        f"Removed {wat_count} water molecules within 0.3nm from the mutated residue. "
+        "Will replace them later."
     )
 
     # Now, write the PDB without the overlapped waters
@@ -146,7 +148,7 @@ def remove_overlapping_waters(
     # Re-add waters to keep the N of the system constant
     wet_pdb_fn = Path(complex.dir) / ("wet_" + config["main"]["name"] + ".pdb")
     if wat_count != 0:
-        logging.info(f"Adding {wat_count} water molecules.")
+        log.info(f"Adding {wat_count} water molecules.")
 
         solvatador = Solvate(
             input_solute_gro_path=str(nonwat_pdb),
@@ -163,7 +165,7 @@ def remove_overlapping_waters(
         launch_biobb(solvatador)
     else:
         copy_to(nonwat_pdb.file, complex.dir, wet_pdb_fn.name)
-        logging.info(
+        log.info(
             f"Not addying any water molecules.{nonwat_pdb} and {wet_pdb_fn} are the same files."
         )
 

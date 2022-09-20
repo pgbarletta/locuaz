@@ -221,9 +221,7 @@ class GROComplex(AbstractComplex):
             # This PDB will be backed up and replaced with a fixed up PDB.
             temp_pdb = PDBStructure.from_path(in_pdb)
         except Exception as e:
-            logging.error(
-                f"Could not get input PDB file from: {input_dir}",
-            )
+            print(f"Could not get input PDB file from: {input_dir}", flush=True)
             raise e
         try:
             pdb, gro, top = get_gro_ziptop_from_pdb(
@@ -236,7 +234,7 @@ class GROComplex(AbstractComplex):
                 force_field=force_field,
             )
         except Exception as e:
-            logging.error(f"Could not get zip tology .gro files from: {temp_pdb}")
+            print(f"Could not get zip tology .gro files from: {temp_pdb}", flush=True)
             raise e
         try:
             traj = XtcTrajectory.from_path(input_dir / (name + ".xtc"))
@@ -282,8 +280,8 @@ class GROComplex(AbstractComplex):
             top.target_chains = tuple(target_chains)
             top.binder_chains = tuple(binder_chains)
         except Exception as e:
-            logging.error(
-                f"Could not get input .gro and .zip files from: {input_dir}",
+            print(
+                f"Could not get input .gro and .zip files from: {input_dir}", flush=True
             )
             raise e
 
@@ -346,15 +344,8 @@ class GROComplex(AbstractComplex):
                     cpt = FileHandle(iter_path / (name + ".cpt"))
                 except FileNotFoundError as e:
                     cpt = None
-                    logging.warning(f"Cannot find checkpoint {name + '.cpt'}.")
         except Exception as ee:
-            logging.error(
-                f"Could not get some file from: {iter_path}\n"
-                f"Input parameters:"
-                f"\n\t{name}\n\t{iter_path}"
-                f"\n\t{target_chains}\n\t{binder_chains}"
-            )
-            raise ee
+            raise RuntimeError("from_complex() failed.") from ee
         ndx = generate_ndx(
             name,
             pdb=pdb,

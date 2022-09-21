@@ -173,9 +173,9 @@ class MDrun:
         try:
             copy_mol_to(complex.top, self.dir, self.out_name + ".zip")
         except SameFileError:
-            logging.warning(
-                f"Attempted to run MD on a finished run, starting from: {complex.cpt} "
-            )
+            # This happens when there was an attempt to run MD on a finished run
+            # and gromacs started from `name`.cpt.
+            pass
 
         new_complex = type(complex).from_gro_zip(
             name=self.out_name,

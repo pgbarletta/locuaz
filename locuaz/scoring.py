@@ -2,6 +2,7 @@ import time
 from typing import Dict
 import logging
 from pathlib import Path
+import concurrent.futures as cf
 
 from utils_scoring import extract_pdbs, join_target_binder, rm_frames
 from projectutils import WorkProject, Iteration
@@ -68,32 +69,39 @@ def initialize_scoring_folder(iteration: Iteration, config: Dict) -> int:
 
 def score_frames(work_pjct: WorkProject, iteration: Iteration, nframes: int) -> None:
     start = time.time()
+    log = logging.getLogger(f"{work_pjct.name}")
 
     for sf_name, scorer in work_pjct.scorers.items():
-        scores = scorer(nframes=nframes, frames_path=iteration.score_dir)
+        try:
+            scores = scorer(nframes=nframes, frames_path=iteration.score_dir)
+        except cf.TimeoutError as e:
+            raise e
         if sf_name == "bluues":
             promedio = iteration.set_score("bluues", scores[0])
-            logging.info(f"{sf_name} average score: {promedio}")
+            log.info(f"{sf_name} average score: {promedio}")
             promedio = iteration.set_score("bmf", scores[1])
-            logging.info(f"bmf average score: {promedio}")
+            log.info(f"bmf average score: {promedio}")
         else:
             promedio = iteration.set_score(sf_name, scores)
-            logging.info(f"{sf_name} average score: {promedio}")
+            log.info(f"{sf_name} average score: {promedio}")
 
     if not work_pjct.config["main"]["debug"]:
-        logging.info("Removing PDB frames. Set `--debug` flag to skip this.")
+        log.info("Removing PDB frames. Set `--debug` flag to skip this.")
         rm_frames(iteration.score_dir, work_pjct.scorers.keys(), nframes)
 
     iteration.write_down_scores()
-    logging.info(
+    log.info(
         f"Time elapsed during {iteration.iter_name}'s {nframes} frames scoring: {time.time() - start}"
     )
 
 
 def score(work_pjct: WorkProject, iteration: Iteration) -> None:
+    log = logging.getLogger(f"{work_pjct.name}")
     try:
-        iteration.read_scores(work_pjct.scorers.keys())
-        logging.info("Read old scores.")
+        log.info("Trying to read old scores.")
+        iteration.read_scores(work_pjct.scorers.keys(), log)
+        log.info("Read old scores.")
     except FileNotFoundError as e:
+        log.info("Could not read scores. Scoring the iteration.")
         nframes = initialize_scoring_folder(iteration, work_pjct.config)
         score_frames(work_pjct, iteration, nframes)

@@ -7,7 +7,7 @@ import glob
 from Bio.PDB import PDBParser
 from Bio.PDB.PDBIO import PDBIO
 
-from fileutils import FileHandle, catenate_pdbs
+from fileutils import DirHandle, FileHandle, catenate_pdbs
 
 
 def extract_pdbs(
@@ -97,22 +97,24 @@ def join_target_binder(
         tmp_fn.unlink()
 
 
-def rm_frames(frames_path: Path, scoring_functions: Iterable, nframes: int) -> None:
+def rm_frames(
+    frames_path: DirHandle, scoring_functions: Iterable, nframes: int
+) -> None:
     for i in range(nframes):
         Path(frames_path, f"target-{i}.pdb").unlink()
         Path(frames_path, f"binder-{i}.pdb").unlink()
         Path(frames_path, f"complex-{i}.pdb").unlink()
 
     if "bluues" in scoring_functions:
-        bluues_dir = frames_path.parent / "bluues"
-        for solv_nrg_file in glob.glob(str(bluues_dir / "*solv_nrg")):
+        bluues_dir = frames_path / "bluues"
+        for solv_nrg_file in glob.glob(str(Path(bluues_dir, "*solv_nrg"))):
             Path(solv_nrg_file).unlink()
-        for pqr_file in glob.glob(str(bluues_dir / "*pqr")):
+        for pqr_file in glob.glob(str(Path(bluues_dir, "*pqr"))):
             Path(pqr_file).unlink()
 
     if "haddock" in scoring_functions:
-        haddock_dir = frames_path.parent / "haddock"
-        for pdb_file in glob.glob(str(haddock_dir / "*pdb")):
+        haddock_dir = frames_path / "haddock"
+        for pdb_file in glob.glob(str(Path(haddock_dir, "*pdb"))):
             Path(pdb_file).unlink()
-        for psf_file in glob.glob(str(haddock_dir / "*psf")):
+        for psf_file in glob.glob(str(Path(haddock_dir, "*psf"))):
             Path(psf_file).unlink()

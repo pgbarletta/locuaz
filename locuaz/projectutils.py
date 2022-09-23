@@ -46,8 +46,8 @@ class Iteration:
         std_score = stdev(scores)
         if abs(avg_score) < std_score:
             log.warning(
-                f"{sf_name} score has a mean of {avg_score} and a standard deviation "
-                f"of {std_score}. This is too much variance. You might want to check this run. "
+                f"{sf_name} score has a mean of {avg_score} and a std dev of {std_score}. "
+                f"This is too much variance. You might want to check {self.iter_name}."
             )
         return self.mean_scores[sf_name]
 

@@ -47,7 +47,7 @@ class Iteration:
         if abs(avg_score) < std_score:
             log.warning(
                 f"{sf_name} score has a mean of {avg_score} and a std dev of {std_score}. "
-                f"This is too much variance. You might want to check {self.iter_name}."
+                f"This is too much variance. You might want to check {self.iter_name}"
             )
         return self.mean_scores[sf_name]
 
@@ -311,16 +311,7 @@ class WorkProject:
         self.dir_handle = DirHandle(iter_path.parent, make=False)
         self.new_epoch(current_epoch)
 
-    # TODO: list the folders inside the working dir (assumed to be
-    # `iter_path.parent`), discard those that aren't true iterationDirs
-    # (in case the user had created some other folder), get the iternames
-    # of those folder and add them to the history set.
-    # self.history = all iternames in iter_path.parent
     def __add_scoring_functions__(self) -> None:
-        first_iter = tuple(self.epochs[-1].iterations.values())[0]
-        target_chains = tuple(first_iter.complex.top.target_chains)
-        binder_chains = tuple(first_iter.complex.top.binder_chains)
-
         self.scorers = {}
         for sf in self.config["scoring"]["functions"]:
             self.scorers[str(sf)] = scoringfunctions[sf](
@@ -420,10 +411,10 @@ class WorkProject:
         return logger
 
     def mem_aminoacids(self, aa_set: Sequence) -> None:
-        self.mutated_aminoacids.append(set(aa_set))
+        self.mutated_aminoacids.appendleft(set(aa_set))
 
     def mem_positions(self, pos_set: Sequence) -> None:
-        self.mutated_positions.append(set(pos_set))
+        self.mutated_positions.appendleft(set(pos_set))
 
     def get_mem_aminoacids(self) -> Set[str]:
         set_of_aas: Set[str] = set()

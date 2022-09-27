@@ -1,4 +1,4 @@
-name: choco
+name: cacho
 channels:
   - conda-forge
   - bioconda
@@ -42,3 +42,4 @@ dependencies:
     - biobb_chemistry==3.7.0
     - biobb_vs==3.7.0
     - pdb2pqr
+    - mdanalysis

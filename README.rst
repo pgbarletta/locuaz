@@ -50,12 +50,16 @@ If on biobb 3.7, apply these patches:
     -On biobb_md/gromacs/pdb2gmx.py, line ~82:
         add:
             self.dev = properties.get('dev')
-    -On biobb_md/gromacs/pdb2gmx.py, line ~129:
+    -On biobb_md/gromacs/pdb2gmx.py, line ~127:
         add:
             if self.dev:
                 fu.log(f'Adding development options: {self.dev} -- DALE BOOO', self.out_log)
                 self.cmd += self.dev.split()
-
+    -On biobb_analysis/gromacs/gmx_trjconv_str_ens.py, line 82:
+        replace:
+            self.fit_selection = properties.get('fit_selection', "System")
+        with:
+            self.selection = properties.get('selection', "System")
 
 Features
 --------

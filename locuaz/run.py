@@ -91,7 +91,7 @@ def run_npt_epoch(work_pjct: WorkProject) -> None:
             gpu_nbr = idx % ngpus
             gpu_id[iter_name] = idx % ngpus
             pinoffset[iter_name] = pinoffsets[idx % ngpus]
-            log.info(f"Queuing NPT of the iteration {iter_name} to GPU {gpu_nbr}. "
+            log.info(f"Queuing NPT of the iteration {iter_name} to GPU {gpu_nbr} "
             f"and pinoffset: {pinoffset[iter_name]}.")
             
             npt = MDrun.npt(

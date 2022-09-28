@@ -1,6 +1,6 @@
 from itertools import chain
 from functools import singledispatch
-import logging
+import MDAnalysis as mda
 from pathlib import Path
 
 from attrs import define, field
@@ -56,6 +56,9 @@ class AbstractFileObject(metaclass=ABCMeta):
 
     def __str__(self) -> str:
         return str(self.file)
+
+    def __fspath__(self) -> str:
+        return self.__str__()
 
     @classmethod
     def from_path(cls, path: Path):
@@ -249,7 +252,6 @@ class GROComplex(AbstractComplex):
             pdb=pdb,
             target_chains=target_chains,
             binder_chains=binder_chains,
-            gmx_bin=gmx_bin,
         )
 
         return GROComplex(
@@ -298,7 +300,6 @@ class GROComplex(AbstractComplex):
             pdb=pdb,
             target_chains=target_chains,
             binder_chains=binder_chains,
-            gmx_bin=gmx_bin,
         )
 
         return GROComplex(
@@ -351,7 +352,6 @@ class GROComplex(AbstractComplex):
             pdb=pdb,
             target_chains=target_chains,
             binder_chains=binder_chains,
-            gmx_bin=gmx_bin,
         )
 
         return GROComplex(
@@ -532,7 +532,7 @@ def split_solute_and_solvent(complex: GROComplex) -> Tuple[PDBStructure, PDBStru
         input_top_path=str(complex.tpr.file.path),
         input_index_path=str(complex.ndx.path),
         output_str_path=str(nonwat_pdb_fn),
-        properties={"selection": "target_binder"},
+        properties={"selection": "complex"},
     )
     launch_biobb(get_protein)
     nonwat_pdb = PDBStructure.from_path(nonwat_pdb_fn)
@@ -544,7 +544,7 @@ def split_solute_and_solvent(complex: GROComplex) -> Tuple[PDBStructure, PDBStru
         input_top_path=str(complex.tpr.file.path),
         input_index_path=str(complex.ndx.path),
         output_str_path=str(wation_pdb_fn),
-        properties={"selection": "!target_binder"},
+        properties={"selection": "solvent_ions"},
     )
     launch_biobb(get_water_ions)
 
@@ -650,61 +650,91 @@ def write_chain_ndx(
     return ndx
 
 
+# TODO: DEPRECATE
+# def generate_ndx(
+#     name: str,
+#     *,
+#     pdb: PDBStructure,
+#     target_chains: Sequence,
+#     binder_chains: Sequence,
+#     gmx_bin: str = "gmx",
+# ) -> FileHandle:
+#     try:
+#         # First, get the target and binder chains
+#         target_ndx = write_chain_ndx(
+#             pdb=pdb, chains=target_chains, selname="target", gmx_bin=gmx_bin
+#         )
+#         binder_ndx = write_chain_ndx(
+#             pdb=pdb, chains=binder_chains, selname="binder", gmx_bin=gmx_bin
+#         )
+
+#         # Then, cat them into 1 file
+#         wrk_dir = pdb.file.path.parent
+#         target_and_binder = catenate(
+#             wrk_dir / "target_and_binder.ndx",
+#             target_ndx,
+#             binder_ndx,
+#         )
+
+#         # Use `target_and_binder` to get a selection of both
+#         target_and_binder_both = wrk_dir / "target_and_binder_both.ndx"
+#         selector = MakeNdx(
+#             input_structure_path=str(pdb),
+#             input_ndx_path=str(target_and_binder),
+#             output_ndx_path=str(target_and_binder_both),
+#             properties={"selection": '"target" | "binder"'},
+#         )
+#         launch_biobb(selector)
+
+#         # Finally, also add the negation of target+binder
+#         complex_ndx_fn = wrk_dir / f"{name}.ndx"
+#         selector = MakeNdx(
+#             input_structure_path=str(pdb),
+#             input_ndx_path=str(target_and_binder_both),
+#             output_ndx_path=str(complex_ndx_fn),
+#             properties={"selection": '! "target_binder"'},
+#         )
+#         launch_biobb(selector)
+
+#         # Save the final ndx file.
+#         complex_ndx = FileHandle(complex_ndx_fn)
+
+#         # Clean-up
+#         target_ndx.unlink()
+#         binder_ndx.unlink()
+#         target_and_binder.unlink()
+#         target_and_binder_both.unlink()
+
+#         return complex_ndx
+
+#     except Exception as e:
+#         raise e
+
+
 def generate_ndx(
     name: str,
     *,
     pdb: PDBStructure,
     target_chains: Sequence,
     binder_chains: Sequence,
-    gmx_bin: str = "gmx",
 ) -> FileHandle:
     try:
-        # First, get the target and binder chains
-        target_ndx = write_chain_ndx(
-            pdb=pdb, chains=target_chains, selname="target", gmx_bin=gmx_bin
+        uni_pdb = mda.Universe(pdb)
+        ndx_file = Path(Path(pdb).parent, f"{name}.ndx")
+
+        uni_pdb.select_atoms(
+            " or ".join([f"segid {chainID}" for chainID in target_chains])
+        ).write(ndx_file, name="target", mode="w")
+        uni_pdb.select_atoms(
+            " or ".join([f"segid {chainID}" for chainID in binder_chains])
+        ).write(ndx_file, name="binder", mode="a")
+        uni_pdb.select_atoms("protein").write(ndx_file, name="complex", mode="a")
+        uni_pdb.select_atoms("not protein").write(
+            ndx_file, name="solvent_ions", mode="a"
         )
-        binder_ndx = write_chain_ndx(
-            pdb=pdb, chains=binder_chains, selname="binder", gmx_bin=gmx_bin
-        )
+        uni_pdb.select_atoms("all").write(ndx_file, name="sistema", mode="a")
 
-        # Then, cat them into 1 file
-        wrk_dir = pdb.file.path.parent
-        target_and_binder = catenate(
-            wrk_dir / "target_and_binder.ndx",
-            target_ndx,
-            binder_ndx,
-        )
-
-        # Use `target_and_binder` to get a selection of both
-        target_and_binder_both = wrk_dir / "target_and_binder_both.ndx"
-        selector = MakeNdx(
-            input_structure_path=str(pdb),
-            input_ndx_path=str(target_and_binder),
-            output_ndx_path=str(target_and_binder_both),
-            properties={"selection": '"target" | "binder"'},
-        )
-        launch_biobb(selector)
-
-        # Finally, also add the negation of target+binder
-        complex_ndx_fn = wrk_dir / f"{name}.ndx"
-        selector = MakeNdx(
-            input_structure_path=str(pdb),
-            input_ndx_path=str(target_and_binder_both),
-            output_ndx_path=str(complex_ndx_fn),
-            properties={"selection": '! "target_binder"'},
-        )
-        launch_biobb(selector)
-
-        # Save the final ndx file.
-        complex_ndx = FileHandle(complex_ndx_fn)
-
-        # Clean-up
-        target_ndx.unlink()
-        binder_ndx.unlink()
-        target_and_binder.unlink()
-        target_and_binder_both.unlink()
-
-        return complex_ndx
+        return FileHandle(ndx_file)
 
     except Exception as e:
         raise e

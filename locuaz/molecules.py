@@ -39,7 +39,7 @@ class AbstractFileObject(metaclass=ABCMeta):
         extension (str): extension, filetype, of the file
     """
 
-    file: FileHandle = field()
+    file: FileHandle = field(converter=FileHandle) # type: ignore
     name: str = field(init=False)
     ext: str = field(init=False)
 

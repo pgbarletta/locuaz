@@ -5,7 +5,7 @@ import queue
 from concurrent.futures import ProcessPoolExecutor
 import concurrent.futures as cf
 
-from projectutils import Epoch, Iteration, WorkProject
+from projectutils import WorkProject
 from runutils import MDrun
 
 def run_epoch(work_pjct: WorkProject) -> None:

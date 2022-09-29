@@ -4,12 +4,12 @@ import logging
 from pathlib import Path
 import concurrent.futures as cf
 
-from utils_scoring import extract_pdbs, join_target_binder, rm_frames
-from projectutils import WorkProject, Iteration
 from fileutils import DirHandle
+from projectutils import WorkProject, Iteration
+from utils_scoring import extract_pdbs, join_target_binder, rm_frames
 from primitives import launch_biobb
+from gromacsutils import image_traj
 from biobb_analysis.gromacs.gmx_trjconv_str_ens import GMXTrjConvStrEns
-from biobb_analysis.gromacs.gmx_image import GMXImage
 from scoringfunctions import *
 
 
@@ -17,22 +17,9 @@ def initialize_scoring_folder(iteration: Iteration, config: Dict) -> int:
     iteration.score_dir = DirHandle(Path(iteration, "scoring"), make=True, replace=True)
     gmx_bin: str = config["md"]["gmx_bin"]
 
-    # First, remove PBC
-    pbc_trj = Path(iteration.score_dir, "pbc_" + iteration.complex.name + ".xtc")
-    remove_box = GMXImage(
-        input_traj_path=str(iteration.complex.tra.file.path),
-        input_top_path=str(iteration.complex.tpr.file.path),
-        output_traj_path=str(pbc_trj),
-        properties={
-            "gmx_path": gmx_bin,
-            "fit_selection": "Protein",
-            "center_selection": "Protein",
-            "output_selection": "Protein",
-            "pbc": "mol",
-        },
-    )
-
-    launch_biobb(remove_box)
+    # First, fix all the imaging issues
+    fix_trj_fn = Path(iteration.score_dir, "fix_" + iteration.complex.name + ".xtc")
+    fix_trj = image_traj(iteration.complex, fix_trj_fn, gmx_bin)
 
     # Zip filename with the extracted PDBs
     ens_of_pdbs = Path(
@@ -40,7 +27,7 @@ def initialize_scoring_folder(iteration: Iteration, config: Dict) -> int:
     )
     # Target
     get_target = GMXTrjConvStrEns(
-        input_traj_path=str(pbc_trj),
+        input_traj_path=str(fix_trj),
         input_top_path=str(iteration.complex.tpr.file.path),
         input_index_path=str(iteration.complex.ndx.path),
         output_str_ens_path=str(ens_of_pdbs),
@@ -51,7 +38,7 @@ def initialize_scoring_folder(iteration: Iteration, config: Dict) -> int:
 
     # Extract binder PDBs
     get_binder = GMXTrjConvStrEns(
-        input_traj_path=str(pbc_trj),
+        input_traj_path=str(fix_trj),
         input_top_path=str(iteration.complex.tpr.file.path),
         input_index_path=str(iteration.complex.ndx.path),
         output_str_ens_path=str(ens_of_pdbs),

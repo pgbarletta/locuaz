@@ -1,24 +1,147 @@
 from pathlib import Path
-from collections.abc import Sequence
-from shutil import SameFileError
 from typing import Dict
+import logging
+import zipfile
+
+import MDAnalysis as mda
+
 from fileutils import FileHandle, update_header, copy_to
 from molecules import (
     AbstractComplex,
     GROComplex,
     PDBStructure,
+    XtcTrajectory,
     get_gro_ziptop_from_pdb,
     copy_mol_to,
     get_tpr,
 )
 from biobb_md.gromacs.gmxselect import Gmxselect
-from biobb_analysis.gromacs.gmx_trjconv_str import gmx_trjconv_str, GMXTrjConvStr
+from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
+from biobb_analysis.gromacs.gmx_trjconv_str_ens import GMXTrjConvStrEns
 from biobb_md.gromacs.solvate import Solvate
-from biobb_md.gromacs.grompp import Grompp
 from biobb_md.gromacs.genion import Genion
-from biobb_md.gromacs.pdb2gmx import Pdb2gmx
+from biobb_analysis.gromacs.gmx_image import GMXImage
 from primitives import launch_biobb
-import logging
+
+
+def image_traj(cpx: GROComplex, out_trj_fn: Path, gmx_bin: str) -> XtcTrajectory:
+
+    wrk_dir = out_trj_fn.parent
+
+    # I have to specify `fit_selection` and `center_selection` even though I'm not
+    # fitting or centering anything or else biobb will throw an error.
+    whole_trj = Path(wrk_dir, "whole.xtc")
+    make_whole = GMXImage(
+        input_traj_path=str(cpx.tra),
+        input_index_path=str(cpx.ndx),
+        input_top_path=str(cpx.tpr),
+        output_traj_path=str(whole_trj),
+        properties={
+            "gmx_path": gmx_bin,
+            "fit_selection": "complex",
+            "center_selection": "complex",
+            "output_selection": "complex",
+            "ur": "compact",
+            "pbc": "whole",
+            "center": False,
+        },
+    )
+    launch_biobb(make_whole)
+
+    cluster_trj = Path(wrk_dir, "clustered.xtc")
+    cluster = GMXImage(
+        input_traj_path=str(whole_trj),
+        input_index_path=str(cpx.ndx),
+        input_top_path=str(cpx.tpr),
+        output_traj_path=str(cluster_trj),
+        properties={
+            "gmx_path": gmx_bin,
+            "fit_selection": "complex",
+            "center_selection": "complex",
+            "output_selection": "complex",
+            "ur": "compact",
+            "pbc": "cluster",
+            "center": False,
+        },
+    )
+    launch_biobb(cluster)
+
+    # Use GMXTrjConvStrEns and MDAnalysis to get a good reference frame for -pbc nojump
+    orig_zip = Path(wrk_dir, "orig.zip")
+    get_orig_pdb = GMXTrjConvStrEns(
+        input_traj_path=str(cpx.tra),
+        input_top_path=str(cpx.tpr),
+        input_index_path=str(cpx.ndx),
+        output_str_ens_path=str(orig_zip),
+        properties={
+            "gmx_path": gmx_bin,
+            "selection": "complex",
+            "start": 1,
+            "end": 1,
+            "output_name": "orig",
+            "output_type": "pdb",
+        },
+    )
+    launch_biobb(get_orig_pdb)
+
+    # Extract PDB.
+    zipped_pdbs = zipfile.ZipFile(orig_zip)
+    with zipped_pdbs as sipesipe:
+        sipesipe.extractall(wrk_dir)
+    orig_pdb = Path(wrk_dir, "orig0.pdb")
+
+    cluster_gro = Path(wrk_dir, "clustered.gro")
+    u = mda.Universe(str(orig_pdb), str(cluster_trj))
+    # For some reason, the first two frames correspond to initial positions which may be
+    # distant from the positions along the trajectory. I want to have a frame closer to
+    # these positions, so I pick the 3rd one.
+    u.trajectory[2]
+    u.select_atoms("all").write(cluster_gro)
+
+    nojump_trj = Path(wrk_dir, "nojump.xtc")
+    fix_jump = GMXImage(
+        input_traj_path=str(cluster_trj),
+        input_index_path=str(cpx.ndx),
+        input_top_path=str(cluster_gro),
+        output_traj_path=str(nojump_trj),
+        properties={
+            "gmx_path": gmx_bin,
+            "fit_selection": "complex",
+            "center_selection": "complex",
+            "output_selection": "complex",
+            "ur": "compact",
+            "pbc": "nojump",
+            "center": False,
+        },
+    )
+    launch_biobb(fix_jump)
+
+    center = GMXImage(
+        input_traj_path=str(nojump_trj),
+        input_index_path=str(cpx.ndx),
+        input_top_path=str(cluster_gro),
+        output_traj_path=str(out_trj_fn),
+        properties={
+            "gmx_path": gmx_bin,
+            "fit_selection": "complex",
+            "center_selection": "complex",
+            "output_selection": "complex",
+            "ur": "compact",
+            "center": True,
+            "center_selection": "complex",
+        },
+    )
+    launch_biobb(center)
+
+    # Remove temporary files
+    whole_trj.unlink()
+    cluster_trj.unlink()
+    orig_zip.unlink()
+    orig_pdb.unlink()
+    cluster_gro.unlink()
+    nojump_trj.unlink()
+
+    return XtcTrajectory(FileHandle(out_trj_fn))
 
 
 def write_non_overlapping_ndx(

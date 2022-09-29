@@ -27,7 +27,7 @@ class MDrun:
     num_threads_mpi: int = field(converter=int, kw_only=True)
     dev: str = field(converter=str, kw_only=True)
     out_name: str = field(converter=str, kw_only=True)
-    nojump: bool = field(converter=bool, kw_only=True, default=False)
+    image_after: bool = field(converter=bool, kw_only=True, default=False)
 
     @classmethod
     def min(
@@ -88,7 +88,7 @@ class MDrun:
         gpu_id: int = 0,
         pinoffset: int = 0,
         out_name="npt",
-        nojump=True,
+        image_after=True,
     ) -> "MDrun":
 
         obj = cls(
@@ -101,7 +101,7 @@ class MDrun:
             num_threads_mpi=work_pjct.config["md"]["mpi_procs"],
             dev=f"-nb gpu -pme gpu -bonded gpu -pmefft gpu -pin on -pinoffset {pinoffset}",
             out_name=out_name,
-            nojump=nojump,
+            image_after=image_after,
         )
 
         return obj
@@ -150,24 +150,28 @@ class MDrun:
         )
         launch_biobb(runner)
 
-        if self.nojump:
-            tmp_xtc = Path(self.dir) / "tmp.xtc"
+        # if self.image_after:
+        #     tmp_xtc = Path(self.dir) / "tmp.xtc"
 
-            wrap_mol = GMXImage(
-                input_traj_path=str(run_xtc),
-                input_top_path=str(complex.gro),
-                output_traj_path=str(tmp_xtc),
-                properties={
-                    "gmx_path": str(self.gmx_path),
-                    "center_selection": "Protein",
-                    "output_selection": "System",
-                    "pbc": "nojump",
-                },
-            )
-            launch_biobb(wrap_mol)
+        #     wrap_mol = GMXImage(
+        #         input_traj_path=str(run_xtc),
+        #         input_index_path=str(complex.ndx),
+        #         input_top_path=str(complex.gro),
+        #         output_traj_path=str(tmp_xtc),
+        #         properties={
+        #             "gmx_path": str(self.gmx_path),
+        #             "fit_selection": "target",
+        #             "center_selection": "target",
+        #             "output_selection": "sistema",
+        #             "pbc": "mol",
+        #             "ur": "compact",
+        #             "center": True,
+        #         },
+        #     )
+        #     launch_biobb(wrap_mol)
 
-            copy_to(FileHandle(tmp_xtc), Path(self.dir), name=run_xtc.name)
-            tmp_xtc.unlink()
+        #     copy_to(FileHandle(tmp_xtc), Path(self.dir), name=run_xtc.name)
+        #     tmp_xtc.unlink()
 
         # Finally, build the Complex.
         try:

@@ -12,20 +12,6 @@ def run_epoch(work_pjct: WorkProject) -> None:
     run_min_nvt_epoch(work_pjct)
     run_npt_epoch(work_pjct)
 
-
-def worker(task_queue: Queue, results_queue: SimpleQueue):
-    while True:
-        try:
-            task = task_queue.get(block=False)
-        except queue.Empty:
-            print("Queue is empty! My work here is done. Exiting.")
-            return
-        engine, input_complex = task["engine"], task["complex"]
-
-        complex = engine(input_complex)
-        results_queue.put(complex)
-        task_queue.task_done()
-
 def run_min_nvt_epoch(work_pjct: WorkProject) -> None:
     log = logging.getLogger(f"{work_pjct.name}")
     epoch = work_pjct.epochs[-1]
@@ -86,8 +72,6 @@ def run_npt_epoch(work_pjct: WorkProject) -> None:
         pinoffset = {}
         futuros_npt = []
         for idx, (iter_name, iter) in enumerate(epoch.items()):
-            if iter.npt_started:
-                continue
             gpu_nbr = idx % ngpus
             gpu_id[iter_name] = idx % ngpus
             pinoffset[iter_name] = pinoffsets[idx % ngpus]
@@ -107,6 +91,7 @@ def run_npt_epoch(work_pjct: WorkProject) -> None:
             iter_name = '-'.join(npt_complex.dir.dir_path.name.split('-')[1:])
             iter = epoch[iter_name]
             iter.complex = npt_complex
+    epoch.npt_done = True
 
 
         

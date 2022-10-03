@@ -16,9 +16,7 @@ def initialize_new_epoch(work_pjct: WorkProject) -> None:
     """
     old_epoch = work_pjct.epochs[-1]
     epoch_id = old_epoch.id + 1
-    current_epoch = Epoch(
-        epoch_id, iterations={}, npt_started=False, npt_finished=False
-    )
+    current_epoch = Epoch(epoch_id, iterations={}, nvt_done=False, npt_done=False)
 
     # Create required mutator
     mutator = mutators[work_pjct.config["protocol"]["mutator"]](

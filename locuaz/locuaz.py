@@ -31,13 +31,13 @@ def main() -> int:
             score(work_pjct, iter)
         return 0
 
-    if not work_pjct.epochs[-1].npt_started:
+    if not work_pjct.epochs[-1].nvt_done:
         run_min_nvt_epoch(work_pjct)
-        work_pjct.epochs[-1].npt_started = True
+        work_pjct.epochs[-1].nvt_done = True
 
-    if not work_pjct.epochs[-1].npt_finished:
-        run_npt_epoch(work_pjct)
-        work_pjct.epochs[-1].npt_finished = True
+    # Try to run the current iterations. If they're ran already, then the GROMACS checkpoint
+    # will end the MD without much delay.
+    run_npt_epoch(work_pjct)
 
     for cnt in range(config["protocol"]["epochs"]):
         epoch_id = work_pjct.epochs[-1].id

@@ -39,7 +39,7 @@ class AbstractFileObject(metaclass=ABCMeta):
         extension (str): extension, filetype, of the file
     """
 
-    file: FileHandle = field(converter=FileHandle) # type: ignore
+    file: FileHandle = field(converter=FileHandle)  # type: ignore
     name: str = field(init=False)
     ext: str = field(init=False)
 
@@ -650,67 +650,6 @@ def write_chain_ndx(
     return ndx
 
 
-# TODO: DEPRECATE
-# def generate_ndx(
-#     name: str,
-#     *,
-#     pdb: PDBStructure,
-#     target_chains: Sequence,
-#     binder_chains: Sequence,
-#     gmx_bin: str = "gmx",
-# ) -> FileHandle:
-#     try:
-#         # First, get the target and binder chains
-#         target_ndx = write_chain_ndx(
-#             pdb=pdb, chains=target_chains, selname="target", gmx_bin=gmx_bin
-#         )
-#         binder_ndx = write_chain_ndx(
-#             pdb=pdb, chains=binder_chains, selname="binder", gmx_bin=gmx_bin
-#         )
-
-#         # Then, cat them into 1 file
-#         wrk_dir = pdb.file.path.parent
-#         target_and_binder = catenate(
-#             wrk_dir / "target_and_binder.ndx",
-#             target_ndx,
-#             binder_ndx,
-#         )
-
-#         # Use `target_and_binder` to get a selection of both
-#         target_and_binder_both = wrk_dir / "target_and_binder_both.ndx"
-#         selector = MakeNdx(
-#             input_structure_path=str(pdb),
-#             input_ndx_path=str(target_and_binder),
-#             output_ndx_path=str(target_and_binder_both),
-#             properties={"selection": '"target" | "binder"'},
-#         )
-#         launch_biobb(selector)
-
-#         # Finally, also add the negation of target+binder
-#         complex_ndx_fn = wrk_dir / f"{name}.ndx"
-#         selector = MakeNdx(
-#             input_structure_path=str(pdb),
-#             input_ndx_path=str(target_and_binder_both),
-#             output_ndx_path=str(complex_ndx_fn),
-#             properties={"selection": '! "target_binder"'},
-#         )
-#         launch_biobb(selector)
-
-#         # Save the final ndx file.
-#         complex_ndx = FileHandle(complex_ndx_fn)
-
-#         # Clean-up
-#         target_ndx.unlink()
-#         binder_ndx.unlink()
-#         target_and_binder.unlink()
-#         target_and_binder_both.unlink()
-
-#         return complex_ndx
-
-#     except Exception as e:
-#         raise e
-
-
 def generate_ndx(
     name: str,
     *,
@@ -728,6 +667,7 @@ def generate_ndx(
         uni_pdb.select_atoms(
             " or ".join([f"segid {chainID}" for chainID in binder_chains])
         ).write(ndx_file, name="binder", mode="a")
+        # TODO: this won't work with glyco mods and stuff
         uni_pdb.select_atoms("protein").write(ndx_file, name="complex", mode="a")
         uni_pdb.select_atoms("not protein").write(
             ndx_file, name="solvent_ions", mode="a"

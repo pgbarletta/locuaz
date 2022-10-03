@@ -23,8 +23,6 @@ class Iteration:
     chainIDs: List[str] = field(converter=list, kw_only=True)
     resnames: List[str] = field(converter=list, kw_only=True)
     resSeqs: List[List[int]] = field(converter=list, kw_only=True)
-    npt_started: bool = field(converter=bool, default=False, kw_only=True)
-    npt_finished: bool = field(converter=bool, default=False, kw_only=True)
     complex: AbstractComplex = field(init=False)
     score_dir: DirHandle = field(converter=DirHandle, init=False)  # type: ignore
     scores: Dict[str, tuple] = field(init=False)
@@ -97,8 +95,8 @@ class Iteration:
 class Epoch(collections.abc.MutableMapping):
     id: int = field(converter=int)
     iterations: Dict[str, Iteration] = field(kw_only=True)
-    npt_started: bool = field(converter=bool, default=False, kw_only=True)
-    npt_finished: bool = field(converter=bool, default=False, kw_only=True)
+    nvt_done: bool = field(converter=bool, default=False, kw_only=True)
+    npt_done: bool = field(converter=bool, default=False, kw_only=True)
     top_iterations: Dict[str, Iteration] = field(init=False)
 
     def __getitem__(self, key) -> Iteration:
@@ -156,7 +154,7 @@ class WorkProject:
         self.__set_logger__()
 
     def __start_work__(self):
-        zero_epoch = Epoch(0, iterations={}, npt_started=False, npt_finished=False)
+        zero_epoch = Epoch(0, iterations={}, nvt_done=False, npt_done=False)
         for data_str in self.config["paths"]["input"]:
             # First, create working dir
             self.dir_handle = DirHandle(
@@ -177,8 +175,6 @@ class WorkProject:
                 chainIDs=chainIDs,
                 resnames=resnames,
                 resSeqs=resSeqs,
-                npt_started=False,
-                npt_finished=False,
             )
             # Copy the input PDB into the iteration folder
             pdb_handle = FileHandle(input_path / (self.config["main"]["name"] + ".pdb"))
@@ -208,7 +204,7 @@ class WorkProject:
         )
         if "previous_iterations" in self.config["paths"]:
             prev_epoch = Epoch(
-                epoch_nbr - 1, iterations={}, npt_started=True, npt_finished=True
+                epoch_nbr - 1, iterations={}, nvt_done=True, npt_done=True
             )
             prev_epoch.top_iterations = {}
             for iter_str in self.config["paths"]["previous_iterations"]:
@@ -229,8 +225,6 @@ class WorkProject:
                     chainIDs=chainIDs,
                     resnames=resnames,
                     resSeqs=resSeqs,
-                    npt_started=True,
-                    npt_finished=True,
                 )
                 try:
                     # Previous iterations should be fully ran.
@@ -254,9 +248,7 @@ class WorkProject:
                 prev_epoch.top_iterations[iter_name] = this_iter
             self.new_epoch(prev_epoch)
 
-        current_epoch = Epoch(
-            epoch_nbr, iterations={}, npt_started=True, npt_finished=False
-        )
+        current_epoch = Epoch(epoch_nbr, iterations={}, nvt_done=True, npt_done=True)
         for iter_str in self.config["paths"]["current_iterations"]:
             # Get `iter_name` from the input iteration dir
             iter_path = Path(iter_str)
@@ -272,8 +264,6 @@ class WorkProject:
                 chainIDs=chainIDs,
                 resnames=resnames,
                 resSeqs=resSeqs,
-                npt_started=True,
-                npt_finished=True,
             )
             # Create complex with coordinates and topology (should be zip)
             try:
@@ -287,7 +277,7 @@ class WorkProject:
                 )
             except Exception as e:
                 try:
-                    # Current iterations may be fully ran or not.
+                    # Current iteration didn't start its NPT MD.
                     cpx_name = self.config["main"]["name"]
                     this_iter.complex = GROComplex.from_complex(
                         name=cpx_name,
@@ -296,9 +286,9 @@ class WorkProject:
                         binder_chains=self.config["binder"]["chainID"],
                         ignore_cpt=False,
                     )
-                    this_iter.npt_started = False
                     # If on iteration isn't finished, then the whole epoch isn't either.
-                    current_epoch.npt_started = False
+                    current_epoch.nvt_done = False
+                    current_epoch.npt_done = False
                 except:
                     log.error(
                         f"Could not build complex from current iteration: {iter_path}"

@@ -277,23 +277,37 @@ class WorkProject:
                 )
             except Exception as e:
                 try:
-                    # Current iteration didn't start its NPT MD.
-                    cpx_name = self.config["main"]["name"]
+                    log.info(f"{epoch_nbr}-{iter_str} didn't finish its NPT MD.")
+                    current_epoch.npt_done = False
+
+                    cpx_name = "nvt_" + self.config["main"]["name"]
                     this_iter.complex = GROComplex.from_complex(
                         name=cpx_name,
                         iter_path=iter_path,
                         target_chains=self.config["target"]["chainID"],
                         binder_chains=self.config["binder"]["chainID"],
-                        ignore_cpt=False,
+                        ignore_cpt=True,
                     )
-                    # If on iteration isn't finished, then the whole epoch isn't either.
-                    current_epoch.nvt_done = False
-                    current_epoch.npt_done = False
                 except:
-                    log.error(
-                        f"Could not build complex from current iteration: {iter_path}"
-                    )
-                    raise e
+                    try:
+                        log.info(f"{epoch_nbr}-{iter_str} didn't finish its NVT MD.")
+                        current_epoch.nvt_done = False
+                        current_epoch.npt_done = False
+
+                        cpx_name = self.config["main"]["name"]
+                        this_iter.complex = GROComplex.from_complex(
+                            name=cpx_name,
+                            iter_path=iter_path,
+                            target_chains=self.config["target"]["chainID"],
+                            binder_chains=self.config["binder"]["chainID"],
+                            ignore_cpt=True,
+                        )
+                    except:
+                        log.error(
+                            f"{epoch_nbr}-{iter_str} is in an invalid state. Cannot build complex from it."
+                            f""
+                        )
+                        raise e
 
             current_epoch[iter_name] = this_iter
 

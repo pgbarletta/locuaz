@@ -139,7 +139,7 @@ class MDrun:
 
         runner = Mdrun(
             input_tpr_path=str(run_tpr),
-            input_cpt_path=str(complex.cpt),
+            input_cpt_path=str(run_cpt),
             output_trr_path=str(run_trr),
             output_xtc_path=str(run_xtc),
             output_gro_path=str(run_gro),

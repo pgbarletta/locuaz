@@ -35,26 +35,26 @@ def main() -> int:
         run_min_nvt_epoch(work_pjct)
         work_pjct.epochs[-1].nvt_done = True
 
-    # Try to run the current iterations. If they're ran already, then the GROMACS checkpoint
-    # will end the MD without much delay.
-    run_npt_epoch(work_pjct)
+    if not work_pjct.epochs[-1].npt_done:
+        run_npt_epoch(work_pjct)
+        work_pjct.epochs[-1].npt_done = True
 
     for cnt in range(config["protocol"]["epochs"]):
-        epoch_id = work_pjct.epochs[-1].id
+        old_id = work_pjct.epochs[-1].id
 
-        log.info(f"Scoring epoch {epoch_id} ({cnt} on this run).")
+        log.info(f"Scoring epoch {old_id} ({cnt} on this run).")
         for iter_name, iter in work_pjct.epochs[-1].items():
             log.info(f"Scoring NPT run from iteration: {iter_name}")
             score(work_pjct, iter)
 
-        log.info(f"Prunning epoch {epoch_id}.")
+        log.info(f"Prunning epoch {old_id}.")
         prune(work_pjct)
         log.info(f"Top iterations: {work_pjct.epochs[-1].top_iterations.keys()}.")
 
-        log.info(f"Initializing new epoch {epoch_id+1} ({cnt+1} on this run).")
+        log.info(f"Initializing new epoch {old_id+1} ({cnt+1} on this run).")
         initialize_new_epoch(work_pjct)
 
-        log.info(f"Running epoch {epoch_id} ({cnt} on this run).")
+        log.info(f"Running epoch {old_id+1} ({cnt} on this run).")
         run_epoch(work_pjct)
 
     log.info(f"Done with protocol.")

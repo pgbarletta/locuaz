@@ -66,37 +66,17 @@ def image_traj(cpx: GROComplex, out_trj_fn: Path, gmx_bin: str) -> XtcTrajectory
     )
     launch_biobb(cluster)
 
-    # Use GMXTrjConvStrEns and MDAnalysis to get a good reference frame for -pbc nojump
-    orig_zip = Path(wrk_dir, "orig.zip")
-    get_orig_pdb = GMXTrjConvStrEns(
-        input_traj_path=str(cpx.tra),
-        input_top_path=str(cpx.tpr),
-        input_index_path=str(cpx.ndx),
-        output_str_ens_path=str(orig_zip),
-        properties={
-            "gmx_path": gmx_bin,
-            "selection": "complex",
-            "start": 1,
-            "end": 1,
-            "output_name": "orig",
-            "output_type": "pdb",
-        },
-    )
-    launch_biobb(get_orig_pdb)
-
-    # Extract PDB.
-    zipped_pdbs = zipfile.ZipFile(orig_zip)
-    with zipped_pdbs as sipesipe:
-        sipesipe.extractall(wrk_dir)
-    orig_pdb = Path(wrk_dir, "orig0.pdb")
-
-    cluster_gro = Path(wrk_dir, "clustered.gro")
+    # Use MDAnalysis to get a good reference frame for -pbc nojump
+    orig_u = mda.Universe(str(cpx.tpr), str(cpx.tra))
+    orig_pdb = Path(wrk_dir, "orig.pdb")
+    # First, get a PDB with the same topology as `cluster_trj`. Selection 'complex'
+    # was made using MDA and selecting 'protein'. If that changes in the future, then
+    # this'll break.
+    orig_u.select_atoms("protein").write(str(orig_pdb))
     u = mda.Universe(str(orig_pdb), str(cluster_trj))
-    # For some reason, the first two frames correspond to initial positions which may be
-    # distant from the positions along the trajectory. I want to have a frame closer to
-    # these positions, so I pick the 3rd one.
     u.trajectory[2]
-    u.select_atoms("all").write(cluster_gro)
+    cluster_gro = Path(wrk_dir, "clustered.gro")
+    u.atoms.write(str(cluster_gro))
 
     nojump_trj = Path(wrk_dir, "nojump.xtc")
     fix_jump = GMXImage(
@@ -136,7 +116,7 @@ def image_traj(cpx: GROComplex, out_trj_fn: Path, gmx_bin: str) -> XtcTrajectory
     # Remove temporary files
     whole_trj.unlink()
     cluster_trj.unlink()
-    orig_zip.unlink()
+    # orig_zip.unlink()
     orig_pdb.unlink()
     cluster_gro.unlink()
     nojump_trj.unlink()

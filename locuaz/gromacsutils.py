@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Dict
 import logging
-import zipfile
+import warnings
 
 import MDAnalysis as mda
 
@@ -12,12 +12,10 @@ from molecules import (
     PDBStructure,
     XtcTrajectory,
     get_gro_ziptop_from_pdb,
-    copy_mol_to,
     get_tpr,
 )
 from biobb_md.gromacs.gmxselect import Gmxselect
 from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
-from biobb_analysis.gromacs.gmx_trjconv_str_ens import GMXTrjConvStrEns
 from biobb_md.gromacs.solvate import Solvate
 from biobb_md.gromacs.genion import Genion
 from biobb_analysis.gromacs.gmx_image import GMXImage
@@ -68,11 +66,13 @@ def image_traj(cpx: GROComplex, out_trj_fn: Path, gmx_bin: str) -> XtcTrajectory
 
     # Use MDAnalysis to get a good reference frame for -pbc nojump
     orig_u = mda.Universe(str(cpx.tpr), str(cpx.tra))
-    orig_pdb = Path(wrk_dir, "orig.pdb")
-    # First, get a PDB with the same topology as `cluster_trj`. Selection 'complex'
-    # was made using MDA and selecting 'protein'. If that changes in the future, then
-    # this'll break.
-    orig_u.select_atoms("protein").write(str(orig_pdb))
+    # First, get a PDB with the same topology as `cluster_trj`.
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        orig_pdb = Path(wrk_dir, "orig.pdb")
+        # Selection 'complex' was made using MDA and selecting 'protein'.
+        # If that changes in the future, then this'll break. Sorry.
+        orig_u.select_atoms("protein").write(str(orig_pdb))
     u = mda.Universe(str(orig_pdb), str(cluster_trj))
     u.trajectory[2]
     cluster_gro = Path(wrk_dir, "clustered.gro")

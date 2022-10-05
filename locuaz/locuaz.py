@@ -54,7 +54,7 @@ def main() -> int:
         log.info(f"Initializing new epoch {old_id+1} ({cnt+1} on this run).")
         initialize_new_epoch(work_pjct)
 
-        log.info(f"Running epoch {old_id+1} ({cnt} on this run).")
+        log.info(f"Running epoch {old_id+1} ({cnt+1} on this run).")
         run_epoch(work_pjct)
 
     log.info(f"Done with protocol.")

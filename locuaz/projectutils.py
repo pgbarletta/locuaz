@@ -1,3 +1,4 @@
+from multiprocessing.sharedctypes import Value
 from pathlib import Path
 from attrs import define, field
 from typing import Iterator, List, Sequence, Set, Dict, Tuple, Union, Deque, Optional
@@ -23,12 +24,17 @@ class Iteration:
     chainIDs: List[str] = field(converter=list, kw_only=True)
     resnames: List[str] = field(converter=list, kw_only=True)
     resSeqs: List[List[int]] = field(converter=list, kw_only=True)
+    epoch_id: int = field(converter=int, init=False)
     complex: AbstractComplex = field(init=False)
     score_dir: DirHandle = field(converter=DirHandle, init=False)  # type: ignore
     scores: Dict[str, tuple] = field(init=False)
     mean_scores: Dict[str, float] = field(init=False)
 
     def __attrs_post_init__(self) -> None:
+        try:
+            self.epoch_id = int(Path(self.dir_handle).name.split("-")[0])
+        except Exception as e:
+            raise ValueError("Bad iteration name.") from e
         self.scores = {}
         self.mean_scores = {}
 
@@ -45,7 +51,7 @@ class Iteration:
         if abs(avg_score) < std_score:
             log.warning(
                 f"{sf_name} score has a mean of {avg_score} and a std dev of {std_score}. "
-                f"This is too much variance. You might want to check {self.iter_name}"
+                f"This is too much variance. You might want to check {self.epoch_id}-{self.iter_name}"
             )
         return self.mean_scores[sf_name]
 

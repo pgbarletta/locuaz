@@ -150,29 +150,6 @@ class MDrun:
         )
         launch_biobb(runner)
 
-        # if self.image_after:
-        #     tmp_xtc = Path(self.dir) / "tmp.xtc"
-
-        #     wrap_mol = GMXImage(
-        #         input_traj_path=str(run_xtc),
-        #         input_index_path=str(complex.ndx),
-        #         input_top_path=str(complex.gro),
-        #         output_traj_path=str(tmp_xtc),
-        #         properties={
-        #             "gmx_path": str(self.gmx_path),
-        #             "fit_selection": "target",
-        #             "center_selection": "target",
-        #             "output_selection": "sistema",
-        #             "pbc": "mol",
-        #             "ur": "compact",
-        #             "center": True,
-        #         },
-        #     )
-        #     launch_biobb(wrap_mol)
-
-        #     copy_to(FileHandle(tmp_xtc), Path(self.dir), name=run_xtc.name)
-        #     tmp_xtc.unlink()
-
         # Finally, build the Complex.
         try:
             copy_mol_to(complex.top, self.dir, self.out_name + ".zip")

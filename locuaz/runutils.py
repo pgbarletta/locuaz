@@ -117,6 +117,7 @@ class MDrun:
             input_gro_path=str(complex.gro.file.path),
             input_top_zip_path=str(complex.top.file.path),
             input_cpt_path=str(complex.cpt),
+            input_ndx_path=str(complex.ndx),
             output_tpr_path=str(run_tpr),
             properties={"gmx_path": str(self.gmx_path)},
         )
@@ -193,5 +194,5 @@ class MDrun:
         assert complex.dir == self.dir, f"Input complex directory: "
         f"{complex.dir}, does not match {type(self)}'s directory: {self.dir}"
 
-        assert isinstance(complex.top, ZipTopology), f"Topology from  input complex "
+        assert isinstance(complex.top, ZipTopology), f"Topology from input complex "
         f"should be in zip format. Current topology: {complex.top}."

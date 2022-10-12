@@ -95,6 +95,30 @@ class PDBStructure(Structure):
         if self.ext != "pdb":
             raise ValueError("Input file's extension for PDBStructure should be .pdb")
 
+    def get_cryst1_record(self) -> str:
+        with open(self.file.path, "r") as file:
+            for linea in file:
+                if linea[0:6] == "CRYST1":
+                    cryst1_record = linea
+                    break
+            else:
+                raise ValueError(f"{self} has no CRYST1 record.")
+        return cryst1_record
+
+    def set_cryst1_record(self, cryst1_record: str) -> None:
+        texto = []
+        with open(self.file.path, "r") as file:
+            for linea in file:
+                if linea[0:6] == "CRYST1":
+                    continue
+                texto.append(linea)
+        with open(self.file.path, "w") as file:
+            if cryst1_record[-1] == "\n":
+                file.write(cryst1_record)
+            else:
+                file.write(cryst1_record + "\n")
+            [file.write(linea) for linea in texto]
+
 
 @define
 class GROStructure(Structure):
@@ -196,6 +220,9 @@ class AbstractComplex(metaclass=ABCMeta):
     ) -> "AbstractComplex":
         raise NotImplementedError
 
+    def get_cryst1_record(self) -> str:
+        return self.pdb.get_cryst1_record()
+
     def __str__(self) -> str:
         return str(self.dir)
 
@@ -227,6 +254,8 @@ class GROComplex(AbstractComplex):
             print(f"Could not get input PDB file from: {input_dir}", flush=True)
             raise e
         try:
+            # The PDB should have box info in it, so it'll be pasted onto the GRO. Else,
+            # pdb2gmx will compute the binding box of the PDB and use that one.
             pdb, gro, top = get_gro_ziptop_from_pdb(
                 pdb=temp_pdb,
                 target_chains=target_chains,
@@ -377,7 +406,7 @@ def get_gro_ziptop_from_pdb(
     force_field: str = "amber99sb-ildn",
     add_ions: bool = False,
 ) -> Tuple[PDBStructure, GROStructure, ZipTopology]:
-    """get_gro_ziptop_from_pdb() does a pdb2gmx from the PDB and tries to keep
+    """get_gro_ziptop_from_pdb does a pdb2gmx from the PDB and tries to keep
     the system neutral, which may alter the topology so a new PDB will be
     written with the same name as the original, which will be backed up by GROMACS.
 
@@ -455,7 +484,7 @@ def get_gro_ziptop_from_pdb(
     )
     launch_biobb(grompepe)
 
-    # Get PDB from GRO file. Gromacs should back up the older input PDB
+    # Get PDB from GRO file. Gromacs should back up the older input PDB, maybe?
     pdb_fn = local_dir / (name + ".pdb")
     trjconv = GMXTrjConvStr(
         input_structure_path=str(gro_fn),
@@ -605,7 +634,9 @@ def fix_pdb(
     return PDBStructure.from_path(pdb_out_path)
 
 
-def catenate_pdbs(*pdbs: PDBStructure, pdb_out_path: Path, gmx_bin: str = "gmx"):
+def catenate_pdbs(
+    *pdbs: PDBStructure, pdb_out_path: Path, gmx_bin: str = "gmx"
+) -> PDBStructure:
     lineas = []
     for pdb in pdbs:
         with open(pdb.file.path, "r") as file:

@@ -166,6 +166,19 @@ def get_memory(config: Dict) -> Optional[List[List[int]]]:
     return fix_all_memory_positions
 
 
+def misc_settings(config: Dict) -> Dict:
+    # config["md"]["box"] overrides config["md"]["dist_to_box"]
+    if "box" in config["md"]:
+        config["md"]["dist_to_box"] = None
+        config["md"]["box"] = " ".join([str(length) for length in config["md"]["box"]])
+    else:
+        if "dist_to_box" in config["md"]:
+            pass
+        else:
+            config["md"]["dist_to_box"] = 1.0
+    return config
+
+
 def main() -> Dict:
     """Console script for locuaz."""
     parser = argparse.ArgumentParser()
@@ -195,6 +208,7 @@ def main() -> Dict:
     memory_positions = get_memory(config)
     if memory_positions:
         config["protocol"]["memory_positions"] = memory_positions
+    config = misc_settings(config)
 
     # Set up environment
     os.environ["OMP_PLACES"] = "threads"

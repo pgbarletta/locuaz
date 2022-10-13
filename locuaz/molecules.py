@@ -426,7 +426,6 @@ def get_gro_ziptop_from_pdb(
         "water_type": water_type,
         "force_field": force_field,
         "ignh": True,
-        # "dev": "-renum",
     }
     pre_gro_fn = local_dir / ("pre" + name + ".gro")
     pre_top_fn = local_dir / "pre_topol.zip"
@@ -439,9 +438,16 @@ def get_gro_ziptop_from_pdb(
     launch_biobb(pdb_to_gro_zip)
 
     # Set the box dimensions
-    dist_to_box: float = md_config.get("dist_to_box", 1.0)
+    dist_to_box: Optional[float] = md_config.get("dist_to_box")
     box_type: str = md_config.get("box_type", "triclinic")
-    props = {"distance_to_molecule": dist_to_box, "box_type": box_type}
+    props = {
+        "distance_to_molecule": dist_to_box,
+        "box_type": box_type,
+    }
+    box: Optional[str] = md_config.get("box", "")
+    if box:
+        props["dev"] = f"-box {box}"
+
     box_gro_fn = local_dir / ("box" + name + ".gro")
     set_box = Editconf(
         input_gro_path=str(pre_gro_fn),

@@ -214,10 +214,18 @@ md:
             allowed: ["triclinic", "cubic", "dodecahedron", "octahedron"]
         dist_to_box:
             type: float 
-            default: 1.0 
+            default: 1.0
             required: false
             min: 0.5
             max: 9.0
+        box:
+            type: list
+            required: false
+            minlength: 3
+            maxlength: 3
+            warn_overrides: dist_to_box
+            schema:
+                type: float
 target:
     type: dict
     required: true

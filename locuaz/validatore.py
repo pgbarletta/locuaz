@@ -225,3 +225,14 @@ class Validatore(Validator):
         for filename in glob.glob(str(Path(value, "*"))):
             if Path(filename).is_dir():
                 self._validate_is_iteration_dir(flag, field, filename)
+
+    def _validate_warn_overrides(self, other, field, value):
+        """_validate_warn_overrides
+
+        The rule's arguments are validated against this schema:
+        {'type': 'string'}
+        """
+        if other and self.document[other]:
+            print(
+                f"Warning: both `{field}` and {other} are set, the former will override the latter. "
+            )

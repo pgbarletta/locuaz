@@ -11,12 +11,13 @@ from abstractscoringfunction import AbstractScoringFunction
 
 
 class Bluues(AbstractScoringFunction):
+    name: str = "bluues"
     bmf_bin_path: FileHandle
     pdb2pqr_bin_path: str = "pdb2pqr30"
     TIMEOUT_PER_FRAME: int = 60
 
     def __init__(self, sf_dir, nprocs=2):
-        self.root_dir = DirHandle(Path(sf_dir, "bluues"), make=False)
+        self.root_dir = DirHandle(Path(sf_dir, self.name), make=False)
         self.nprocs = nprocs
 
         self.bin_path = FileHandle(self.root_dir / "bluues_new_2")
@@ -61,7 +62,7 @@ class Bluues(AbstractScoringFunction):
         return i
 
     def __parse_output__(
-        self, *, score_stdout=None, score_file=None
+        self, *, score_stdout=None, score_file=None, original_command=""
     ) -> Tuple[float, float]:
         try:
             with open(str(score_file[0]) + ".solv_nrg", "r") as f:
@@ -69,8 +70,10 @@ class Bluues(AbstractScoringFunction):
                     if linea[0:26] == "Total              energy:":
                         bluues_raw = float(linea.split()[2])
                         break
-        except ValueError as e:
-            raise ValueError(f"{self} couldn't parse {score_file[0]}.") from e
+        except (ValueError, IndexError) as e:
+            raise ValueError(
+                f"{self} couldn't parse {score_file[0]}\nfrom: \n{original_command[0]}"
+            ) from e
         bluues = bluues_raw * 15 / (abs(bluues_raw) + 15)
 
         try:
@@ -78,36 +81,46 @@ class Bluues(AbstractScoringFunction):
                 lineas = f.readlines()
             bmf, bumps, tors = tuple(map(float, itemgetter(1, 3, 7)(lineas[0].split())))
             gab = 0.17378 * bmf + 0.25789 * bumps + 0.26624 * tors + 0.16446 * bluues
-        except ValueError as e:
-            raise ValueError(f"{self} couldn't parse {score_file[1]}.") from e
+        except (ValueError, IndexError) as e:
+            raise ValueError(
+                f"{self} couldn't parse {score_file[1]}\nfrom: \n{original_command[1]}"
+            ) from e
 
         return bluues_raw, gab
 
     def __bluues_bmf_molecule__(self, mol: str, i: int) -> Tuple[float, float]:
-        pqr_mol = Path(self.results_dir, f"{mol}-{i}.pqr")
-        blu_mol_out = Path(self.results_dir, f"bluues_{mol}-{i}.out")
-
+        pqr_mol = f"{mol}-{i}.pqr"
         # BLUUES
+        blu_mol_out = f"bluues_{mol}-{i}.out"
+        blu_mol_out_fn = Path(self.results_dir, f"bluues_{mol}-{i}.out")
+
         comando_bluues = f"{self.bin_path} {pqr_mol} {blu_mol_out}"
         sp.run(
             comando_bluues,
             stdout=sp.PIPE,
             stderr=sp.PIPE,
+            cwd=self.results_dir,
             shell=True,
             text=True,
         )
 
         # BMF
-        bmf_mol_out = Path(self.results_dir, f"bmf_{mol}-{i}.out")
+        bmf_mol_out = f"bmf_{mol}-{i}.out"
+        bmf_mol_out_fn = Path(self.results_dir, bmf_mol_out)
+
         comando_bmf = f"{self.bmf_bin_path} {pqr_mol} {bmf_mol_out} -x"
         sp.run(
             comando_bmf,
             stdout=sp.PIPE,
             stderr=sp.PIPE,
+            cwd=self.results_dir,
             shell=True,
             text=True,
         )
-        bluues, bmf = self.__parse_output__(score_file=(blu_mol_out, bmf_mol_out))
+        bluues, bmf = self.__parse_output__(
+            score_file=(blu_mol_out_fn, bmf_mol_out_fn),
+            original_command=(comando_bluues, comando_bmf),
+        )
 
         return bluues, bmf
 
@@ -129,7 +142,7 @@ class Bluues(AbstractScoringFunction):
         frames_path: Path,
     ) -> Tuple[List[float], List[float]]:
 
-        self.results_dir = DirHandle(Path(frames_path, "bluues"), make=True)
+        self.results_dir = DirHandle(Path(frames_path, self.name), make=True)
         scores_bluues: List[float] = [0] * (nframes)
         scores_bmf: List[float] = [0] * (nframes)
         # TODO: check bluues doesn't do anything weird.
@@ -161,7 +174,8 @@ class Bluues(AbstractScoringFunction):
                 for futu in cf.as_completed(futuros_bluues_bmf, timeout=timeout):
                     if futu.exception():
                         print(
-                            f"Exception while running pdb2pqr: " f"{futu.exception()}",
+                            f"Exception while running {self.name}: "
+                            f"{futu.exception()}",
                             flush=True,
                         )
                         raise futu.exception()  # type: ignore
@@ -170,6 +184,6 @@ class Bluues(AbstractScoringFunction):
                     scores_bluues[k] = bluues
                     scores_bmf[k] = bmf
             except cf.TimeoutError as e:
-                print("bluues/bmf subprocess timed out.", flush=True)
+                print("{self.name}/bmf subprocess timed out.", flush=True)
                 raise e
         return scores_bluues, scores_bmf

@@ -22,7 +22,9 @@ class AbstractScoringFunction(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def __parse_output__(self, *, score_stdout=None, score_file=None) -> float:
+    def __parse_output__(
+        self, *, score_stdout=None, score_file=None, original_command=""
+    ) -> float:
         pass
 
     # Quite hacky, but it works.

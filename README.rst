@@ -60,6 +60,15 @@ If on biobb 3.7, apply these patches:
             self.fit_selection = properties.get('fit_selection', "System")
         with:
             self.selection = properties.get('selection', "System")
+    -On biobb_md/gromacs/editconf.py, line ~74:
+        add:
+            self.dev = properties.get('dev')
+    -On biobb_md/gromacs/solvate.py, line ~117:
+        add:
+            if self.dev:
+                fu.log(f'Adding development options: {self.dev} -- DALE BOOO', self.out_log)
+                self.cmd += self.dev.split()
+
 
 Features
 --------

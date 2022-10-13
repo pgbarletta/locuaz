@@ -13,6 +13,7 @@ from abstractscoringfunction import AbstractScoringFunction
 
 
 class Haddock(AbstractScoringFunction):
+    name: str = "haddock"
     template_scoring_inp_handle: FileHandle
     haddock_protocols_dir: DirHandle
     haddock_toppar_dir: DirHandle
@@ -20,7 +21,7 @@ class Haddock(AbstractScoringFunction):
     TIMEOUT_PER_FRAME: int = 30
 
     def __init__(self, sf_dir, nprocs=2):
-        self.root_dir = DirHandle(Path(sf_dir, "haddock"), make=False)
+        self.root_dir = DirHandle(Path(sf_dir, self.name), make=False)
         self.nprocs = nprocs
 
         self.bin_path = FileHandle(
@@ -82,13 +83,17 @@ class Haddock(AbstractScoringFunction):
 
         return scorin_inp_file
 
-    def __parse_output__(self, *, score_stdout=None, score_file=None) -> float:
+    def __parse_output__(
+        self, *, score_stdout=None, score_file=None, original_command=""
+    ) -> float:
         try:
             with open(score_file, "r") as f:
                 lineas = f.readlines()
                 score_haddock = float(lineas[8].split()[1][0:-1])
-        except ValueError as e:
-            raise ValueError(f"{self} couldn't parse {score_file}.") from e
+        except (ValueError, IndexError) as e:
+            raise ValueError(
+                f"{self} couldn't parse {score_file}\nfrom: \n{original_command}"
+            ) from e
 
         return score_haddock
 
@@ -111,7 +116,9 @@ class Haddock(AbstractScoringFunction):
         )
 
         output_haddock_file = Path(self.results_dir, f"mod_complex-{i}_conv.psf")
-        score_haddock = self.__parse_output__(score_file=output_haddock_file)
+        score_haddock = self.__parse_output__(
+            score_file=output_haddock_file, original_command=comando_haddock
+        )
 
         return i, score_haddock
 
@@ -122,7 +129,7 @@ class Haddock(AbstractScoringFunction):
         frames_path: Path,
     ) -> List[float]:
 
-        self.results_dir = DirHandle(Path(frames_path, "haddock"), make=True)
+        self.results_dir = DirHandle(Path(frames_path, self.name), make=True)
         self.__initialize_scoring_dir__()
         scores: List[float] = [0] * (nframes)
         with cf.ProcessPoolExecutor(max_workers=self.nprocs) as exe:
@@ -143,7 +150,8 @@ class Haddock(AbstractScoringFunction):
                     scores[j] = score
             except cf.TimeoutError as e:
                 print(
-                    f"haddock subprocess timed out after {timeout} seconds.", flush=True
+                    f"{self.name} subprocess timed out after {timeout} seconds.",
+                    flush=True,
                 )
                 raise e
 

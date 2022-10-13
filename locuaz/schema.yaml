@@ -207,7 +207,17 @@ md:
             default: "tip3p"
             required: false
             allowed: ["tip3p", "tip4p", "tip4pew", "tip5p", "spc", "spce"]
-
+        box_type:
+            type: string
+            default: "triclinic"
+            required: false
+            allowed: ["triclinic", "cubic", "dodecahedron", "octahedron"]
+        dist_to_box:
+            type: float 
+            default: 1.0 
+            required: false
+            min: 0.5
+            max: 9.0
 target:
     type: dict
     required: true

@@ -239,9 +239,7 @@ def remove_overlapping_waters(
         pdb=PDBStructure.from_path(nonwat_pdb_fn),
         target_chains=complex.top.target_chains,
         binder_chains=complex.top.binder_chains,
-        water_type=config["md"]["water_type"],
-        force_field=config["md"]["force_field"],
-        gmx_path=config["md"]["gmx_bin"],
+        md_config=config["md"],
         add_ions=False,
     )
 
@@ -277,9 +275,7 @@ def remove_overlapping_waters(
         pdb=PDBStructure.from_path(wet_pdb_fn),
         target_chains=complex.top.target_chains,
         binder_chains=complex.top.binder_chains,
-        water_type=config["md"]["water_type"],
-        force_field=config["md"]["force_field"],
-        gmx_path=config["md"]["gmx_bin"],
+        md_config=config["md"],
         add_ions=False,
     )
 

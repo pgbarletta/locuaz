@@ -192,6 +192,7 @@ class WorkProject:
                 input_dir=this_iter.dir_handle,
                 target_chains=self.config["target"]["chainID"],
                 binder_chains=self.config["binder"]["chainID"],
+                md_config=self.config["md"],
             )
 
             zero_epoch[iter_name] = this_iter

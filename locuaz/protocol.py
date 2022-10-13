@@ -32,6 +32,12 @@ def initialize_new_epoch(work_pjct: WorkProject) -> None:
 
     for old_iter_name, mutations in mutation_generator.items():
         old_iter = old_epoch.top_iterations[old_iter_name]
+        # Get the system's box size after the NPT run, to add it later onto the
+        # mutated PDB system. The PDB format has less precision for the box parameters
+        # than the GRO format, so there may be a difference in the last digit for the
+        # lengths (eg: 12.27215 to 12.27210) and the angles (6.13607 to 6.13605).
+        # That's why GROComplex.from_pdb() also uses editconf.
+        cryst1_record = old_iter.complex.get_cryst1_record()
         nonwat_pdb, wation_pdb = split_solute_and_solvent(old_iter.complex)
 
         for mutation in mutations:
@@ -51,7 +57,8 @@ def initialize_new_epoch(work_pjct: WorkProject) -> None:
             # Rejoin the mutated complex with water and ions
             over_name = "overlapped_" + work_pjct.config["main"]["name"]
             mut_pdb_fn = iter_path / (over_name + ".pdb")
-            catenate_pdbs(dry_mut_pdb, wation_pdb, pdb_out_path=mut_pdb_fn)
+            mut_pdb = catenate_pdbs(dry_mut_pdb, wation_pdb, pdb_out_path=mut_pdb_fn)
+            mut_pdb.set_cryst1_record(cryst1_record)
             # Remove the temporary mutated complex that lacks the solvent
             dry_mut_pdb.unlink()
 
@@ -60,7 +67,7 @@ def initialize_new_epoch(work_pjct: WorkProject) -> None:
                 input_dir=iter_path,
                 target_chains=work_pjct.config["target"]["chainID"],
                 binder_chains=work_pjct.config["binder"]["chainID"],
-                gmx_bin=work_pjct.config["md"]["gmx_bin"],
+                md_config=work_pjct.config["md"],
             )
             #
             this_iter.complex = remove_overlapping_waters(

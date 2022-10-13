@@ -9,7 +9,7 @@ from abc import ABCMeta, abstractmethod
 from typing import List, Sequence, Set, Dict, Tuple, Optional
 from biobb_md.gromacs.pdb2gmx import Pdb2gmx
 from biobb_md.gromacs.gmxselect import Gmxselect
-from biobb_md.gromacs.make_ndx import MakeNdx
+from biobb_md.gromacs.editconf import Editconf
 from biobb_md.gromacs.grompp import Grompp
 from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
 from biobb_md.gromacs.genion import Genion
@@ -187,9 +187,7 @@ class AbstractComplex(metaclass=ABCMeta):
         input_dir: Path,
         target_chains: Sequence,
         binder_chains: Sequence,
-        gmx_bin: str = "gmx",
-        water_type: str = "tip3p",
-        force_field: str = "amber99sb-ildn",
+        md_config: Dict,
     ) -> "AbstractComplex":
         raise NotImplementedError
 
@@ -242,10 +240,9 @@ class GROComplex(AbstractComplex):
         input_dir: Path,
         target_chains: Sequence,
         binder_chains: Sequence,
-        gmx_bin: str = "gmx",
-        water_type: str = "tip3p",
-        force_field: str = "amber99sb-ildn",
+        md_config: Dict,
     ) -> "GROComplex":
+        gmx_bin: str = md_config.get("gmx_bin", "gmx")
         try:
             in_pdb = input_dir / (name + ".pdb")
             # This PDB will be backed up and replaced with a fixed up PDB.
@@ -260,10 +257,7 @@ class GROComplex(AbstractComplex):
                 pdb=temp_pdb,
                 target_chains=target_chains,
                 binder_chains=binder_chains,
-                gmx_path=gmx_bin,
-                add_ions=True,
-                water_type=water_type,
-                force_field=force_field,
+                md_config=md_config,
             )
         except Exception as e:
             print(f"Could not get zip tology .gro files from: {temp_pdb}", flush=True)
@@ -401,9 +395,7 @@ def get_gro_ziptop_from_pdb(
     pdb: PDBStructure,
     target_chains: Sequence,
     binder_chains: Sequence,
-    gmx_path: str = "gmx",
-    water_type: str = "tip3p",
-    force_field: str = "amber99sb-ildn",
+    md_config: Dict,
     add_ions: bool = False,
 ) -> Tuple[PDBStructure, GROStructure, ZipTopology]:
     """get_gro_ziptop_from_pdb does a pdb2gmx from the PDB and tries to keep
@@ -421,13 +413,16 @@ def get_gro_ziptop_from_pdb(
     Returns:
         Tuple[PDBStructure, GROStructure, ZipTopology]: Proper, nice, system.
     """
+    gmx_bin: str = md_config.get("gmx_bin", "gmx")
+    water_type: str = md_config.get("water_type", "tip3p")
+    force_field: str = md_config.get("force_field", "amber99sb-ildn")
 
     local_dir = pdb.file.path.parent
     name = pdb.name
 
     # Generate the first set of GROStructure and ZipTopology
     props = {
-        "gmx_path": gmx_path,
+        "gmx_path": gmx_bin,
         "water_type": water_type,
         "force_field": force_field,
         "ignh": True,
@@ -443,14 +438,26 @@ def get_gro_ziptop_from_pdb(
     )
     launch_biobb(pdb_to_gro_zip)
 
+    # Set the box dimensions
+    dist_to_box: float = md_config.get("dist_to_box", 1.0)
+    box_type: str = md_config.get("box_type", "triclinic")
+    props = {"distance_to_molecule": dist_to_box, "box_type": box_type}
+    box_gro_fn = local_dir / ("box" + name + ".gro")
+    set_box = Editconf(
+        input_gro_path=str(pre_gro_fn),
+        output_gro_path=str(box_gro_fn),
+        properties=props,
+    )
+    launch_biobb(set_box)
+
     if add_ions:
         # Build a .tpr for genion
         gen_tpr_fn = local_dir / ("genion_" + name + ".tpr")
         grompepe = Grompp(
-            input_gro_path=str(pre_gro_fn),
+            input_gro_path=str(box_gro_fn),
             input_top_zip_path=str(pre_top_fn),
             output_tpr_path=str(gen_tpr_fn),
-            properties={"gmx_path": gmx_path, "maxwarn": 2},
+            properties={"gmx_path": gmx_bin, "maxwarn": 2},
         )
         launch_biobb(grompepe)
 
@@ -462,13 +469,13 @@ def get_gro_ziptop_from_pdb(
             input_top_zip_path=str(pre_top_fn),
             output_gro_path=str(gro_fn),
             output_top_zip_path=str(top_fn),
-            properties={"gmx_path": gmx_path, "neutral": True, "concentration": 0.0},
+            properties={"gmx_path": gmx_bin, "neutral": True, "concentration": 0.0},
         )
         launch_biobb(genio)
         # Remove temporary file
         gen_tpr_fn.unlink()
     else:
-        gro_fn = copy_to(FileHandle(pre_gro_fn), local_dir, name + ".gro").path
+        gro_fn = copy_to(FileHandle(box_gro_fn), local_dir, name + ".gro").path
         top_fn = copy_to(FileHandle(pre_top_fn), local_dir, name + ".zip").path
 
     # Build a temporary tpr file for the next step
@@ -478,7 +485,7 @@ def get_gro_ziptop_from_pdb(
         input_top_zip_path=str(top_fn),
         output_tpr_path=str(temp_tpr_fn),
         properties={
-            "gmx_path": gmx_path,
+            "gmx_path": gmx_bin,
             "maxwarn": 2,
         },
     )
@@ -490,7 +497,7 @@ def get_gro_ziptop_from_pdb(
         input_structure_path=str(gro_fn),
         input_top_path=str(temp_tpr_fn),
         output_str_path=str(pdb_fn),
-        properties={"gmx_path": gmx_path},
+        properties={"gmx_path": gmx_bin},
     )
     launch_biobb(trjconv)
 
@@ -498,6 +505,7 @@ def get_gro_ziptop_from_pdb(
     temp_tpr_fn.unlink()
     pre_gro_fn.unlink()
     pre_top_fn.unlink()
+    box_gro_fn.unlink()
 
     top = ZipTopology.from_path(top_fn)
     top.target_chains = tuple(target_chains)

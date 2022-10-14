@@ -1,5 +1,5 @@
 import re
-from typing import Iterable
+from typing import Iterable, Optional
 import zipfile
 from pathlib import Path
 import glob
@@ -14,7 +14,7 @@ def extract_pdbs(
     zip_file: Path,
     out_prefix: str,
     *,
-    new_chainID: str = None,
+    new_chainID: Optional[str] = None,
     delete_zip_file: bool = True,
 ):
     """
@@ -48,7 +48,7 @@ def extract_pdbs(
 
 
 def fix_gromacs_pdb(
-    pdb_in_fn: Path, pdb_out_fn: Path, *, new_chainID: str = None
+    pdb_in_fn: Path, pdb_out_fn: Path, *, new_chainID: Optional[str] = None
 ) -> None:
     """fix_gromacs_pdb uses Bio to add TER between chains, END at the end,
     and manually make the resSeq numbers continuous.

@@ -1,5 +1,3 @@
-import logging
-from textwrap import wrap
 from typing import Optional
 from attrs import define, field
 from pathlib import Path
@@ -8,10 +6,9 @@ from shutil import SameFileError
 from biobb_md.gromacs.grompp import Grompp
 from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
 from biobb_md.gromacs.mdrun import Mdrun
-from biobb_analysis.gromacs.gmx_image import GMXImage
-from molecules import AbstractComplex, ZipTopology, copy_mol_to
+from molecules import AbstractComplex, GROComplex, ZipTopology, copy_mol_to
 
-from fileutils import DirHandle, FileHandle, copy_to
+from fileutils import DirHandle, FileHandle
 from projectutils import WorkProject
 from primitives import launch_biobb
 
@@ -41,9 +38,9 @@ class MDrun:
     ) -> "MDrun":
 
         obj = cls(
-            root_dir,
+            DirHandle(root_dir),
             gmx_path=work_pjct.config["md"]["gmx_bin"],
-            mdp=Path(work_pjct.mdps["min_mdp"]),
+            mdp=FileHandle(Path(work_pjct.mdps["min_mdp"])),
             gpu_id=gpu_id,
             pinoffset=pinoffset,
             num_threads_omp=work_pjct.config["md"]["omp_procs"],
@@ -66,9 +63,9 @@ class MDrun:
     ) -> "MDrun":
 
         obj = cls(
-            root_dir,
+            DirHandle(root_dir),
             gmx_path=work_pjct.config["md"]["gmx_bin"],
-            mdp=Path(work_pjct.mdps["nvt_mdp"]),
+            mdp=FileHandle(Path(work_pjct.mdps["nvt_mdp"])),
             gpu_id=gpu_id,
             pinoffset=pinoffset,
             num_threads_omp=work_pjct.config["md"]["omp_procs"],
@@ -92,9 +89,9 @@ class MDrun:
     ) -> "MDrun":
 
         obj = cls(
-            root_dir,
+            DirHandle(root_dir),
             gmx_path=work_pjct.config["md"]["gmx_bin"],
-            mdp=Path(work_pjct.mdps["npt_mdp"]),
+            mdp=FileHandle(Path(work_pjct.mdps["npt_mdp"])),
             gpu_id=gpu_id,
             pinoffset=pinoffset,
             num_threads_omp=work_pjct.config["md"]["omp_procs"],
@@ -106,7 +103,7 @@ class MDrun:
 
         return obj
 
-    def __call__(self, complex: AbstractComplex) -> AbstractComplex:
+    def __call__(self, complex: GROComplex) -> GROComplex:
         # Check
         self.__check_input__(complex)
 
@@ -161,7 +158,7 @@ class MDrun:
 
         new_complex = type(complex).from_gro_zip(
             name=self.out_name,
-            input_dir=self.dir,
+            input_dir=Path(self.dir),
             target_chains=complex.top.target_chains,
             binder_chains=complex.top.binder_chains,
             gmx_bin=self.gmx_path,
@@ -181,7 +178,7 @@ class MDrun:
         # Build the new complex
         new_complex = type(complex).from_complex(
             name=self.out_name,
-            iter_path=self.dir,
+            iter_path=Path(self.dir),
             target_chains=complex.top.target_chains,
             binder_chains=complex.top.binder_chains,
             gmx_bin=self.gmx_path,

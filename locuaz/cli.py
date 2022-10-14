@@ -35,11 +35,11 @@ def validate_input(raw_config: Dict, mode: str, debug: bool):
 
     # Use the schema to validate the input configuration yaml
     validator = Validatore(schema)
-    if not validator.validate(raw_config):
+    if not validator.validate(raw_config):  # type: ignore
         print(f"Wrong input config file.", flush=True)
-        raise ValueError(validator.errors)
+        raise ValueError(validator.errors)  # type: ignore
     else:
-        config = validator.normalized(raw_config)
+        config = validator.normalized(raw_config)  # type: ignore
 
     if mode != config["main"]["mode"]:
         print(

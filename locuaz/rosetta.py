@@ -3,7 +3,7 @@ import os
 import logging
 from pathlib import Path
 from socket import timeout
-from typing import Tuple, List
+from typing import Tuple, List, Any
 import subprocess as sp
 from collections.abc import Sequence
 import concurrent.futures as cf
@@ -59,6 +59,10 @@ class Rosetta(AbstractScoringFunction):
     def __parse_output__(
         self, *, score_stdout=None, score_file=None, original_command=""
     ) -> float:
+
+        assert (
+            score_file is not None
+        ), f"This shouldn't happen. {self} couldn't parse {score_file}\nfrom: \n{original_command}"
         try:
             with open(score_file, "r") as f:
                 lineas = f.readlines()

@@ -47,7 +47,7 @@ def run_min_nvt_epoch(work_pjct: WorkProject) -> None:
             f"and pinoffset: {pinoffset[iter_name]}.")
 
             nvt = MDrun.nvt(
-                iter.dir_handle, work_pjct=work_pjct, gpu_id = gpu_id[iter_name],
+                Path(iter.dir_handle), work_pjct=work_pjct, gpu_id = gpu_id[iter_name],
                 pinoffset=pinoffset[iter_name], out_name="nvt_" + work_pjct.name)
             futuros_nvt.append(ex.submit(nvt, min_complex))
 

@@ -1,5 +1,6 @@
+from functools import singledispatch
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Tuple
 import logging
 import warnings
 
@@ -10,6 +11,7 @@ from molecules import (
     AbstractComplex,
     GROComplex,
     PDBStructure,
+    Trajectory,
     XtcTrajectory,
     get_gro_ziptop_from_pdb,
     get_tpr,
@@ -22,7 +24,13 @@ from biobb_analysis.gromacs.gmx_image import GMXImage
 from primitives import launch_biobb
 
 
-def image_traj(cpx: GROComplex, out_trj_fn: Path, gmx_bin: str) -> XtcTrajectory:
+@singledispatch
+def image_traj(cpx: AbstractComplex, out_trj_fn: Path, gmx_bin: str) -> Trajectory:
+    raise NotImplementedError
+
+
+@image_traj.register
+def _(cpx: GROComplex, out_trj_fn: Path, gmx_bin: str) -> XtcTrajectory:
 
     wrk_dir = out_trj_fn.parent
 
@@ -76,7 +84,7 @@ def image_traj(cpx: GROComplex, out_trj_fn: Path, gmx_bin: str) -> XtcTrajectory
     u = mda.Universe(str(orig_pdb), str(cluster_trj))
     u.trajectory[2]
     cluster_gro = Path(wrk_dir, "clustered.gro")
-    u.atoms.write(str(cluster_gro))
+    u.atoms.write(str(cluster_gro))  # type: ignore
 
     nojump_trj = Path(wrk_dir, "nojump.xtc")
     fix_jump = GMXImage(
@@ -131,7 +139,7 @@ def write_non_overlapping_ndx(
     *,
     dist_threshold: float = 0.3,
     gmx_bin: str = "gmx",
-) -> FileHandle:
+) -> Tuple[FileHandle, int]:
 
     # First, get the number of waters that overlap
     ndx_fn_wat_out = str(pdb_path.parent / "overlapping.ndx")
@@ -166,7 +174,7 @@ def write_non_overlapping_ndx(
     # And also discard ions (Na and Cl). These will be readded later.
     # This is done to prevent the SOL group from being discontinuous (as water
     # molecules will be readded later), which breaks gmx genion.
-    ndx_fn_out = str(pdb_path.parent / "non_overlapping.ndx")
+    ndx_fn_out = Path(pdb_path.parent, "non_overlapping.ndx")
     select_not_overlapping = Gmxselect(
         input_structure_path=str(pdb_path),
         input_ndx_path=str(ndx_fn_in),
@@ -188,9 +196,15 @@ def write_non_overlapping_ndx(
     return ndx, wat_count
 
 
+@singledispatch
 def remove_overlapping_waters(
-    config: Dict, complex: AbstractComplex, overlapped_resSeq: int
+    complex: AbstractComplex, config: Dict, overlapped_resSeq: int
 ) -> AbstractComplex:
+    raise NotImplementedError
+
+
+@remove_overlapping_waters.register
+def _(complex: GROComplex, config: Dict, overlapped_resSeq: int) -> GROComplex:
     """remove_overlapping_waters takes a complex and removes all the waters that
     are within a certain cutoff from `overlapped_resSeq`. Then it replaces them.
     It does a lot of gymnastics to deal with Gromacs weirdness.
@@ -300,9 +314,9 @@ def remove_overlapping_waters(
     launch_biobb(genio)
 
     # Finally, build the Complex
-    new_complex = GROComplex.from_gro_zip(
+    new_complex: GROComplex = GROComplex.from_gro_zip(
         name=config["main"]["name"],
-        input_dir=complex.dir,
+        input_dir=Path(complex.dir),
         target_chains=complex.top.target_chains,
         binder_chains=complex.top.binder_chains,
         gmx_bin=config["md"]["gmx_bin"],

@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Type
 
 from abstractscoringfunction import AbstractScoringFunction
 from bach import Bach
@@ -8,7 +8,7 @@ from haddock import Haddock
 from pisa import Pisa
 from rosetta import Rosetta
 
-scoringfunctions: Dict[str, AbstractScoringFunction] = {
+scoringfunctions: Dict[str, Type[AbstractScoringFunction]] = {
     "bach": Bach,
     "bluues": Bluues,
     "evoef2": Evoef2,

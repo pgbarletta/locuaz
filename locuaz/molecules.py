@@ -6,7 +6,7 @@ from pathlib import Path
 from attrs import define, field
 from fileutils import DirHandle, FileHandle, copy_to, catenate, update_header
 from abc import ABCMeta, abstractmethod
-from typing import List, Sequence, Set, Dict, Tuple, Optional
+from typing import List, Sequence, Set, Dict, Tuple, Optional, Any, Union
 from biobb_md.gromacs.pdb2gmx import Pdb2gmx
 from biobb_md.gromacs.gmxselect import Gmxselect
 from biobb_md.gromacs.editconf import Editconf
@@ -61,7 +61,7 @@ class AbstractFileObject(metaclass=ABCMeta):
         return self.__str__()
 
     @classmethod
-    def from_path(cls, path: Path):
+    def from_path(cls, path: Any):
         file = FileHandle(path)
         return cls(file)
 
@@ -170,13 +170,13 @@ class XtcTrajectory(Trajectory):
     pass
 
 
-@define
+@define(frozen=True)
 class AbstractComplex(metaclass=ABCMeta):
     name: str = field(converter=str)
-    dir: DirHandle = field(converter=DirHandle, kw_only=True)  # type: ignore
+    dir: Union[DirHandle, Path] = field(converter=DirHandle, kw_only=True)  # type: ignore
     pdb: PDBStructure = field(kw_only=True)
     top: Topology = field(kw_only=True, default=None)
-    tra: Trajectory = field(kw_only=False, default=None)
+    tra: Optional[Trajectory] = field(kw_only=False, default=None)
 
     @classmethod
     @abstractmethod
@@ -229,7 +229,7 @@ class AbstractComplex(metaclass=ABCMeta):
 class GROComplex(AbstractComplex):
     gro: GROStructure = field(kw_only=True, default=None)
     tpr: TPRFile = field(kw_only=False, default=None)
-    cpt: FileHandle = field(kw_only=False, default=None)
+    cpt: Optional[FileHandle] = field(kw_only=False, default=None)
     ndx: FileHandle = field(kw_only=False, default=None)
 
     @classmethod
@@ -237,7 +237,7 @@ class GROComplex(AbstractComplex):
         cls,
         *,
         name: str,
-        input_dir: Path,
+        input_dir: Union[Path, DirHandle],
         target_chains: Sequence,
         binder_chains: Sequence,
         md_config: Dict,
@@ -297,7 +297,7 @@ class GROComplex(AbstractComplex):
         target_chains: Sequence,
         binder_chains: Sequence,
         gmx_bin: str = "gmx",
-    ) -> "AbstractComplex":
+    ) -> "GROComplex":
         try:
             gro = GROStructure.from_path(input_dir / (name + ".gro"))
 
@@ -448,19 +448,19 @@ def get_gro_ziptop_from_pdb(
     if box:
         props["dev"] = f"-box {box}"
 
-    box_gro_fn = local_dir / ("box" + name + ".gro")
-    set_box = Editconf(
-        input_gro_path=str(pre_gro_fn),
-        output_gro_path=str(box_gro_fn),
-        properties=props,
-    )
-    launch_biobb(set_box)
+    # box_gro_fn = local_dir / ("box" + name + ".gro")
+    # set_box = Editconf(
+    #     input_gro_path=str(pre_gro_fn),
+    #     output_gro_path=str(box_gro_fn),
+    #     properties=props,
+    # )
+    # launch_biobb(set_box)
 
     if add_ions:
         # Build a .tpr for genion
         gen_tpr_fn = local_dir / ("genion_" + name + ".tpr")
         grompepe = Grompp(
-            input_gro_path=str(box_gro_fn),
+            input_gro_path=str(pre_gro_fn),
             input_top_zip_path=str(pre_top_fn),
             output_tpr_path=str(gen_tpr_fn),
             properties={"gmx_path": gmx_bin, "maxwarn": 2},
@@ -481,7 +481,7 @@ def get_gro_ziptop_from_pdb(
         # Remove temporary file
         gen_tpr_fn.unlink()
     else:
-        gro_fn = copy_to(FileHandle(box_gro_fn), local_dir, name + ".gro").path
+        gro_fn = copy_to(FileHandle(pre_gro_fn), local_dir, name + ".gro").path
         top_fn = copy_to(FileHandle(pre_top_fn), local_dir, name + ".zip").path
 
     # Build a temporary tpr file for the next step
@@ -511,7 +511,7 @@ def get_gro_ziptop_from_pdb(
     temp_tpr_fn.unlink()
     pre_gro_fn.unlink()
     pre_top_fn.unlink()
-    box_gro_fn.unlink()
+    # box_gro_fn.unlink()
 
     top = ZipTopology.from_path(top_fn)
     top.target_chains = tuple(target_chains)
@@ -560,7 +560,13 @@ def get_pdb_tpr(
     return PDBStructure.from_path(pdb_fn), tpr
 
 
-def split_solute_and_solvent(complex: GROComplex) -> Tuple[PDBStructure, PDBStructure]:
+@singledispatch
+def split_solute_and_solvent(complex: AbstractComplex) -> Any:
+    raise NotImplementedError
+
+
+@split_solute_and_solvent.register
+def _(complex: GROComplex) -> Tuple[PDBStructure, PDBStructure]:
     """prepare_old_iter extract 2 PDBs from an input pdb, one with the protein
     and the other with the water and ions.
 
@@ -764,7 +770,7 @@ def _(obj: GROComplex, dir_path: Path, name=None):
     )
 
 
-def try_copy_to(obj, dir_path: Path, name=None):
+def try_copy_to(obj, dir_path: Path, name=None) -> Any:
     try:
         new_obj = copy_to(obj, dir_path, name)
     except FileNotFoundError as e:

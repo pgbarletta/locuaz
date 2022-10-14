@@ -1,6 +1,6 @@
 from pathlib import Path
 from abc import ABCMeta, abstractmethod
-from typing import List
+from typing import List, Optional, Any
 from fileutils import FileHandle, DirHandle
 from collections.abc import Sequence
 
@@ -23,7 +23,7 @@ class AbstractScoringFunction(metaclass=ABCMeta):
 
     @abstractmethod
     def __parse_output__(
-        self, *, score_stdout=None, score_file=None, original_command=""
+        self, *, score_stdout: Any = None, score_file: Any = None, original_command=""
     ) -> float:
         pass
 

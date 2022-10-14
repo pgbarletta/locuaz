@@ -1,3 +1,5 @@
+# type: ignore
+# seems that cerberus doesn't provide proper stubs for mypy
 import os
 from pathlib import Path
 import glob

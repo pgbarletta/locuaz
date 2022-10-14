@@ -1,6 +1,6 @@
 from pathlib import Path
 from operator import itemgetter
-from typing import Tuple, List
+from typing import Tuple, List, Optional, Any
 import subprocess as sp
 import logging
 from collections.abc import Sequence
@@ -20,8 +20,8 @@ class Bluues(AbstractScoringFunction):
         self.root_dir = DirHandle(Path(sf_dir, self.name), make=False)
         self.nprocs = nprocs
 
-        self.bin_path = FileHandle(self.root_dir / "bluues_new_2")
-        self.bmf_bin_path = FileHandle(self.root_dir / "score_bmf_3")
+        self.bin_path = FileHandle(Path(self.root_dir, "bluues_new_2"))
+        self.bmf_bin_path = FileHandle(Path(self.root_dir, "score_bmf_3"))
 
     def __pdb2pqr_worker__(self, frames_path: Path, i: int) -> int:
 
@@ -62,8 +62,16 @@ class Bluues(AbstractScoringFunction):
         return i
 
     def __parse_output__(
-        self, *, score_stdout=None, score_file=None, original_command=""
+        self,
+        *,
+        score_stdout: Any = None,
+        score_file: Any = None,
+        original_command: Tuple[str, str] = ("", ""),
     ) -> Tuple[float, float]:
+        assert (
+            score_file is not None
+        ), f"This shouldn't happen. {self} couldn't parse {score_file}\nfrom: \n{original_command}"
+        bluues_raw = 0.0
         try:
             with open(str(score_file[0]) + ".solv_nrg", "r") as f:
                 for linea in f:

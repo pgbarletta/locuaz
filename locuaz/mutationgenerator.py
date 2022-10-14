@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from email import iterators
-from typing import List, Tuple, Dict, Set, Iterator
+from typing import List, Tuple, Dict, Set, Iterator, Sequence
 from random import choice, sample
 from collections import defaultdict
 from collections.abc import ItemsView, Mapping
@@ -9,7 +9,7 @@ from projectutils import Iteration, Epoch
 from mutator import Mutation
 
 
-class AbstractMutationGenerator(ABC):
+class AbstractMutationGenerator(ABC, Mapping):
     @abstractmethod
     def __init__(
         self,
@@ -35,27 +35,28 @@ class AbstractMutationGenerator(ABC):
 
 
 class SPM_RB(AbstractMutationGenerator):
-    def __init__(
-        self,
-        epoch: Epoch,
-        max_branches: int,
-        *,
-        excluded_aas: Set[str],
-        excluded_pos: Set[int],
-    ) -> None:
-        pass
+    pass
+    # def __init__(
+    #     self,
+    #     epoch: Epoch,
+    #     max_branches: int,
+    #     *,
+    #     excluded_aas: Set[str],
+    #     excluded_pos: Set[int],
+    # ) -> None:
+    #     pass
 
-    def __getitem__(self, key: Iteration) -> Mutation:
-        pass
+    # def __getitem__(self, key: Iteration) -> Mutation:
+    #     pass
 
-    def __iter__(self) -> Iterator:
-        pass
+    # def __iter__(self) -> Iterator:
+    #     pass
 
-    def __contains__(self, value: Iteration) -> bool:
-        pass
+    # def __contains__(self, value: Iteration) -> bool:
+    #     pass
 
 
-class SPM_4(AbstractMutationGenerator, Mapping):
+class SPM_4(AbstractMutationGenerator):
     # Cystein is not included.
     NEG_AAS: Tuple = ("D", "E", "S", "T")
     POS_AAS: Tuple = ("R", "N", "Q", "H", "K")
@@ -115,7 +116,7 @@ class SPM_4(AbstractMutationGenerator, Mapping):
                 remaining_iterations = set(epoch.top_iterations.keys())
             remaining_branches -= 1
 
-    def __get_random_pos__(self, epoch: Epoch) -> Tuple[int, int]:
+    def __get_random_pos__(self, epoch: Epoch) -> Tuple[str, int]:
         # Get an iteration to read the chainIDs and the resSeqs.
         any_iteration = next(iter(epoch.top_iterations.values()))
 
@@ -123,12 +124,14 @@ class SPM_4(AbstractMutationGenerator, Mapping):
         max_tries: int = sum([len(resSeq) for resSeq in any_iteration.resSeqs]) * 5
         for i in range(max_tries):
             n_chains = len(any_iteration.chainIDs)
-            self.idx_chain = choice(range(0, n_chains))
+            idx_chain = choice(range(0, n_chains))
             n_residues = len(any_iteration.resSeqs[self.idx_chain])
-            self.idx_residue = choice(range(0, n_residues))
+            idx_residue = choice(range(0, n_residues))
 
-            mut_resSeq = any_iteration.resSeqs[self.idx_chain][self.idx_residue]
+            mut_resSeq = any_iteration.resSeqs[idx_chain][idx_residue]
             if mut_resSeq not in self.excluded_pos:
+                self.idx_chain = idx_chain
+                self.idx_residue = idx_residue
                 mut_chainID = any_iteration.chainIDs[self.idx_chain]
                 return mut_chainID, mut_resSeq
 
@@ -164,10 +167,10 @@ class SPM_4(AbstractMutationGenerator, Mapping):
                     self.remaining_categories.difference_update({i})
         return old_aa, new_aa
 
-    def __generate_mutation__(iteration: Iteration) -> Mutation:
-        pass
+    # def __generate_mutation__(iteration: Iteration) -> Mutation:
+    #     pass
 
-    def __getitem__(self, key: Iteration) -> Mutation:
+    def __getitem__(self, key: str) -> Sequence[Mutation]:
         return self.mutations[key]
 
     def __iter__(self) -> Iterator:

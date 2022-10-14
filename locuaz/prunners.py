@@ -1,6 +1,6 @@
 from typing import Dict, Callable
 
-from projectutils import Epoch, Iteration, WorkProject
+from projectutils import WorkProject
 from prunner import choose_top_iters, adaptive_prunner, top_prunner
 
 

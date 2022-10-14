@@ -13,7 +13,7 @@ class FileHandle:
     name: str = field(init=False)
     extension: str = field(init=False)
 
-    @path.validator
+    @path.validator  # type: ignore
     def file_exists(self, attribute, value: Path):
         if not value.is_file():
             raise FileNotFoundError(f"File: {value} doesn't exist.")
@@ -59,7 +59,7 @@ class DirHandle:
     force: bool = field(kw_only=True, default=False)
     replace: bool = field(kw_only=True, default=False)
 
-    @dir_path.validator
+    @dir_path.validator  # type: ignore
     def file_exists(self, attribute, value: Path):
         if not self.make and not value.is_dir():
             raise FileNotFoundError(f"Directory: {value} doesn't exist.")

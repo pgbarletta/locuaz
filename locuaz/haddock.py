@@ -6,7 +6,7 @@ from pathlib import Path
 from collections.abc import Sequence
 import subprocess as sp
 import concurrent.futures as cf
-from typing import Tuple, List
+from typing import Tuple, List, Any
 
 from fileutils import FileHandle, DirHandle, copy_to
 from abstractscoringfunction import AbstractScoringFunction
@@ -27,7 +27,9 @@ class Haddock(AbstractScoringFunction):
         self.bin_path = FileHandle(
             Path(self.root_dir, "cns_solve_1.3/ibm-ppc64le-linux/bin/cns")
         )
-        self.template_scoring_inp_handle = Path(self.root_dir, "template_scoring.inp")
+        self.template_scoring_inp_handle = FileHandle(
+            Path(self.root_dir, "template_scoring.inp")
+        )
         self.haddock_protocols_dir = DirHandle(
             Path(self.root_dir, "haddock2.1", "protocols"), make=False
         )
@@ -84,8 +86,11 @@ class Haddock(AbstractScoringFunction):
         return scorin_inp_file
 
     def __parse_output__(
-        self, *, score_stdout=None, score_file=None, original_command=""
+        self, *, score_stdout: Any = None, score_file: Any = None, original_command=""
     ) -> float:
+        assert (
+            score_file is not None
+        ), f"This shouldn't happen. {self} couldn't parse {score_file}\nfrom: \n{original_command}"
         try:
             with open(score_file, "r") as f:
                 lineas = f.readlines()

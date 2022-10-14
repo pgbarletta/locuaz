@@ -5,6 +5,7 @@ from pathlib import Path
 import concurrent.futures as cf
 
 from fileutils import DirHandle
+from molecules import GROComplex
 from projectutils import WorkProject, Iteration
 from utils_scoring import extract_pdbs, join_target_binder, rm_frames
 from primitives import launch_biobb
@@ -14,6 +15,9 @@ from scoringfunctions import *
 
 
 def initialize_scoring_folder(iteration: Iteration, config: Dict) -> int:
+    # No amber support for now.
+    assert isinstance(iteration.complex, GROComplex)
+
     iteration.score_dir = DirHandle(Path(iteration, "scoring"), make=True, replace=True)
     gmx_bin: str = config["md"]["gmx_bin"]
 
@@ -60,9 +64,14 @@ def score_frames(work_pjct: WorkProject, iteration: Iteration, nframes: int) -> 
 
     for sf_name, scorer in work_pjct.scorers.items():
         try:
-            scores = scorer(nframes=nframes, frames_path=iteration.score_dir)
+            scores = scorer(nframes=nframes, frames_path=Path(iteration.score_dir))
         except cf.TimeoutError as e:
             raise e
+
+        assert (
+            scores is not None
+        ), f"This shouldn't happen. Iteration: {iteration.score_dir}"
+
         if sf_name == "bluues":
             promedio = iteration.set_score("bluues", scores[0])
             log.info(f"{sf_name} average score: {promedio}")
@@ -85,10 +94,8 @@ def score_frames(work_pjct: WorkProject, iteration: Iteration, nframes: int) -> 
 def score(work_pjct: WorkProject, iteration: Iteration) -> None:
     log = logging.getLogger(f"{work_pjct.name}")
     try:
-        log.info("Trying to read old scores.")
         iteration.read_scores(work_pjct.scorers.keys(), log)
         log.info("Read old scores.")
     except FileNotFoundError as e:
-        log.info("Could not read scores. Scoring the iteration.")
         nframes = initialize_scoring_folder(iteration, work_pjct.config)
         score_frames(work_pjct, iteration, nframes)

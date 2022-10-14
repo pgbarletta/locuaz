@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Tuple, Any
 import subprocess as sp
 import concurrent.futures as cf
 
@@ -18,7 +18,7 @@ class Evoef2(AbstractScoringFunction):
         self.nprocs = nprocs
         self.max_concurrent_jobs = self.CPU_TO_MEM_RATIO * self.nprocs
 
-        self.bin_path = FileHandle(self.root_dir / "EvoEF2")
+        self.bin_path = FileHandle(Path(self.root_dir, "EvoEF2"))
 
     def __evoef2_worker__(self, frames_path: Path, i: int) -> Tuple[int, float]:
         # Using relative path to `pdb_frame` to shorten path to input PDB.
@@ -42,8 +42,12 @@ class Evoef2(AbstractScoringFunction):
         return i, evoef2_score
 
     def __parse_output__(
-        self, *, score_stdout=None, score_file=None, original_command=""
+        self, *, score_stdout: Any = None, score_file: Any = None, original_command=""
     ) -> float:
+        assert (
+            score_stdout is not None
+        ), f"This shouldn't happen. {self} couldn't parse {score_stdout}\nfrom: \n{original_command}"
+
         try:
             evoef2_score = float(score_stdout.split()[-4])
         except (ValueError, IndexError) as e:

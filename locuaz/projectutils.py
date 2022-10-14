@@ -1,11 +1,23 @@
 from multiprocessing.sharedctypes import Value
 from pathlib import Path
 from attrs import define, field
-from typing import Iterator, List, Sequence, Set, Dict, Tuple, Union, Deque, Optional
+from typing import (
+    Iterable,
+    Iterator,
+    List,
+    Sequence,
+    Set,
+    Dict,
+    Tuple,
+    Union,
+    Deque,
+    Optional,
+)
 import collections
 import logging
 from statistics import mean, stdev
 from collections import deque
+from collections.abc import MutableMapping
 
 from Bio.PDB import PDBParser
 from Bio.SeqUtils import seq1
@@ -62,7 +74,7 @@ class Iteration:
                     f.write(str(round(s, 3)) + "\n")
 
     def read_scores(
-        self, scoring_functions: Sequence, log: Optional[logging.Logger] = None
+        self, scoring_functions: Iterable, log: Optional[logging.Logger] = None
     ) -> None:
         if not log:
             log = logging.getLogger("root")
@@ -98,7 +110,7 @@ class Iteration:
 
 
 @define
-class Epoch(collections.abc.MutableMapping):
+class Epoch(MutableMapping):
     id: int = field(converter=int)
     iterations: Dict[str, Iteration] = field(kw_only=True)
     nvt_done: bool = field(converter=bool, default=False, kw_only=True)
@@ -173,7 +185,7 @@ class WorkProject:
                 input_path
             )
 
-            self.history = set(iter_name)
+            # self.history = set(iter_name)
             iter_folder = "0-" + iter_name
             this_iter = Iteration(
                 DirHandle(self.dir_handle.dir_path / iter_folder, make=True),
@@ -319,7 +331,7 @@ class WorkProject:
             current_epoch[iter_name] = this_iter
 
         # Set up working dir
-        self.dir_handle = DirHandle(iter_path.parent, make=False)
+        self.dir_handle = DirHandle(iter_path.parent, make=False)  # type: ignore
         self.new_epoch(current_epoch)
 
     def __add_scoring_functions__(self) -> None:

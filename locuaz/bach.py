@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import Tuple, List
+from typing import Tuple, List, Optional, Any
 import subprocess as sp
 from collections.abc import Sequence
 import concurrent.futures as cf
@@ -19,11 +19,11 @@ class Bach(AbstractScoringFunction):
     def __init__(self, sf_dir, nprocs=2):
         self.root_dir = DirHandle(Path(sf_dir, self.name), make=False)
         self.nprocs = nprocs
-        self.parameters_handle = FileHandle(self.root_dir / "BSS.par")
+        self.parameters_handle = FileHandle(Path(self.root_dir, "BSS.par"))
         self.atomic_parameters_handle = FileHandle(
-            self.root_dir / "ATOMIC_PARAMETERS_BSS"
+            Path(self.root_dir, "ATOMIC_PARAMETERS_BSS")
         )
-        self.bin_path = FileHandle(self.root_dir / self.name)
+        self.bin_path = FileHandle(Path(self.root_dir, self.name))
 
     def __bach_worker__(self, frames_path: Path, i: int) -> Tuple[int, float]:
         # Use relative paths to shorten the input.
@@ -56,8 +56,16 @@ class Bach(AbstractScoringFunction):
         return i, bach_score
 
     def __parse_output__(
-        self, *, score_stdout=None, score_file=None, original_command=""
+        self,
+        *,
+        score_stdout: Any = None,
+        score_file: Any = None,
+        original_command="",
     ) -> float:
+        assert (
+            score_stdout is not None
+        ), f"This shouldn't happen. {self} couldn't parse {score_stdout}\nfrom: \n{original_command}"
+
         try:
             bach_score = float(score_stdout.split()[-1])
         except (ValueError, IndexError) as e:

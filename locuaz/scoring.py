@@ -74,12 +74,12 @@ def score_frames(work_pjct: WorkProject, iteration: Iteration, nframes: int) -> 
 
         if sf_name == "bluues":
             promedio = iteration.set_score("bluues", scores[0])
-            log.info(f"{sf_name} average score: {promedio}")
+            log.info(f"{sf_name} average score: {promedio:.3f}")
             promedio = iteration.set_score("bmf", scores[1])
-            log.info(f"bmf average score: {promedio}")
+            log.info(f"bmf average score: {promedio:.3f}")
         else:
             promedio = iteration.set_score(sf_name, scores)
-            log.info(f"{sf_name} average score: {promedio}")
+            log.info(f"{sf_name} average score: {promedio:.3f}")
 
     if not work_pjct.config["main"]["debug"]:
         log.info("Removing PDB frames. Set `--debug` flag to skip this.")

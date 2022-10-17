@@ -10,7 +10,7 @@ class MutatorEvoEF2(AbstractMutator):
     bin_path: FileHandle
 
     def __init__(self, bin_dir: Path) -> None:
-        self.bin_path = FileHandle(Path(bin_dir, "evoef2/EvoEF2"))
+        self.bin_path = FileHandle(Path(bin_dir, "EvoEF2"))
 
     def __evoef2_file__(self, mut: Mutation, output_path: Path) -> FileHandle:
         """__evoef2_file__ creates a .txt file for EvoEF2's --command=BuildMutant

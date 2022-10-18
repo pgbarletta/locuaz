@@ -3,7 +3,7 @@
 import os
 from pathlib import Path
 import glob
-
+from warnings import warn
 from cerberus import Validator
 
 
@@ -22,7 +22,7 @@ class Validatore(Validator):
             if ("current_iterations" in set_fields) and (
                 "previous_iterations" not in set_fields
             ):
-                print(
+                warn(
                     "Warning: `current_iterations` is set, but `previous_iterations` isn't. "
                     "Won't be able to prune the current iterations. Make sure there're enough branches."
                 )
@@ -112,7 +112,7 @@ class Validatore(Validator):
         {'type': 'integer'}
         """
         if threshold and value > threshold:
-            print(
+            warn(
                 f"Warning: {field} set to {value}. Make sure you have enough resources.",
                 flush=True,
             )
@@ -135,7 +135,7 @@ class Validatore(Validator):
                 # TODO: also try to check TORQUE PBS environmental variable.
                 available_procs = len(os.sched_getaffinity(0))
             if available_procs < necessary:
-                print(
+                warn(
                     f"Warning, {value} gpus, {mpi} MPI processors and {omp} "
                     f"OMP threads requested. {necessary} threads are necessary, "
                     f"but only {available_procs} are available.\n "
@@ -235,6 +235,6 @@ class Validatore(Validator):
         {'type': 'string'}
         """
         if other and self.document[other]:
-            print(
+            warn(
                 f"Warning: both `{field}` and {other} are set, the former will override the latter. "
             )

@@ -5,7 +5,7 @@ from pathlib import Path
 from queue import PriorityQueue
 import glob
 from itertools import product
-
+from warnings import warn
 
 import yaml
 
@@ -17,12 +17,9 @@ def get_raw_config(config_path: str):
         with open(Path(config_path), "r") as file:
             raw_config = yaml.load(file, yaml.SafeLoader)
     except Exception as e:
-        print(
-            "Bad .yaml file. Check one of the included configuration files "
-            "for a YAML format example.",
-            flush=True,
-        )
-        raise e
+        raise ValueError(
+            "Bad config YAML file. Check one of the example config files."
+        ) from e
     return raw_config
 
 
@@ -128,14 +125,14 @@ def get_memory(config: Dict) -> Optional[List[List[int]]]:
         # Check in case the mutating chains/residues have changed:
         for iterchains in epoch_iternames:
             if len(iterchains) != input_n_chains:
-                print(
+                warn(
                     f"Can't fill requested memory since input 'mutating_chainID' does not "
                     f" match the 'mutating_chainID' previously used on this workspace."
                 )
                 return None
             old_n_resSeqs = [len(itername[2:]) for itername in iterchains]
             if old_n_resSeqs != input_n_resSeqs:
-                print(
+                warn(
                     f"Can't fill requested memory since input 'mutating_resSeq' does not "
                     f" match the 'mutating_resSeq' previously used on this workspace."
                 )

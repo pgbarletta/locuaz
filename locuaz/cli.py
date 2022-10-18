@@ -33,17 +33,23 @@ def validate_input(raw_config: Dict, mode: str, debug: bool):
     # Use the schema to validate the input configuration yaml
     validator = Validatore(schema)
     if not validator.validate(raw_config):  # type: ignore
-        print(f"Wrong input config file.", flush=True)
         raise ValueError(validator.errors)  # type: ignore
     else:
         config = validator.normalized(raw_config)  # type: ignore
 
     if mode != config["main"]["mode"]:
-        print(
-            f"Warning, CLI input {mode} doesn't match "
-            f"{config['main']['mode']}. Overwriting option."
+        warn(
+            f"Warning, CLI input {mode} doesn't match {config['main']['mode']}."
+            f"Overwriting option."
         )
         config["main"]["mode"] = mode
+
+    if mode != "evolve" and "root" in config["paths"]:
+        raise ValueError(
+            "If `--mode` is not set to 'evolve', input iterations are needed, "
+            "either through `current_iterations` or `work` options in the `path` field."
+        )
+
     config["main"]["debug"] = debug
 
     return config

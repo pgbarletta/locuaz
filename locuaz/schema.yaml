@@ -92,7 +92,6 @@ protocol:
             max: 24
         prune:
             type: integer
-            default: 1
             required: false
             min: 1
             max: 4
@@ -101,6 +100,7 @@ protocol:
             default: "adaptive"
             required: false
             allowed: ["adaptive", "top"]
+            warn_overrides: prune
         generator:
             type: string 
             default: "SPM_4"

@@ -114,7 +114,6 @@ class Validatore(Validator):
         if threshold and value > threshold:
             warn(
                 f"Warning: {field} set to {value}. Make sure you have enough resources.",
-                flush=True,
             )
 
     def _validate_warn_thread_availability(self, others, field, value):
@@ -140,7 +139,7 @@ class Validatore(Validator):
                     f"OMP threads requested. {necessary} threads are necessary, "
                     f"but only {available_procs} are available.\n "
                     "Continue only if you know what you're doing.",
-                    flush=True,
+                    
                 )
 
     def _validate_unique(self, flag, field, value):
@@ -234,7 +233,7 @@ class Validatore(Validator):
         The rule's arguments are validated against this schema:
         {'type': 'string'}
         """
-        if other and self.document[other]:
+        if other and self.document.get(other, False):
             warn(
                 f"Warning: both `{field}` and {other} are set, the former will override the latter. "
             )

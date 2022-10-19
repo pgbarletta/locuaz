@@ -223,7 +223,6 @@ md:
             required: false
             minlength: 3
             maxlength: 3
-            warn_overrides: dist_to_box
             schema:
                 type: float
 target:

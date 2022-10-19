@@ -257,9 +257,6 @@ def _(complex: GROComplex, config: Dict, overlapped_resSeq: int) -> GROComplex:
         add_ions=False,
     )
 
-    # pdb2gmx changes the name of the solvent to HOH, for some reason.
-    # nonwat_gro.file.replace_text("HOH", "SOL")
-
     # Re-add waters to keep the N of the system constant
     wet_pdb_fn = Path(complex.dir) / ("wet_" + config["main"]["name"] + ".pdb")
     if wat_count != 0:

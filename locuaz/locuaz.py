@@ -39,7 +39,7 @@ def main() -> int:
         run_npt_epoch(work_pjct)
         work_pjct.epochs[-1].npt_done = True
 
-    for cnt in range(config["protocol"]["epochs"]):
+    for cnt in range(config["protocol"]["epochs"] + 1):
         old_id = work_pjct.epochs[-1].id
 
         log.info(f"Scoring epoch {old_id} ({cnt} on this run).")
@@ -51,13 +51,15 @@ def main() -> int:
         prune(work_pjct)
         log.info(f"Top iterations: {work_pjct.epochs[-1].top_iterations.keys()}.")
 
+        if cnt == config["protocol"]["epochs"]:
+            log.info(f"Done with protocol.")
+            break
+
         log.info(f"Initializing new epoch {old_id+1} ({cnt+1} on this run).")
         initialize_new_epoch(work_pjct)
 
         log.info(f"Running epoch {old_id+1} ({cnt+1} on this run).")
         run_epoch(work_pjct)
-
-    log.info(f"Done with protocol.")
 
     return 0
 

@@ -207,14 +207,16 @@ md:
             default: "tip3p"
             required: false
             allowed: ["tip3p", "tip4p", "tip4pew", "tip5p", "spc", "spce"]
+        use_box:
+            type: boolean
+            required: true
+            check_with: box_check
         box_type:
             type: string
-            default: "triclinic"
             required: false
             allowed: ["triclinic", "cubic", "dodecahedron", "octahedron"]
         dist_to_box:
             type: float 
-            default: 1.0
             required: false
             min: 0.5
             max: 9.0

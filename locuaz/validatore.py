@@ -237,3 +237,14 @@ class Validatore(Validator):
             warn(
                 f"Warning: both `{field}` and {other} are set, the former will override the latter. "
             )
+
+    def _check_with_box_check(self, field, value):
+        box_options = ("box_type", "dist_to_box", "box")
+        if value:
+            if not any([ box_opt in self.document for box_opt in box_options ]):
+                self._error(field, f"is true, at least one of {box_options} needs to be set.")
+        else:
+            for box_opt in box_options:
+                if box_opt in self.document:
+                    self._error(field, f"is false, cannot set {box_opt}.")
+            

@@ -437,24 +437,33 @@ def get_gro_ziptop_from_pdb(
     )
     launch_biobb(pdb_to_gro_zip)
 
-    # Set the box dimensions
-    dist_to_box: Optional[float] = md_config.get("dist_to_box")
-    box_type: str = md_config.get("box_type", "triclinic")
-    props = {
-        "distance_to_molecule": dist_to_box,
-        "box_type": box_type,
-    }
-    box: Optional[str] = md_config.get("box", "")
-    if box:
-        props["dev"] = f"-box {box}"
+    if md_config.get("use_box", False):
+        # Set the box dimensions
+        box: Optional[str] = md_config.get("box")
+        if box:
+            props = {
+                "distance_to_molecule": None,
+                "box_type": "triclinic",
+                "dev": f"-box {box}",
+            }
+        else:
+            dist_to_box: float = md_config.get("dist_to_box", 1.0)
+            box_type: str = md_config.get("box_type", "triclinic")
+            props = {
+                "distance_to_molecule": dist_to_box,
+                "box_type": box_type,
+            }
 
-    # box_gro_fn = local_dir / ("box" + name + ".gro")
-    # set_box = Editconf(
-    #     input_gro_path=str(pre_gro_fn),
-    #     output_gro_path=str(box_gro_fn),
-    #     properties=props,
-    # )
-    # launch_biobb(set_box)
+        box_gro_fn = local_dir / ("box" + name + ".gro")
+        set_box = Editconf(
+            input_gro_path=str(pre_gro_fn),
+            output_gro_path=str(box_gro_fn),
+            properties=props,
+        )
+        launch_biobb(set_box)
+
+        pre_gro_fn = copy_to(FileHandle(box_gro_fn), local_dir, f"pre{name}.gro").path
+        box_gro_fn.unlink()
 
     if add_ions:
         # Build a .tpr for genion
@@ -511,7 +520,6 @@ def get_gro_ziptop_from_pdb(
     temp_tpr_fn.unlink()
     pre_gro_fn.unlink()
     pre_top_fn.unlink()
-    # box_gro_fn.unlink()
 
     top = ZipTopology.from_path(top_fn)
     top.target_chains = tuple(target_chains)

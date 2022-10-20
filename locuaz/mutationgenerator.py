@@ -36,24 +36,6 @@ class AbstractMutationGenerator(ABC, Mapping):
 
 class SPM_RB(AbstractMutationGenerator):
     pass
-    # def __init__(
-    #     self,
-    #     epoch: Epoch,
-    #     max_branches: int,
-    #     *,
-    #     excluded_aas: Set[str],
-    #     excluded_pos: Set[int],
-    # ) -> None:
-    #     pass
-
-    # def __getitem__(self, key: Iteration) -> Mutation:
-    #     pass
-
-    # def __iter__(self) -> Iterator:
-    #     pass
-
-    # def __contains__(self, value: Iteration) -> bool:
-    #     pass
 
 
 class SPM_4(AbstractMutationGenerator):
@@ -125,7 +107,7 @@ class SPM_4(AbstractMutationGenerator):
         for i in range(max_tries):
             n_chains = len(any_iteration.chainIDs)
             idx_chain = choice(range(0, n_chains))
-            n_residues = len(any_iteration.resSeqs[self.idx_chain])
+            n_residues = len(any_iteration.resSeqs[idx_chain])
             idx_residue = choice(range(0, n_residues))
 
             mut_resSeq = any_iteration.resSeqs[idx_chain][idx_residue]

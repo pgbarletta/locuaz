@@ -38,7 +38,7 @@ def initialize_new_epoch(work_pjct: WorkProject) -> None:
         # than the GRO format, so there may be a difference in the last digit for the
         # lengths (eg: 12.27215 to 12.27210) and the angles (6.13607 to 6.13605).
         # That's why GROComplex.from_pdb() also uses editconf.
-        # cryst1_record = old_iter.complex.get_cryst1_record()
+        cryst1_record = old_iter.complex.get_cryst1_record()
         nonwat_pdb, wation_pdb = split_solute_and_solvent(old_iter.complex)
 
         for mutation in mutations:
@@ -59,7 +59,7 @@ def initialize_new_epoch(work_pjct: WorkProject) -> None:
             over_name = "overlapped_" + work_pjct.config["main"]["name"]
             mut_pdb_fn = iter_path / (over_name + ".pdb")
             mut_pdb = catenate_pdbs(dry_mut_pdb, wation_pdb, pdb_out_path=mut_pdb_fn)
-            # mut_pdb.set_cryst1_record(cryst1_record)
+            mut_pdb.set_cryst1_record(cryst1_record)
             # Remove the temporary mutated complex that lacks the solvent
             dry_mut_pdb.unlink()
 

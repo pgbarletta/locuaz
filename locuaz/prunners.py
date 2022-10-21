@@ -27,7 +27,7 @@ def prune(work_pjct: WorkProject) -> None:
         top_iterations = prev_epoch.top_iterations
     else:
         prunner_func = prunners[work_pjct.config["protocol"]["prunner"]]
-        prune = work_pjct.config["protocol"]["prune"]
+        prune = work_pjct.config["protocol"].get("prune")
         # Use the required prunner
         top_iterations = prunner_func(better_iters_queue, prune)
 

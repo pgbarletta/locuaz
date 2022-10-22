@@ -127,12 +127,14 @@ class MDrun:
         run_edr = Path(self.dir) / (self.out_name + ".edr")
         run_log = Path(self.dir) / (self.out_name + ".log")
         run_cpt = Path(self.dir) / (self.out_name + ".cpt")
+        run_pux = Path(self.dir) / (f"pullx_{self.out_name}.xvg")
+        run_puf = Path(self.dir) / (f"pullf_{self.out_name}.xvg")
         props = {
             "gmx_path": str(self.gmx_path),
             "num_threads_omp": self.num_threads_omp,
             "num_threads_mpi": self.num_threads_mpi,
             "gpu_id": self.gpu_id,
-            "dev": self.dev,
+            "dev": f"{self.dev} -px {run_pux} -pf {run_puf}",
         }
 
         runner = Mdrun(

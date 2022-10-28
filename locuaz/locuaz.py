@@ -56,7 +56,7 @@ def main() -> int:
                 for iter in work_pjct.epochs[-1].top_iterations.values()
             ]
         )
-        log.info(f"Top iterations: {top_itrs_str}.")
+        log.info(f"Top iterations: {top_itrs_str}")
 
         if cnt == config["protocol"]["epochs"]:
             log.info(f"Done with protocol.")

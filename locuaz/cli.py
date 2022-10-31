@@ -1,11 +1,12 @@
 import os
 import argparse
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set
 from pathlib import Path
 from queue import PriorityQueue
 import glob
 from itertools import product
 from warnings import warn
+import shutil as sh
 
 import yaml
 
@@ -73,15 +74,52 @@ def append_iterations(
     return append_iterations(sorted_iters, iterations, epoch_nbr)
 
 
+def is_incomplete(iter_path: Path, name: str) -> bool:
+    return not Path(iter_path, f"{name}.pdb").is_file()
+
+
+def list_iteration_dirs(wrk_path: Path, name: str) -> List[Path]:
+    iter_dirs: List[Path] = []
+    incomplete_epochs: Set[str] = set()
+    for filename in glob.glob(str(Path(wrk_path, "*"))):
+        iter_path = Path(filename)
+        if iter_path.is_dir():
+            try:
+                nbr, *_ = Path(iter_path).name.split("-")
+                if nbr.isnumeric():
+                    iter_dirs.append(iter_path)
+                    if is_incomplete(iter_path, name):
+                        incomplete_epochs.add(nbr)
+            except:
+                # not an Epoch folder
+                pass
+
+    valid_iters = []
+    for iter_path in iter_dirs:
+        nbr, *_ = iter_path.name.split("-")
+        if nbr in incomplete_epochs:
+            new_path = Path(iter_path.parent, "bu_" + iter_path.name)
+            # TODO: won't be necessary to cast after 3.9 upgrade
+            sh.move(str(iter_path), str(new_path))
+            warn(f"Found incomplete epoch. Will backup {iter_path} to {new_path}")
+        else:
+            valid_iters.append(iter_path)
+    return valid_iters
+
+
 def set_iterations(config: Dict) -> None:
     if "work" not in config["paths"]:
         return
+
+    valid_iters = list_iteration_dirs(
+        Path(config["paths"]["work"]), config["main"]["name"]
+    )
+
     iters: PriorityQueue = PriorityQueue()
-    for filename in glob.glob(str(Path(config["paths"]["work"], "*"))):
-        iter_path = Path(filename)
-        if iter_path.is_dir():
-            nbr, *_ = Path(iter_path).name.split("-")
-            iters.put((-int(nbr), iter_path))
+    for iter_path in valid_iters:
+        nbr, *_ = iter_path.name.split("-")
+        iters.put((-int(nbr), iter_path))
+
     # Iterations are sorted by epoch number now
     config["paths"]["current_iterations"] = []
     iter_str = append_iterations(iters, config["paths"]["current_iterations"], 1)

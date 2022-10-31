@@ -39,7 +39,9 @@ def initialize_new_epoch(work_pjct: WorkProject) -> None:
         # lengths (eg: 12.27215 to 12.27210) and the angles (6.13607 to 6.13605).
         # That's why GROComplex.from_pdb() also uses editconf.
         cryst1_record = old_iter.complex.get_cryst1_record()
-        nonwat_pdb, wation_pdb = split_solute_and_solvent(old_iter.complex)
+        nonwat_pdb, wation_pdb = split_solute_and_solvent(
+            old_iter.complex, work_pjct.config["md"]["gmx_bin"]
+        )
 
         for mutation in mutations:
             iter_name, iter_resnames = mutation.new_name_resname(old_iter)

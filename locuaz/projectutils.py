@@ -324,7 +324,6 @@ class WorkProject:
                     except:
                         log.error(
                             f"{epoch_nbr}-{iter_str} is in an invalid state. Cannot build complex from it."
-                            f""
                         )
                         raise e
 

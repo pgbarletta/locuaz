@@ -10,6 +10,7 @@ afra.sh
 bin
 dist
 aux
+daux
 __*__*
 nice_example
 BIND*sh

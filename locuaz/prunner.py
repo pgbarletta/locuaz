@@ -27,11 +27,15 @@ def choose_top_iters(
 ) -> PriorityQueue:
     better_iters: PriorityQueue = PriorityQueue()
 
-    for prev_iter in prev_epoch.top_iterations.values():
-        for iter in this_epoch.values():
+    for iter in this_epoch.values():
+        better_overall: bool = True
+        rank_overall: int = 0
+        for prev_iter in prev_epoch.top_iterations.values():
             better, rank = beats_old_iter(prev_iter, iter, threshold)
-            if better:
-                better_iters.put((-rank, iter))
+            better_overall &= better
+            rank_overall += rank
+        if better_overall:
+            better_iters.put((-rank_overall, iter))
 
     return better_iters
 

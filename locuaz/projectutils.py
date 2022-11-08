@@ -136,7 +136,6 @@ class Epoch(MutableMapping):
         return len(self.iterations)
 
 
-@define
 class WorkProject:
     """WorkProject:
     Args:
@@ -145,19 +144,20 @@ class WorkProject:
         root (Path): path to locuaz's root folder.
     """
 
-    config: Dict = field()
-    name: str = field(init=False)
-    dir_handle: DirHandle = field(init=False)
-    epochs: List[Epoch] = field(init=False)
-    mdps: Dict[str, FileHandle] = field(init=False)
-    history: Set[Tuple] = field(init=False)
-    mutant_mtx: List[List[str]] = field(init=False)
-    scorers: Dict[str, AbstractScoringFunction] = field(init=False)
-    mutated_positions: Deque[Set[int]] = field(init=False)
-    mutated_aminoacids: Deque[Set[str]] = field(init=False)
-    has_memory: bool = field(init=False, default=False)
+    config: Dict
+    name: str
+    dir_handle: DirHandle
+    epochs: List[Epoch]
+    mdps: Dict[str, FileHandle]
+    history: Set[Tuple]
+    mutant_mtx: List[List[str]]
+    scorers: Dict[str, AbstractScoringFunction]
+    mutated_positions: Deque[Set[int]]
+    mutated_aminoacids: Deque[Set[str]]
+    has_memory: bool = False
 
-    def __attrs_post_init__(self):
+    def __init__(self, config: Dict):
+        self.config = config
         self.name = self.config["main"]["name"]
         self.epochs = []
 
@@ -199,13 +199,18 @@ class WorkProject:
             copy_to(pdb_handle, this_iter.dir_handle)
 
             # set up complex
-            this_iter.complex = GROComplex.from_pdb(
-                name=self.config["main"]["name"],
-                input_dir=this_iter.dir_handle,
-                target_chains=self.config["target"]["chainID"],
-                binder_chains=self.config["binder"]["chainID"],
-                md_config=self.config["md"],
-            )
+            try:
+                this_iter.complex = GROComplex.from_pdb(
+                    name=self.config["main"]["name"],
+                    input_dir=this_iter.dir_handle,
+                    target_chains=self.config["target"]["chainID"],
+                    binder_chains=self.config["binder"]["chainID"],
+                    md_config=self.config["md"],
+                )
+            except Exception as e:
+                raise ValueError(
+                    f"Cannot generate starting complex from {pdb_handle}. Aborting."
+                ) from e
 
             zero_epoch[iter_name] = this_iter
 

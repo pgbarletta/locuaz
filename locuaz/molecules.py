@@ -627,7 +627,7 @@ def _(complex: GROComplex, gmx_bin: str) -> Tuple[PDBStructure, PDBStructure]:
         input_top_path=str(complex.tpr.file.path),
         input_index_path=str(complex.ndx.path),
         output_str_path=str(nonwat_pdb_fn),
-        properties={"selection": "complex"},
+        properties={"selection": "Protein"},
     )
     launch_biobb(get_protein)
     nonwat_pdb = PDBStructure.from_path(nonwat_pdb_fn)
@@ -639,7 +639,7 @@ def _(complex: GROComplex, gmx_bin: str) -> Tuple[PDBStructure, PDBStructure]:
         input_top_path=str(complex.tpr.file.path),
         input_index_path=str(complex.ndx.path),
         output_str_path=str(wation_pdb_fn),
-        properties={"selection": "solvent_ions"},
+        properties={"selection": "Non-Protein"},
     )
     launch_biobb(get_water_ions)
 
@@ -679,7 +679,7 @@ def _(complex: GROComplex, gmx_bin: str) -> Tuple[PDBStructure, PDBStructure]:
 #         input_top_path=str(complex.tpr.file.path),
 #         input_index_path=str(complex.ndx.path),
 #         output_str_path=str(wation_pdb_fn),
-#         properties={"selection": "solvent_ions"},
+#         properties={"selection": "Non-Protein"},
 #     )
 #     launch_biobb(get_water_ions)
 
@@ -805,9 +805,9 @@ def generate_ndx(
             " or ".join([f"segid {chainID}" for chainID in binder_chains])
         ).write(ndx_file, name="binder", mode="a")
         # TODO: this won't work with glyco mods and stuff
-        uni_pdb.select_atoms("protein").write(ndx_file, name="complex", mode="a")
+        uni_pdb.select_atoms("protein").write(ndx_file, name="Protein", mode="a")
         uni_pdb.select_atoms("not protein").write(
-            ndx_file, name="solvent_ions", mode="a"
+            ndx_file, name="Non-Protein", mode="a"
         )
         uni_pdb.select_atoms("all").write(ndx_file, name="sistema", mode="a")
 

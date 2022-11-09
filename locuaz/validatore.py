@@ -98,7 +98,7 @@ class Validatore(Validator):
         The rule's arguments are validated against this schema:
         {'type': 'string'}
         """
-        if other:
+        if other and other in self.document:
             try:
                 if value < len(self.document[other]):
                     self._error(field, f"cannot be lower than the length of {other}.")

@@ -14,8 +14,8 @@ from prunners import prune
 
 def main() -> int:
 
-    config = cli.main()
-    work_pjct = pu.WorkProject(config)
+    config, start = cli.main()
+    work_pjct = pu.WorkProject(config, start)
     log = logging.getLogger(work_pjct.name)
     log.info(f"Launching.")
 

@@ -1,7 +1,7 @@
 paths:
     type: dict
     required: true
-    contains_any_of: [input, root, work, previous_iterations, current_iterations ]
+    contains_any_of: [input, work ]
     schema:
         gmxrc:
             type: string
@@ -27,39 +27,10 @@ paths:
                 type: string
                 is_directory: true
             required: false
-            excludes: current_iterations
-            dependencies: root 
-        root:
-            type: string
-            required: false
-            excludes: current_iterations
-            dependencies: input
-            is_directory: true
         work:
             type: string
-            required: false
-            excludes: current_iterations
-            is_directory: true
-            contains_iteration_dirs: true
-        previous_iterations:
-            type: list
-            minlength: 0
-            maxlength: 12
-            required: false
-            schema:
-                type: string
-                is_directory: true
-                is_iteration_dir: true
-        current_iterations:
-            type: list
-            minlength: 1
-            maxlength: 12
-            required: false
-            excludes: [input, root]
-            schema:
-                type: string
-                is_directory: true
-                is_iteration_dir: true
+            required: true
+
 main:
     type: dict
     required: true
@@ -113,13 +84,14 @@ protocol:
             allowed: ["evoef2", "biobb"]
         memory_size:
             type: integer
-            default: 0
+            required: false
             min: 0
             max: 12
             higher_than_length_of: memory_positions
         memory_positions:
             type: list
             required: false
+            dependencies: memory_size
             minlength: 1
             maxlength: 12
             schema:

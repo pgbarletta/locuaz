@@ -1,6 +1,6 @@
 import os
 import argparse
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, Tuple
 from pathlib import Path
 from queue import PriorityQueue
 import glob
@@ -24,7 +24,7 @@ def get_raw_config(config_path: str):
     return raw_config
 
 
-def validate_input(raw_config: Dict, mode: str, debug: bool):
+def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool]:
     # Get the cerberus schema located in this same folder
     here_dir = Path(__file__).parent.resolve()
     schema_fn = Path.joinpath(here_dir, "schema.yaml")
@@ -45,15 +45,20 @@ def validate_input(raw_config: Dict, mode: str, debug: bool):
         )
         config["main"]["mode"] = mode
 
-    if mode != "evolve" and "root" in config["paths"]:
-        raise ValueError(
-            "If `--mode` is not set to 'evolve', input iterations are needed, "
-            "either through `current_iterations` or `work` options in the `path` field."
-        )
-
     config["main"]["debug"] = debug
 
-    return config
+    if Path(config["paths"]["work"]).is_dir():
+        start = False
+    else:
+        root_dir = Path(config["paths"]["work"]).parent
+        assert root_dir.is_dir(), f"Invalid input work dir: {config['paths']['work']}"
+        assert (
+            mode == "evolve"
+        ), "`--mode` is not set to 'evolve', a `work` folder with vaild iterations is needed."
+
+        start = True
+
+    return config, start
 
 
 def append_iterations(
@@ -108,8 +113,6 @@ def list_iteration_dirs(wrk_path: Path, name: str) -> List[Path]:
 
 
 def set_iterations(config: Dict) -> None:
-    if "work" not in config["paths"]:
-        return
 
     valid_iters = list_iteration_dirs(
         Path(config["paths"]["work"]), config["main"]["name"]
@@ -137,13 +140,8 @@ def remove_overlap(v: List):
 
 # Small bug in this function: when an epoch was generated from more than 1 top iteration
 # The mutations performed on that epoch will be memorized and also the ones that were actually
-# performed on a previous epoch, since it will find differences among
+# performed on a previous epoch, since it will find differences among them
 def get_memory(config: Dict) -> Optional[List[List[int]]]:
-    starts = "root" in config["paths"]
-    requested_memory = config["protocol"].get("memory_size", False)
-    has_set_memory = config["protocol"].get("memory_positions", False)
-    if starts or not requested_memory or has_set_memory:
-        return None
 
     # Get all the iterations sorted by epoch
     iters: PriorityQueue = PriorityQueue()
@@ -220,7 +218,7 @@ def misc_settings(config: Dict) -> Dict:
     return config
 
 
-def main() -> Dict:
+def main() -> Tuple[Dict, bool]:
     """Console script for locuaz."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -244,14 +242,17 @@ def main() -> Dict:
     args = parser.parse_args()
 
     raw_config = get_raw_config(args.config_file)
-    config = validate_input(raw_config, args.mode, args.debug)
+    config, starts = validate_input(raw_config, args.mode, args.debug)
     set_iterations(config)
-    memory_positions = get_memory(config)
-    if memory_positions:
+
+    requested_memory = "memory_size" in config["protocol"]
+    has_no_memory = not ("memory_positions" in config["protocol"])
+    if not starts and requested_memory and has_no_memory:
+        memory_positions = get_memory(config)
         config["protocol"]["memory_positions"] = memory_positions
     config = misc_settings(config)
 
     # Set up environment
     os.environ["OMP_PLACES"] = "threads"
 
-    return config
+    return config, starts

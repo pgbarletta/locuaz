@@ -156,12 +156,12 @@ class WorkProject:
     mutated_aminoacids: Deque[Set[str]]
     has_memory: bool = False
 
-    def __init__(self, config: Dict):
+    def __init__(self, config: Dict, start: bool):
         self.config = config
         self.name = self.config["main"]["name"]
         self.epochs = []
 
-        if "root" in self.config["paths"]:
+        if start:
             self.__start_work__()
         else:
             self.__restart_work__()
@@ -176,7 +176,7 @@ class WorkProject:
         for data_str in self.config["paths"]["input"]:
             # First, create working dir
             self.dir_handle = DirHandle(
-                Path(self.config["paths"]["root"], "work_dir"), make=True, force=True
+                Path(self.config["paths"]["work"]), make=True, force=False
             )
 
             # Check input PDB to create name and attributes for the starting iteration.

@@ -575,100 +575,60 @@ def split_solute_and_solvent(complex: AbstractComplex, gmx_bin: str) -> Any:
     raise NotImplementedError
 
 
-@split_solute_and_solvent.register
-def _(complex: GROComplex, gmx_bin: str) -> Tuple[PDBStructure, PDBStructure]:
-    """prepare_old_iter extract 2 PDBs from an input pdb, one with the protein
-    and the other with the water and ions.
-
-    Args:
-        complex (Complex): a complex object with a PDB and a TPR file.
-    """
-    wrk_dir = Path(complex.dir)
-
-    whole_pdb = Path(wrk_dir, "whole.pdb")
-    make_whole = GMXImage(
-        input_traj_path=str(complex.pdb),
-        input_index_path=str(complex.ndx),
-        input_top_path=str(complex.tpr),
-        output_traj_path=str(whole_pdb),
-        properties={
-            "gmx_path": gmx_bin,
-            "fit_selection": "sistema",
-            "center_selection": "sistema",
-            "output_selection": "sistema",
-            "ur": "tric",
-            "pbc": "whole",
-            "center": False,
-        },
-    )
-    launch_biobb(make_whole)
-
-    center_pdb = Path(wrk_dir, f"center_{complex.name}.pdb")
-    centrar = GMXImage(
-        input_traj_path=str(whole_pdb),
-        input_index_path=str(complex.ndx),
-        input_top_path=str(whole_pdb),
-        output_traj_path=str(center_pdb),
-        properties={
-            "gmx_path": gmx_bin,
-            "fit_selection": "target",
-            "center_selection": "target",
-            "output_selection": "sistema",
-            "ur": "tric",
-            "pbc": "res",
-            "center": True,
-        },
-    )
-    launch_biobb(centrar)
-
-    # Protein
-    nonwat_pdb_fn = Path(complex.dir) / ("nonwat_" + complex.name + ".pdb")
-    get_protein = GMXTrjConvStr(
-        input_structure_path=str(center_pdb),
-        input_top_path=str(complex.tpr.file.path),
-        input_index_path=str(complex.ndx.path),
-        output_str_path=str(nonwat_pdb_fn),
-        properties={"selection": "Protein"},
-    )
-    launch_biobb(get_protein)
-    nonwat_pdb = PDBStructure.from_path(nonwat_pdb_fn)
-
-    # Water and ions
-    wation_pdb_fn = Path(complex.dir) / ("wation_" + complex.name + ".pdb")
-    get_water_ions = GMXTrjConvStr(
-        input_structure_path=str(center_pdb),
-        input_top_path=str(complex.tpr.file.path),
-        input_index_path=str(complex.ndx.path),
-        output_str_path=str(wation_pdb_fn),
-        properties={"selection": "Non-Protein"},
-    )
-    launch_biobb(get_water_ions)
-
-    wation_pdb = PDBStructure.from_path(wation_pdb_fn)
-
-    # Remove temporary files
-    whole_pdb.unlink()
-
-    return nonwat_pdb, wation_pdb
-
-
 # @split_solute_and_solvent.register
-# def _(complex: GROComplex) -> Tuple[PDBStructure, PDBStructure]:
+# def _(complex: GROComplex, gmx_bin: str) -> Tuple[PDBStructure, PDBStructure]:
 #     """prepare_old_iter extract 2 PDBs from an input pdb, one with the protein
 #     and the other with the water and ions.
 
 #     Args:
 #         complex (Complex): a complex object with a PDB and a TPR file.
 #     """
+#     wrk_dir = Path(complex.dir)
+
+#     whole_pdb = Path(wrk_dir, "whole.pdb")
+#     make_whole = GMXImage(
+#         input_traj_path=str(complex.pdb),
+#         input_index_path=str(complex.ndx),
+#         input_top_path=str(complex.tpr),
+#         output_traj_path=str(whole_pdb),
+#         properties={
+#             "gmx_path": gmx_bin,
+#             "fit_selection": "sistema",
+#             "center_selection": "sistema",
+#             "output_selection": "sistema",
+#             "ur": "tric",
+#             "pbc": "whole",
+#             "center": False,
+#         },
+#     )
+#     launch_biobb(make_whole)
+
+#     center_pdb = Path(wrk_dir, f"center_{complex.name}.pdb")
+#     centrar = GMXImage(
+#         input_traj_path=str(whole_pdb),
+#         input_index_path=str(complex.ndx),
+#         input_top_path=str(whole_pdb),
+#         output_traj_path=str(center_pdb),
+#         properties={
+#             "gmx_path": gmx_bin,
+#             "fit_selection": "target",
+#             "center_selection": "target",
+#             "output_selection": "sistema",
+#             "ur": "tric",
+#             "pbc": "res",
+#             "center": True,
+#         },
+#     )
+#     launch_biobb(centrar)
 
 #     # Protein
 #     nonwat_pdb_fn = Path(complex.dir) / ("nonwat_" + complex.name + ".pdb")
 #     get_protein = GMXTrjConvStr(
-#         input_structure_path=str(complex.pdb.file.path),
+#         input_structure_path=str(whole_pdb),
 #         input_top_path=str(complex.tpr.file.path),
 #         input_index_path=str(complex.ndx.path),
 #         output_str_path=str(nonwat_pdb_fn),
-#         properties={"selection": "complex"},
+#         properties={"selection": "Protein"},
 #     )
 #     launch_biobb(get_protein)
 #     nonwat_pdb = PDBStructure.from_path(nonwat_pdb_fn)
@@ -676,7 +636,7 @@ def _(complex: GROComplex, gmx_bin: str) -> Tuple[PDBStructure, PDBStructure]:
 #     # Water and ions
 #     wation_pdb_fn = Path(complex.dir) / ("wation_" + complex.name + ".pdb")
 #     get_water_ions = GMXTrjConvStr(
-#         input_structure_path=str(complex.pdb.file.path),
+#         input_structure_path=str(whole_pdb),
 #         input_top_path=str(complex.tpr.file.path),
 #         input_index_path=str(complex.ndx.path),
 #         output_str_path=str(wation_pdb_fn),
@@ -686,7 +646,47 @@ def _(complex: GROComplex, gmx_bin: str) -> Tuple[PDBStructure, PDBStructure]:
 
 #     wation_pdb = PDBStructure.from_path(wation_pdb_fn)
 
+#     # Remove temporary files
+#     whole_pdb.unlink()
+
 #     return nonwat_pdb, wation_pdb
+
+
+@split_solute_and_solvent.register
+def _(complex: GROComplex) -> Tuple[PDBStructure, PDBStructure]:
+    """prepare_old_iter extract 2 PDBs from an input pdb, one with the protein
+    and the other with the water and ions.
+
+    Args:
+        complex (Complex): a complex object with a PDB and a TPR file.
+    """
+
+    # Protein
+    nonwat_pdb_fn = Path(complex.dir) / ("nonwat_" + complex.name + ".pdb")
+    get_protein = GMXTrjConvStr(
+        input_structure_path=str(complex.pdb.file.path),
+        input_top_path=str(complex.tpr.file.path),
+        input_index_path=str(complex.ndx.path),
+        output_str_path=str(nonwat_pdb_fn),
+        properties={"selection": "complex"},
+    )
+    launch_biobb(get_protein)
+    nonwat_pdb = PDBStructure.from_path(nonwat_pdb_fn)
+
+    # Water and ions
+    wation_pdb_fn = Path(complex.dir) / ("wation_" + complex.name + ".pdb")
+    get_water_ions = GMXTrjConvStr(
+        input_structure_path=str(complex.pdb.file.path),
+        input_top_path=str(complex.tpr.file.path),
+        input_index_path=str(complex.ndx.path),
+        output_str_path=str(wation_pdb_fn),
+        properties={"selection": "Non-Protein"},
+    )
+    launch_biobb(get_water_ions)
+
+    wation_pdb = PDBStructure.from_path(wation_pdb_fn)
+
+    return nonwat_pdb, wation_pdb
 
 
 def fix_pdb(

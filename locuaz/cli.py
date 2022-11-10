@@ -149,7 +149,11 @@ def get_memory(config: Dict) -> Optional[List[List[int]]]:
         iter_path = Path(filename)
         if iter_path.is_dir():
             nbr, *_ = Path(iter_path).name.split("-")
-            iters.put((-int(nbr), iter_path))
+            try:
+                iters.put((-int(nbr), iter_path))
+            except ValueError:
+                # not valid iteration folder
+                continue
 
     input_n_chains = len(config["binder"]["mutating_chainID"])
     input_n_resSeqs = [len(resSeqs) for resSeqs in config["binder"]["mutating_resSeq"]]

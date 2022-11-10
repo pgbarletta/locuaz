@@ -5,8 +5,17 @@ from shutil import SameFileError
 
 from biobb_md.gromacs.grompp import Grompp
 from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
+from biobb_analysis.gromacs.gmx_image import GMXImage
 from biobb_md.gromacs.mdrun import Mdrun
-from molecules import AbstractComplex, GROComplex, ZipTopology, copy_mol_to
+from molecules import (
+    AbstractComplex,
+    GROStructure,
+    TPRFile,
+    GROComplex,
+    ZipTopology,
+    fix_box,
+    copy_mol_to,
+)
 
 from fileutils import DirHandle, FileHandle
 from projectutils import WorkProject
@@ -166,16 +175,20 @@ class MDrun:
             gmx_bin=self.gmx_path,
         )
 
-        # Convert output .gro to PDB.
-        run_pdb = Path(self.dir) / (self.out_name + ".pdb")
-        props = {"gmx_path": str(self.gmx_path), "selection": "System"}
-        gro_to_pdb = GMXTrjConvStr(
-            input_structure_path=str(run_gro),
-            input_top_path=str(run_tpr),
-            output_str_path=str(run_pdb),
-            properties=props,
-        )
-        launch_biobb(gro_to_pdb)
+        if self.image_after:
+            run_pdb = Path(self.dir, f"{self.out_name}.pdb")
+            fix_box(new_complex, run_pdb, str(self.gmx_path))
+        else:
+            # Convert output .gro to PDB.
+            run_pdb = Path(self.dir) / (self.out_name + ".pdb")
+            props = {"gmx_path": str(self.gmx_path), "selection": "System"}
+            gro_to_pdb = GMXTrjConvStr(
+                input_structure_path=str(run_gro),
+                input_top_path=str(run_tpr),
+                output_str_path=str(run_pdb),
+                properties=props,
+            )
+            launch_biobb(gro_to_pdb)
 
         # Build the new complex
         new_complex = type(complex).from_complex(

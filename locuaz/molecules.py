@@ -653,7 +653,7 @@ def split_solute_and_solvent(complex: AbstractComplex, gmx_bin: str) -> Any:
 
 
 @split_solute_and_solvent.register
-def _(complex: GROComplex) -> Tuple[PDBStructure, PDBStructure]:
+def _(complex: GROComplex, gmx_bin: str) -> Tuple[PDBStructure, PDBStructure]:
     """prepare_old_iter extract 2 PDBs from an input pdb, one with the protein
     and the other with the water and ions.
 
@@ -668,7 +668,7 @@ def _(complex: GROComplex) -> Tuple[PDBStructure, PDBStructure]:
         input_top_path=str(complex.tpr.file.path),
         input_index_path=str(complex.ndx.path),
         output_str_path=str(nonwat_pdb_fn),
-        properties={"selection": "complex"},
+        properties={"gmx_path": gmx_bin, "selection": "Protein"},
     )
     launch_biobb(get_protein)
     nonwat_pdb = PDBStructure.from_path(nonwat_pdb_fn)
@@ -680,7 +680,7 @@ def _(complex: GROComplex) -> Tuple[PDBStructure, PDBStructure]:
         input_top_path=str(complex.tpr.file.path),
         input_index_path=str(complex.ndx.path),
         output_str_path=str(wation_pdb_fn),
-        properties={"selection": "Non-Protein"},
+        properties={"gmx_path": gmx_bin, "selection": "Non-Protein"},
     )
     launch_biobb(get_water_ions)
 

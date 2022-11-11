@@ -9,8 +9,17 @@ from projectutils import WorkProject
 from runutils import MDrun
 
 def run_epoch(work_pjct: WorkProject) -> None:
-    run_min_nvt_epoch(work_pjct)
-    run_npt_epoch(work_pjct)
+    log = logging.getLogger(f"{work_pjct.name}")
+    
+    if not work_pjct.epochs[-1].nvt_done:
+        run_min_nvt_epoch(work_pjct)
+    else:
+        log.info(f"Skipping minimization and NVT run of epoch {work_pjct.epochs[-1].id}")
+    
+    if not work_pjct.epochs[-1].npt_done:
+        run_npt_epoch(work_pjct)
+    else:
+        log.info(f"Skipping NPT run of epoch {work_pjct.epochs[-1].id}")
 
 def run_min_nvt_epoch(work_pjct: WorkProject) -> None:
     log = logging.getLogger(f"{work_pjct.name}")
@@ -58,6 +67,7 @@ def run_min_nvt_epoch(work_pjct: WorkProject) -> None:
             nvt_complex = futu_nvt.result()
             iter_name = '-'.join(nvt_complex.dir.dir_path.name.split('-')[1:])
             epoch[iter_name].complex = nvt_complex
+    epoch.nvt_done = True
 
 
 def run_npt_epoch(work_pjct: WorkProject) -> None:

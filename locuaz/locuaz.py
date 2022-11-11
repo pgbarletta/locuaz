@@ -46,14 +46,6 @@ def main() -> int:
         log.info(f"Prunning epoch {old_id}.")
         prune(work_pjct)
 
-        top_itrs_str = " ; ".join(
-            [
-                f"{iter.epoch_id}-{iter.iter_name}"
-                for iter in work_pjct.epochs[-1].top_iterations.values()
-            ]
-        )
-        log.info(f"Top iterations: {top_itrs_str}")
-
         if old_id >= config["protocol"]["epochs"]:
             log.info(f"Done with protocol.")
             break

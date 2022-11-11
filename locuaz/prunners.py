@@ -1,4 +1,5 @@
 from typing import Dict, Callable
+import logging
 
 from projectutils import WorkProject
 from prunner import choose_top_iters, adaptive_prunner, top_prunner
@@ -19,9 +20,10 @@ def prune(work_pjct: WorkProject) -> None:
         this_epoch.top_iterations = this_epoch.iterations
         return
 
+    log = logging.getLogger(work_pjct.name)
     threshold = work_pjct.config["scoring"]["consensus_threshold"]
 
-    better_iters_queue = choose_top_iters(prev_epoch, this_epoch, threshold)
+    better_iters_queue = choose_top_iters(prev_epoch, this_epoch, threshold, log)
     if better_iters_queue.empty():
         # All new iterations are worse than the old ones or they all failed during MD.
         top_iterations = prev_epoch.top_iterations
@@ -31,5 +33,10 @@ def prune(work_pjct: WorkProject) -> None:
         # Use the required prunner
         top_iterations = prunner_func(better_iters_queue, prune)
 
+    top_itrs_str = " ; ".join(
+        [f"{iter.epoch_id}-{iter.iter_name}" for iter in top_iterations.values()]
+    )
+    log.info(f"Top iterations: {top_itrs_str}")
     this_epoch.top_iterations = top_iterations
+
     return

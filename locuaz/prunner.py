@@ -1,12 +1,13 @@
 from ast import Call
 from typing import Tuple, Dict, Callable
 from queue import PriorityQueue
+import logging
 
 from projectutils import Epoch, Iteration, WorkProject
 
 
 def beats_old_iter(
-    old_iter: Iteration, new_iter: Iteration, threshold: int
+    old_iter: Iteration, new_iter: Iteration, threshold: int, log: logging.Logger
 ) -> Tuple[bool, int]:
 
     # Allow the user to change scoring functions mid-run and only use
@@ -19,11 +20,16 @@ def beats_old_iter(
         ]
     )
 
-    return count > threshold, count
+    log.info(
+        f"{new_iter.epoch_id}-{new_iter.iter_name} vs. {old_iter.epoch_id}-{old_iter.iter_name} "
+        f"improves on {count} scoring functions."
+    )
+
+    return count >= threshold, count
 
 
 def choose_top_iters(
-    prev_epoch: Epoch, this_epoch: Epoch, threshold: int
+    prev_epoch: Epoch, this_epoch: Epoch, threshold: int, log: logging.Logger
 ) -> PriorityQueue:
     better_iters: PriorityQueue = PriorityQueue()
 
@@ -31,7 +37,7 @@ def choose_top_iters(
         better_overall: bool = True
         rank_overall: int = 0
         for prev_iter in prev_epoch.top_iterations.values():
-            better, rank = beats_old_iter(prev_iter, iter, threshold)
+            better, rank = beats_old_iter(prev_iter, iter, threshold, log)
             better_overall &= better
             rank_overall += rank
         if better_overall:

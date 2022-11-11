@@ -83,21 +83,26 @@ def is_incomplete(iter_path: Path, name: str) -> bool:
     return not Path(iter_path, f"{name}.pdb").is_file()
 
 
-def list_iteration_dirs(wrk_path: Path, name: str) -> List[Path]:
+def list_iteration_dirs(wrk_path: Path, name: str, max_epochs: int) -> List[Path]:
     iter_dirs: List[Path] = []
     incomplete_epochs: Set[str] = set()
     for filename in glob.glob(str(Path(wrk_path, "*"))):
         iter_path = Path(filename)
         if iter_path.is_dir():
             try:
-                nbr, *_ = Path(iter_path).name.split("-")
-                if nbr.isnumeric():
-                    iter_dirs.append(iter_path)
-                    if is_incomplete(iter_path, name):
-                        incomplete_epochs.add(nbr)
+                nbr, *iter_name = Path(iter_path).name.split("-")
             except:
                 # not an Epoch folder
-                pass
+                continue
+            if nbr.isnumeric():
+                assert int(nbr) <= max_epochs, (
+                    f"Max of {max_epochs} epochs "
+                    f"solicited, but found iteration {iter_name} from epoch {nbr}. Aborting."
+                )
+
+                iter_dirs.append(iter_path)
+                if is_incomplete(iter_path, name):
+                    incomplete_epochs.add(nbr)
 
     valid_iters = []
     for iter_path in iter_dirs:
@@ -115,7 +120,9 @@ def list_iteration_dirs(wrk_path: Path, name: str) -> List[Path]:
 def set_iterations(config: Dict) -> None:
 
     valid_iters = list_iteration_dirs(
-        Path(config["paths"]["work"]), config["main"]["name"]
+        Path(config["paths"]["work"]),
+        config["main"]["name"],
+        config["protocol"]["epochs"],
     )
 
     iters: PriorityQueue = PriorityQueue()

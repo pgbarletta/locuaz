@@ -31,16 +31,12 @@ def main() -> int:
             score(work_pjct, iter)
         return 0
 
-    if not work_pjct.epochs[-1].nvt_done:
-        run_min_nvt_epoch(work_pjct)
-        work_pjct.epochs[-1].nvt_done = True
-
-    if not work_pjct.epochs[-1].npt_done:
-        run_npt_epoch(work_pjct)
-        work_pjct.epochs[-1].npt_done = True
-
-    for cnt in range(config["protocol"]["epochs"] + 1):
+    cnt = 0
+    while True:
         old_id = work_pjct.epochs[-1].id
+
+        log.info(f"Running epoch {old_id} ({cnt} on this run).")
+        run_epoch(work_pjct)
 
         log.info(f"Scoring epoch {old_id} ({cnt} on this run).")
         for iter_name, iter in work_pjct.epochs[-1].items():
@@ -58,15 +54,13 @@ def main() -> int:
         )
         log.info(f"Top iterations: {top_itrs_str}")
 
-        if cnt == config["protocol"]["epochs"]:
+        if old_id >= config["protocol"]["epochs"]:
             log.info(f"Done with protocol.")
             break
+        cnt += 1
 
-        log.info(f"Initializing new epoch {old_id+1} ({cnt+1} on this run).")
+        log.info(f"Initializing new epoch {old_id+1} ({cnt} on this run).")
         initialize_new_epoch(work_pjct)
-
-        log.info(f"Running epoch {old_id+1} ({cnt+1} on this run).")
-        run_epoch(work_pjct)
 
     return 0
 

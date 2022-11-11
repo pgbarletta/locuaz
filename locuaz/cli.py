@@ -97,7 +97,7 @@ def list_iteration_dirs(wrk_path: Path, name: str, max_epochs: int) -> List[Path
             if nbr.isnumeric():
                 assert int(nbr) <= max_epochs, (
                     f"Max of {max_epochs} epochs "
-                    f"solicited, but found iteration {iter_name} from epoch {nbr}. Aborting."
+                    f"solicited, but found iteration {nbr}-{'-'.join(iter_name)} . Aborting."
                 )
 
                 iter_dirs.append(iter_path)

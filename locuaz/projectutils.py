@@ -13,11 +13,13 @@ from typing import (
     Deque,
     Optional,
 )
-import collections
 import logging
 from statistics import mean, stdev
 from collections import deque
 from collections.abc import MutableMapping
+from queue import PriorityQueue
+import itertools
+
 
 from Bio.PDB import PDBParser
 from Bio.SeqUtils import seq1
@@ -116,6 +118,24 @@ class Epoch(MutableMapping):
     nvt_done: bool = field(converter=bool, default=False, kw_only=True)
     npt_done: bool = field(converter=bool, default=False, kw_only=True)
     top_iterations: Dict[str, Iteration] = field(init=False)
+
+    def set_top_iter(self) -> None:
+        better_iters: PriorityQueue[Tuple[int, Iteration]] = PriorityQueue()
+
+        for it, other_it in itertools.permutations(self.iterations.values(), 2):
+            # Allow the user to change scoring functions mid-run and only use
+            # the subset present in both iterations.
+            scoring_functions = set(it.scores.keys()) & set(other_it.scores.keys())
+            count = sum(
+                [
+                    other_it.mean_scores[SF] > it.mean_scores[SF]
+                    for SF in scoring_functions
+                ]
+            )
+            better_iters.put((-count, it))
+
+        top_it: Iteration = better_iters.get()[1]
+        self.top_iterations[top_it.iter_name] = top_it
 
     def __getitem__(self, key) -> Iteration:
         return self.iterations[key]
@@ -269,7 +289,7 @@ class WorkProject:
                 # Previous iterations should be fully scored.
                 this_iter.read_scores(self.config["scoring"]["functions"])
                 prev_epoch[iter_name] = this_iter
-                prev_epoch.top_iterations[iter_name] = this_iter
+            prev_epoch.set_top_iter()
             self.new_epoch(prev_epoch)
 
         current_epoch = Epoch(epoch_nbr, iterations={}, nvt_done=True, npt_done=True)

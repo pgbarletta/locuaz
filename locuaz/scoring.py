@@ -7,7 +7,7 @@ import concurrent.futures as cf
 from fileutils import DirHandle
 from molecules import GROComplex
 from projectutils import WorkProject, Iteration
-from utils_scoring import extract_pdbs, join_target_binder, rm_frames
+from utils_scoring import extract_pdbs, join_target_binder, rm_aux_scoring_files
 from primitives import launch_biobb
 from gromacsutils import image_traj
 from biobb_analysis.gromacs.gmx_trjconv_str_ens import GMXTrjConvStrEns
@@ -82,8 +82,10 @@ def score_frames(work_pjct: WorkProject, iteration: Iteration, nframes: int) -> 
             log.info(f"{sf_name} average score: {promedio:.3f}")
 
     if not work_pjct.config["main"]["debug"]:
-        log.info("Removing PDB frames. Set `--debug` flag to skip this.")
-        rm_frames(iteration.score_dir, work_pjct.scorers.keys(), nframes)
+        log.info(
+            "Removing PDB, PSF, PQR frames and auxiliary scoring files. Set `--debug` to skip this."
+        )
+        rm_aux_scoring_files(iteration.score_dir, work_pjct.scorers.keys(), nframes)
 
     iteration.write_down_scores()
     log.info(

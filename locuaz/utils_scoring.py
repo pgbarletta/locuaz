@@ -97,7 +97,7 @@ def join_target_binder(
         tmp_fn.unlink()
 
 
-def rm_frames(
+def rm_aux_scoring_files(
     frames_path: DirHandle, scoring_functions: Iterable, nframes: int
 ) -> None:
     for i in range(nframes):
@@ -111,6 +111,8 @@ def rm_frames(
             Path(solv_nrg_file).unlink()
         for pqr_file in glob.glob(str(Path(bluues_dir, "*pqr"))):
             Path(pqr_file).unlink()
+        for log_file in glob.glob(str(Path(bluues_dir, "*log"))):
+            Path(log_file).unlink()
 
     if "haddock" in scoring_functions:
         haddock_dir = frames_path / "haddock"
@@ -118,3 +120,7 @@ def rm_frames(
             Path(pdb_file).unlink()
         for psf_file in glob.glob(str(Path(haddock_dir, "*psf"))):
             Path(psf_file).unlink()
+        for out_file in glob.glob(str(Path(haddock_dir, "*out"))):
+            Path(out_file).unlink()
+        for inp_file in glob.glob(str(Path(haddock_dir, "*inp"))):
+            Path(inp_file).unlink()

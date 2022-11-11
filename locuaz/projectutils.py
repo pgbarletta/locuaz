@@ -122,20 +122,33 @@ class Epoch(MutableMapping):
     def set_top_iter(self) -> None:
         better_iters: PriorityQueue[Tuple[int, Iteration]] = PriorityQueue()
 
-        for it, other_it in itertools.permutations(self.iterations.values(), 2):
-            # Allow the user to change scoring functions mid-run and only use
-            # the subset present in both iterations.
-            scoring_functions = set(it.scores.keys()) & set(other_it.scores.keys())
-            count = sum(
-                [
-                    other_it.mean_scores[SF] > it.mean_scores[SF]
-                    for SF in scoring_functions
-                ]
-            )
+        for it in self.iterations.values():
+            count = 0
+            for other_it in self.iterations.values():
+                if it == other_it:
+                    continue
+                # Allow the user to change scoring functions mid-run and only use
+                # the subset present in both iterations.
+                scoring_functions = set(it.scores.keys()) & set(other_it.scores.keys())
+                count += sum(
+                    [
+                        other_it.mean_scores[SF] > it.mean_scores[SF]
+                        for SF in scoring_functions
+                    ]
+                )
             better_iters.put((-count, it))
 
-        top_it: Iteration = better_iters.get()[1]
-        self.top_iterations[top_it.iter_name] = top_it
+        prev_count = 1
+        while not better_iters.empty():
+            # Remember, `count`, the priority, is negative.
+            count, iter = better_iters.get()
+            if count > prev_count:
+                assert (
+                    len(self.top_iterations) > 0
+                ), f"Logical error. This can't happen."
+                break
+            prev_count = count
+            self.top_iterations[iter.iter_name] = iter
 
     def __getitem__(self, key) -> Iteration:
         return self.iterations[key]

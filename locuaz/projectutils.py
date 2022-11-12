@@ -1,4 +1,3 @@
-from multiprocessing.sharedctypes import Value
 from pathlib import Path
 from attrs import define, field
 from typing import (
@@ -18,8 +17,9 @@ from statistics import mean, stdev
 from collections import deque
 from collections.abc import MutableMapping
 from queue import PriorityQueue
+import shutil as sh
+import time
 
-from Bio.PDB import PDBParser
 from Bio.SeqUtils import seq1
 import numpy as np
 import MDAnalysis as mda
@@ -262,13 +262,11 @@ class WorkProject:
 
     def __restart_work__(self):
         log = logging.getLogger(self.name)
-        # Restart from input iterations, but use the most recent epoch's number
-        epoch_nbr = max(
-            [
-                int(Path(iteration_str).name.split("-")[0])
-                for iteration_str in self.config["paths"]["current_iterations"]
-            ]
+        # Restart from input iterations, they should all have the same epoch number
+        epoch_nbr = int(
+            Path(self.config["paths"]["current_iterations"][0]).name.split("-")[0]
         )
+
         if "previous_iterations" in self.config["paths"]:
             prev_epoch = Epoch(
                 epoch_nbr - 1, iterations={}, nvt_done=True, npt_done=True
@@ -312,7 +310,16 @@ class WorkProject:
                 # Previous iterations should be fully scored.
                 this_iter.read_scores(self.config["scoring"]["functions"])
                 prev_epoch[iter_name] = this_iter
+
             prev_epoch.set_top_iter()
+            top_itrs_str = " ; ".join(
+                [
+                    f"{iter.epoch_id}-{iter.iter_name}"
+                    for iter in prev_epoch.top_iterations.values()
+                ]
+            )
+            log.info(f"Previous epoch {epoch_nbr-1} top iterations: {top_itrs_str}")
+
             self.new_epoch(prev_epoch)
 
         current_epoch = Epoch(epoch_nbr, iterations={}, nvt_done=True, npt_done=True)
@@ -392,27 +399,6 @@ class WorkProject:
     def __get_mutating_resname__(
         self, pdb_path: Path, chainIDs: List, resSeqs: List
     ) -> List[str]:
-        # parsero = PDBParser(QUIET=True)
-        # pdb = parsero.get_structure("UNK", pdb_path)
-
-        # resnames = []
-        # for (chainID, resSeq) in zip(chainIDs, resSeqs):
-        #     resname_by_chain = ""
-        #     for chain in pdb.get_chains():
-        #         if chain.get_id() == chainID:
-        #             for residue in chain.get_residues():
-        #                 if residue.get_id()[1] in resSeq:
-        #                     resname_by_chain += seq1(residue.get_resname())
-        #     if len(resname_by_chain) == 0:
-        #         raise ValueError(
-        #             f"Could not get resnames for the mutating resSeq: {resSeq} "
-        #             f"and chainID: {chainID}. mutating_resSeq may be wrong. Aborting."
-        #         )
-        #     resnames.append(resname_by_chain)
-
-        # self.config["binder"]["mutating_resnames"] = resnames
-        # return resnames
-
         u = mda.Universe(pdb_path)
 
         resnames = []

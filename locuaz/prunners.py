@@ -26,17 +26,21 @@ def prune(work_pjct: WorkProject) -> None:
     better_iters_queue = choose_top_iters(prev_epoch, this_epoch, threshold, log)
     if better_iters_queue.empty():
         # All new iterations are worse than the old ones or they all failed during MD.
-        top_iterations = prev_epoch.top_iterations
+        log.info(f"Failed epoch. Backing up epoch {this_epoch.id}.")
+        prev_epoch.backup()
+        this_epoch = prev_epoch
     else:
         prunner_func = prunners[work_pjct.config["protocol"]["prunner"]]
         prune = work_pjct.config["protocol"].get("prune")
         # Use the required prunner
-        top_iterations = prunner_func(better_iters_queue, prune)
+        this_epoch.top_iterations = prunner_func(better_iters_queue, prune)
 
     top_itrs_str = " ; ".join(
-        [f"{iter.epoch_id}-{iter.iter_name}" for iter in top_iterations.values()]
+        [
+            f"{iter.epoch_id}-{iter.iter_name}"
+            for iter in this_epoch.top_iterations.values()
+        ]
     )
     log.info(f"Top iterations: {top_itrs_str}")
-    this_epoch.top_iterations = top_iterations
 
     return

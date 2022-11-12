@@ -150,6 +150,16 @@ class Epoch(MutableMapping):
             prev_count = count
             self.top_iterations[iter.iter_name] = iter
 
+    def backup(self) -> None:
+        for it in self.iterations.values():
+            orig = it.dir_handle.dir_path
+            dest = Path(orig.parent, "bu_" + orig.name)
+            if dest.exists():
+                unique_str = "_".join(time.ctime().split()).replace(":", "_")
+                dest = Path(orig.parent, f"bu_{unique_str}_{orig.name}")
+            # TODO: won't be necessary to cast after 3.9 upgrade
+            sh.move(str(orig), str(dest))
+
     def __getitem__(self, key) -> Iteration:
         return self.iterations[key]
 

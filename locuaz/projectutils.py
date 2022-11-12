@@ -18,11 +18,11 @@ from statistics import mean, stdev
 from collections import deque
 from collections.abc import MutableMapping
 from queue import PriorityQueue
-import itertools
-
 
 from Bio.PDB import PDBParser
 from Bio.SeqUtils import seq1
+import numpy as np
+import MDAnalysis as mda
 
 from fileutils import FileHandle, DirHandle, copy_to
 from molecules import AbstractComplex, GROComplex
@@ -334,7 +334,7 @@ class WorkProject:
                 )
             except Exception as e:
                 try:
-                    log.info(f"{epoch_nbr}-{iter_str} didn't finish its NPT MD.")
+                    log.info(f"{iter_path} didn't finish its NPT MD.")
                     current_epoch.npt_done = False
 
                     cpx_name = "nvt_" + self.config["main"]["name"]
@@ -347,7 +347,7 @@ class WorkProject:
                     )
                 except:
                     try:
-                        log.info(f"{epoch_nbr}-{iter_str} didn't finish its NVT MD.")
+                        log.info(f"{iter_path} didn't finish its NVT MD.")
                         current_epoch.nvt_done = False
                         current_epoch.npt_done = False
 
@@ -361,7 +361,7 @@ class WorkProject:
                         )
                     except:
                         log.error(
-                            f"{epoch_nbr}-{iter_str} is in an invalid state. Cannot build complex from it."
+                            f"{iter_path} is in an invalid state. Cannot build complex from it."
                         )
                         raise e
 
@@ -382,25 +382,50 @@ class WorkProject:
     def __get_mutating_resname__(
         self, pdb_path: Path, chainIDs: List, resSeqs: List
     ) -> List[str]:
-        parsero = PDBParser(QUIET=True)
-        pdb = parsero.get_structure("UNK", pdb_path)
+        # parsero = PDBParser(QUIET=True)
+        # pdb = parsero.get_structure("UNK", pdb_path)
+
+        # resnames = []
+        # for (chainID, resSeq) in zip(chainIDs, resSeqs):
+        #     resname_by_chain = ""
+        #     for chain in pdb.get_chains():
+        #         if chain.get_id() == chainID:
+        #             for residue in chain.get_residues():
+        #                 if residue.get_id()[1] in resSeq:
+        #                     resname_by_chain += seq1(residue.get_resname())
+        #     if len(resname_by_chain) == 0:
+        #         raise ValueError(
+        #             f"Could not get resnames for the mutating resSeq: {resSeq} "
+        #             f"and chainID: {chainID}. mutating_resSeq may be wrong. Aborting."
+        #         )
+        #     resnames.append(resname_by_chain)
+
+        # self.config["binder"]["mutating_resnames"] = resnames
+        # return resnames
+
+        u = mda.Universe(pdb_path)
 
         resnames = []
-        for (chainID, resSeq) in zip(chainIDs, resSeqs):
-            resname_by_chain = ""
-            for chain in pdb.get_chains():
-                if chain.get_id() == chainID:
-                    for residue in chain.get_residues():
-                        if residue.get_id()[1] in resSeq:
-                            resname_by_chain += seq1(residue.get_resname())
-            if len(resname_by_chain) == 0:
-                raise ValueError(
-                    f"Could not get resnames for the mutating resSeq: {resSeq} "
-                    f"and chainID: {chainID}. mutating_resSeq may be wrong. Aborting."
+        for chainID, list_resSeq in zip(chainIDs, resSeqs):
+            ch_resnames = []
+            ch_resids = []
+            cadena = u.select_atoms(f"segid {chainID}")
+            for resn, resi in {
+                (atm.resname, atm.resnum)
+                for atm in cadena.select_atoms(
+                    " or ".join([f"resid {res}" for res in list_resSeq])
                 )
-            resnames.append(resname_by_chain)
-
-        self.config["binder"]["mutating_resnames"] = resnames
+            }:
+                ch_resnames.append(resn)
+                ch_resids.append(resi)
+            resnames.append(
+                "".join(
+                    [
+                        seq1(resn_3)
+                        for resn_3 in np.array(ch_resnames)[np.argsort(ch_resids)]
+                    ]
+                )
+            )
         return resnames
 
     def __generate_iteration_ID__(

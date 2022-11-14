@@ -3,6 +3,7 @@
 """Main module."""
 import sys
 import logging
+from pathlib import Path
 
 import cli
 import projectutils as pu
@@ -15,6 +16,8 @@ from prunners import prune
 def main() -> int:
 
     config, start = cli.main()
+    log = pu.set_logger(config["main"]["name"], Path(config["paths"]["work"]))
+    log.info(f"Setting up work project.")
     work_pjct = pu.WorkProject(config, start)
     log = logging.getLogger(work_pjct.name)
     log.info(f"Launching.")
@@ -46,12 +49,13 @@ def main() -> int:
         log.info(f"Prunning epoch {old_id}.")
         prune(work_pjct)
 
-        if old_id >= config["protocol"]["epochs"]:
+        new_id = work_pjct.epochs[-1].id + 1
+        cnt += 1
+        if new_id >= config["protocol"]["epochs"]:
             log.info(f"Done with protocol.")
             break
-        cnt += 1
 
-        log.info(f"Initializing new epoch {old_id+1} ({cnt} on this run).")
+        log.info(f"Initializing new epoch {new_id} ({cnt} on this run).")
         initialize_new_epoch(work_pjct)
 
     return 0

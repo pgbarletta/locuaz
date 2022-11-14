@@ -212,7 +212,6 @@ class WorkProject:
         self.get_mdps(self.config["paths"]["mdp"], self.config["md"]["mdp_names"])
         self.__add_scoring_functions__()
         self.__set_memory__()
-        self.__set_logger__()
 
     def __start_work__(self):
         zero_epoch = Epoch(0, iterations={}, nvt_done=False, npt_done=False)
@@ -262,6 +261,10 @@ class WorkProject:
 
     def __restart_work__(self):
         log = logging.getLogger(self.name)
+
+        # Set up working dir
+        self.dir_handle = DirHandle(Path(self.config["paths"]["work"]), make=False)  # type: ignore
+
         # Restart from input iterations, they should all have the same epoch number
         epoch_nbr = int(
             Path(self.config["paths"]["current_iterations"][0]).name.split("-")[0]
@@ -351,7 +354,7 @@ class WorkProject:
                 )
             except Exception as e:
                 try:
-                    log.info(f"{iter_path} didn't finish its NPT MD.")
+                    log.info(f"{iter_path.name} didn't finish its NPT MD.")
                     current_epoch.npt_done = False
 
                     cpx_name = "nvt_" + self.config["main"]["name"]
@@ -364,7 +367,7 @@ class WorkProject:
                     )
                 except:
                     try:
-                        log.info(f"{iter_path} didn't finish its NVT MD.")
+                        log.info(f"{iter_path.name} didn't finish its NVT MD.")
                         current_epoch.nvt_done = False
                         current_epoch.npt_done = False
 
@@ -384,8 +387,6 @@ class WorkProject:
 
             current_epoch[iter_name] = this_iter
 
-        # Set up working dir
-        self.dir_handle = DirHandle(iter_path.parent, make=False)  # type: ignore
         self.new_epoch(current_epoch)
 
     def __add_scoring_functions__(self) -> None:
@@ -469,28 +470,6 @@ class WorkProject:
         except KeyError:
             self.mem_aminoacids([])
 
-    def __set_logger__(self) -> logging.Logger:
-        logger = logging.getLogger(f"{self.name}")
-        logger.setLevel(logging.INFO)
-
-        stream_handler = logging.StreamHandler()
-        stream_handler.setLevel(logging.WARNING)
-
-        file_handler = logging.FileHandler(
-            filename=f"{Path(self.dir_handle, self.name)}.log"
-        )
-        file_handler.setLevel(logging.INFO)
-
-        formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-        stream_handler.setFormatter(formatter)
-        file_handler.setFormatter(formatter)
-
-        # add Handlers to our logger
-        logger.addHandler(stream_handler)
-        logger.addHandler(file_handler)
-
-        return logger
-
     def mem_aminoacids(self, aa_set: Sequence) -> None:
         self.mutated_aminoacids.appendleft(set(aa_set))
 
@@ -532,3 +511,24 @@ class WorkProject:
 
     def get_first_iter(self) -> Tuple[str, Iteration]:
         return next(iter(self.epochs[0].items()))
+
+
+def set_logger(name: str, dir_path: Path) -> logging.Logger:
+    logger = logging.getLogger(f"{name}")
+    logger.setLevel(logging.INFO)
+
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(logging.WARNING)
+
+    file_handler = logging.FileHandler(filename=f"{Path(dir_path, name)}.log")
+    file_handler.setLevel(logging.INFO)
+
+    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+    stream_handler.setFormatter(formatter)
+    file_handler.setFormatter(formatter)
+
+    # add Handlers to our logger
+    logger.addHandler(stream_handler)
+    logger.addHandler(file_handler)
+
+    return logger

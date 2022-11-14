@@ -27,8 +27,8 @@ def prune(work_pjct: WorkProject) -> None:
     if better_iters_queue.empty():
         # All new iterations are worse than the old ones or they all failed during MD.
         log.info(f"Failed epoch. Backing up epoch {this_epoch.id}.")
-        prev_epoch.backup()
-        this_epoch = prev_epoch
+        this_epoch.backup()
+        work_pjct.epochs[-1] = prev_epoch
     else:
         prunner_func = prunners[work_pjct.config["protocol"]["prunner"]]
         prune = work_pjct.config["protocol"].get("prune")
@@ -38,7 +38,7 @@ def prune(work_pjct: WorkProject) -> None:
     top_itrs_str = " ; ".join(
         [
             f"{iter.epoch_id}-{iter.iter_name}"
-            for iter in this_epoch.top_iterations.values()
+            for iter in work_pjct.epochs[-1].top_iterations.values()
         ]
     )
     log.info(f"Top iterations: {top_itrs_str}")

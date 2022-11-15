@@ -13,16 +13,16 @@ def beats_old_iter(
     # Allow the user to change scoring functions mid-run and only use
     # the subset present in both iterations.
     scoring_functions = set(old_iter.scores.keys()) & set(new_iter.scores.keys())
+    log.info(f"Scoring functions: {scoring_functions}")
     count = sum(
         [
-            old_iter.mean_scores[SF] > new_iter.mean_scores[SF]
+            old_iter.mean_scores[SF] >= new_iter.mean_scores[SF]
             for SF in scoring_functions
         ]
     )
-
     log.info(
         f"{new_iter.epoch_id}-{new_iter.iter_name} vs. {old_iter.epoch_id}-{old_iter.iter_name} "
-        f"improves on {count} scoring functions."
+        f"improves on {count} of {len(scoring_functions)} scoring functions."
     )
 
     return count >= threshold, count

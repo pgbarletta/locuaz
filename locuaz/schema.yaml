@@ -264,7 +264,7 @@ scoring:
             required: true
             schema:
                 type: string
-                allowed: ["bach", "bluues", "evoef2", "haddock", "pisa", "rosetta", "zrank", "irad", "firedock"]
+                allowed: ["bach", "bluues", "bmf", "evoef2", "haddock", "pisa", "rosetta", "zrank", "irad", "firedock"]
         consensus_threshold:
             type: integer
             min: 1

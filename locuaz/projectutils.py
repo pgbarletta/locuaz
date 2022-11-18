@@ -99,9 +99,7 @@ class Iteration:
                             "bmf", [float(linea.strip()) for linea in f], log
                         )
             except FileNotFoundError as e:
-                log.warning(
-                    f"{self.iter_name} was not scored with {SF}. Rescoring iteration."
-                )
+                log.warning(f"{self.iter_name} was not scored with {SF}.")
                 raise FileNotFoundError from e
 
     def __str__(self) -> str:

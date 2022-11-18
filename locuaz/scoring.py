@@ -99,5 +99,6 @@ def score(work_pjct: WorkProject, iteration: Iteration) -> None:
         iteration.read_scores(work_pjct.scorers.keys(), log)
         log.info("Read old scores.")
     except FileNotFoundError as e:
+        log.info("Splitting NPT trajectory in frames.")
         nframes = initialize_scoring_folder(iteration, work_pjct.config)
         score_frames(work_pjct, iteration, nframes)

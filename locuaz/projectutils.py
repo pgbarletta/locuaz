@@ -19,6 +19,7 @@ from collections.abc import MutableMapping
 from queue import PriorityQueue
 import shutil as sh
 import time
+import pickle
 
 from Bio.SeqUtils import seq1
 import numpy as np
@@ -123,7 +124,19 @@ class Epoch(MutableMapping):
     npt_done: bool = field(converter=bool, default=False, kw_only=True)
     top_iterations: Dict[str, Iteration] = field(init=False)
 
-    def set_top_iter(self) -> None:
+    def set_top_iter(self, config_paths: Dict) -> None:
+        # First, check if a "top_iterations" was set from a pickle tracking file.
+        if "top_iterations" in config_paths:
+            for top_it_full in config_paths["top_iterations"]:
+                top_it_name = Path(top_it_full).name.split("-")[1]
+                try:
+                    self.top_iterations[top_it_name] = self.iterations[top_it_name]
+                except Exception as e:
+                    raise RuntimeError(
+                        f"Could not set top iteration from pickle tracking file. Aborting."
+                    ) from e
+            return
+
         better_iters: PriorityQueue[Tuple[int, Iteration]] = PriorityQueue()
 
         for it in self.iterations.values():
@@ -315,10 +328,15 @@ class WorkProject:
                     raise e
 
                 # Previous iterations should be fully scored.
-                this_iter.read_scores(self.config["scoring"]["functions"])
+                try:
+                    this_iter.read_scores(self.config["scoring"]["functions"])
+                except Exception as e:
+                    raise ValueError(
+                        f"Previous iteration not fully scored. Run in --score mode."
+                    ) from e
                 prev_epoch[iter_name] = this_iter
 
-            prev_epoch.set_top_iter()
+            prev_epoch.set_top_iter(self.config["paths"])
             top_itrs_str = " ; ".join(
                 [
                     f"{iter.epoch_id}-{iter.iter_name}"
@@ -512,6 +530,40 @@ class WorkProject:
 
     def new_epoch(self, epoch: Epoch) -> None:
         self.epochs.append(epoch)
+        self.__track_project__()
+
+    def __track_project__(self) -> None:
+        try:
+            previous_iterations = [
+                str(pre_it.dir_handle) for pre_it in self.epochs[-2].values()
+            ]
+            pre_pkl = Path(self.dir_handle, "previous_iterations.pkl")
+            #
+            current_iterations = [
+                str(cur_it.dir_handle) for cur_it in self.epochs[-1].values()
+            ]
+            cur_pkl = Path(self.dir_handle, "current_iterations.pkl")
+            #
+            top_iterations = [
+                str(cur_it.dir_handle)
+                for cur_it in self.epochs[-2].top_iterations.values()
+            ]
+            top_pkl = Path(self.dir_handle, "top_iterations.pkl")
+
+            if (
+                (len(previous_iterations) > 0)
+                and (len(current_iterations) > 0)
+                and (len(top_iterations) > 0)
+            ):
+                with open(cur_pkl, "wb") as cur_file:
+                    pickle.dump(current_iterations, cur_file)
+                with open(pre_pkl, "wb") as pre_file:
+                    pickle.dump(previous_iterations, pre_file)
+                with open(top_pkl, "wb") as top_file:
+                    pickle.dump(top_iterations, top_file)
+        except Exception:
+            # not a full project yet.
+            pass
 
     def get_first_iter(self) -> Tuple[str, Iteration]:
         return next(iter(self.epochs[0].items()))

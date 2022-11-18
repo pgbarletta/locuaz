@@ -1,14 +1,15 @@
 import os
 import argparse
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple, Union
 from pathlib import Path
 from queue import PriorityQueue
 import glob
 from itertools import product
 from warnings import warn
 import shutil as sh
-
 import yaml
+import pickle
+from collections import defaultdict
 
 from validatore import Validatore
 
@@ -68,9 +69,7 @@ def append_iterations(
         return ""
 
     epoch_nbr, iter_path = sorted_iters.get()
-    if prev_epoch == 1:
-        iterations.append(str(iter_path))
-    elif epoch_nbr == prev_epoch:
+    if prev_epoch == -1 or epoch_nbr == prev_epoch:
         iterations.append(str(iter_path))
     else:
         sorted_iters.put((epoch_nbr, iter_path))
@@ -79,29 +78,40 @@ def append_iterations(
     return append_iterations(sorted_iters, iterations, epoch_nbr)
 
 
-def is_incomplete(iter_path: Path, name: str) -> bool:
-    return not Path(iter_path, f"{name}.pdb").is_file()
+def get_valid_iter_dirs(files_and_dirs: List[str], config: Dict) -> List[Path]:
+    """get_valid_iter_dirs Filter out paths in input and return valid iteration paths
 
+    Args:
+        files_and_dirs (List[str]): list of files and/or dirs
+        name (str): name of the project
+        max_epochs (int): max epoch number an iteration may have
 
-def list_iteration_dirs(wrk_path: Path, name: str, max_epochs: int) -> List[Path]:
+    Returns:
+        List[Path]: list of valid iteration paths
+    """
+
+    def is_incomplete(iter_path: Path, name: str) -> bool:
+        return not Path(iter_path, f"{name}.pdb").is_file()
+
     iter_dirs: List[Path] = []
     incomplete_epochs: Set[str] = set()
-    for filename in glob.glob(str(Path(wrk_path, "*"))):
-        iter_path = Path(filename)
-        if iter_path.is_dir():
+    iters_per_epoch: Dict[str, int] = defaultdict(int)
+    for filename in files_and_dirs:
+        dir_path = Path(filename)
+        if dir_path.is_dir():
             try:
-                nbr, *iter_name = Path(iter_path).name.split("-")
+                nbr, *iter_name = Path(dir_path).name.split("-")
             except:
                 # not an Epoch folder
                 continue
             if nbr.isnumeric():
-                assert int(nbr) <= max_epochs, (
-                    f"Max of {max_epochs} epochs "
-                    f"solicited, but found iteration {nbr}-{'-'.join(iter_name)} . Aborting."
+                assert int(nbr) <= config["protocol"]["epochs"], (
+                    f"Max of {config['protocol']['epochs']} epochs solicited, but found iteration "
+                    f"{nbr}-{'-'.join(iter_name)} . Aborting."
                 )
-
-                iter_dirs.append(iter_path)
-                if is_incomplete(iter_path, name):
+                iters_per_epoch[nbr] += 1
+                iter_dirs.append(dir_path)
+                if is_incomplete(dir_path, config["main"]["name"]):
                     incomplete_epochs.add(nbr)
 
     valid_iters = []
@@ -114,28 +124,96 @@ def list_iteration_dirs(wrk_path: Path, name: str, max_epochs: int) -> List[Path
             warn(f"Found incomplete epoch. Will backup {iter_path} to {new_path}")
         else:
             valid_iters.append(iter_path)
+
+    assert len(valid_iters) > 0, "No valid iterations in input."
+
     return valid_iters
 
 
-def set_iterations(config: Dict) -> None:
+def lacks_branches(
+    current_iterations: Union[List[str], List[Path]],
+    max_branches: int,
+    prevent_fewer_branches: bool,
+) -> bool:
+    if prevent_fewer_branches:
+        # Check that the epoch wasn't cut short during its initialization. This may
+        # happen if last run was cut during initialize_new_epoch().
+        nbr_branches = len(current_iterations)
+        if nbr_branches < max_branches:
+            for it_fn in current_iterations:
+                it_path = Path(it_fn)
+                new_path = Path(it_path.parent, "bu_" + it_path.name)
+                # TODO: won't be necessary to cast after 3.9 upgrade
+                sh.move(str(it_path), str(new_path))
+                warn(f"Found incomplete epoch. Will backup {it_path} to {new_path}")
+            return True
+    return False
 
-    valid_iters = list_iteration_dirs(
-        Path(config["paths"]["work"]),
-        config["main"]["name"],
-        config["protocol"]["epochs"],
-    )
+
+def get_tracking_files(config: Dict) -> bool:
+    pre_pkl = Path(config["paths"]["work"], "previous_iterations.pkl")
+    cur_pkl = Path(config["paths"]["work"], "current_iterations.pkl")
+    top_pkl = Path(config["paths"]["work"], "top_iterations.pkl")
+
+    try:
+        with open(pre_pkl, "rb") as pre_file:
+            previous_iterations = pickle.load(pre_file)
+        with open(cur_pkl, "rb") as cur_file:
+            current_iterations = pickle.load(cur_file)
+        with open(top_pkl, "rb") as top_file:
+            top_iterations = pickle.load(top_file)
+
+        previous_iterations = get_valid_iter_dirs(previous_iterations, config)
+        current_iterations = get_valid_iter_dirs(current_iterations, config)
+        top_iterations = get_valid_iter_dirs(top_iterations, config)
+
+        if lacks_branches(
+            current_iterations,
+            config["protocol"]["max_branches"],
+            config["protocol"]["prevent_fewer_branches"],
+        ):
+            return False
+
+        config["paths"]["previous_iterations"] = previous_iterations
+        config["paths"]["current_iterations"] = current_iterations
+        config["paths"]["top_iterations"] = top_iterations
+
+        return True
+    except Exception:
+        # No full tracking info.
+        return False
+
+
+def set_iterations(config: Dict) -> None:
+    # Try to read pickle info written by a previous run.
+    if get_tracking_files(config):
+        return
+
+    files_and_dirs = glob.glob(str(Path(config["paths"]["work"], "*")))
+    valid_iters = get_valid_iter_dirs(files_and_dirs, config)
 
     iters: PriorityQueue = PriorityQueue()
     for iter_path in valid_iters:
         nbr, *_ = iter_path.name.split("-")
         iters.put((-int(nbr), iter_path))
-
     # Iterations are sorted by epoch number now
-    config["paths"]["current_iterations"] = []
-    iter_str = append_iterations(iters, config["paths"]["current_iterations"], 1)
-    if iter_str != "":
-        config["paths"]["previous_iterations"] = []
-        append_iterations(iters, config["paths"]["previous_iterations"], 1)
+    while not iters.empty():
+        config["paths"]["current_iterations"] = []
+        iter_str = append_iterations(iters, config["paths"]["current_iterations"], -1)
+
+        if lacks_branches(
+            config["paths"]["current_iterations"],
+            config["protocol"]["max_branches"],
+            config["protocol"]["prevent_fewer_branches"],
+        ):
+            # Start over, this time, the incomplete epoch will not be in `iters`.
+            continue
+
+        if iter_str != "":
+            config["paths"]["previous_iterations"] = []
+            append_iterations(iters, config["paths"]["previous_iterations"], -1)
+        return
+    raise ValueError("No valid iterations in work_dir. Aborting.")
 
 
 def remove_overlap(v: List):

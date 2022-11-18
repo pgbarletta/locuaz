@@ -51,7 +51,7 @@ def main() -> int:
 
         new_id = work_pjct.epochs[-1].id + 1
         cnt += 1
-        if new_id >= config["protocol"]["epochs"]:
+        if new_id > config["protocol"]["epochs"]:
             log.info(f"Done with protocol.")
             break
 

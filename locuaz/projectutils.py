@@ -529,7 +529,11 @@ def set_logger(name: str, dir_path: Path) -> logging.Logger:
     file_handler = logging.FileHandler(filename=f"{Path(dir_path, name)}.log")
     file_handler.setLevel(logging.INFO)
 
-    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+    formatter = logging.Formatter(
+        "{asctime} - {levelname} - {message}",
+        style="{",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
     stream_handler.setFormatter(formatter)
     file_handler.setFormatter(formatter)
 

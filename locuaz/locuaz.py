@@ -29,8 +29,19 @@ def main() -> int:
         run_npt_epoch(work_pjct)
         return 0
     elif config["main"]["mode"] == "score":
+        try:
+            prev_id = old_id = work_pjct.epochs[-2].id
+            prev_epoch = work_pjct.epochs[-2]
+            for iter_name, iter in prev_epoch.items():
+                log.info(f"Scoring NPT run from iteration: {prev_id}-{iter_name}")
+                score(work_pjct, iter)
+        except Exception:
+            log.info(f"Cannot score previous epoch.")
+            pass
+
+        curr_id = old_id = work_pjct.epochs[-1].id
         for iter_name, iter in work_pjct.epochs[-1].items():
-            log.info(f"Scoring NPT run from iteration: {iter_name}")
+            log.info(f"Scoring NPT run from iteration: {curr_id}-{iter_name}")
             score(work_pjct, iter)
         return 0
 

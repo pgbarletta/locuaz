@@ -185,6 +185,15 @@ def get_tracking_files(config: Dict) -> bool:
 
 
 def set_iterations(config: Dict) -> None:
+    """set_iterations Set config["paths"]["current_iterations"],
+    config["paths"]["previous_iterations"] and possibly config["paths"]["top_iterations"]
+
+    Args:
+        config (Dict): dictionary with input config
+
+    Raises:
+        ValueError: when there're no valid iteration dirs.
+    """
     # Try to read pickle info written by a previous run.
     if get_tracking_files(config):
         return
@@ -332,13 +341,21 @@ def main() -> Tuple[Dict, bool]:
 
     raw_config = get_raw_config(args.config_file)
     config, starts = validate_input(raw_config, args.mode, args.debug)
-    set_iterations(config)
+    if starts:
+        # Set up working dir
+        try:
+            Path(config["paths"]["work"]).mkdir()
+        except FileExistsError as e:
+            raise e
+    else:
+        set_iterations(config)
+        # Set up the memory
+        requested_memory = "memory_size" in config["protocol"]
+        has_no_memory = not ("memory_positions" in config["protocol"])
+        if requested_memory and has_no_memory:
+            memory_positions = get_memory(config)
+            config["protocol"]["memory_positions"] = memory_positions
 
-    requested_memory = "memory_size" in config["protocol"]
-    has_no_memory = not ("memory_positions" in config["protocol"])
-    if not starts and requested_memory and has_no_memory:
-        memory_positions = get_memory(config)
-        config["protocol"]["memory_positions"] = memory_positions
     config = misc_settings(config)
 
     # Set up environment

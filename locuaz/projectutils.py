@@ -128,7 +128,7 @@ class Epoch(MutableMapping):
         # First, check if a "top_iterations" was set from a pickle tracking file.
         if "top_iterations" in config_paths:
             for top_it_full in config_paths["top_iterations"]:
-                top_it_name = Path(top_it_full).name.split("-")[1]
+                top_it_name = "-".join(Path(top_it_full).name.split("-")[1:])
                 try:
                     self.top_iterations[top_it_name] = self.iterations[top_it_name]
                 except Exception as e:
@@ -220,6 +220,8 @@ class WorkProject:
         self.config = config
         self.name = self.config["main"]["name"]
         self.epochs = []
+        # Set up working dir
+        self.dir_handle = DirHandle(Path(self.config["paths"]["work"]), make=False)  # type: ignore
 
         if start:
             self.__start_work__()
@@ -233,10 +235,6 @@ class WorkProject:
     def __start_work__(self):
         zero_epoch = Epoch(0, iterations={}, nvt_done=False, npt_done=False)
         for data_str in self.config["paths"]["input"]:
-            # First, create working dir
-            self.dir_handle = DirHandle(
-                Path(self.config["paths"]["work"]), make=True, force=False
-            )
 
             # Check input PDB to create name and attributes for the starting iteration.
             input_path = Path(data_str)
@@ -278,9 +276,6 @@ class WorkProject:
 
     def __restart_work__(self):
         log = logging.getLogger(self.name)
-
-        # Set up working dir
-        self.dir_handle = DirHandle(Path(self.config["paths"]["work"]), make=False)  # type: ignore
 
         # Restart from input iterations, they should all have the same epoch number
         epoch_nbr = int(

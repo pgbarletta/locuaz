@@ -69,7 +69,7 @@ def append_iterations(
         return ""
 
     epoch_nbr, iter_path = sorted_iters.get()
-    if prev_epoch == -1 or epoch_nbr == prev_epoch:
+    if prev_epoch == 1 or epoch_nbr == prev_epoch:
         iterations.append(str(iter_path))
     else:
         sorted_iters.put((epoch_nbr, iter_path))
@@ -216,7 +216,7 @@ def set_iterations(config: Dict) -> None:
     # Iterations are sorted by epoch number now
     while not iters.empty():
         config["paths"]["current_iterations"] = []
-        iter_str = append_iterations(iters, config["paths"]["current_iterations"], -1)
+        iter_str = append_iterations(iters, config["paths"]["current_iterations"], 1)
 
         if lacks_branches(
             config["paths"]["current_iterations"],
@@ -228,7 +228,7 @@ def set_iterations(config: Dict) -> None:
 
         if iter_str != "":
             config["paths"]["previous_iterations"] = []
-            append_iterations(iters, config["paths"]["previous_iterations"], -1)
+            append_iterations(iters, config["paths"]["previous_iterations"], 1)
         return
     raise ValueError("No valid iterations in work_dir. Aborting.")
 

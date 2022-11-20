@@ -26,7 +26,7 @@ import numpy as np
 import MDAnalysis as mda
 
 from fileutils import FileHandle, DirHandle, copy_to
-from molecules import AbstractComplex, GROComplex
+from complex import AbstractComplex, GROComplex
 from abstractscoringfunction import AbstractScoringFunction
 from scoringfunctions import scoringfunctions
 

@@ -7,16 +7,9 @@ from biobb_md.gromacs.grompp import Grompp
 from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
 from biobb_analysis.gromacs.gmx_image import GMXImage
 from biobb_md.gromacs.mdrun import Mdrun
-from molecules import (
-    AbstractComplex,
-    GROStructure,
-    TPRFile,
-    GROComplex,
-    ZipTopology,
-    fix_box,
-    copy_mol_to,
-)
-
+from molecules import ZipTopology, copy_mol_to
+from complex import AbstractComplex, GROComplex
+from molutils import fix_box
 from fileutils import DirHandle, FileHandle
 from projectutils import WorkProject
 from primitives import launch_biobb

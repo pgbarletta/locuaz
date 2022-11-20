@@ -3,8 +3,10 @@ from projectutils import WorkProject, Epoch, Iteration
 from fileutils import DirHandle
 from mutationgenerators import mutation_generators
 from mutators import mutators
-from mutator import Mutation, memorize_mutations
-from molecules import split_solute_and_solvent, catenate_pdbs, GROComplex
+from mutator import memorize_mutations
+from molecules import catenate_pdbs
+from complex import GROComplex
+from molutils import split_solute_and_solvent
 from gromacsutils import remove_overlapping_waters
 
 

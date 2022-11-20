@@ -5,7 +5,6 @@ from biobb_model.model.mutate import Mutate
 
 from molecules import PDBStructure
 from primitives import launch_biobb
-from fileutils import FileHandle
 from mutator import AbstractMutator, Mutation
 
 

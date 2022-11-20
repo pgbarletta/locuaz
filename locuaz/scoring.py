@@ -5,7 +5,7 @@ from pathlib import Path
 import concurrent.futures as cf
 
 from fileutils import DirHandle
-from molecules import GROComplex
+from complex import GROComplex
 from projectutils import WorkProject, Iteration
 from utils_scoring import extract_pdbs, join_target_binder, rm_aux_scoring_files
 from primitives import launch_biobb

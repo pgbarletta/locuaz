@@ -8,14 +8,13 @@ import MDAnalysis as mda
 
 from fileutils import FileHandle, update_header, copy_to
 from molecules import (
-    AbstractComplex,
-    GROComplex,
     PDBStructure,
     Trajectory,
     XtcTrajectory,
     get_gro_ziptop_from_pdb,
     get_tpr,
 )
+from complex import AbstractComplex, GROComplex
 from biobb_md.gromacs.gmxselect import Gmxselect
 from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
 from biobb_md.gromacs.solvate import Solvate

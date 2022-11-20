@@ -69,7 +69,7 @@ class DirHandle:
         if self.make:
             try:
                 self.dir_path.mkdir()
-            except FileExistsError as e:
+            except FileExistsError as e_dir_exists:
                 if self.force:
                     # Add a numbered prefix to the directory name to avoid conflict.
                     for i in range(1, 100):
@@ -92,7 +92,7 @@ class DirHandle:
                     self.dir_path.mkdir()
                     print(f"Replaced dir: {self.dir_path}")
                 else:
-                    raise e
+                    raise e_dir_exists
 
     def __str__(self) -> str:
         return str(self.dir_path)

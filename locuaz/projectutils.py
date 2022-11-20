@@ -48,8 +48,8 @@ class Iteration:
     def __attrs_post_init__(self) -> None:
         try:
             self.epoch_id = int(Path(self.dir_handle).name.split("-")[0])
-        except Exception as e:
-            raise ValueError("Bad iteration name.") from e
+        except Exception as bad_iter_name:
+            raise ValueError("Bad iteration name.") from bad_iter_name
         self.scores = {}
         self.mean_scores = {}
 
@@ -197,11 +197,29 @@ class Epoch(MutableMapping):
 
 
 class WorkProject:
-    """WorkProject:
+    """WorkProject main state holder of the run
     Args:
-        config (Dict): dict with all the input configuration read from the input yaml.
+        config (Dict): dict with the yaml input configuration parsed by cli.py.
+        start (bool): wether the working project is being run for the 1st time.
     Attributes:
-        root (Path): path to locuaz's root folder.
+            config (Dict): dict with the yaml input configuration parsed by cli.py.
+            name (str): project's name
+            dir_handle (DirHandle): working directory
+            epochs (List[Epoch]): list of all the epochs generated on this run
+            mdps (Dict[str, FileHandle]): dict with handles to the minimization,
+                NVT and NPT mdps.
+            scorers (Dict[str, AbstractScoringFunction]): dict with the callables to
+                the scoring functinos.
+            mutated_positions (Deque[Set[int]]): last N mutated positions
+            mutated_aminoacids (Deque[Set[str]]): last N added amino acids.
+                Unused for now.
+            has_memory (bool = False): wether the protocol uses memory of mutations.
+    Raises:
+        e_start_cpx: Failure to build starting complex.
+        e_restart_cpx: Failure to build a complex from input iterations.
+        e_score: Failure to read scores from previous iterations.
+        e_top_iter: Failure to set the top iterations from previous iterations.
+        e: Other failures, like file issues or bad iteration names.
     """
 
     config: Dict
@@ -209,8 +227,6 @@ class WorkProject:
     dir_handle: DirHandle
     epochs: List[Epoch]
     mdps: Dict[str, FileHandle]
-    history: Set[Tuple]
-    mutant_mtx: List[List[str]]
     scorers: Dict[str, AbstractScoringFunction]
     mutated_positions: Deque[Set[int]]
     mutated_aminoacids: Deque[Set[str]]
@@ -220,19 +236,19 @@ class WorkProject:
         self.config = config
         self.name = self.config["main"]["name"]
         self.epochs = []
-        # Set up working dir
         self.dir_handle = DirHandle(Path(self.config["paths"]["work"]), make=False)  # type: ignore
+        log = logging.getLogger(self.name)
 
         if start:
-            self.__start_work__()
+            self.__start_work__(log)
         else:
-            self.__restart_work__()
+            self.__restart_work__(log)
 
         self.get_mdps(self.config["paths"]["mdp"], self.config["md"]["mdp_names"])
         self.__add_scoring_functions__()
         self.__set_memory__()
 
-    def __start_work__(self):
+    def __start_work__(self, log: logging.Logger):
         zero_epoch = Epoch(0, iterations={}, nvt_done=False, npt_done=False)
         for data_str in self.config["paths"]["input"]:
 
@@ -242,7 +258,6 @@ class WorkProject:
                 input_path
             )
 
-            # self.history = set(iter_name)
             iter_folder = "0-" + iter_name
             this_iter = Iteration(
                 DirHandle(self.dir_handle.dir_path / iter_folder, make=True),
@@ -264,19 +279,18 @@ class WorkProject:
                     binder_chains=self.config["binder"]["chainID"],
                     md_config=self.config["md"],
                 )
-            except Exception as e:
-                raise ValueError(
+            except Exception as e_start_cpx:
+                log.error(
                     f"Cannot generate starting complex from {pdb_handle}. Aborting."
-                ) from e
+                )
+                raise e_start_cpx
 
             zero_epoch[iter_name] = this_iter
 
         # Finally, add the epoch 0.
         self.new_epoch(zero_epoch)
 
-    def __restart_work__(self):
-        log = logging.getLogger(self.name)
-
+    def __restart_work__(self, log: logging.Logger):
         # Restart from input iterations, they should all have the same epoch number
         epoch_nbr = int(
             Path(self.config["paths"]["current_iterations"][0]).name.split("-")[0]
@@ -316,22 +330,26 @@ class WorkProject:
                         binder_chains=self.config["binder"]["chainID"],
                         ignore_cpt=False,
                     )
-                except Exception as e:
+                except Exception as e_restart_cpx:
                     log.error(
                         f"Could not build complex from previous iteration: {iter_path}"
                     )
-                    raise e
+                    raise e_restart_cpx
 
                 # Previous iterations should be fully scored.
                 try:
                     this_iter.read_scores(self.config["scoring"]["functions"])
-                except Exception as e:
-                    raise ValueError(
-                        f"Previous iteration not fully scored. Run in --score mode."
-                    ) from e
+                except Exception as e_score:
+                    log.error(f"Previous epoch not fully scored. Run in --score mode.")
+                    raise e_score
                 prev_epoch[iter_name] = this_iter
 
-            prev_epoch.set_top_iter(self.config["paths"])
+            try:
+                prev_epoch.set_top_iter(self.config["paths"])
+            except Exception as e_top_iter:
+                log.error(f"Failed to set top iteration from: {prev_epoch.keys()}")
+                raise e_top_iter
+
             top_itrs_str = " ; ".join(
                 [
                     f"{iter.epoch_id}-{iter.iter_name}"
@@ -369,7 +387,7 @@ class WorkProject:
                     binder_chains=self.config["binder"]["chainID"],
                     ignore_cpt=False,
                 )
-            except Exception as e:
+            except Exception:
                 try:
                     log.info(f"{iter_path.name} didn't finish its NPT MD.")
                     current_epoch.npt_done = False
@@ -396,11 +414,11 @@ class WorkProject:
                             binder_chains=self.config["binder"]["chainID"],
                             ignore_cpt=True,
                         )
-                    except:
+                    except Exception as e_restart_cpx:
                         log.error(
                             f"{iter_path} is in an invalid state. Cannot build complex from it."
                         )
-                        raise e
+                        raise e_restart_cpx
 
             current_epoch[iter_name] = this_iter
 

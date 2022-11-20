@@ -9,7 +9,7 @@ import cli
 import projectutils as pu
 from protocol import initialize_new_epoch
 from scoring import score
-from run import run_epoch, run_min_nvt_epoch, run_npt_epoch
+from run import run_epoch, run_npt_epoch
 from prunners import prune
 
 

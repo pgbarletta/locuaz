@@ -130,6 +130,14 @@ def get_valid_iter_dirs(files_and_dirs: List[str], config: Dict) -> List[Path]:
     return valid_iters
 
 
+def is_not_epoch_0(iterations: Union[List[str], List[Path]]):
+    for it_fn in iterations:
+        it_path = Path(it_fn)
+        if it_path.name.split("-")[0] == "0":
+            return False
+    return True
+
+
 def lacks_branches(
     current_iterations: Union[List[str], List[Path]],
     max_branches: int,
@@ -139,7 +147,7 @@ def lacks_branches(
         # Check that the epoch wasn't cut short during its initialization. This may
         # happen if last run was cut during initialize_new_epoch().
         nbr_branches = len(current_iterations)
-        if nbr_branches < max_branches:
+        if nbr_branches < max_branches and is_not_epoch_0(current_iterations):
             for it_fn in current_iterations:
                 it_path = Path(it_fn)
                 new_path = Path(it_path.parent, "bu_" + it_path.name)

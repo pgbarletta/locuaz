@@ -24,29 +24,48 @@ class Haddock(AbstractScoringFunction):
         self.root_dir = DirHandle(Path(sf_dir, self.name), make=False)
         self.nprocs = nprocs
 
-        self.bin_path = FileHandle(
-            Path(self.root_dir, "cns_solve_1.3/ibm-ppc64le-linux/bin/cns")
-        )
+        # self.bin_path = FileHandle(
+        #     Path(self.root_dir, "cns_solve_1.3/ibm-ppc64le-linux/bin/cns")
+        # )
+        # self.template_scoring_inp_handle = FileHandle(
+        #     Path(self.root_dir, "template_scoring.inp")
+        # )
+        # self.haddock_protocols_dir = DirHandle(
+        #     Path(self.root_dir, "haddock2.1", "protocols"), make=False
+        # )
+        # self.haddock_toppar_dir = DirHandle(
+        #     Path(self.root_dir, "haddock2.1", "toppar"), make=False
+        # )
+        # self.rescoring_scripts_dir = DirHandle(
+        #     Path(sf_dir, "rescoring-scripts"), make=False
+        # )
+
+        # # Set up environment:
+        # os.environ["HADDOCK"] = str(Path(self.root_dir, "haddock2.1"))
+        # cns_environment_script = Path(self.root_dir, "cns_solve_1.3/cns_solve_env")
+        # sp.run("/bin/csh " + str(cns_environment_script), shell=True)
+        # haddock_configure_script = Path(
+        #     self.root_dir, "haddock2.1/haddock_configure.csh"
+        # )
+        self.bin_path = FileHandle(Path(self.root_dir, "cns"))
         self.template_scoring_inp_handle = FileHandle(
             Path(self.root_dir, "template_scoring.inp")
         )
         self.haddock_protocols_dir = DirHandle(
-            Path(self.root_dir, "haddock2.1", "protocols"), make=False
+            Path(self.root_dir, "protocols"), make=False
         )
-        self.haddock_toppar_dir = DirHandle(
-            Path(self.root_dir, "haddock2.1", "toppar"), make=False
-        )
+        self.haddock_toppar_dir = DirHandle(Path(self.root_dir, "toppar"), make=False)
         self.rescoring_scripts_dir = DirHandle(
             Path(sf_dir, "rescoring-scripts"), make=False
         )
 
         # Set up environment:
-        os.environ["HADDOCK"] = str(Path(self.root_dir, "haddock2.1"))
-        cns_environment_script = Path(self.root_dir, "cns_solve_1.3/cns_solve_env")
+        os.environ["HADDOCK"] = str(Path(self.root_dir, "haddock"))
+
+        cns_environment_script = Path(self.root_dir, "cns_solve_env")
         sp.run("/bin/csh " + str(cns_environment_script), shell=True)
-        haddock_configure_script = Path(
-            self.root_dir, "haddock2.1/haddock_configure.csh"
-        )
+
+        haddock_configure_script = Path(self.root_dir, "haddock_configure.csh")
         sp.run("/bin/csh " + str(haddock_configure_script), shell=True)
 
     def __pdb_chain_segid__(self, file_in: Path, file_out: Path) -> None:

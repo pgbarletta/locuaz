@@ -20,8 +20,8 @@ class Bluues(AbstractScoringFunction):
         self.root_dir = DirHandle(Path(sf_dir, self.name), make=False)
         self.nprocs = nprocs
 
-        self.bin_path = FileHandle(Path(self.root_dir, "bluues_new_2"))
-        self.bmf_bin_path = FileHandle(Path(self.root_dir, "score_bmf_3"))
+        self.bin_path = FileHandle(Path(self.root_dir, self.name))
+        self.bmf_bin_path = FileHandle(Path(self.root_dir, "bmf"))
 
     def __pdb2pqr_worker__(self, frames_path: Path, i: int) -> int:
 

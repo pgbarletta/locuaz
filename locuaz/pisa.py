@@ -17,8 +17,8 @@ class Pisa(AbstractScoringFunction):
         self.root_dir = DirHandle(Path(sf_dir, self.name), make=False)
         self.nprocs = nprocs
 
-        self.parameters_handle = FileHandle(Path(self.root_dir, "pisa.params"))
-        self.bin_path = FileHandle(Path(self.root_dir, "pisaEnergy_linux"))
+        self.bin_path = FileHandle(Path(self.root_dir, self.name))
+        self.parameters_handle = FileHandle(Path(self.root_dir, f"{self.name}.params"))
 
     def __parse_output__(
         self, *, score_stdout: Any = None, score_file: Any = None, original_command=""

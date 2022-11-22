@@ -18,7 +18,7 @@ class Evoef2(AbstractScoringFunction):
         self.nprocs = nprocs
         self.max_concurrent_jobs = self.CPU_TO_MEM_RATIO * self.nprocs
 
-        self.bin_path = FileHandle(Path(self.root_dir, "EvoEF2"))
+        self.bin_path = FileHandle(Path(self.root_dir, self.name))
 
     def __evoef2_worker__(self, frames_path: Path, i: int) -> Tuple[int, float]:
         # Using relative path to `pdb_frame` to shorten path to input PDB.

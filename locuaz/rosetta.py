@@ -18,34 +18,42 @@ class Rosetta(AbstractScoringFunction):
 
     def __init__(self, sf_dir, nprocs=2):
         self.root_dir = DirHandle(Path(sf_dir, self.name), make=False)
-        self.bin_path = FileHandle(
-            Path(
-                self.root_dir,
-                "sources/rosetta_source/bin/InterfaceAnalyzer.linuxgccrelease",
-            )
-        )
+        # self.bin_path = FileHandle(
+        #     Path(
+        #         self.root_dir,
+        #         "sources/rosetta_source/bin/InterfaceAnalyzer.linuxgccrelease",
+        #     )
+        # )
+        # self.executable = (
+        #     str(self.bin_path)
+        #     + " -database "
+        #     + str(Path(self.root_dir, "sources/rosetta_database"))
+        # )
+        self.bin_path = FileHandle(Path(self.root_dir, self.name))
         self.executable = (
-            str(self.bin_path)
-            + " -database "
-            + str(Path(self.root_dir, "sources/rosetta_database"))
+            f'{self.bin_path} -database {Path(self.root_dir, "rosetta_database")}'
         )
 
         self.nprocs = nprocs
 
         # Set up environment:
-        parameters_dir = DirHandle(
-            Path(
-                self.root_dir,
-                "sources/rosetta_source/build/src/release/linux/4.14/64/ppc64le/gcc/8.4",
-            ),
-            make=False,
-        )
+        # parameters_dir = DirHandle(
+        #     Path(
+        #         self.root_dir,
+        #         "sources/rosetta_source/build/src/release/linux/4.14/64/ppc64le/gcc/8.4",
+        #     ),
+        #     make=False,
+        # )
+        # parameters_external_dir = DirHandle(
+        #     Path(
+        #         self.root_dir,
+        #         "sources/rosetta_source/build/external/release/linux/4.14/64/ppc64le/gcc/8.4",
+        #     ),
+        #     make=False,
+        # )
+        parameters_dir = DirHandle(Path(self.root_dir, "parameters"), make=False)
         parameters_external_dir = DirHandle(
-            Path(
-                self.root_dir,
-                "sources/rosetta_source/build/external/release/linux/4.14/64/ppc64le/gcc/8.4",
-            ),
-            make=False,
+            Path(self.root_dir, "external_parameters"), make=False
         )
 
         os.environ["LD_LIBRARY_PATH"] = (

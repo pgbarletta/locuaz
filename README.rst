@@ -70,6 +70,38 @@ If on biobb 3.7, apply these patches:
                 self.cmd += self.dev.split()
 
 
+All scoring functions (SFs) should be inside the config['paths']['scoring_functions'] directory.
+Their folder names should match the exact SF names used in the config file and their binaries
+should be on the top level of their folders and also be named with the exact SF name. 
+Eg: for the pisa scoring function and config['paths']['scoring_functions']='home/user/my_SFs'
+
+pisa directory: 'home/user/my_SFs/pisa'
+pisa binary: 'home/user/my_SFs/pisa/pisa'
+pisa parameters (pisa's a special case): 'home/user/my_SFs/pisa/pisa.params'
+
+Additional requirements for specific SFs:
+ - pisa: see above.
+ - rosetta: symbolic links on the top rosetta folder should be added, pointing the InterfaceAnalyzer,
+   the database, the parameters directory and the external parameters directory. 
+   Eg: inside the main rosetta folder
+    ln -s sources/rosetta_source/bin/InterfaceAnalyzer.linuxgccrelease rosetta
+    ln -s sources/rosetta_database/ rosetta_database
+    ln -s sources/rosetta_source/build/src/release/linux/4.14/64/ppc64le/gcc/8.4/ parameters
+    ln -s sources/rosetta_source/build/external/release/linux/4.14/64/ppc64le/gcc/8.4 external_parameters
+
+ - haddock:
+    The 'template_scoring.inp' has to be at the top level of the haddock
+    The 'rescoring-scripts' folder has to be at the top level of the haddock
+    The 'haddock' folder has to be at the top level of the haddock
+    The 'cns_solve' or 'cns_solve_X.Y' (where 'X'.'Y' is the version number) folder
+        has to be at the top level of the haddock
+
+    ln -s ./cns_solve_1.3/ibm-ppc64le-linux/bin/cns cns
+    ln -s haddock/protocols protocols
+    ln -s haddock/toppar/ toppar
+    ln -s cns_solve_1.3/cns_solve_env cns_solve_env
+    ln -s haddock/haddock_configure.csh haddock_configure.csh
+
 Features
 --------
 

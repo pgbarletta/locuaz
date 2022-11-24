@@ -3,10 +3,10 @@ from attrs import define, field
 from pathlib import Path
 from shutil import SameFileError
 
-from biobb_md.gromacs.grompp import Grompp
+from biobb_gromacs.gromacs.grompp import Grompp
 from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
 from biobb_analysis.gromacs.gmx_image import GMXImage
-from biobb_md.gromacs.mdrun import Mdrun
+from biobb_gromacs.gromacs.mdrun import Mdrun
 from molecules import ZipTopology, copy_mol_to
 from complex import AbstractComplex, GROComplex
 from molutils import fix_box
@@ -18,7 +18,7 @@ from primitives import launch_biobb
 @define(frozen=True)
 class MDrun:
     dir: DirHandle = field(converter=DirHandle)  # type: ignore
-    gmx_path: str = field(converter=str, kw_only=True)
+    binary_path: str = field(converter=str, kw_only=True)
     mdp: FileHandle = field(converter=FileHandle, kw_only=True)  # type: ignore
     gpu_id: int = field(converter=int, kw_only=True, default=0)
     pinoffset: int = field(converter=int, kw_only=True, default=0)
@@ -41,7 +41,7 @@ class MDrun:
 
         obj = cls(
             DirHandle(root_dir),
-            gmx_path=work_pjct.config["md"]["gmx_bin"],
+            binary_path=work_pjct.config["md"]["gmx_bin"],
             mdp=FileHandle(Path(work_pjct.mdps["min_mdp"])),
             gpu_id=gpu_id,
             pinoffset=pinoffset,
@@ -66,7 +66,7 @@ class MDrun:
 
         obj = cls(
             DirHandle(root_dir),
-            gmx_path=work_pjct.config["md"]["gmx_bin"],
+            binary_path=work_pjct.config["md"]["gmx_bin"],
             mdp=FileHandle(Path(work_pjct.mdps["nvt_mdp"])),
             gpu_id=gpu_id,
             pinoffset=pinoffset,
@@ -92,7 +92,7 @@ class MDrun:
 
         obj = cls(
             DirHandle(root_dir),
-            gmx_path=work_pjct.config["md"]["gmx_bin"],
+            binary_path=work_pjct.config["md"]["gmx_bin"],
             mdp=FileHandle(Path(work_pjct.mdps["npt_mdp"])),
             gpu_id=gpu_id,
             pinoffset=pinoffset,
@@ -118,7 +118,7 @@ class MDrun:
             input_cpt_path=str(complex.cpt),
             input_ndx_path=str(complex.ndx),
             output_tpr_path=str(run_tpr),
-            properties={"gmx_path": str(self.gmx_path)},
+            properties={"binary_path": str(self.binary_path)},
         )
         launch_biobb(grompepe)
 
@@ -132,7 +132,7 @@ class MDrun:
         run_pux = Path(self.dir) / (f"pullx_{self.out_name}.xvg")
         run_puf = Path(self.dir) / (f"pullf_{self.out_name}.xvg")
         props = {
-            "gmx_path": str(self.gmx_path),
+            "binary_path": str(self.binary_path),
             "num_threads_omp": self.num_threads_omp,
             "num_threads_mpi": self.num_threads_mpi,
             "gpu_id": self.gpu_id,
@@ -165,16 +165,16 @@ class MDrun:
             input_dir=Path(self.dir),
             target_chains=complex.top.target_chains,
             binder_chains=complex.top.binder_chains,
-            gmx_bin=self.gmx_path,
+            gmx_bin=self.binary_path,
         )
 
         if self.image_after:
             run_pdb = Path(self.dir, f"{self.out_name}.pdb")
-            fix_box(new_complex, run_pdb, str(self.gmx_path))
+            fix_box(new_complex, run_pdb, str(self.binary_path))
         else:
             # Convert output .gro to PDB.
             run_pdb = Path(self.dir) / (self.out_name + ".pdb")
-            props = {"gmx_path": str(self.gmx_path), "selection": "System"}
+            props = {"binary_path": str(self.binary_path), "selection": "System"}
             gro_to_pdb = GMXTrjConvStr(
                 input_structure_path=str(run_gro),
                 input_top_path=str(run_tpr),
@@ -189,7 +189,7 @@ class MDrun:
             iter_path=Path(self.dir),
             target_chains=complex.top.target_chains,
             binder_chains=complex.top.binder_chains,
-            gmx_bin=self.gmx_path,
+            gmx_bin=self.binary_path,
         )
 
         return new_complex

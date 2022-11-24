@@ -8,13 +8,13 @@ from typing import List, Sequence, Dict, Tuple, Optional, Any
 
 from attrs import define, field
 
-from biobb_md.gromacs.pdb2gmx import Pdb2gmx
-from biobb_md.gromacs.gmxselect import Gmxselect
-from biobb_md.gromacs.editconf import Editconf
-from biobb_md.gromacs.grompp import Grompp
+from biobb_gromacs.gromacs.pdb2gmx import Pdb2gmx
+from biobb_gromacs.gromacs.gmxselect import Gmxselect
+from biobb_gromacs.gromacs.editconf import Editconf
+from biobb_gromacs.gromacs.grompp import Grompp
 from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
 
-from biobb_md.gromacs.genion import Genion
+from biobb_gromacs.gromacs.genion import Genion
 
 from fileutils import FileHandle, copy_to, update_header
 from primitives import launch_biobb
@@ -179,7 +179,7 @@ def get_gro_ziptop_from_pdb(
         pdb (PDBStructure): input PDB
         target_chains (Sequence): these will be used to construct the ZipTopology
         binder_chains (Sequence): these will be used to construct the ZipTopology
-        gmx_path (str, optional): for all the biobb tools. Defaults to "gmx".
+        binary_path (str, optional): for all the biobb tools. Defaults to "gmx".
         water_type (str, optional): argument to pdb2gmx. Defaults to "tip3p".
         force_field (str, optional): argument to pdb2gmx. Defaults to "amber99sb-ildn".
 
@@ -195,7 +195,7 @@ def get_gro_ziptop_from_pdb(
 
     # Generate the first set of GROStructure and ZipTopology
     props = {
-        "gmx_path": gmx_bin,
+        "binary_path": gmx_bin,
         "water_type": water_type,
         "force_field": force_field,
         "ignh": True,
@@ -245,7 +245,7 @@ def get_gro_ziptop_from_pdb(
             input_gro_path=str(pre_gro_fn),
             input_top_zip_path=str(pre_top_fn),
             output_tpr_path=str(gen_tpr_fn),
-            properties={"gmx_path": gmx_bin, "maxwarn": 2},
+            properties={"binary_path": gmx_bin, "maxwarn": 2},
         )
         launch_biobb(grompepe)
 
@@ -257,7 +257,7 @@ def get_gro_ziptop_from_pdb(
             input_top_zip_path=str(pre_top_fn),
             output_gro_path=str(gro_fn),
             output_top_zip_path=str(top_fn),
-            properties={"gmx_path": gmx_bin, "neutral": True, "concentration": 0.0},
+            properties={"binary_path": gmx_bin, "neutral": True, "concentration": 0.0},
         )
         launch_biobb(genio)
         # Remove temporary file
@@ -273,7 +273,7 @@ def get_gro_ziptop_from_pdb(
         input_top_zip_path=str(top_fn),
         output_tpr_path=str(temp_tpr_fn),
         properties={
-            "gmx_path": gmx_bin,
+            "binary_path": gmx_bin,
             "maxwarn": 2,
         },
     )
@@ -285,7 +285,7 @@ def get_gro_ziptop_from_pdb(
         input_structure_path=str(gro_fn),
         input_top_path=str(temp_tpr_fn),
         output_str_path=str(pdb_fn),
-        properties={"gmx_path": gmx_bin},
+        properties={"binary_path": gmx_bin},
     )
     launch_biobb(trjconv)
 
@@ -313,7 +313,7 @@ def get_tpr(
         input_gro_path=str(gro.file.path),
         input_top_zip_path=str(top.file.path),
         output_tpr_path=str(tpr),
-        properties={"gmx_path": gmx_bin, "simulation_type": "index"},
+        properties={"binary_path": gmx_bin, "simulation_type": "index"},
     )
     launch_biobb(grompepe)
 
@@ -334,7 +334,7 @@ def get_pdb_tpr(
         input_structure_path=str(gro.file.path),
         input_top_path=str(tpr.file.path),
         output_str_path=str(pdb_fn),
-        properties={"gmx_path": gmx_bin},
+        properties={"binary_path": gmx_bin},
     )
     launch_biobb(trjconv)
 
@@ -351,7 +351,7 @@ def fix_pdb(
     # Hydrogens and getting a good output PDB, so the output has to be
     # a .gro file
     props = {
-        "gmx_path": str(gmx_bin),
+        "binary_path": str(gmx_bin),
         "water_type": "tip3p",
         "force_field": "amber99sb-ildn",
         "ignh": True,
@@ -373,7 +373,7 @@ def fix_pdb(
         input_gro_path=str(temp_gro),
         input_top_zip_path=str(temp_zip),
         output_tpr_path=str(temp_tpr),
-        properties={"gmx_path": gmx_bin, "maxwarn": 1},
+        properties={"binary_path": gmx_bin, "maxwarn": 1},
     )
     launch_biobb(grompepe)
 
@@ -382,7 +382,7 @@ def fix_pdb(
         input_structure_path=str(temp_gro),
         input_top_path=str(temp_tpr),
         output_str_path=str(pdb_out_path),
-        properties={"gmx_path": gmx_bin},
+        properties={"binary_path": gmx_bin},
     )
     launch_biobb(trjconv)
 
@@ -448,7 +448,7 @@ def generate_ndx(
     binder_chains: Sequence,
 ) -> FileHandle:
     try:
-        uni_pdb = mda.Universe(pdb)
+        uni_pdb = mda.Universe(str(pdb))
         ndx_file = Path(Path(pdb).parent, f"{name}.ndx")
 
         uni_pdb.select_atoms(

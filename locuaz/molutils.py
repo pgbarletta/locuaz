@@ -34,7 +34,7 @@ def _(complex: GROComplex, gmx_bin: str) -> Tuple[PDBStructure, PDBStructure]:
         input_top_path=str(complex.tpr.file.path),
         input_index_path=str(complex.ndx.path),
         output_str_path=str(nonwat_pdb_fn),
-        properties={"gmx_path": gmx_bin, "selection": "Protein"},
+        properties={"binary_path": gmx_bin, "selection": "Protein"},
     )
     launch_biobb(get_protein)
     nonwat_pdb = PDBStructure.from_path(nonwat_pdb_fn)
@@ -46,7 +46,7 @@ def _(complex: GROComplex, gmx_bin: str) -> Tuple[PDBStructure, PDBStructure]:
         input_top_path=str(complex.tpr.file.path),
         input_index_path=str(complex.ndx.path),
         output_str_path=str(wation_pdb_fn),
-        properties={"gmx_path": gmx_bin, "selection": "Non-Protein"},
+        properties={"binary_path": gmx_bin, "selection": "Non-Protein"},
     )
     launch_biobb(get_water_ions)
 
@@ -85,7 +85,7 @@ def fix_box(cpx: GROComplex, out_path: Path, gmx_bin: str = "gmx") -> PDBStructu
         input_top_path=str(cpx.tpr),
         output_traj_path=str(whole_pdb),
         properties={
-            "gmx_path": gmx_bin,
+            "binary_path": gmx_bin,
             "fit_selection": "Protein",
             "center_selection": "System",
             "output_selection": "System",
@@ -96,7 +96,7 @@ def fix_box(cpx: GROComplex, out_path: Path, gmx_bin: str = "gmx") -> PDBStructu
     )
     launch_biobb(make_whole)
 
-    u = mda.Universe(whole_pdb)
+    u = mda.Universe(str(whole_pdb))
     H = get_matrix(u.dimensions)
     inv_H = np.linalg.inv(H)
     centro = np.sum(H / 2, axis=1)

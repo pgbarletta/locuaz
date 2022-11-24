@@ -35,7 +35,7 @@ def initialize_scoring_folder(iteration: Iteration, config: Dict) -> int:
         input_top_path=str(iteration.complex.tpr.file.path),
         input_index_path=str(iteration.complex.ndx.path),
         output_str_ens_path=str(ens_of_pdbs),
-        properties={"gmx_path": gmx_bin, "selection": "target"},
+        properties={"binary_path": gmx_bin, "selection": "target"},
     )
     launch_biobb(get_target)
     nframes = extract_pdbs(ens_of_pdbs, "target", new_chainID="A")
@@ -46,7 +46,7 @@ def initialize_scoring_folder(iteration: Iteration, config: Dict) -> int:
         input_top_path=str(iteration.complex.tpr.file.path),
         input_index_path=str(iteration.complex.ndx.path),
         output_str_ens_path=str(ens_of_pdbs),
-        properties={"gmx_path": gmx_bin, "selection": "binder"},
+        properties={"binary_path": gmx_bin, "selection": "binder"},
     )
     launch_biobb(get_binder)
     nframes_binder = extract_pdbs(ens_of_pdbs, "binder", new_chainID="B")

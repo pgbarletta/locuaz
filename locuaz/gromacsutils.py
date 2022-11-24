@@ -15,10 +15,10 @@ from molecules import (
     get_tpr,
 )
 from complex import AbstractComplex, GROComplex
-from biobb_md.gromacs.gmxselect import Gmxselect
+from biobb_gromacs.gromacs.gmxselect import Gmxselect
 from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
-from biobb_md.gromacs.solvate import Solvate
-from biobb_md.gromacs.genion import Genion
+from biobb_gromacs.gromacs.solvate import Solvate
+from biobb_gromacs.gromacs.genion import Genion
 from biobb_analysis.gromacs.gmx_image import GMXImage
 from primitives import launch_biobb
 
@@ -42,7 +42,7 @@ def _(cpx: GROComplex, out_trj_fn: Path, gmx_bin: str) -> XtcTrajectory:
         input_top_path=str(cpx.tpr),
         output_traj_path=str(whole_trj),
         properties={
-            "gmx_path": gmx_bin,
+            "binary_path": gmx_bin,
             "fit_selection": "Protein",
             "center_selection": "Protein",
             "output_selection": "Protein",
@@ -60,7 +60,7 @@ def _(cpx: GROComplex, out_trj_fn: Path, gmx_bin: str) -> XtcTrajectory:
         input_top_path=str(cpx.tpr),
         output_traj_path=str(cluster_trj),
         properties={
-            "gmx_path": gmx_bin,
+            "binary_path": gmx_bin,
             "fit_selection": "Protein",
             "center_selection": "Protein",
             "output_selection": "Protein",
@@ -92,7 +92,7 @@ def _(cpx: GROComplex, out_trj_fn: Path, gmx_bin: str) -> XtcTrajectory:
         input_top_path=str(cluster_gro),
         output_traj_path=str(nojump_trj),
         properties={
-            "gmx_path": gmx_bin,
+            "binary_path": gmx_bin,
             "fit_selection": "Protein",
             "center_selection": "Protein",
             "output_selection": "Protein",
@@ -109,7 +109,7 @@ def _(cpx: GROComplex, out_trj_fn: Path, gmx_bin: str) -> XtcTrajectory:
         input_top_path=str(cluster_gro),
         output_traj_path=str(out_trj_fn),
         properties={
-            "gmx_path": gmx_bin,
+            "binary_path": gmx_bin,
             "fit_selection": "Protein",
             "center_selection": "Protein",
             "output_selection": "Protein",
@@ -147,7 +147,7 @@ def write_non_overlapping_ndx(
         input_ndx_path=str(ndx_fn_in),
         output_ndx_path=str(ndx_fn_wat_out),
         properties={
-            "gmx_path": gmx_bin,
+            "binary_path": gmx_bin,
             "selection": f"(same residue as resname SOL and "
             f"within {dist_threshold} of (group binder and resid {resSeq}))",
         },
@@ -179,7 +179,7 @@ def write_non_overlapping_ndx(
         input_ndx_path=str(ndx_fn_in),
         output_ndx_path=str(ndx_fn_out),
         properties={
-            "gmx_path": gmx_bin,
+            "binary_path": gmx_bin,
             "selection": f"not (same residue as resname SOL and "
             f"within {dist_threshold} of (group binder and resid {resSeq})) "
             "and (not name CL) and (not name NA)",
@@ -241,7 +241,7 @@ def _(complex: GROComplex, config: Dict, overlapped_resSeq: int) -> GROComplex:
         input_index_path=str(ndx.path),
         output_str_path=str(nonwat_pdb_fn),
         properties={
-            "gmx_path": config["md"]["gmx_bin"],
+            "binary_path": config["md"]["gmx_bin"],
             "selection": "non_overlapping",
         },
     )
@@ -269,7 +269,7 @@ def _(complex: GROComplex, config: Dict, overlapped_resSeq: int) -> GROComplex:
             # parameter doesn't make much sense.
             output_top_zip_path=str(nonwat_top),
             properties={
-                "gmx_path": config["md"]["gmx_bin"],
+                "binary_path": config["md"]["gmx_bin"],
                 "dev": f"-maxsol {wat_count}",
             },
         )
@@ -302,7 +302,7 @@ def _(complex: GROComplex, config: Dict, overlapped_resSeq: int) -> GROComplex:
         output_gro_path=str(gro_fn),
         output_top_zip_path=str(top_fn),
         properties={
-            "gmx_path": config["md"]["gmx_bin"],
+            "binary_path": config["md"]["gmx_bin"],
             "neutral": True,
             "concentration": 0.0,
         },

@@ -1,5 +1,5 @@
 from pathlib import Path
-from attrs import define, field
+from attrs import define, field, validators
 from typing import (
     Iterable,
     Iterator,
@@ -36,9 +36,11 @@ class Iteration:
 
     dir_handle: DirHandle = field(converter=DirHandle)  # type: ignore
     iter_name: str = field(converter=str, kw_only=True)
-    chainIDs: List[str] = field(converter=list, kw_only=True)
-    resnames: List[str] = field(converter=list, kw_only=True)
-    resSeqs: List[List[int]] = field(converter=list, kw_only=True)
+    chainIDs: List[str] = field(kw_only=True, validator=validators.instance_of(list))
+    resnames: List[str] = field(kw_only=True, validator=validators.instance_of(list))
+    resSeqs: List[List[int]] = field(
+        kw_only=True, validator=validators.instance_of(list)
+    )  # Had to use validators.instance_of() instead of converter because mypy complains
     epoch_id: int = field(converter=int, init=False)
     complex: AbstractComplex = field(init=False)
     score_dir: DirHandle = field(converter=DirHandle, init=False)  # type: ignore
@@ -435,7 +437,7 @@ class WorkProject:
     def __get_mutating_resname__(
         self, pdb_path: Path, chainIDs: List, resSeqs: List
     ) -> List[str]:
-        u = mda.Universe(pdb_path)
+        u = mda.Universe(str(pdb_path))
 
         resnames = []
         for chainID, list_resSeq in zip(chainIDs, resSeqs):

@@ -1,25 +1,24 @@
-name: cacho
+name: locuaz 
 channels:
   - conda-forge
   - bioconda
 dependencies:
-  - python==3.7.12
+  - python==3.8.14
   - pytest
-  - sphinx
   - yaml
-  - types-pyyaml
   - cerberus
   - pocl
-  - biobb_structure_utils==3.7.6
+  - biobb_structure_utils==3.8.0
   - pip
   - pip:
     - git+https://github.com/bioexcel/biobb_analysis.git@844b8801c568b03985ff8b7d31e781f3477d336e
-    - biobb_io==3.7.0
-    - biobb_md==3.7.1
-    - biobb_model==3.7.0
-    - biobb_pmx==3.7.0
-    - biobb_amber==3.7.1
-    - biobb_chemistry==3.7.0
-    - biobb_vs==3.7.0
+    - biobb_analysis==3.8.0
+    - biobb_io==3.8.0
+    - biobb_gromacs==3.8.1
+    - biobb_model==3.8.1
+    - biobb_pmx==3.8.1
+    - biobb_amber==3.8.0
+    - biobb_chemistry==3.8.0
+    - biobb_vs==3.8.1
     - pdb2pqr
     - mdanalysis

@@ -1,9 +1,9 @@
-name: choco
+name: locuaz
 channels:
   - conda-forge
   - bioconda
 dependencies:
-  - python==3.8.1
+  - python==3.8.14
   - ipykernel
   - jupyterlab
   - black

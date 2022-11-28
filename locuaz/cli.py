@@ -62,6 +62,14 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
     return config, start
 
 
+def backup_iteration(it_fn: Union[str, Path]) -> None:
+    it_path = Path(it_fn)
+    new_path = Path(it_path.parent, "bu_" + it_path.name)
+    # TODO: won't be necessary to cast after 3.9 upgrade
+    sh.move(str(it_path), str(new_path))
+    warn(f"Found incomplete epoch. Will backup {it_path} to {new_path}")
+
+
 def append_iterations(
     sorted_iters: PriorityQueue, iterations: List, prev_epoch: int
 ) -> str:
@@ -118,10 +126,7 @@ def get_valid_iter_dirs(files_and_dirs: List[str], config: Dict) -> List[Path]:
     for iter_path in iter_dirs:
         nbr, *_ = iter_path.name.split("-")
         if nbr in incomplete_epochs:
-            new_path = Path(iter_path.parent, "bu_" + iter_path.name)
-            # TODO: won't be necessary to cast after 3.9 upgrade
-            sh.move(str(iter_path), str(new_path))
-            warn(f"Found incomplete epoch. Will backup {iter_path} to {new_path}")
+            backup_iteration(iter_path)
         else:
             valid_iters.append(iter_path)
 
@@ -149,11 +154,7 @@ def lacks_branches(
         nbr_branches = len(current_iterations)
         if nbr_branches < max_branches and is_not_epoch_0(current_iterations):
             for it_fn in current_iterations:
-                it_path = Path(it_fn)
-                new_path = Path(it_path.parent, "bu_" + it_path.name)
-                # TODO: won't be necessary to cast after 3.9 upgrade
-                sh.move(str(it_path), str(new_path))
-                warn(f"Found incomplete epoch. Will backup {it_path} to {new_path}")
+                backup_iteration(it_fn)
             return True
     return False
 

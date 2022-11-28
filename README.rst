@@ -24,7 +24,7 @@ Looping Uniquely Catered Amino Acid Sequences
 
 * Not tested for multiple chains
 
-Download mambaforge from:
+Download Mambaforge from:
 
 https://github.com/conda-forge/miniforge
 
@@ -32,6 +32,12 @@ if on POWER9, go to the bottom, or just search 'POWER9'.
 
 Can't install biobb using conda because It'll try to get packages that are not ppc64 compatible,
 eg: gromacs, and some old babel version.
+
+* Make sure your cmake version is >3.17. If on MARCONI:
+
+```
+module load autoload cmake
+```
 
 If on biobb 3.7, apply these patches:
     - On biobb_md/gromacs/mdrun.py, line 201:

@@ -552,11 +552,12 @@ class WorkProject:
     def get_mem_positions(self) -> Set[int]:
         set_of_pos: Set[int] = set()
 
-        if not self.has_memory:
-            return set_of_pos
-
-        for mem in self.mutated_positions:
-            set_of_pos.update(mem)
+        if self.has_memory:
+            for mem in self.mutated_positions:
+                set_of_pos.update(mem)
+        if self.has_failed_memory:
+            for mem in self.failed_mutated_positions:
+                set_of_pos.update(mem)
         return set_of_pos
 
     def get_mdps(self, dir_path: Path, mdp_names: Dict) -> None:

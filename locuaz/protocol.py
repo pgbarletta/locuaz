@@ -28,7 +28,7 @@ def initialize_new_epoch(work_pjct: WorkProject) -> None:
     generator = mutation_generators[work_pjct.config["protocol"]["generator"]]
     mutation_generator = generator(
         old_epoch,
-        work_pjct.config["protocol"]["max_branches"],
+        work_pjct.config["protocol"]["branches"],
         excluded_aas=work_pjct.get_mem_aminoacids(),
         excluded_pos=work_pjct.get_mem_positions(),
     )

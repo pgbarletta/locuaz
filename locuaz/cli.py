@@ -145,14 +145,14 @@ def is_not_epoch_0(iterations: Union[List[str], List[Path]]):
 
 def lacks_branches(
     current_iterations: Union[List[str], List[Path]],
-    max_branches: int,
+    branches: int,
     prevent_fewer_branches: bool,
 ) -> bool:
     if prevent_fewer_branches:
         # Check that the epoch wasn't cut short during its initialization. This may
         # happen if last run was cut during initialize_new_epoch().
         nbr_branches = len(current_iterations)
-        if nbr_branches < max_branches and is_not_epoch_0(current_iterations):
+        if nbr_branches < branches and is_not_epoch_0(current_iterations):
             for it_fn in current_iterations:
                 backup_iteration(it_fn)
             return True
@@ -178,7 +178,7 @@ def get_tracking_files(config: Dict) -> bool:
 
         if lacks_branches(
             current_iterations,
-            config["protocol"]["max_branches"],
+            config["protocol"]["branches"],
             config["protocol"]["prevent_fewer_branches"],
         ):
             return False
@@ -221,7 +221,7 @@ def set_iterations(config: Dict) -> None:
 
         if lacks_branches(
             config["paths"]["current_iterations"],
-            config["protocol"]["max_branches"],
+            config["protocol"]["branches"],
             config["protocol"]["prevent_fewer_branches"],
         ):
             # Start over, this time, the incomplete epoch will not be in `iters`.

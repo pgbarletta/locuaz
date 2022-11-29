@@ -56,7 +56,7 @@ protocol:
             default: 0
             min: 0
             max: 48
-        max_branches:
+        branches:
             type: integer
             default: 1
             min: 1
@@ -79,7 +79,7 @@ protocol:
             type: string 
             default: "SPM_4"
             required: false
-            crosscheck: [max_branches] 
+            crosscheck: [branches] 
             allowed: ["SPM_4", "SPM_R&B"]
         mutator:
             type: string

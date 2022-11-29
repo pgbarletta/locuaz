@@ -14,7 +14,7 @@ class AbstractMutationGenerator(ABC, Mapping):
     def __init__(
         self,
         epoch: Epoch,
-        max_branches: int,
+        branches: int,
         *,
         excluded_aas: Set[str],
         excluded_pos: Set[int],
@@ -62,7 +62,7 @@ class SPM_4(AbstractMutationGenerator):
     def __init__(
         self,
         epoch: Epoch,
-        max_branches: int,
+        branches: int,
         *,
         excluded_aas: Set[str],
         excluded_pos: Set[int],
@@ -73,8 +73,8 @@ class SPM_4(AbstractMutationGenerator):
         self.excluded_pos = excluded_pos
 
         mut_chainID, mut_resSeq = self.__get_random_pos__(epoch)
-        # Now, generate up to `max_branches` mutations
-        remaining_branches = max_branches
+        # Now, generate up to `branches` mutations
+        remaining_branches = branches
         remaining_iterations = set(epoch.top_iterations.keys())
         while remaining_branches != 0:
             iteration = epoch.top_iterations[remaining_iterations.pop()]

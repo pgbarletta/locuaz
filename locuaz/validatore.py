@@ -159,11 +159,11 @@ class Validatore(Validator):
         {'type': 'list'}
         """
         if others:
-            max_branches = self.document[others[0]]
-            if ("SPM" in value) and (max_branches > 19):
+            branches = self.document[others[0]]
+            if ("SPM" in value) and (branches > 19):
                 self._error(
                     field,
-                    f"{others[0]} set to {max_branches} but this binder generator outputs "
+                    f"{others[0]} set to {branches} but this binder generator outputs "
                     "mutations for a single position, hence, 19 is the maximum number "
                     "of possible mutations.",
                 )

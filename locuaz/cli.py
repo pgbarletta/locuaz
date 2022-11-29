@@ -186,11 +186,7 @@ def get_tracking_files(config: Dict) -> bool:
             tracking["epoch_mutated_positions"]
         )
         config["protocol"]["memory_positions"] = deque(tracking["memory_positions"])
-        config["protocol"]["memory_size"] = len(tracking["memory_positions"])
         config["protocol"]["failed_memory_positions"] = deque(
-            tracking["failed_memory_positions"]
-        )
-        config["protocol"]["failed_memory_size"] = len(
             tracking["failed_memory_positions"]
         )
 
@@ -203,9 +199,6 @@ def get_tracking_files(config: Dict) -> bool:
 def set_iterations(config: Dict) -> None:
     """set_iterations Set config["paths"]["current_iterations"],
     config["paths"]["previous_iterations"] and possibly config["paths"]["top_iterations"].
-    Also set: config["misc"]["epoch_mutated_positions"], config["protocol"]["memory_positions"],
-    config["protocol"]["memory_size"], config["protocol"]["failed_memory_positions"] and
-    config["protocol"]["failed_memory_size"]
 
     Args:
         config (Dict): dictionary with input config
@@ -240,7 +233,7 @@ def set_iterations(config: Dict) -> None:
     raise ValueError("No valid iterations in work_dir. Aborting.")
 
 
-def get_memory(config: Dict) -> List[List[int]]:
+def get_memory(config: Dict) -> None:
     """get_memory compare character by character of the iteration folders resnames to
     find differences among them that would correspond to previously done mutations.
     Small issue in this function: when an epoch was generated from more than 1 top iteration,
@@ -252,6 +245,9 @@ def get_memory(config: Dict) -> List[List[int]]:
     (or no memory at all), that mutated the same position more than once in the last N
     (N being equal to `config["protocol"]["memory_size"]`) epochs.
     Hence, no overlap is removedand repetitive resSeqs may be found on the resulting List of Lists.
+
+    Sets: config["misc"]["epoch_mutated_positions"] and config["protocol"]["memory_positions"],
+
 
     Args:
         config (Dict): input config options from the user.
@@ -293,14 +289,14 @@ def get_memory(config: Dict) -> List[List[int]]:
                     f"Can't fill requested memory since input 'mutating_chainID' does not "
                     f" match the 'mutating_chainID' previously used on this workspace."
                 )
-                return [[]]
+                return None
             old_n_resSeqs = [len(itername[2:]) for itername in iterchains]
             if old_n_resSeqs != input_n_resSeqs:
                 warn(
                     f"Can't fill requested memory since input 'mutating_resSeq' does not "
                     f" match the 'mutating_resSeq' previously used on this workspace."
                 )
-                return [[]]
+                return None
 
         # Find the positions and chains that were mutated in this epoch
         memory_positions = set()
@@ -324,8 +320,7 @@ def get_memory(config: Dict) -> List[List[int]]:
     )
     # Get the mutated positions on the last epoch
     config["misc"]["epoch_mutated_positions"] = set(all_memory_positions[0])
-
-    return all_memory_positions
+    config["protocol"]["memory_positions"] = all_memory_positions
 
 
 def define_box_settings(config: Dict) -> Dict:
@@ -382,8 +377,9 @@ def main() -> Tuple[Dict, bool]:
             requested_memory = "memory_size" in config["protocol"]
             has_no_memory = not ("memory_positions" in config["protocol"])
             if requested_memory and has_no_memory:
-                memory_positions = get_memory(config)
-                config["protocol"]["memory_positions"] = memory_positions
+                get_memory(config)
+            else:
+                config["misc"]["epoch_mutated_positions"] = set()
 
     config = define_box_settings(config)
 

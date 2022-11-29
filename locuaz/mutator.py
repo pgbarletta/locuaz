@@ -4,7 +4,7 @@ from attrs import define, field
 from typing import Iterable, List, Sequence, Tuple
 
 
-from projectutils import Iteration, WorkProject
+from projectutils import Iteration, WorkProject, Epoch
 from molecules import PDBStructure
 
 
@@ -51,11 +51,14 @@ class AbstractMutator(metaclass=ABCMeta):
         pass
 
 
-def memorize_mutations(work_pjct: WorkProject, mutations: Iterable[Mutation]) -> None:
-    if not work_pjct.has_memory:
-        return
+def memorize_mutations(work_pjct: WorkProject, new_epoch: Epoch, mutations: Iterable[Mutation]) -> None:
+
     mutated_aminoacids = [mutation.new_aa for mutation in mutations]
     mutated_positions = [mutation.resSeq for mutation in mutations]
+    new_epoch.mutated_positions = set(mutated_positions)
 
-    # Don't memorize amino acids
-    work_pjct.mem_positions(mutated_positions)
+    if not work_pjct.has_memory:
+        return
+    else:
+        # TODO: memorize amino acid as well.
+        work_pjct.mem_positions(mutated_positions)

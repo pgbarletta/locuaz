@@ -125,6 +125,7 @@ class Epoch(MutableMapping):
     nvt_done: bool = field(converter=bool, default=False, kw_only=True)
     npt_done: bool = field(converter=bool, default=False, kw_only=True)
     top_iterations: Dict[str, Iteration] = field(init=False)
+    mutated_positions: Set[int] = field(init=False)
 
     def set_top_iter(self, config_paths: Dict) -> None:
         # First, check if a "top_iterations" was set from a pickle tracking file.
@@ -233,7 +234,9 @@ class WorkProject:
     scorers: Dict[str, AbstractScoringFunction]
     mutated_positions: Deque[Set[int]]
     mutated_aminoacids: Deque[Set[str]]
+    failed_mutated_positions: Deque[Set[int]]
     has_memory: bool = False
+    has_failed_memory: bool = False
 
     def __init__(self, config: Dict, start: bool):
         self.config = config
@@ -250,6 +253,7 @@ class WorkProject:
         self.get_mdps(self.config["paths"]["mdp"], self.config["md"]["mdp_names"])
         self.__add_scoring_functions__()
         self.__set_memory__()
+        self.__set_failed_memory__()
 
     def __start_work__(self, log: logging.Logger):
         zero_epoch = Epoch(0, iterations={}, nvt_done=False, npt_done=False)
@@ -290,6 +294,7 @@ class WorkProject:
 
             zero_epoch[iter_name] = this_iter
 
+        zero_epoch.mutated_positions = set()
         # Finally, add the epoch 0.
         self.new_epoch(zero_epoch)
 
@@ -361,6 +366,7 @@ class WorkProject:
             )
             log.info(f"Previous epoch {epoch_nbr-1} top iterations: {top_itrs_str}")
 
+            prev_epoch.mutated_positions = set()
             self.new_epoch(prev_epoch)
 
         current_epoch = Epoch(epoch_nbr, iterations={}, nvt_done=True, npt_done=True)
@@ -425,6 +431,9 @@ class WorkProject:
 
             current_epoch[iter_name] = this_iter
 
+        current_epoch.mutated_positions = set(
+            self.config["misc"]["epoch_mutated_positions"]
+        )
         self.new_epoch(current_epoch)
 
     def __add_scoring_functions__(self) -> None:
@@ -498,6 +507,7 @@ class WorkProject:
                 self.mem_positions(set_of_positions)
         except KeyError:
             self.mem_positions([])
+        # TODO: implement this?
         try:
             self.mutated_aminoacids = deque(
                 maxlen=self.config["protocol"]["memory_size"]
@@ -507,6 +517,21 @@ class WorkProject:
             self.has_memory = True
         except KeyError:
             self.mem_aminoacids([])
+
+    def __set_failed_memory__(self):
+        try:
+            self.failed_mutated_positions = deque(
+                maxlen=self.config["protocol"]["failed_memory_size"]
+            )
+            self.has_failed_memory = True
+        except KeyError:
+            # User requested no memory
+            return
+        try:
+            for set_of_positions in self.config["protocol"]["failed_memory_positions"]:
+                self.mem_positions(set_of_positions)
+        except KeyError:
+            self.mem_positions([])
 
     def mem_aminoacids(self, aa_set: Sequence) -> None:
         self.mutated_aminoacids.appendleft(set(aa_set))
@@ -553,30 +578,29 @@ class WorkProject:
             previous_iterations = [
                 str(pre_it.dir_handle) for pre_it in self.epochs[-2].values()
             ]
-            pre_pkl = Path(self.dir_handle, "previous_iterations.pkl")
-            #
             current_iterations = [
                 str(cur_it.dir_handle) for cur_it in self.epochs[-1].values()
             ]
-            cur_pkl = Path(self.dir_handle, "current_iterations.pkl")
-            #
             top_iterations = [
                 str(cur_it.dir_handle)
                 for cur_it in self.epochs[-2].top_iterations.values()
             ]
-            top_pkl = Path(self.dir_handle, "top_iterations.pkl")
 
+            tracking = {
+                "previous_iterations": previous_iterations,
+                "current_iterations": current_iterations,
+                "top_iterations": top_iterations,
+                "epoch_mutated_positions": self.epochs[-1].mutated_positions,
+                "memory_positions": self.mutated_positions,
+                "failed_memory_positions": self.failed_mutated_positions,
+            }
             if (
-                (len(previous_iterations) > 0)
-                and (len(current_iterations) > 0)
-                and (len(top_iterations) > 0)
+                len(previous_iterations) > 0
+                and len(current_iterations) > 0
+                and len(top_iterations) > 0
             ):
-                with open(cur_pkl, "wb") as cur_file:
-                    pickle.dump(current_iterations, cur_file)
-                with open(pre_pkl, "wb") as pre_file:
-                    pickle.dump(previous_iterations, pre_file)
-                with open(top_pkl, "wb") as top_file:
-                    pickle.dump(top_iterations, top_file)
+                with open(Path(self.dir_handle, "tracking.pkl"), "wb") as cur_file:
+                    pickle.dump(tracking, cur_file)
         except Exception:
             # not a full project yet.
             pass

@@ -1,6 +1,6 @@
 import os
 import argparse
-from typing import Dict, List, Optional, Set, Tuple, Union
+from typing import Dict, List, Optional, Set, Tuple, Union, Any
 from pathlib import Path
 from queue import PriorityQueue
 import glob
@@ -9,7 +9,7 @@ from warnings import warn
 import shutil as sh
 import yaml
 import pickle
-from collections import defaultdict
+from collections import defaultdict, deque
 
 from validatore import Validatore
 
@@ -160,21 +160,17 @@ def lacks_branches(
 
 
 def get_tracking_files(config: Dict) -> bool:
-    pre_pkl = Path(config["paths"]["work"], "previous_iterations.pkl")
-    cur_pkl = Path(config["paths"]["work"], "current_iterations.pkl")
-    top_pkl = Path(config["paths"]["work"], "top_iterations.pkl")
+    tracking_pkl = Path(config["paths"]["work"], "tracking.pkl")
 
     try:
-        with open(pre_pkl, "rb") as pre_file:
-            previous_iterations = pickle.load(pre_file)
-        with open(cur_pkl, "rb") as cur_file:
-            current_iterations = pickle.load(cur_file)
-        with open(top_pkl, "rb") as top_file:
-            top_iterations = pickle.load(top_file)
+        with open(tracking_pkl, "rb") as file:
+            tracking: Dict[str, Any] = pickle.load(file)
 
-        previous_iterations = get_valid_iter_dirs(previous_iterations, config)
-        current_iterations = get_valid_iter_dirs(current_iterations, config)
-        top_iterations = get_valid_iter_dirs(top_iterations, config)
+        previous_iterations = get_valid_iter_dirs(
+            tracking["previous_iterations"], config
+        )
+        current_iterations = get_valid_iter_dirs(tracking["current_iterations"], config)
+        top_iterations = get_valid_iter_dirs(tracking["top_iterations"], config)
 
         if lacks_branches(
             current_iterations,
@@ -186,6 +182,17 @@ def get_tracking_files(config: Dict) -> bool:
         config["paths"]["previous_iterations"] = previous_iterations
         config["paths"]["current_iterations"] = current_iterations
         config["paths"]["top_iterations"] = top_iterations
+        config["misc"]["epoch_mutated_positions"] = set(
+            tracking["epoch_mutated_positions"]
+        )
+        config["protocol"]["memory_positions"] = deque(tracking["memory_positions"])
+        config["protocol"]["memory_size"] = len(tracking["memory_positions"])
+        config["protocol"]["failed_memory_positions"] = deque(
+            tracking["failed_memory_positions"]
+        )
+        config["protocol"]["failed_memory_size"] = len(
+            tracking["failed_memory_positions"]
+        )
 
         return True
     except Exception:
@@ -195,7 +202,10 @@ def get_tracking_files(config: Dict) -> bool:
 
 def set_iterations(config: Dict) -> None:
     """set_iterations Set config["paths"]["current_iterations"],
-    config["paths"]["previous_iterations"] and possibly config["paths"]["top_iterations"]
+    config["paths"]["previous_iterations"] and possibly config["paths"]["top_iterations"].
+    Also set: config["misc"]["epoch_mutated_positions"], config["protocol"]["memory_positions"],
+    config["protocol"]["memory_size"], config["protocol"]["failed_memory_positions"] and
+    config["protocol"]["failed_memory_size"]
 
     Args:
         config (Dict): dictionary with input config
@@ -203,10 +213,6 @@ def set_iterations(config: Dict) -> None:
     Raises:
         ValueError: when there're no valid iteration dirs.
     """
-    # Try to read pickle info written by a previous run.
-    if get_tracking_files(config):
-        return
-
     files_and_dirs = glob.glob(str(Path(config["paths"]["work"], "*")))
     valid_iters = get_valid_iter_dirs(files_and_dirs, config)
 
@@ -234,17 +240,26 @@ def set_iterations(config: Dict) -> None:
     raise ValueError("No valid iterations in work_dir. Aborting.")
 
 
-def remove_overlap(v: List):
-    not_overlapped = []
-    for i, j in zip(v[:-1], v[1:]):
-        not_overlapped.append(list(set(i) - set(j)))
-    return not_overlapped + [v[-1]]
+def get_memory(config: Dict) -> List[List[int]]:
+    """get_memory compare character by character of the iteration folders resnames to
+    find differences among them that would correspond to previously done mutations.
+    Small issue in this function: when an epoch was generated from more than 1 top iteration,
+    the mutations performed on that epoch will be memorized and also the ones that were actually
+    performed on a previous epoch and were already present, since it will find differences among them.
 
+    One could remove positions that are repeated in more than 1 memory slot, but it's impossible to know
+    if the cause of this was the aforementioned example, or, a previous run with a shorter memory
+    (or no memory at all), that mutated the same position more than once in the last N
+    (N being equal to `config["protocol"]["memory_size"]`) epochs.
+    Hence, no overlap is removedand repetitive resSeqs may be found on the resulting List of Lists.
 
-# Small bug in this function: when an epoch was generated from more than 1 top iteration
-# The mutations performed on that epoch will be memorized and also the ones that were actually
-# performed on a previous epoch, since it will find differences among them
-def get_memory(config: Dict) -> Optional[List[List[int]]]:
+    Args:
+        config (Dict): input config options from the user.
+
+    Returns:
+        List[List[int]]: resSeqs where different AAs where found. It may be empty, when the iteration folders
+        being proved don't have the same number of chains and the same length of residues being mutated.
+    """
 
     # Get all the iterations sorted by epoch
     iters: PriorityQueue = PriorityQueue()
@@ -278,41 +293,42 @@ def get_memory(config: Dict) -> Optional[List[List[int]]]:
                     f"Can't fill requested memory since input 'mutating_chainID' does not "
                     f" match the 'mutating_chainID' previously used on this workspace."
                 )
-                return None
+                return [[]]
             old_n_resSeqs = [len(itername[2:]) for itername in iterchains]
             if old_n_resSeqs != input_n_resSeqs:
                 warn(
                     f"Can't fill requested memory since input 'mutating_resSeq' does not "
                     f" match the 'mutating_resSeq' previously used on this workspace."
                 )
-                return None
+                return [[]]
 
         # Find the positions and chains that were mutated in this epoch
-        different_positions = set()
-        for i in range(input_n_chains):
-            resname = [chainID_resname[i][2:] for chainID_resname in epoch_iternames]
+        memory_positions = set()
+        for chain_idx in range(input_n_chains):
+            resnames = [
+                chainID_resname[chain_idx][2:] for chainID_resname in epoch_iternames
+            ]
 
-            for str_1, str_2 in list(product(resname, resname)):
-                for j, (char_1, char_2) in enumerate(zip(str_1, str_2)):
+            for str_1, str_2 in list(product(resnames, resnames)):
+                for pos, (char_1, char_2) in enumerate(zip(str_1, str_2)):
                     if char_1 != char_2:
-                        different_positions.add((i, j))
+                        # Turn the (chain, position) into resSeq
+                        memory_positions.add(
+                            config["binder"]["mutating_resSeq"][chain_idx][pos]
+                        )
+        all_memory_positions.append(list(memory_positions))
 
-        # Turn the (chain, position) into resSeq
-        memory_positions = []
-        for chain_idx, pos in different_positions:
-            memory_positions.append(config["binder"]["mutating_resSeq"][chain_idx][pos])
-        all_memory_positions.append(memory_positions)
-
-    fix_all_memory_positions = remove_overlap(all_memory_positions)
     print(
-        f"Memorized the following positions: {fix_all_memory_positions} from the "
+        f"Memorized the following positions: {all_memory_positions} from the "
         f'{config["protocol"]["memory_size"]} previous epochs.'
     )
+    # Get the mutated positions on the last epoch
+    config["misc"]["epoch_mutated_positions"] = set(all_memory_positions[0])
 
-    return fix_all_memory_positions
+    return all_memory_positions
 
 
-def misc_settings(config: Dict) -> Dict:
+def define_box_settings(config: Dict) -> Dict:
     # config["md"]["box"] overrides config["md"]["dist_to_box"]
     if "box" in config["md"]:
         config["md"]["dist_to_box"] = None
@@ -357,15 +373,19 @@ def main() -> Tuple[Dict, bool]:
         except FileExistsError as e:
             raise e
     else:
-        set_iterations(config)
-        # Set up the memory
-        requested_memory = "memory_size" in config["protocol"]
-        has_no_memory = not ("memory_positions" in config["protocol"])
-        if requested_memory and has_no_memory:
-            memory_positions = get_memory(config)
-            config["protocol"]["memory_positions"] = memory_positions
+        # Try to read pickle info written by a previous run.
+        if get_tracking_files(config):
+            pass
+        else:
+            set_iterations(config)
+            # Set up the memory
+            requested_memory = "memory_size" in config["protocol"]
+            has_no_memory = not ("memory_positions" in config["protocol"])
+            if requested_memory and has_no_memory:
+                memory_positions = get_memory(config)
+                config["protocol"]["memory_positions"] = memory_positions
 
-    config = misc_settings(config)
+    config = define_box_settings(config)
 
     # Set up environment
     os.environ["OMP_PLACES"] = "threads"

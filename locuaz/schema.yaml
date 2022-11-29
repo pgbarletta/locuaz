@@ -105,6 +105,28 @@ protocol:
                     type: integer
                     min: 1
                     max: 99999
+        failed_memory_size:
+            type: integer
+            required: false
+            min: 0
+            max: 12
+            higher_than_length_of: memory_positions
+            higher_than_length_of: failed_memory_positions
+        failed_memory_positions:
+            type: list
+            required: false
+            dependencies: memory_size
+            minlength: 1
+            maxlength: 12
+            schema:
+                type: list
+                minlength: 1
+                maxlength: 36
+                schema:
+                    type: integer
+                    min: 1
+                    max: 99999
+
         memory_aminoacids:
             type: list
             required: false

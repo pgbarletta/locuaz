@@ -26,13 +26,21 @@ def prune(work_pjct: WorkProject) -> None:
     better_iters_queue = choose_top_iters(prev_epoch, this_epoch, threshold, log)
     if better_iters_queue.empty():
         # All new iterations are worse than the old ones or they all failed during MD.
-        log.info(f"Failed epoch. Backing up epoch {this_epoch.id}.")
+        log.info(
+            f"Failed epoch after mutating resSeqs: {this_epoch.mutated_positions} ."
+            f"Backing up epoch {this_epoch.id}."
+        )
         this_epoch.backup()
+        if work_pjct.has_failed_memory:
+            work_pjct.failed_mutated_positions.appendleft(this_epoch.mutated_positions)
         work_pjct.epochs[-1] = prev_epoch
     else:
+        log.info(
+            f"Successful epoch after mutating resSeqs: {this_epoch.mutated_positions} ."
+        )
         prunner_func = prunners[work_pjct.config["protocol"]["prunner"]]
         prune = work_pjct.config["protocol"].get("prune")
-        # Use the required prunner
+        # Prunne as many branches as requested, using the required prunner.
         this_epoch.top_iterations = prunner_func(better_iters_queue, prune)
 
     top_itrs_str = " ; ".join(

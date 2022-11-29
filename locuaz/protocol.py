@@ -81,5 +81,6 @@ def initialize_new_epoch(work_pjct: WorkProject) -> None:
 
             current_epoch[iter_name] = this_iter
 
-        memorize_mutations(work_pjct, mutations)
+        # TODO: check if this works with mutations on different positions
+        memorize_mutations(work_pjct, current_epoch, mutations)
     work_pjct.new_epoch(current_epoch)

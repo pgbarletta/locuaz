@@ -39,7 +39,32 @@ eg: gromacs, and some old babel version.
 module load autoload cmake
 ```
 
-If on biobb 3.7, apply these patches:
+### If on biobb 3.8, apply these patches:
+    - On biobb_analysis/gromacs/gmximage.py, line 126:
+      replace:
+```
+# If fitting provided, echo fit_selection
+if self.fit == 'none':
+    if self.center:
+        selections = '\"' + self.center_selection + '\" \"' + self.output_selection + '\"'
+    else:
+        selections = '\"' + self.output_selection + '\"'
+else:
+    if self.center:
+        selections = '\"' + self.fit_selection + '\" \"' + self.center_selection + '\" \"' + self.output_selection + '\"'
+    else:
+        selections = '\"' + self.fit_selection + '\" \"' + self.output_selection + '\"'
+```
+        with:
+```
+# If fitting provided, echo fit_selection
+if self.fit == 'none':
+    selections = '\"' + self.center_selection + '\" \"' + self.output_selection + '\"'
+else:
+    selections = '\"' + self.fit_selection + '\" \"' + self.center_selection + '\" \"' + self.output_selection + '\"'
+```
+
+### If on biobb 3.7, apply these patches:
     - On biobb_md/gromacs/mdrun.py, line 201:
         replace:
             self.cmd += [self.dev.split()]

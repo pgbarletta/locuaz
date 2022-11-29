@@ -151,7 +151,7 @@ class Epoch(MutableMapping):
                 scoring_functions = set(it.scores.keys()) & set(other_it.scores.keys())
                 count += sum(
                     [
-                        other_it.mean_scores[SF] > it.mean_scores[SF]
+                        other_it.mean_scores[SF] >= it.mean_scores[SF]
                         for SF in scoring_functions
                     ]
                 )
@@ -211,11 +211,12 @@ class WorkProject:
             mdps (Dict[str, FileHandle]): dict with handles to the minimization,
                 NVT and NPT mdps.
             scorers (Dict[str, AbstractScoringFunction]): dict with the callables to
-                the scoring functinos.
+                the scoring functions.
+            last_mutated_position (Set[int]): last mutated position
             mutated_positions (Deque[Set[int]]): last N mutated positions
-            mutated_aminoacids (Deque[Set[str]]): last N added amino acids.
-                Unused for now.
+            mutated_aminoacids (Deque[Set[str]]): last N added amino acids. Unused for now.
             has_memory (bool = False): wether the protocol uses memory of mutations.
+            has_failed_memory (bool = False): wether the protocol uses memory of failed mutations.
     Raises:
         e_start_cpx: Failure to build starting complex.
         e_restart_cpx: Failure to build a complex from input iterations.

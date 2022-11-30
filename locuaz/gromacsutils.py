@@ -63,6 +63,7 @@ def _(cpx: GROComplex, out_trj_fn: Path, gmx_bin: str) -> XtcTrajectory:
             "binary_path": gmx_bin,
             "fit_selection": "Protein",
             "center_selection": "Protein",
+            "cluster_selection": "Protein",
             "output_selection": "Protein",
             "ur": "compact",
             "pbc": "cluster",

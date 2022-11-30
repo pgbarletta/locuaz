@@ -11,8 +11,7 @@ dependencies:
   - biobb_structure_utils==3.8.0
   - pip
   - pip:
-    - git+https://github.com/bioexcel/biobb_analysis.git@844b8801c568b03985ff8b7d31e781f3477d336e
-    - biobb_analysis==3.8.0
+    - git+https://github.com/bioexcel/biobb_analysis.git@d52c9039fbc85823812418229f2007c5fc118353
     - biobb_io==3.8.0
     - biobb_gromacs==3.8.1
     - biobb_model==3.8.1

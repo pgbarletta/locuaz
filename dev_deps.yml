@@ -33,7 +33,7 @@ dependencies:
     - flake8-quotes
     - flake8-rst-docstrings
     - flake8-string-format
-    - git+https://github.com/bioexcel/biobb_analysis.git@844b8801c568b03985ff8b7d31e781f3477d336e
+    - git+https://github.com/bioexcel/biobb_analysis.git@d52c9039fbc85823812418229f2007c5fc118353
     - biobb_analysis==3.8.0
     - biobb_io==3.8.0
     - biobb_gromacs==3.8.1

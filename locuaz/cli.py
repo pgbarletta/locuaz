@@ -365,6 +365,7 @@ def main() -> Tuple[Dict, bool]:
 
     raw_config = get_raw_config(args.config_file)
     config, starts = validate_input(raw_config, args.mode, args.debug)
+    config["misc"] = {}
     if starts:
         # Set up working dir
         try:

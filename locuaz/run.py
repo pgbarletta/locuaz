@@ -96,6 +96,7 @@ def run_npt_epoch(work_pjct: WorkProject) -> None:
         for futu_npt in cf.as_completed(futuros_npt):
             if futu_npt.exception():
                 log.error(f"Exception while running NPT:  {futu_npt.exception()} ")
+                continue
                 
             npt_complex = futu_npt.result()
             iter_name = '-'.join(npt_complex.dir.dir_path.name.split('-')[1:])

@@ -2,6 +2,7 @@ from pathlib import Path
 import numpy as np
 from typing import Any, Tuple
 from functools import singledispatch
+import warnings
 
 import MDAnalysis as mda
 from biobb_analysis.gromacs.gmx_image import GMXImage
@@ -159,7 +160,9 @@ def fix_box(cpx: GROComplex, out_path: Path, gmx_bin: str = "gmx") -> PDBStructu
             s_positions[i] -= wrapped_ion_xyz
 
     u.atoms.positions = ((s_positions @ H) + centro) * 10  # type: ignore
-    u.atoms.write(out_path)  # type: ignore
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        u.atoms.write(out_path)  # type: ignore
 
     # Remove temporary files
     whole_pdb.unlink()

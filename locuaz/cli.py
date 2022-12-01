@@ -194,7 +194,7 @@ def get_tracking_files(config: Dict) -> bool:
     except Exception:
         warn(
             "Could not read tracking info. Will try to get the previous iterations, the "
-            "current iterations, the memory of the last mutated positions from the work dir. "
+            "current iterations and the memory of the last mutated positions from the work dir. "
             "Memory of failed mutations won't be loaded."
         )
         return False

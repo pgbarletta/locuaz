@@ -67,7 +67,7 @@ class Iteration:
         std_score = stdev(scores)
         if abs(avg_score) < std_score:
             log.warning(
-                f"{sf_name} score has a mean of {avg_score} and a std dev of {std_score}. "
+                f"{sf_name} score has a mean of {avg_score:.5f} and a std dev of {std_score:.5f}. "
                 f"This is too much variance. You might want to check {self.epoch_id}-{self.iter_name}"
             )
         return self.mean_scores[sf_name]

@@ -73,7 +73,7 @@ protocol:
             type: string
             default: "adaptive"
             required: false
-            allowed: ["adaptive", "top"]
+            allowed: ["top", "adaptive", "threshold"]
             warn_overrides: prune
         generator:
             type: string 

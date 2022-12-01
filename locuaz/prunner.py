@@ -87,3 +87,22 @@ def adaptive_prunner(better_iters: PriorityQueue, prune: int) -> Dict[str, Itera
         prev_count = count
         top_iterations[iter.iter_name] = iter
     return top_iterations
+
+
+def threshold_prunner(better_iters: PriorityQueue, prune: int) -> Dict[str, Iteration]:
+    """threshold_prunner select all iterations that satisfy the threshold of approved SFs
+
+    Args:
+        better_iters (PriorityQueue[Tuple[int, Iteration]]): iterations above the threshold,
+            sorted by approved SFs
+        prune (int): unused
+
+    Returns:
+        Dict[str, Iteration]: map of top `iter_name:Iteration` for the next epoch.
+    """
+    top_iterations: Dict[str, Iteration] = {}
+    prev_count = 1
+    while not better_iters.empty():
+        _, iter = better_iters.get()
+        top_iterations[iter.iter_name] = iter
+    return top_iterations

@@ -2,12 +2,13 @@ from typing import Dict, Callable
 import logging
 
 from projectutils import WorkProject
-from prunner import choose_top_iters, adaptive_prunner, top_prunner
+from prunner import choose_top_iters, adaptive_prunner, top_prunner, threshold_prunner
 
 
 prunners: Dict[str, Callable] = {
     "adaptive": adaptive_prunner,
     "top": top_prunner,
+    "threshold": threshold_prunner,
 }
 
 

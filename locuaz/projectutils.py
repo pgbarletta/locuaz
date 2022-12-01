@@ -570,11 +570,11 @@ class WorkProject:
                 print(f"Could not get mdp file from: {mdp_path}.", flush=True)
                 raise e
 
-    def new_epoch(self, epoch: Epoch) -> None:
+    def new_epoch(self, epoch: Epoch, log: Optional[logging.Logger] = None) -> None:
         self.epochs.append(epoch)
-        self.__track_project__()
+        self.__track_project__(log)
 
-    def __track_project__(self) -> None:
+    def __track_project__(self, log: Optional[logging.Logger] = None) -> None:
         try:
             previous_iterations = [
                 str(pre_it.dir_handle) for pre_it in self.epochs[-2].values()
@@ -602,9 +602,9 @@ class WorkProject:
             ):
                 with open(Path(self.dir_handle, "tracking.pkl"), "wb") as cur_file:
                     pickle.dump(tracking, cur_file)
-        except Exception:
-            # not a full project yet.
-            pass
+        except Exception as e:
+            if log:
+                log.warning(f"{e} \n Not a full WorkProject yet, could not track it.")
 
     def get_first_iter(self) -> Tuple[str, Iteration]:
         return next(iter(self.epochs[0].items()))

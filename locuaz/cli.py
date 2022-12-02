@@ -375,7 +375,7 @@ def main() -> Tuple[Dict, bool]:
     else:
         # Try to read pickle info written by a previous run.
         if get_tracking_files(config):
-            pass
+            print("Read tracking file from work dir.")
         else:
             set_iterations(config)
             # Set up the memory

@@ -185,11 +185,27 @@ def get_tracking_files(config: Dict) -> bool:
         config["misc"]["epoch_mutated_positions"] = set(
             tracking["epoch_mutated_positions"]
         )
-        config["protocol"]["memory_positions"] = deque(tracking["memory_positions"])
-        config["protocol"]["failed_memory_positions"] = deque(
-            tracking["failed_memory_positions"]
-        )
+        if "memory_positions" in config["protocol"]:
+            warn(
+                f"Tracking file memory_positions ignored: "
+                f'{tracking["memory_positions"]}.\n'
+                f"Using input config memory_positions instead: "
+                f'{config["protocol"]["memory_positions"]}'
+            )
+        else:
+            config["protocol"]["memory_positions"] = tracking["memory_positions"]
 
+        if "failed_memory_positions" in config["protocol"]:
+            warn(
+                f"Tracking file failed_memory_positions ignored: "
+                f'{tracking["failed_memory_positions"]}.\n'
+                f"Using input config failed_memory_positions instead: "
+                f'{config["protocol"]["failed_memory_positions"]}'
+            )
+        else:
+            config["protocol"]["failed_memory_positions"] = tracking[
+                "failed_memory_positions"
+            ]
         return True
     except Exception:
         warn(
@@ -275,7 +291,7 @@ def get_memory(config: Dict) -> None:
 
     input_n_chains = len(config["binder"]["mutating_chainID"])
     input_n_resSeqs = [len(resSeqs) for resSeqs in config["binder"]["mutating_resSeq"]]
-    all_memory_positions = []
+    all_memory_positions: List[List] = []
     # Memorize `config["protocol"]["memory_size"]` epochs.
     for _ in range(config["protocol"]["memory_size"]):
         epoch_iters_paths: List[str] = []

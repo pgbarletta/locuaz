@@ -1,4 +1,4 @@
-from typing import Dict, Callable
+from typing import Dict, Callable, Set, Optional
 import logging
 
 from projectutils import WorkProject
@@ -25,15 +25,15 @@ def prune(work_pjct: WorkProject) -> None:
     threshold = work_pjct.config["scoring"]["consensus_threshold"]
 
     better_iters_queue = choose_top_iters(prev_epoch, this_epoch, threshold, log)
+    failed_pos: Set[int] = set()
     if better_iters_queue.empty():
         # All new iterations are worse than the old ones or they all failed during MD.
         log.info(
             f"Failed epoch after mutating resSeqs: {this_epoch.mutated_positions} ."
             f"Backing up epoch {this_epoch.id}."
         )
+        failed_pos = this_epoch.mutated_positions
         this_epoch.backup()
-        if work_pjct.has_failed_memory:
-            work_pjct.failed_mutated_positions.appendleft(this_epoch.mutated_positions)
         work_pjct.epochs[-1] = prev_epoch
     else:
         log.info(
@@ -43,6 +43,9 @@ def prune(work_pjct: WorkProject) -> None:
         prune = work_pjct.config["protocol"].get("prune")
         # Prunne as many branches as requested, using the required prunner.
         this_epoch.top_iterations = prunner_func(better_iters_queue, prune)
+
+    if work_pjct.has_failed_memory:
+        work_pjct.failed_mutated_positions.appendleft(failed_pos)
 
     top_itrs_str = " ; ".join(
         [

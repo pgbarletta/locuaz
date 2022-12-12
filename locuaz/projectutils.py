@@ -254,6 +254,7 @@ class WorkProject:
         self.__add_scoring_functions__()
         self.__set_memory__()
         self.__set_failed_memory__()
+        self.__track_project__(log)
 
     def __start_work__(self, log: logging.Logger):
         zero_epoch = Epoch(0, iterations={}, nvt_done=False, npt_done=False)

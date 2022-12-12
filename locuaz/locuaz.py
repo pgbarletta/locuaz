@@ -17,6 +17,7 @@ def main() -> int:
 
     config, start = cli.main()
     log = pu.set_logger(config["main"]["name"], Path(config["paths"]["work"]))
+    log.info("-----------------------------")
     log.info(f"Setting up work project.")
     work_pjct = pu.WorkProject(config, start)
     log = logging.getLogger(work_pjct.name)

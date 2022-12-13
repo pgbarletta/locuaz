@@ -585,16 +585,25 @@ class WorkProject:
                 "memory_positions": self.mutated_positions,
                 "failed_memory_positions": self.failed_mutated_positions,
             }
-            if (
+            assert (
                 len(previous_iterations) > 0
                 and len(current_iterations) > 0
                 and len(top_iterations) > 0
-            ):
-                with open(Path(self.dir_handle, "tracking.pkl"), "wb") as cur_file:
-                    pickle.dump(tracking, cur_file)
+            )
+
+            # Back up tracking.pkl before writing.
+            track = Path(self.dir_handle, "tracking.pkl")
+            try:
+                sh.move(track, Path(self.dir_handle, "bu_tracking.pkl"))
+            except Exception:
+                warn("No tracking.pkl file present. Writing initial one.")
+
+            with open(track, "wb") as cur_file:
+                pickle.dump(tracking, cur_file)
+
         except Exception as e:
             if log:
-                log.warning(f"{e} \n Not a full WorkProject yet, could not track it.")
+                log.warning(f"Not a full WorkProject yet, could not track it. {e}")
 
     def get_first_iter(self) -> Tuple[str, Iteration]:
         return next(iter(self.epochs[0].items()))

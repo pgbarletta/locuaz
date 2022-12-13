@@ -253,7 +253,7 @@ def set_iterations(config: Dict) -> None:
     raise ValueError("No valid iterations in work_dir. Aborting.")
 
 
-def get_memory(config: Dict) -> None:
+def get_memory(config: Dict) -> Tuple[Set, List[List]]:
     """get_memory compare character by character of the iteration folders resnames to
     find differences among them that would correspond to previously done mutations.
     Small issue in this function: when an epoch was generated from more than 1 top iteration,
@@ -309,14 +309,14 @@ def get_memory(config: Dict) -> None:
                     f"Can't fill requested memory since input 'mutating_chainID' does not "
                     f" match the 'mutating_chainID' previously used on this workspace."
                 )
-                return None
+                return set(), [[]]
             old_n_resSeqs = [len(itername[2:]) for itername in iterchains]
             if old_n_resSeqs != input_n_resSeqs:
                 warn(
                     f"Can't fill requested memory since input 'mutating_resSeq' does not "
                     f" match the 'mutating_resSeq' previously used on this workspace."
                 )
-                return None
+                return set(), [[]]
 
         # Find the positions and chains that were mutated in this epoch
         memory_positions = set()
@@ -324,7 +324,6 @@ def get_memory(config: Dict) -> None:
             resnames = [
                 chainID_resname[chain_idx][2:] for chainID_resname in epoch_iternames
             ]
-
             for str_1, str_2 in list(product(resnames, resnames)):
                 for pos, (char_1, char_2) in enumerate(zip(str_1, str_2)):
                     if char_1 != char_2:
@@ -336,11 +335,11 @@ def get_memory(config: Dict) -> None:
 
     print(
         f"Memorized the following positions: {all_memory_positions} from the "
-        f'{config["protocol"]["memory_size"]} previous epochs.'
+        f'{config["protocol"]["memory_size"]} previous epochs.',
+        flush=True,
     )
     # Get the mutated positions on the last epoch
-    config["misc"]["epoch_mutated_positions"] = set(all_memory_positions[0])
-    config["protocol"]["memory_positions"] = all_memory_positions
+    return set(all_memory_positions[0]), all_memory_positions
 
 
 def define_box_settings(config: Dict) -> Dict:
@@ -391,14 +390,17 @@ def main() -> Tuple[Dict, bool]:
     else:
         # Try to read pickle info written by a previous run.
         if get_tracking_files(config):
-            print("Read tracking file from work dir.")
+            print("Read tracking file from work dir.", flush=True)
         else:
             set_iterations(config)
             # Set up the memory
             requested_memory = "memory_size" in config["protocol"]
-            has_no_memory = not ("memory_positions" in config["protocol"])
-            if requested_memory and has_no_memory:
-                get_memory(config)
+            if requested_memory:
+                epoch_mutated_positions, memory_positions = get_memory(config)
+                config["misc"]["epoch_mutated_positions"] = epoch_mutated_positions
+                has_no_memory = not ("memory_positions" in config["protocol"])
+                if has_no_memory:
+                    config["protocol"]["memory_positions"] = memory_positions
             else:
                 config["misc"]["epoch_mutated_positions"] = set()
 

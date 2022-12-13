@@ -20,6 +20,7 @@ from queue import PriorityQueue
 import shutil as sh
 import time
 import pickle
+from warnings import warn
 
 from Bio.SeqUtils import seq1
 import numpy as np
@@ -502,22 +503,15 @@ class WorkProject:
             )
             self.has_memory = True
         except KeyError:
+            # User requested no memory
+            self.mutated_positions = deque()
             return
         try:
             for set_of_positions in self.config["protocol"]["memory_positions"]:
-                self.mem_positions(set_of_positions)
+                self.mutated_positions.appendleft(set(set_of_positions))
         except KeyError:
-            self.mem_positions([])
-        # TODO: implement this?
-        try:
-            self.mutated_aminoacids = deque(
-                maxlen=self.config["protocol"]["memory_size"]
-            )
-            for set_of_aas in self.config["protocol"]["memory_aminoacids"]:
-                self.mem_aminoacids(set_of_aas)
-            self.has_memory = True
-        except KeyError:
-            self.mem_aminoacids([])
+            self.mutated_positions.appendleft(set())
+        # TODO: implement memory of amino acids?
 
     def __set_failed_memory__(self):
         try:
@@ -527,18 +521,13 @@ class WorkProject:
             self.has_failed_memory = True
         except KeyError:
             # User requested no memory
+            self.failed_mutated_positions = deque()
             return
         try:
             for set_of_positions in self.config["protocol"]["failed_memory_positions"]:
-                self.mem_positions(set_of_positions)
+                self.failed_mutated_positions.appendleft(set(set_of_positions))
         except KeyError:
-            self.mem_positions([])
-
-    def mem_aminoacids(self, aa_set: Sequence) -> None:
-        self.mutated_aminoacids.appendleft(set(aa_set))
-
-    def mem_positions(self, pos_set: Sequence) -> None:
-        self.mutated_positions.appendleft(set(pos_set))
+            self.failed_mutated_positions.appendleft(set())
 
     def get_mem_aminoacids(self) -> Set[str]:
         set_of_aas: Set[str] = set()

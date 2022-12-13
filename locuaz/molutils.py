@@ -80,7 +80,7 @@ def get_matrix(dimensions):
     return H
 
 
-def fix_box(cpx: GROComplex, out_path: Path, gmx_bin: str = "gmx") -> PDBStructure:
+def fix_box(cpx: GROComplex, out_path: Path, gmx_bin: str = "gmx") -> Tuple[bool, PDBStructure]:
 
     whole_pdb = Path(out_path.parent, "whole.pdb")
     make_whole = GMXImage(
@@ -168,7 +168,11 @@ def fix_box(cpx: GROComplex, out_path: Path, gmx_bin: str = "gmx") -> PDBStructu
     # Remove temporary files
     whole_pdb.unlink()
 
-    return PDBStructure(FileHandle(out_path))
+    n_outside_box_target = np.sum(np.floor(s_positions[indices["target"]] + .5))
+    n_outside_box_binder = np.sum(np.floor(s_positions[indices["binder"]] + .5))
+    all_in = (n_outside_box_target+n_outside_box_binder) == 0
+
+    return all_in, PDBStructure(FileHandle(out_path))
 
 
 class FixBox(TransformationBase):

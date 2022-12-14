@@ -51,7 +51,9 @@ class AbstractMutator(metaclass=ABCMeta):
         pass
 
 
-def memorize_mutations(work_pjct: WorkProject, new_epoch: Epoch, mutations: Iterable[Mutation]) -> None:
+def memorize_mutations(
+    work_pjct: WorkProject, new_epoch: Epoch, mutations: Iterable[Mutation]
+) -> None:
 
     mutated_aminoacids = [mutation.new_aa for mutation in mutations]
     mutated_positions = [mutation.resSeq for mutation in mutations]
@@ -61,4 +63,4 @@ def memorize_mutations(work_pjct: WorkProject, new_epoch: Epoch, mutations: Iter
         return
     else:
         # TODO: memorize amino acid as well.
-        work_pjct.mem_positions(mutated_positions)
+        work_pjct.mutated_positions.appendleft(new_epoch.mutated_positions)

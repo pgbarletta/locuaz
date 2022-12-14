@@ -233,9 +233,9 @@ class WorkProject:
     epochs: List[Epoch]
     mdps: Dict[str, FileHandle]
     scorers: Dict[str, AbstractScoringFunction]
-    mutated_positions: Deque[Set[int]]
-    mutated_aminoacids: Deque[Set[str]]
-    failed_mutated_positions: Deque[Set[int]]
+    mutated_positions: Deque[Set[int]] = deque(set())
+    mutated_aminoacids: Deque[Set[str]] = deque(set())
+    failed_mutated_positions: Deque[Set[int]] = deque(set())
     has_memory: bool = False
     has_failed_memory: bool = False
 

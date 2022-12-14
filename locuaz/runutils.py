@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Tuple
 from attrs import define, field
 from pathlib import Path
 from shutil import SameFileError
@@ -105,7 +105,7 @@ class MDrun:
 
         return obj
 
-    def __call__(self, complex: GROComplex) -> GROComplex:
+    def __call__(self, complex: GROComplex) -> Tuple[bool, GROComplex]:
         # Check
         self.__check_input__(complex)
 
@@ -168,9 +168,10 @@ class MDrun:
             gmx_bin=self.binary_path,
         )
 
+        all_atoms_in_box = True
         if self.image_after:
             run_pdb = Path(self.dir, f"{self.out_name}.pdb")
-            fix_box(new_complex, run_pdb, str(self.binary_path))
+            all_atoms_in_box, _ = fix_box(new_complex, run_pdb, str(self.binary_path))
         else:
             # Convert output .gro to PDB.
             run_pdb = Path(self.dir) / (self.out_name + ".pdb")
@@ -192,7 +193,7 @@ class MDrun:
             gmx_bin=self.binary_path,
         )
 
-        return new_complex
+        return all_atoms_in_box, new_complex
 
     def __check_input__(self, complex: AbstractComplex) -> None:
 

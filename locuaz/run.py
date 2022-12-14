@@ -48,7 +48,7 @@ def run_min_nvt_epoch(work_pjct: WorkProject) -> None:
             if futu_min.exception():
                 log.error(f"Exception while running MIN: {futu_min.exception()}")
                 
-            min_complex = futu_min.result()
+            _, min_complex = futu_min.result()
             iter_name = '-'.join(min_complex.dir.dir_path.name.split('-')[1:])
             iter = epoch[iter_name]
             
@@ -64,7 +64,7 @@ def run_min_nvt_epoch(work_pjct: WorkProject) -> None:
             if futu_nvt.exception():
                 log.error(f"Exception while running NVT:  {futu_nvt.exception()} ")
                 
-            nvt_complex = futu_nvt.result()
+            _, nvt_complex = futu_nvt.result()
             iter_name = '-'.join(nvt_complex.dir.dir_path.name.split('-')[1:])
             epoch[iter_name].complex = nvt_complex
     epoch.nvt_done = True
@@ -80,7 +80,8 @@ def run_npt_epoch(work_pjct: WorkProject) -> None:
     with ProcessPoolExecutor(max_workers=ngpus) as ex:
         gpu_id = {}
         pinoffset = {}
-        futuros_npt = []
+        # futuros_npt = []
+        futuros_npt = {}
         for idx, (iter_name, iter) in enumerate(epoch.items()):
             gpu_nbr = idx % ngpus
             gpu_id[iter_name] = idx % ngpus
@@ -91,17 +92,27 @@ def run_npt_epoch(work_pjct: WorkProject) -> None:
             npt = MDrun.npt(
                 iter.dir_handle, work_pjct=work_pjct, gpu_id = gpu_nbr,
                 pinoffset=pinoffset[iter_name], out_name=prefix + work_pjct.name)
-            futuros_npt.append(ex.submit(npt, iter.complex))
+            
+            futu_npt = ex.submit(npt, iter.complex)
+            # futuros_npt.append()
+            futuros_npt[futu_npt] = iter_name
 
         for futu_npt in cf.as_completed(futuros_npt):
+            iter_name = futuros_npt[futu_npt]
+            # iter_name = '-'.join(npt_complex.dir.dir_path.name.split('-')[1:])
             if futu_npt.exception():
-                log.error(f"Exception while running NPT:  {futu_npt.exception()} ")
+                log.error(f"Exception while running NPT from iteration: {iter_name}\n"
+                    "{futu_npt.exception()}")
+                del epoch[iter_name]
                 continue
-                
-            npt_complex = futu_npt.result()
-            iter_name = '-'.join(npt_complex.dir.dir_path.name.split('-')[1:])
+            all_atoms_in_box, npt_complex = futu_npt.result()
+            if not all_atoms_in_box:
+                log.error(f"{epoch.id}-{iter_name} has atoms outside the box. "
+                "This run may not be apt to continue.")
             iter = epoch[iter_name]
             iter.complex = npt_complex
+
+            
     epoch.npt_done = True
 
 

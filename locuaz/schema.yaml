@@ -153,12 +153,6 @@ md:
             type: dict
             required: true
             schema:
-                min_water_mdp:
-                    type: string
-                    default: "min_water.mdp"
-                min_environment_mdp:
-                    type: string
-                    default: "min_environment.mdp"
                 min_mdp:
                     type: string
                     default: "min.mdp"

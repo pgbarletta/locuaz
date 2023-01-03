@@ -207,6 +207,7 @@ md:
         use_box:
             type: boolean
             required: true
+            default: false
             check_with: box_check
         box_type:
             type: string

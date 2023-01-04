@@ -47,6 +47,7 @@ class Iteration:
     score_dir: DirHandle = field(converter=DirHandle, init=False)  # type: ignore
     scores: Dict[str, tuple] = field(init=False)
     mean_scores: Dict[str, float] = field(init=False)
+    outside_box: bool = field(init=False, default=False)
 
     def __attrs_post_init__(self) -> None:
         try:

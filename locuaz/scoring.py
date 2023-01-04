@@ -93,12 +93,29 @@ def score_frames(work_pjct: WorkProject, iteration: Iteration, nframes: int) -> 
     )
 
 
+def discard_iteration(work_pjct: WorkProject, iteration: Iteration) -> None:
+    log = logging.getLogger(f"{work_pjct.name}")
+
+    for sf_name, _ in work_pjct.scorers.items():
+        if sf_name == "bluues":
+            iteration.set_score("bluues", [0, 0])
+            iteration.set_score("bmf", [0, 0])
+            log.info(f"{sf_name} nullifying score.")
+        else:
+            iteration.set_score(sf_name, [0, 0])
+            log.info(f"{sf_name} nullifying score.")
+
+
 def score(work_pjct: WorkProject, iteration: Iteration) -> None:
     log = logging.getLogger(f"{work_pjct.name}")
     try:
         iteration.read_scores(work_pjct.scorers.keys(), log)
         log.info("Read old scores.")
     except FileNotFoundError as e:
-        log.info("Splitting NPT trajectory in frames.")
-        nframes = initialize_scoring_folder(iteration, work_pjct.config)
-        score_frames(work_pjct, iteration, nframes)
+        if iteration.outside_box:
+            # Discard this iteration.
+            discard_iteration(work_pjct, iteration)
+        else:
+            log.info("Splitting NPT trajectory in frames.")
+            nframes = initialize_scoring_folder(iteration, work_pjct.config)
+            score_frames(work_pjct, iteration, nframes)

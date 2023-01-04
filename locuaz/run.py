@@ -80,7 +80,6 @@ def run_npt_epoch(work_pjct: WorkProject) -> None:
     with ProcessPoolExecutor(max_workers=ngpus) as ex:
         gpu_id = {}
         pinoffset = {}
-        # futuros_npt = []
         futuros_npt = {}
         for idx, (iter_name, iter) in enumerate(epoch.items()):
             gpu_nbr = idx % ngpus
@@ -94,23 +93,23 @@ def run_npt_epoch(work_pjct: WorkProject) -> None:
                 pinoffset=pinoffset[iter_name], out_name=prefix + work_pjct.name)
             
             futu_npt = ex.submit(npt, iter.complex)
-            # futuros_npt.append()
             futuros_npt[futu_npt] = iter_name
 
         for futu_npt in cf.as_completed(futuros_npt):
             iter_name = futuros_npt[futu_npt]
-            # iter_name = '-'.join(npt_complex.dir.dir_path.name.split('-')[1:])
             if futu_npt.exception():
                 log.error(f"Exception while running NPT from iteration: {iter_name}\n"
                     "{futu_npt.exception()}")
                 del epoch[iter_name]
                 continue
             all_atoms_in_box, npt_complex = futu_npt.result()
+            
+            iter = epoch[iter_name]
+            iter.complex = npt_complex
             if not all_atoms_in_box:
                 log.error(f"{epoch.id}-{iter_name} has atoms outside the box. "
                 "This run may not be apt to continue.")
-            iter = epoch[iter_name]
-            iter.complex = npt_complex
+                iter.outside_box = True
 
             
     epoch.npt_done = True

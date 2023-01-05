@@ -269,6 +269,11 @@ class WorkProject:
 
             # Check input PDB to create name and attributes for the starting iteration.
             input_path = Path(data_str)
+            self.__check_input_pdb__(
+                input_path,
+                self.config["target"]["chainID"],
+                self.config["binder"]["chainID"],
+            )
             iter_name, chainIDs, resSeqs, resnames = self.__generate_iteration_ID__(
                 input_path
             )
@@ -501,6 +506,36 @@ class WorkProject:
 
         # Drop the leading -:
         return iter_name[1:], chainIDs, resSeqs, resnames
+
+    def __check_input_pdb__(
+        self, input_path: Path, target_chainIDs, binder_chainIDs
+    ) -> None:
+
+        # Check the chainIDs:
+        pdb_path = input_path / (self.config["main"]["name"] + ".pdb")
+        u = mda.Universe(str(pdb_path))
+        segids = [s.segid for s in u.segments]  # type: ignore
+        assert (
+            target_chainIDs in segids
+        ), f"target chainID ({target_chainIDs}) not present in input PDB chainIDs ({segids})"
+        assert (
+            binder_chainIDs in segids
+        ), f"binder chainID ({binder_chainIDs}) not present in input PDB chainIDs ({segids})"
+        assert (
+            len(segids) > 2
+        ), "Too few segments in the input PDB. There should be at least 3 (target+binder+solvent)."
+
+        # Check amino acids
+        prot = u.atoms.select_atoms("protein")  # type: ignore
+        aas = {res.resname for res in prot.residues}
+        all_aas = set(AA_MAP.keys())
+        assert aas.issubset(all_aas), f"Unrecognized residues: {aas - all_aas}"
+
+        # Check solvent
+        wat = u.select_atoms("resname SOL")
+        assert len(
+            wat
+        ), f"No 'SOL' residues. If you do have waters, please rename them to 'SOL' both in the PDB and the topology."
 
     def __set_memory__(self):
         try:

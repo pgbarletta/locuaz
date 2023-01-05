@@ -139,7 +139,6 @@ class Validatore(Validator):
                     f"OMP threads requested. {necessary} threads are necessary, "
                     f"but only {available_procs} are available.\n "
                     "Continue only if you know what you're doing.",
-                    
                 )
 
     def _validate_unique(self, flag, field, value):
@@ -241,8 +240,10 @@ class Validatore(Validator):
     def _check_with_box_check(self, field, value):
         box_options = ("box_type", "dist_to_box", "box")
         if value:
-            if not any([ box_opt in self.document for box_opt in box_options ]):
-                self._error(field, f"is true, at least one of {box_options} needs to be set.")
+            if not any([box_opt in self.document for box_opt in box_options]):
+                self._error(
+                    field, f"is true, at least one of {box_options} needs to be set."
+                )
         else:
             for box_opt in box_options:
                 if box_opt in self.document:

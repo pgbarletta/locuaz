@@ -14,8 +14,6 @@ locuaz
         :alt: Documentation Status
 
 
-
-
 Looping Uniquely Catered Amino Acid Sequences
 
 
@@ -33,73 +31,11 @@ if on POWER9, go to the bottom, or just search 'POWER9'.
 Can't install biobb using conda because It'll try to get packages that are not ppc64 compatible,
 eg: gromacs, and some old babel version.
 
-* Make sure your cmake version is >3.17. If on MARCONI:
+* Make sure your cmake version is >3.17. If on MARCONI100:
 
 ```
 module load autoload cmake
 ```
-
-### If on biobb 3.8, apply these patches:
-    - On biobb_analysis/gromacs/gmximage.py, line 126:
-      replace:
-```
-# If fitting provided, echo fit_selection
-if self.fit == 'none':
-    if self.center:
-        selections = '\"' + self.center_selection + '\" \"' + self.output_selection + '\"'
-    else:
-        selections = '\"' + self.output_selection + '\"'
-else:
-    if self.center:
-        selections = '\"' + self.fit_selection + '\" \"' + self.center_selection + '\" \"' + self.output_selection + '\"'
-    else:
-        selections = '\"' + self.fit_selection + '\" \"' + self.output_selection + '\"'
-```
-        with:
-```
-# If fitting provided, echo fit_selection
-if self.fit == 'none':
-    selections = '\"' + self.center_selection + '\" \"' + self.output_selection + '\"'
-else:
-    selections = '\"' + self.fit_selection + '\" \"' + self.center_selection + '\" \"' + self.output_selection + '\"'
-```
-
-### If on biobb 3.7, apply these patches:
-    - On biobb_md/gromacs/mdrun.py, line 201:
-        replace:
-            self.cmd += [self.dev.split()]
-        with:
-            self.cmd.append(self.dev)
-    -On biobb_md/gromacs/solvate.py, line ~82:
-        add:
-            self.dev = properties.get('dev')
-    -On biobb_md/gromacs/solvate.py, line ~129:
-        add:
-            if self.dev:
-                fu.log(f'Adding development options: {self.dev} -- DALE BOOO', self.out_log)
-                self.cmd += self.dev.split()
-    -On biobb_md/gromacs/pdb2gmx.py, line ~82:
-        add:
-            self.dev = properties.get('dev')
-    -On biobb_md/gromacs/pdb2gmx.py, line ~127:
-        add:
-            if self.dev:
-                fu.log(f'Adding development options: {self.dev} -- DALE BOOO', self.out_log)
-                self.cmd += self.dev.split()
-    -On biobb_analysis/gromacs/gmx_trjconv_str_ens.py, line 82:
-        replace:
-            self.fit_selection = properties.get('fit_selection', "System")
-        with:
-            self.selection = properties.get('selection', "System")
-    -On biobb_md/gromacs/editconf.py, line ~74:
-        add:
-            self.dev = properties.get('dev')
-    -On biobb_md/gromacs/solvate.py, line ~117:
-        add:
-            if self.dev:
-                fu.log(f'Adding development options: {self.dev} -- DALE BOOO', self.out_log)
-                self.cmd += self.dev.split()
-
 
 All scoring functions (SFs) should be inside the config['paths']['scoring_functions'] directory.
 Their folder names should match the exact SF names used in the config file and their binaries
@@ -136,7 +72,12 @@ Additional requirements for specific SFs:
 Features
 --------
 
-* TODO
+ - If you want to use amber topologies:
+
+```
+mamba install ambertools, acpype
+```
+
 
 Credits
 -------
@@ -145,7 +86,4 @@ Credits
     https://mmb.irbbarcelona.org/biobb/documentation/source
     https://mmb.irbbarcelona.org/biobb/workflows/tutorials/md_setup
 
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
 
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage

@@ -9,6 +9,7 @@ dependencies:
   - yaml
   - cerberus
   - pocl
+  - ambertools
   - biobb_structure_utils==3.8.0
   - pip
   - pip:

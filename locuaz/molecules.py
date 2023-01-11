@@ -133,6 +133,11 @@ class Topology(AbstractFileObject):
     target_chains: Tuple[str] = field(init=False)
     binder_chains: Tuple[str] = field(init=False)
 
+    selection_target: str = field(init=False)
+    selection_binder: str = field(init=False)
+    selection_protein: str = field(init=False)
+    selection_not_protein: str = field(init=False)
+
     @classmethod
     def from_path_with_chains(
         cls, path: Path, *, target_chains: Sequence, binder_chains: Sequence
@@ -140,6 +145,20 @@ class Topology(AbstractFileObject):
         self = super().from_path(path)
         self.target_chains = tuple(target_chains)
         self.binder_chains = tuple(binder_chains)
+
+        self.selection_target = " or ".join(
+            [f"segid {chainID}" for chainID in target_chains]
+        )
+        self.selection_binder = " or ".join(
+            [f"segid {chainID}" for chainID in binder_chains]
+        )
+        self.selection_protein = " or ".join(
+            ["protein", self.selection_target, self.selection_binder]
+        )
+        self.selection_not_protein = " and not ".join(
+            ["not protein", self.selection_target, self.selection_binder]
+        )
+
         return self
 
 
@@ -150,7 +169,28 @@ class AmberTopology(Topology):
 
 @define
 class ZipTopology(Topology):
-    pass
+    @classmethod
+    def from_path_with_chains(
+        cls, path: Path, *, target_chains: Sequence, binder_chains: Sequence
+    ) -> "ZipTopology":
+        self = super().from_path(path)
+        self.target_chains = tuple(target_chains)
+        self.binder_chains = tuple(binder_chains)
+
+        self.selection_target = " or ".join(
+            [f"segid {chainID}" for chainID in target_chains]
+        )
+        self.selection_binder = " or ".join(
+            [f"segid {chainID}" for chainID in binder_chains]
+        )
+        self.selection_protein = " or ".join(
+            ["protein", self.selection_target, self.selection_binder]
+        )
+        self.selection_not_protein = " and not ".join(
+            ["not protein", self.selection_target, self.selection_binder]
+        )
+
+        return self
 
 
 @define

@@ -269,11 +269,7 @@ class WorkProject:
 
             # Check input PDB to create name and attributes for the starting iteration.
             input_path = Path(data_str)
-            self.__check_input_pdb__(
-                input_path,
-                self.config["target"]["chainID"],
-                self.config["binder"]["chainID"],
-            )
+            self.__check_input_pdb__(input_path)
             iter_name, chainIDs, resSeqs, resnames = self.__generate_iteration_ID__(
                 input_path
             )
@@ -507,23 +503,21 @@ class WorkProject:
         # Drop the leading -:
         return iter_name[1:], chainIDs, resSeqs, resnames
 
-    def __check_input_pdb__(
-        self, input_path: Path, target_chainIDs, binder_chainIDs
-    ) -> None:
+    def __check_input_pdb__(self, input_path: Path) -> None:
 
         # Check the chainIDs:
         pdb_path = input_path / (self.config["main"]["name"] + ".pdb")
         u = mda.Universe(str(pdb_path))
         segids = [s.segid for s in u.segments]  # type: ignore
         assert (
-            target_chainIDs in segids
-        ), f"target chainID ({target_chainIDs}) not present in input PDB chainIDs ({segids})"
-        assert (
-            binder_chainIDs in segids
-        ), f"binder chainID ({binder_chainIDs}) not present in input PDB chainIDs ({segids})"
-        assert (
             len(segids) > 2
         ), "Too few segments in the input PDB. There should be at least 3 (target+binder+solvent)."
+
+        chainIDs = self.config["target"]["chainID"] + self.config["binder"]["chainID"]
+        for segid, chainID in zip(segids, chainIDs):
+            assert (
+                segid == chainID
+            ), f"PDBs chainIDs ({segid}) and input target-binder chainIDs ({chainIDs}) should be identical."
 
         # Check amino acids
         prot = u.atoms.select_atoms("protein")  # type: ignore

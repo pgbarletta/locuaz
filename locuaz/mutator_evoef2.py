@@ -17,10 +17,11 @@ class MutatorEvoEF2(AbstractMutator):
 
         Returns:
             FileHandle: .txt file with mutations as: \
-                WT_AA_ThreeLeterCode Chain Resnum MUT_AA_ThreeLeterCode (no whitespace)
+                WT_AA_OneLetterCode Chain Resnum MUT_AA_OneLetterCode (no whitespace)
         """
         mut_string = f"{mut.old_aa}{mut.chainID}{mut.resSeq}{mut.new_aa};"
         with open(output_path, "w") as file:
+            print(mut_string)
             file.write(mut_string)
 
         return FileHandle(output_path)

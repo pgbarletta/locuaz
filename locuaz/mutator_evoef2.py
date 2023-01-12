@@ -35,7 +35,6 @@ class MutatorEvoEF2(AbstractMutator):
         comando_evoef2 = (
             f"{self.bin_path} --command=BuildMutant --pdb={input_pdb.file.path.name} "
             "--mutant_file=mutlist.txt"
-            # + str(input_mutlist_fn.name)
         )
 
         sp.run(

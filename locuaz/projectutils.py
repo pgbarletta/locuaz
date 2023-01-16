@@ -535,8 +535,9 @@ class WorkProject:
             warn(f"Unrecognized residues: {aas - all_aas}")
 
         # Check solvent
-        wat = u.select_atoms("resname SOL or resname WAT")
-        assert len(wat), f"Input PDB lacks solvent."
+        solvent_sel = "resname WAT" if self.config["md"]["use_tleap"] else "resname SOL"
+        wat = u.select_atoms(solvent_sel)
+        assert len(wat), f"Input PDB lacks solvent: {solvent_sel}."
 
         # Make sure mutating residues are present.
         mutating_chainID = self.config["binder"]["mutating_chainID"]
@@ -548,40 +549,30 @@ class WorkProject:
                         [res in chain.residues.resnums for res in resSeq]
                     ), f"mutating_resSeq ({resSeq}) not present in binder."
 
-        ### Check residue numbering
-
-        # Check if resSeq is continuous.
-        continuous: bool = False
-        err_msg_continuous: str = ""
-        for i, j in pairwise(range(u.segments.n_segments)):  # type: ignore
-            pre_seg = u.segments[i]  # type: ignore
-            seg = u.segments[j]  # type: ignore
-            if pre_seg.segid in chainIDs and seg.segid in chainIDs:
-                pre_resSeq = pre_seg.residues[-1].resnum
-                resSeq = seg.residues[0].resnum
-                continuous = (resSeq - pre_resSeq) == 1
-                if not continuous:
-                    err_msg_continuous = (
-                        "\n"
-                        f"Non-continuous resSeq ({pre_resSeq} - {resSeq}) between {pre_seg} and {seg}"
-                    )
-        # Check if each protein chain begins at resnum 1
-        strided: bool = False
-        err_msg_strided: str = ""
-        for segment in u.segments:  # type: ignore
-            if segment.segid in chainIDs:
-                first_resSeq = segment.residues[0].resnum
-                strided = first_resSeq == 1
-                if not strided:
-                    err_msg_strided = (
-                        "\n"
-                        f"First resSeq from chain {segment.segid} is {first_resSeq} "
-                    )
-
-        if not continuous and not strided:
-            raise AssertionError(
-                f"resSeq need to be continuous or start at 1 on each chain. {err_msg_continuous} {err_msg_strided}"
-            )
+        # Check residue numbering
+        if self.config["md"]["use_tleap"]:
+            # Check if resSeq is continuous.
+            for i, j in pairwise(range(u.segments.n_segments)):  # type: ignore
+                pre_seg = u.segments[i]  # type: ignore
+                seg = u.segments[j]  # type: ignore
+                if pre_seg.segid in chainIDs and seg.segid in chainIDs:
+                    pre_resSeq = pre_seg.residues[-1].resnum
+                    resSeq = seg.residues[0].resnum
+                    assert (
+                        resSeq - pre_resSeq
+                    ) == 1, f"Non-continuous resSeq ({pre_resSeq}, {resSeq}) between {pre_seg} and {seg}. "
+                    "It should be continuous, according to Amber specifications. "
+                    "'mutating_resSeq' should follow this same convention."
+        else:
+            # Check if each protein chain begins at resnum 1
+            for segment in u.segments:  # type: ignore
+                if segment.segid in chainIDs:
+                    first_resSeq = segment.residues[0].resnum
+                    assert (
+                        first_resSeq == 1
+                    ), f"First resSeq from chain {segment.segid} is {first_resSeq}. "
+                    "It should be 1, according to GROMACS specifications. "
+                    "'mutating_resSeq' should follow this same convention."
 
     def __set_memory__(self):
         try:

@@ -30,6 +30,10 @@ paths:
         work:
             type: string
             required: true
+        tleap:
+            type: string
+            required: false
+            is_directory: true
 
 main:
     type: dict
@@ -186,6 +190,9 @@ md:
             required: true
             schema:
                 type: integer
+        use_tleap:
+            type: boolean
+            default: false
         force_field:
             type: string
             allowed: ["amber03", "amber94", "amber96", "amber99", "amber99sb-ildn",

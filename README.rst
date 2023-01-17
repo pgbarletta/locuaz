@@ -22,6 +22,10 @@ Looping Uniquely Catered Amino Acid Sequences
 
 * Not tested for multiple chains
 
+
+Install
+------
+
 Download Mambaforge from:
 
 https://github.com/conda-forge/miniforge
@@ -36,6 +40,15 @@ eg: gromacs, and some old babel version.
 ```
 module load autoload cmake
 ```
+
+If on MDAnalysis 2.24.2 or older:
+- On MDAnalysis/topology/tpr/utils.py line 330:
+    `segid = f"seg_{i}_{molblock}"`
+    replace with:
+    `segid = molblock[14:] if molblock[:14] == "Protein_chain_" else molblock`
+
+On scoring
+--------
 
 All scoring functions (SFs) should be inside the config['paths']['scoring_functions'] directory.
 Their folder names should match the exact SF names used in the config file and their binaries
@@ -75,7 +88,7 @@ Features
  - If you want to use amber topologies:
 
 ```
-mamba install ambertools, acpype
+mamba install ambertools 
 ```
 
 

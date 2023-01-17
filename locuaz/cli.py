@@ -1,6 +1,6 @@
 import os
 import argparse
-from typing import Dict, List, Optional, Set, Tuple, Union, Any
+from typing import Dict, List, Final, Set, Tuple, Union, Any
 from pathlib import Path
 from queue import PriorityQueue
 import glob
@@ -12,6 +12,16 @@ import pickle
 from collections import defaultdict, deque
 
 from validatore import Validatore
+
+
+def get_dir_size(folder: Path) -> float:
+    B_TO_MB: Final = 1048576
+    total_size = 0
+    for path, _, files in os.walk(folder):
+        for f in files:
+            fp = os.path.join(path, f)
+            total_size += os.path.getsize(fp)
+    return total_size / B_TO_MB
 
 
 def get_raw_config(config_path: str):
@@ -58,6 +68,12 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
         ), "`--mode` is not set to 'evolve', a `work` folder with vaild iterations is needed."
 
         start = True
+
+    if config["md"].get("use_tleap", False):
+        assert "tleap" in config["paths"], f"Specify path to tleap files."
+        assert (
+            get_dir_size(config["paths"]["tleap"]) < 10
+        ), f"tleap dir is heavier than 10Mb. Choose a dir with only the necessary tleap files."
 
     return config, start
 

@@ -244,6 +244,8 @@ class Validatore(Validator):
                 self._error(
                     field, f"is true, at least one of {box_options} needs to be set."
                 )
+            if self.document.get("use_tleap", False):
+                self._error(field, "'use_tleap' is True, so box parameters are set by tleap.")
         else:
             for box_opt in box_options:
                 if box_opt in self.document:

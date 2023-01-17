@@ -3,7 +3,7 @@ from operator import itemgetter
 from typing import Tuple, List, Optional, Any
 import subprocess as sp
 import logging
-from collections.abc import Sequence
+from collections.abc import Iterable
 import concurrent.futures as cf
 
 from fileutils import FileHandle, DirHandle

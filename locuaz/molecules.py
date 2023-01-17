@@ -4,17 +4,16 @@ import MDAnalysis as mda
 from pathlib import Path
 import numpy as np
 from abc import ABCMeta
-from typing import List, Sequence, Dict, Tuple, Optional, Any
+from collections.abc import Iterable
+from typing import List, Dict, Tuple, Any
 
 from attrs import define, field
 
 from biobb_gromacs.gromacs.pdb2gmx import Pdb2gmx
 from biobb_gromacs.gromacs.gmxselect import Gmxselect
-from biobb_gromacs.gromacs.editconf import Editconf
 from biobb_gromacs.gromacs.grompp import Grompp
 from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
 
-from biobb_gromacs.gromacs.genion import Genion
 
 from fileutils import FileHandle, copy_to, update_header
 from primitives import launch_biobb
@@ -140,7 +139,7 @@ class Topology(AbstractFileObject):
 
     @classmethod
     def from_path_with_chains(
-        cls, path: Path, *, target_chains: Sequence, binder_chains: Sequence
+        cls, path: Path, *, target_chains: Iterable, binder_chains: Iterable
     ) -> "Topology":
         self = super().from_path(path)
         self.target_chains = tuple(target_chains)
@@ -171,7 +170,7 @@ class AmberTopology(Topology):
 class ZipTopology(Topology):
     @classmethod
     def from_path_with_chains(
-        cls, path: Path, *, target_chains: Sequence, binder_chains: Sequence
+        cls, path: Path, *, target_chains: Iterable, binder_chains: Iterable
     ) -> "ZipTopology":
         self = super().from_path(path)
         self.target_chains = tuple(target_chains)
@@ -461,7 +460,7 @@ def catenate_pdbs(
 
 
 def write_chain_ndx(
-    *, pdb: PDBStructure, chains: Sequence, selname: str, gmx_bin: str = "gmx"
+    *, pdb: PDBStructure, chains: Iterable, selname: str, gmx_bin: str = "gmx"
 ) -> FileHandle:
     selection = " or ".join([f"chain {chainID}" for chainID in chains])
 

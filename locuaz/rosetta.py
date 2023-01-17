@@ -5,7 +5,7 @@ from pathlib import Path
 from socket import timeout
 from typing import Tuple, List, Any
 import subprocess as sp
-from collections.abc import Sequence
+from collections.abc import Iterable
 import concurrent.futures as cf
 
 from fileutils import FileHandle, DirHandle

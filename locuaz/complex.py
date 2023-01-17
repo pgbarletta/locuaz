@@ -1,7 +1,8 @@
 from pathlib import Path
 from abc import ABCMeta
 from abc import ABCMeta, abstractmethod
-from typing import Sequence, Dict, Optional, Union
+from collections.abc import Iterable
+from typing import Dict, Optional, Union
 
 from attrs import define, field
 
@@ -39,8 +40,8 @@ class AbstractComplex(metaclass=ABCMeta):
         *,
         name: str,
         input_dir: Path,
-        target_chains: Sequence,
-        binder_chains: Sequence,
+        target_chains: Iterable,
+        binder_chains: Iterable,
         md_config: Dict,
     ) -> "AbstractComplex":
         raise NotImplementedError
@@ -52,8 +53,8 @@ class AbstractComplex(metaclass=ABCMeta):
         *,
         name: str,
         input_dir: Path,
-        target_chains: Sequence,
-        binder_chains: Sequence,
+        target_chains: Iterable,
+        binder_chains: Iterable,
         gmx_bin: str = "gmx",
     ) -> "AbstractComplex":
         raise NotImplementedError
@@ -65,8 +66,8 @@ class AbstractComplex(metaclass=ABCMeta):
         *,
         name: str,
         iter_path: Path,
-        target_chains: Sequence,
-        binder_chains: Sequence,
+        target_chains: Iterable,
+        binder_chains: Iterable,
         ignore_cpt: bool = True,
         gmx_bin: str = "gmx",
     ) -> "AbstractComplex":

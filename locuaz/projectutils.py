@@ -1,10 +1,10 @@
+import os
 from pathlib import Path
 from attrs import define, field, validators
 from typing import (
     Iterable,
     Iterator,
     List,
-    Sequence,
     Set,
     Dict,
     Tuple,
@@ -58,7 +58,7 @@ class Iteration:
         self.mean_scores = {}
 
     def set_score(
-        self, sf_name: str, scores: Sequence, log: Optional[logging.Logger] = None
+        self, sf_name: str, scores: Iterable, log: Optional[logging.Logger] = None
     ) -> float:
         if not log:
             log = logging.getLogger("root")

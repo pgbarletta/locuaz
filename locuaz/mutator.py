@@ -1,11 +1,12 @@
 from pathlib import Path
 from abc import ABCMeta, abstractmethod
 from attrs import define, field
-from typing import Iterable, List, Sequence, Tuple
+from typing import Iterable, List, Iterable, Tuple, Optional
 
 
 from projectutils import Iteration, WorkProject, Epoch
 from molecules import PDBStructure
+from complex import GROComplex
 
 
 @define(frozen=True)

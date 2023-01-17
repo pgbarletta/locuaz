@@ -2,7 +2,7 @@ from pathlib import Path
 from abc import ABCMeta, abstractmethod
 from typing import List, Optional, Any
 from fileutils import FileHandle, DirHandle
-from collections.abc import Sequence
+from collections.abc import Iterable
 
 
 class AbstractScoringFunction(metaclass=ABCMeta):

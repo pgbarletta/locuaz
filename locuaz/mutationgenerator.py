@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from email import iterators
-from typing import List, Tuple, Dict, Set, Iterator, Sequence
+from collections.abc import Iterable
+from typing import List, Tuple, Dict, Set, Iterator
 from random import choice, sample
 from collections import defaultdict
 from collections.abc import ItemsView, Mapping
@@ -152,7 +152,7 @@ class SPM_4(AbstractMutationGenerator):
     # def __generate_mutation__(iteration: Iteration) -> Mutation:
     #     pass
 
-    def __getitem__(self, key: str) -> Sequence[Mutation]:
+    def __getitem__(self, key: str) -> Iterable[Mutation]:
         return self.mutations[key]
 
     def __iter__(self) -> Iterator:

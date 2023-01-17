@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 from typing import Tuple, List, Optional, Any
 import subprocess as sp
-from collections.abc import Sequence
+from collections.abc import Iterable
 import concurrent.futures as cf
 
 from fileutils import FileHandle, DirHandle

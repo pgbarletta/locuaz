@@ -3,7 +3,7 @@ import logging
 import os
 import re
 from pathlib import Path
-from collections.abc import Sequence
+from collections.abc import Iterable
 import subprocess as sp
 import concurrent.futures as cf
 from typing import Tuple, List, Any

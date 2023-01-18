@@ -1,7 +1,5 @@
 import logging
 from pathlib import Path
-from multiprocessing import Queue, SimpleQueue
-import queue
 from concurrent.futures import ProcessPoolExecutor
 import concurrent.futures as cf
 

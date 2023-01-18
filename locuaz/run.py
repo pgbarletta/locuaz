@@ -99,7 +99,7 @@ def run_npt_epoch(work_pjct: WorkProject) -> None:
             iter_name = futuros_npt[futu_npt]
             if futu_npt.exception():
                 log.error(f"Exception while running NPT from iteration: {iter_name}\n"
-                    "{futu_npt.exception()}")
+                    f"{futu_npt.exception()}")
                 del epoch[iter_name]
                 continue
             all_atoms_in_box, npt_complex = futu_npt.result()

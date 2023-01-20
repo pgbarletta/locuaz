@@ -43,9 +43,17 @@ module load autoload cmake
 
 If on MDAnalysis 2.24.2 or older:
 - On MDAnalysis/topology/tpr/utils.py line 330:
-    `segid = f"seg_{i}_{molblock}"`
+```
+segid = f"seg_{i}_{molblock}"
+```
+
     replace with:
-    `segid = molblock[14:] if molblock[:14] == "Protein_chain_" else molblock`
+
+```
+segid = molblock[14:] if molblock[:14] == "Protein_chain_" else molblock
+```
+
+
 
 On scoring
 --------

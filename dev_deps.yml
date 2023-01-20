@@ -1,9 +1,9 @@
-name: luca
+name: lupo
 channels:
   - conda-forge
   - bioconda
 dependencies:
-  - python==3.10.6
+  - python==3.9.15
   - scipy
   - ipykernel
   - jupyterlab
@@ -19,7 +19,8 @@ dependencies:
   - cerberus
   - pocl
   - ambertools
-  - biobb_structure_utils==3.8.0
+  - biobb_structure_utils==3.9.0
+  - biobb_common==3.9.0
   - pip
   - pip:
     - wemake-python-styleguide
@@ -35,14 +36,12 @@ dependencies:
     - flake8-quotes
     - flake8-rst-docstrings
     - flake8-string-format
-    - git+https://github.com/bioexcel/biobb_analysis.git@d52c9039fbc85823812418229f2007c5fc118353
-    - biobb_analysis==3.8.0
-    - biobb_io==3.8.0
-    - biobb_gromacs==3.8.1
-    - biobb_model==3.8.1
-    - biobb_pmx==3.8.1
-    - biobb_amber==3.8.0
-    - biobb_chemistry==3.8.0
-    - biobb_vs==3.8.1
+    - git+https://github.com/bioexcel/biobb_analysis.git@596d71c918a515786ed1d8b89f6a6f0357fc98f8
+    - biobb_io==3.9.0
+    - biobb_gromacs==3.9.0
+    - biobb_model==3.9.0
+    - biobb_amber==3.9.0
+    - biobb_chemistry==3.9.0
+    - biobb_vs==3.9.0
     - pdb2pqr
-    - mdanalysis
+    - mdanalysis==2.3.0

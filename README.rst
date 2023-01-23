@@ -41,7 +41,7 @@ eg: gromacs, and some old babel version.
 module load autoload cmake
 ```
 
-If on MDAnalysis 2.24.2 or older:
+If on MDAnalysis 2.4.2 or older:
 - On MDAnalysis/topology/tpr/utils.py line 330:
 ```
 segid = f"seg_{i}_{molblock}"

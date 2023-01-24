@@ -380,21 +380,24 @@ def remove_overlapping_solvent(
 ) -> PDBStructure:
     pdb_in_fn = Path(overlapped_pdb)
     u = mda.Universe(str(pdb_in_fn))
-    overlapped_atoms = u.select_atoms(
+
+    overlapped_wat_atoms = u.select_atoms(
         f"(around {cutoff} resnum {overlapped_resSeq}) and (resname WAT or resname SOL)"
-    )
+    ).residues.atoms
+    nwats_atm = len(overlapped_wat_atoms)
+    assert (
+        nwats_atm % 3
+    ) == 0, f"Invalid number of overlapped water atoms: {nwats_atm}"
+    nwats = len(overlapped_wat_atoms) // 3
+
     ions = u.select_atoms(
         "name CL or name Cl or name NA or name Na or type CL or type Cl or type NA or type Na"
     )
-
-    overlapped_waters = {at.residue for at in overlapped_atoms}
-    nwats = len(overlapped_waters)
     nions = len(ions)
-    substracting_atoms = sum([wat.atoms for wat in overlapped_waters])  # type: ignore
 
     nonoverlapped_nonwat = "init_nonoverlapped_nonwat.pdb"
     nonoverlapped_nonwat_fn = Path(pdb_in_fn.parent, nonoverlapped_nonwat)
-    (u.atoms - substracting_atoms - ions).write(str(nonoverlapped_nonwat_fn))  # type: ignore
+    (u.atoms - overlapped_wat_atoms - ions).write(str(nonoverlapped_nonwat_fn))  # type: ignore
 
     # insert waters
     nonoverlapped = "init_nonoverlapped.pdb"

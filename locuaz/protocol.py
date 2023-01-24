@@ -55,9 +55,6 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
             old_pdb = fix_pdb(pre_fix_pdb, pdb_path)
         else:
             old_pdb = old_iter.complex.pdb
-        # nonwat_pdb, wation_pdb = split_solute_and_solvent_old(
-        #     old_iter.complex, work_pjct.config["md"]["gmx_bin"]
-        # )
 
         for mutation in mutations:
             iter_name, iter_resnames = mutation.new_name_resname(old_iter)
@@ -102,11 +99,6 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
                 add_ions=True,
             )
             current_epoch[iter_name] = this_iter
-
-            #
-            # this_iter.complex = remove_overlapping_waters(
-            #     overlapped_cpx, work_pjct.config, mutation.resSeq
-            # )
 
         # TODO: check if this works with mutations on different positions
         memorize_mutations(work_pjct, current_epoch, mutations)

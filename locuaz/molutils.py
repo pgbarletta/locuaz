@@ -1,7 +1,7 @@
 from pathlib import Path
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
-from typing import Any, Tuple, Optional, List, Set
+from typing import Any, Tuple, Optional, List, Set, Union
 from functools import singledispatch
 import warnings
 
@@ -16,13 +16,9 @@ from molecules import PDBStructure, read_ndx
 from complex import AbstractComplex, GROComplex
 
 
-@singledispatch
-def split_solute_and_solvent(complex: AbstractComplex, gmx_bin: str) -> Any:
-    raise NotImplementedError
-
-
-@split_solute_and_solvent.register
-def _(complex: GROComplex, gmx_bin: str) -> Tuple[PDBStructure, PDBStructure]:
+def split_solute_and_solvent_old(
+    complex: GROComplex, gmx_bin: str
+) -> Tuple[PDBStructure, PDBStructure]:
     """prepare_old_iter extract 2 PDBs from an input pdb, one with the protein
     and the other with the water and ions.
 
@@ -58,6 +54,33 @@ def _(complex: GROComplex, gmx_bin: str) -> Tuple[PDBStructure, PDBStructure]:
     return nonwat_pdb, wation_pdb
 
 
+def split_solute_solvent(
+    pdb_in: Union[PDBStructure, Path],
+    *,
+    selection_protein: Optional[str] = None,
+    selection_wations: Optional[str] = None,
+) -> Tuple[PDBStructure, PDBStructure]:
+
+    pdb_in_path = Path(pdb_in)
+    u = mda.Universe(str(pdb_in_path))
+
+    # Protein
+    nonwat_pdb_fn = Path(pdb_in_path.parent, "init_nonwat.pdb")
+    if selection_protein:
+        u.atoms.select_atoms(selection_protein).write(str(nonwat_pdb_fn))  # type: ignore
+    else:
+        u.atoms.select_atoms("protein").write(str(nonwat_pdb_fn))  # type: ignore
+
+    # Water and ions
+    wation_pdb_fn = Path(pdb_in_path.parent, "init_wation.pdb")
+    if selection_wations:
+        u.atoms.select_atoms(selection_wations).write(str(wation_pdb_fn))  # type: ignore
+    else:
+        u.atoms.select_atoms("not protein").write(str(wation_pdb_fn))  # type: ignore
+
+    return PDBStructure.from_path(nonwat_pdb_fn), PDBStructure.from_path(wation_pdb_fn)
+
+
 def get_matrix(dimensions):
     x, y, z, a, b, c = dimensions
     x /= 10
@@ -80,7 +103,9 @@ def get_matrix(dimensions):
     return H
 
 
-def fix_box(cpx: GROComplex, out_path: Path, gmx_bin: str = "gmx") -> Tuple[bool, PDBStructure]:
+def fix_box(
+    cpx: GROComplex, out_path: Path, gmx_bin: str = "gmx"
+) -> Tuple[bool, PDBStructure]:
 
     whole_pdb = Path(out_path.parent, "whole.pdb")
     make_whole = GMXImage(
@@ -168,9 +193,9 @@ def fix_box(cpx: GROComplex, out_path: Path, gmx_bin: str = "gmx") -> Tuple[bool
     # Remove temporary files
     whole_pdb.unlink()
 
-    n_outside_box_target = np.sum(np.floor(s_positions[indices["target"]] + .5))
-    n_outside_box_binder = np.sum(np.floor(s_positions[indices["binder"]] + .5))
-    all_in = (n_outside_box_target+n_outside_box_binder) == 0
+    n_outside_box_target = np.sum(np.floor(s_positions[indices["target"]] + 0.5))
+    n_outside_box_binder = np.sum(np.floor(s_positions[indices["binder"]] + 0.5))
+    all_in = (n_outside_box_target + n_outside_box_binder) == 0
 
     return all_in, PDBStructure(FileHandle(out_path))
 

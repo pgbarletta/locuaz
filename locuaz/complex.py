@@ -16,13 +16,13 @@ from molecules import (
     Trajectory,
     XtcTrajectory,
     TrrTrajectory,
-    get_gro_ziptop_from_pdb,
     generate_ndx,
     get_tpr,
     get_pdb_tpr,
     copy_mol_to,
     try_copy_to,
 )
+from moleculesutils import get_gro_ziptop_from_pdb, get_gro_ziptop_from_pdb_tleap
 
 
 @define(frozen=True)
@@ -43,6 +43,7 @@ class AbstractComplex(metaclass=ABCMeta):
         target_chains: Iterable,
         binder_chains: Iterable,
         md_config: Dict,
+        add_ions: bool = False,
     ) -> "AbstractComplex":
         raise NotImplementedError
 
@@ -114,27 +115,37 @@ class GROComplex(AbstractComplex):
         *,
         name: str,
         input_dir: Union[Path, DirHandle],
-        target_chains: Sequence,
-        binder_chains: Sequence,
+        target_chains: Iterable,
+        binder_chains: Iterable,
         md_config: Dict,
+        add_ions: bool = False,
     ) -> "GROComplex":
         gmx_bin: str = md_config.get("gmx_bin", "gmx")
         try:
-            in_pdb = input_dir / (name + ".pdb")
+            in_pdb = Path(input_dir, f"{name}.pdb")
             # This PDB will be backed up and replaced with a fixed up PDB.
             temp_pdb = PDBStructure.from_path(in_pdb)
         except Exception as e:
             print(f"Could not get input PDB file from: {input_dir}", flush=True)
             raise e
         try:
-            # The PDB should have box info in it, so it'll be pasted onto the GRO. Else,
-            # pdb2gmx will compute the binding box of the PDB and use that one.
-            pdb, gro, top = get_gro_ziptop_from_pdb(
-                pdb=temp_pdb,
-                target_chains=target_chains,
-                binder_chains=binder_chains,
-                md_config=md_config,
-            )
+            if md_config["use_tleap"]:
+                pdb, gro, top = get_gro_ziptop_from_pdb_tleap(
+                    pdb=temp_pdb,
+                    target_chains=target_chains,
+                    binder_chains=binder_chains,
+                    gmx_bin=gmx_bin,
+                )
+            else:
+                # The PDB should have box info in it, so it'll be pasted onto the GRO. Else,
+                # pdb2gmx will compute the binding box of the PDB and use that one.
+                pdb, gro, top = get_gro_ziptop_from_pdb(
+                    pdb=temp_pdb,
+                    target_chains=target_chains,
+                    binder_chains=binder_chains,
+                    md_config=md_config,
+                    add_ions=add_ions,
+                )
         except Exception as e:
             print(f"Could not get zip tology .gro files from: {temp_pdb}", flush=True)
             raise e
@@ -149,8 +160,7 @@ class GROComplex(AbstractComplex):
         ndx = generate_ndx(
             name,
             pdb=pdb,
-            target_chains=target_chains,
-            binder_chains=binder_chains,
+            top=top,
         )
 
         return GROComplex(
@@ -170,16 +180,18 @@ class GROComplex(AbstractComplex):
         *,
         name: str,
         input_dir: Path,
-        target_chains: Sequence,
-        binder_chains: Sequence,
+        target_chains: Iterable,
+        binder_chains: Iterable,
         gmx_bin: str = "gmx",
     ) -> "GROComplex":
         try:
             gro = GROStructure.from_path(input_dir / (name + ".gro"))
 
-            top = ZipTopology.from_path(input_dir / (name + ".zip"))
-            top.target_chains = tuple(target_chains)
-            top.binder_chains = tuple(binder_chains)
+            top = ZipTopology.from_path_with_chains(
+                input_dir / (name + ".zip"),
+                target_chains=target_chains,
+                binder_chains=binder_chains,
+            )
         except Exception as e:
             print(
                 f"Could not get input .gro and .zip files from: {input_dir}", flush=True
@@ -197,8 +209,7 @@ class GROComplex(AbstractComplex):
         ndx = generate_ndx(
             name,
             pdb=pdb,
-            target_chains=target_chains,
-            binder_chains=binder_chains,
+            top=top,
         )
 
         return GROComplex(
@@ -218,17 +229,20 @@ class GROComplex(AbstractComplex):
         *,
         name: str,
         iter_path: Path,
-        target_chains: Sequence,
-        binder_chains: Sequence,
+        target_chains: Iterable,
+        binder_chains: Iterable,
         ignore_cpt: bool = True,
         gmx_bin: str = "gmx",
     ) -> "GROComplex":
         try:
             pdb = PDBStructure.from_path(iter_path / (name + ".pdb"))
             gro = GROStructure.from_path(iter_path / (name + ".gro"))
-            top = ZipTopology.from_path(iter_path / (name + ".zip"))
-            top.target_chains = tuple(target_chains)
-            top.binder_chains = tuple(binder_chains)
+            top = ZipTopology.from_path_with_chains(
+                iter_path / (name + ".zip"),
+                target_chains=target_chains,
+                binder_chains=binder_chains,
+            )
+
             try:
                 traj = XtcTrajectory.from_path(iter_path / (name + ".xtc"))
             except FileNotFoundError:
@@ -249,8 +263,7 @@ class GROComplex(AbstractComplex):
         ndx = generate_ndx(
             name,
             pdb=pdb,
-            target_chains=target_chains,
-            binder_chains=binder_chains,
+            top=top,
         )
 
         return GROComplex(

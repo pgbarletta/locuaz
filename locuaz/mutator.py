@@ -48,8 +48,26 @@ class AbstractMutator(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def __call__(self, input_pdb: PDBStructure, mutation: Mutation) -> PDBStructure:
+    def __run__(self, input_pdb: PDBStructure, mutation: Mutation) -> PDBStructure:
         pass
+
+    @abstractmethod
+    def on_pdb(
+        self,
+        input_pdb: PDBStructure,
+        local_dir: Path,
+        *,
+        mutation: Mutation,
+        selection_protein: Optional[str] = None,
+        selection_wations: Optional[str] = None,
+    ) -> PDBStructure:
+        pass
+
+    # @abstractmethod
+    # def on_grocomplex(
+    #     self, cpx: GROComplex, *, mutation: Mutation, split_solvent=True
+    # ) -> PDBStructure:
+    #     pass
 
 
 def memorize_mutations(

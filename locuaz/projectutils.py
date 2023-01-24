@@ -16,6 +16,10 @@ import logging
 from statistics import mean, stdev
 from collections import deque
 from collections.abc import MutableMapping
+
+# TODO: replace own pairwise with itertools' on 3.10
+# from itertools import pairwise
+from itertools import tee
 from queue import PriorityQueue
 import shutil as sh
 import time
@@ -26,10 +30,18 @@ from Bio.SeqUtils import seq1
 import numpy as np
 import MDAnalysis as mda
 
+from primitives import AA_MAP
 from fileutils import FileHandle, DirHandle, copy_to
 from complex import AbstractComplex, GROComplex
 from abstractscoringfunction import AbstractScoringFunction
 from scoringfunctions import scoringfunctions
+
+# TODO: replace own pairwise with itertools' on 3.10
+def pairwise(iterable):
+    # pairwise('ABCDEFG') --> AB BC CD DE EF FG
+    a, b = tee(iterable)
+    next(b, None)
+    return zip(a, b)
 
 
 @define
@@ -239,6 +251,7 @@ class WorkProject:
     failed_mutated_positions: Deque[Set[int]] = deque(set())
     has_memory: bool = False
     has_failed_memory: bool = False
+    tleap_dir: Optional[DirHandle] = None
 
     def __init__(self, config: Dict, start: bool):
         self.config = config
@@ -246,6 +259,7 @@ class WorkProject:
         self.epochs = []
         self.dir_handle = DirHandle(Path(self.config["paths"]["work"]), make=False)  # type: ignore
         log = logging.getLogger(self.name)
+        self.__init_tleap__()
 
         if start:
             self.__start_work__(log)
@@ -285,6 +299,9 @@ class WorkProject:
             # Copy the input PDB into the iteration folder
             pdb_handle = FileHandle(input_path / (self.config["main"]["name"] + ".pdb"))
             copy_to(pdb_handle, this_iter.dir_handle)
+
+            # Copy tleap files, if necessary
+            self.get_tleap_into_iter(Path(this_iter.dir_handle))
 
             # set up complex
             try:
@@ -606,6 +623,15 @@ class WorkProject:
                 self.failed_mutated_positions.appendleft(set(set_of_positions))
         except KeyError:
             self.failed_mutated_positions.appendleft(set())
+
+    def __init_tleap__(self) -> None:
+        if self.config["md"]["use_tleap"]:
+            self.tleap_dir = DirHandle(Path(self.config["paths"]["tleap"]))
+
+    def get_tleap_into_iter(self, iter_dir: Path) -> None:
+        if self.config["md"]["use_tleap"]:
+            for file in os.listdir(Path(self.tleap_dir)):  # type: ignore
+                sh.copy(Path(self.tleap_dir, file), Path(iter_dir))  # type: ignore
 
     def get_mem_aminoacids(self) -> Set[str]:
         set_of_aas: Set[str] = set()

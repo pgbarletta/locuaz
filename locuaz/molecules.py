@@ -136,6 +136,7 @@ class Topology(AbstractFileObject):
     selection_binder: str = field(init=False)
     selection_protein: str = field(init=False)
     selection_not_protein: str = field(init=False)
+    selection_water: str = field(init=False)
 
     @classmethod
     def from_path_with_chains(
@@ -157,6 +158,7 @@ class Topology(AbstractFileObject):
         self.selection_not_protein = " and not ".join(
             ["not protein", self.selection_target, self.selection_binder]
         )
+        self.selection_water = "resname WAT or resname SOL"
 
         return self
 
@@ -188,6 +190,7 @@ class ZipTopology(Topology):
         self.selection_not_protein = " and not ".join(
             ["not protein", self.selection_target, self.selection_binder]
         )
+        self.selection_water = "resname WAT or resname SOL"
 
         return self
 
@@ -200,144 +203,6 @@ class TrrTrajectory(Trajectory):
 @define
 class XtcTrajectory(Trajectory):
     pass
-
-
-def get_gro_ziptop_from_pdb(
-    *,
-    pdb: PDBStructure,
-    target_chains: Sequence,
-    binder_chains: Sequence,
-    md_config: Dict,
-    add_ions: bool = False,
-) -> Tuple[PDBStructure, GROStructure, ZipTopology]:
-    """get_gro_ziptop_from_pdb does a pdb2gmx from the PDB and tries to keep
-    the system neutral, which may alter the topology so a new PDB will be
-    written with the same name as the original, which will be backed up by GROMACS.
-
-    Args:
-        pdb (PDBStructure): input PDB
-        target_chains (Sequence): these will be used to construct the ZipTopology
-        binder_chains (Sequence): these will be used to construct the ZipTopology
-        binary_path (str, optional): for all the biobb tools. Defaults to "gmx".
-        water_type (str, optional): argument to pdb2gmx. Defaults to "tip3p".
-        force_field (str, optional): argument to pdb2gmx. Defaults to "amber99sb-ildn".
-
-    Returns:
-        Tuple[PDBStructure, GROStructure, ZipTopology]: Proper, nice, system.
-    """
-    gmx_bin: str = md_config.get("gmx_bin", "gmx")
-    water_type: str = md_config.get("water_type", "tip3p")
-    force_field: str = md_config.get("force_field", "amber99sb-ildn")
-
-    local_dir = pdb.file.path.parent
-    name = pdb.name
-
-    # Generate the first set of GROStructure and ZipTopology
-    props = {
-        "binary_path": gmx_bin,
-        "water_type": water_type,
-        "force_field": force_field,
-        "ignh": True,
-    }
-    pre_gro_fn = local_dir / ("pre" + name + ".gro")
-    pre_top_fn = local_dir / "pre_topol.zip"
-    pdb_to_gro_zip = Pdb2gmx(
-        input_pdb_path=str(pdb.file),
-        output_gro_path=str(pre_gro_fn),
-        output_top_zip_path=str(pre_top_fn),
-        properties=props,
-    )
-    launch_biobb(pdb_to_gro_zip)
-
-    if md_config.get("use_box", False):
-        # Set the box dimensions
-        box: Optional[str] = md_config.get("box")
-        if box:
-            props = {
-                "distance_to_molecule": None,
-                "box_type": "triclinic",
-                "dev": f"-box {box}",
-            }
-        else:
-            dist_to_box: float = md_config.get("dist_to_box", 1.0)
-            box_type: str = md_config.get("box_type", "triclinic")
-            props = {
-                "distance_to_molecule": dist_to_box,
-                "box_type": box_type,
-            }
-
-        box_gro_fn = local_dir / ("box" + name + ".gro")
-        set_box = Editconf(
-            input_gro_path=str(pre_gro_fn),
-            output_gro_path=str(box_gro_fn),
-            properties=props,
-        )
-        launch_biobb(set_box)
-
-        pre_gro_fn = copy_to(FileHandle(box_gro_fn), local_dir, f"pre{name}.gro").path
-        box_gro_fn.unlink()
-
-    if add_ions:
-        # Build a .tpr for genion
-        gen_tpr_fn = local_dir / ("genion_" + name + ".tpr")
-        grompepe = Grompp(
-            input_gro_path=str(pre_gro_fn),
-            input_top_zip_path=str(pre_top_fn),
-            output_tpr_path=str(gen_tpr_fn),
-            properties={"binary_path": gmx_bin, "maxwarn": 2},
-        )
-        launch_biobb(grompepe)
-
-        # Add ions
-        gro_fn = local_dir / (name + ".gro")
-        top_fn = local_dir / (name + ".zip")
-        genio = Genion(
-            input_tpr_path=str(gen_tpr_fn),
-            input_top_zip_path=str(pre_top_fn),
-            output_gro_path=str(gro_fn),
-            output_top_zip_path=str(top_fn),
-            properties={"binary_path": gmx_bin, "neutral": True, "concentration": 0.0},
-        )
-        launch_biobb(genio)
-        # Remove temporary file
-        gen_tpr_fn.unlink()
-    else:
-        gro_fn = copy_to(FileHandle(pre_gro_fn), local_dir, name + ".gro").path
-        top_fn = copy_to(FileHandle(pre_top_fn), local_dir, name + ".zip").path
-
-    # Build a temporary tpr file for the next step
-    temp_tpr_fn = local_dir / ("temp_" + name + ".tpr")
-    grompepe = Grompp(
-        input_gro_path=str(gro_fn),
-        input_top_zip_path=str(top_fn),
-        output_tpr_path=str(temp_tpr_fn),
-        properties={
-            "binary_path": gmx_bin,
-            "maxwarn": 2,
-        },
-    )
-    launch_biobb(grompepe)
-
-    # Get PDB from GRO file. Gromacs should back up the older input PDB, maybe?
-    pdb_fn = local_dir / (name + ".pdb")
-    trjconv = GMXTrjConvStr(
-        input_structure_path=str(gro_fn),
-        input_top_path=str(temp_tpr_fn),
-        output_str_path=str(pdb_fn),
-        properties={"binary_path": gmx_bin},
-    )
-    launch_biobb(trjconv)
-
-    # Remove temporary files
-    temp_tpr_fn.unlink()
-    pre_gro_fn.unlink()
-    pre_top_fn.unlink()
-
-    top = ZipTopology.from_path(top_fn)
-    top.target_chains = tuple(target_chains)
-    top.binder_chains = tuple(binder_chains)
-
-    return PDBStructure.from_path(pdb_fn), GROStructure.from_path(gro_fn), top
 
 
 def get_tpr(
@@ -380,7 +245,7 @@ def get_pdb_tpr(
     return PDBStructure.from_path(pdb_fn), tpr
 
 
-def fix_pdb(
+def fix_pdb_gro(
     pdb_in: PDBStructure, pdb_out_path: Path, gmx_bin: str = "gmx"
 ) -> PDBStructure:
     # This is quite cumbersome.
@@ -453,7 +318,7 @@ def catenate_pdbs(
         file.write("END")
 
     # Now, use gromacs to fix the PDB.
-    out_pdb = fix_pdb(PDBStructure.from_path(temp_pdb), pdb_out_path, gmx_bin)
+    out_pdb = fix_pdb_gro(PDBStructure.from_path(temp_pdb), pdb_out_path, gmx_bin)
     temp_pdb.unlink()
 
     return out_pdb
@@ -483,22 +348,34 @@ def generate_ndx(
     name: str,
     *,
     pdb: PDBStructure,
-    target_chains: Sequence,
-    binder_chains: Sequence,
+    top: Topology,
 ) -> FileHandle:
     try:
         uni_pdb = mda.Universe(str(pdb))
         ndx_file = Path(Path(pdb).parent, f"{name}.ndx")
 
-        uni_pdb.select_atoms(
-            " or ".join([f"segid {chainID}" for chainID in target_chains])
-        ).write(ndx_file, name="target", mode="w")
-        uni_pdb.select_atoms(
-            " or ".join([f"segid {chainID}" for chainID in binder_chains])
-        ).write(ndx_file, name="binder", mode="a")
+        # sel_target = " or ".join([f"segid {chainID}" for chainID in target_chains])
+        uni_pdb.select_atoms(top.selection_target).write(
+            ndx_file, name="target", mode="w"
+        )
+
+        # sel_binder = " or ".join([f"segid {chainID}" for chainID in binder_chains])
+        uni_pdb.select_atoms(top.selection_binder).write(
+            ndx_file, name="binder", mode="a"
+        )
+
         # TODO: this won't work with glyco mods and stuff
-        uni_pdb.select_atoms("protein").write(ndx_file, name="Protein", mode="a")
-        uni_pdb.select_atoms("not protein").write(
+        # sel_protein = " or ".join(["protein", sel_target, sel_binder])
+        uni_pdb.select_atoms(top.selection_protein).write(
+            ndx_file, name="Protein", mode="a"
+        )
+
+        # sel_not_target = " and ".join([f"segid {chainID}" for chainID in target_chains])
+        # sel_not_binder = " and ".join([f"segid {chainID}" for chainID in binder_chains])
+        # sel_not_protein = " and not ".join(
+        #     ["not protein", sel_not_target, sel_not_binder]
+        # )
+        uni_pdb.select_atoms(top.selection_not_protein).write(
             ndx_file, name="Non-Protein", mode="a"
         )
         uni_pdb.select_atoms("all").write(ndx_file, name="sistema", mode="a")

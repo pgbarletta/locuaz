@@ -111,15 +111,25 @@ class MDrun:
 
         # Build .tpr file for the run
         run_tpr = Path(str(self.dir)) / (self.out_name + ".tpr")
-        grompepe = Grompp(
-            input_mdp_path=str(self.mdp),
-            input_gro_path=str(complex.gro.file.path),
-            input_top_zip_path=str(complex.top.file.path),
-            input_cpt_path=str(complex.cpt),
-            input_ndx_path=str(complex.ndx),
-            output_tpr_path=str(run_tpr),
-            properties={"binary_path": str(self.binary_path)},
-        )
+        if complex.cpt:
+            grompepe = Grompp(
+                input_mdp_path=str(self.mdp),
+                input_gro_path=str(complex.gro.file.path),
+                input_top_zip_path=str(complex.top.file.path),
+                input_cpt_path=str(complex.cpt),
+                input_ndx_path=str(complex.ndx),
+                output_tpr_path=str(run_tpr),
+                properties={"binary_path": str(self.binary_path)},
+            )
+        else:
+            grompepe = Grompp(
+                input_mdp_path=str(self.mdp),
+                input_gro_path=str(complex.gro.file.path),
+                input_top_zip_path=str(complex.top.file.path),
+                input_ndx_path=str(complex.ndx),
+                output_tpr_path=str(run_tpr),
+                properties={"binary_path": str(self.binary_path)},
+            )
         launch_biobb(grompepe)
 
         # Run
@@ -139,17 +149,29 @@ class MDrun:
             "dev": f"{self.dev} -px {run_pux} -pf {run_puf}",
         }
 
-        runner = Mdrun(
-            input_tpr_path=str(run_tpr),
-            input_cpt_path=str(run_cpt),
-            output_trr_path=str(run_trr),
-            output_xtc_path=str(run_xtc),
-            output_gro_path=str(run_gro),
-            output_edr_path=str(run_edr),
-            output_log_path=str(run_log),
-            output_cpt_path=str(run_cpt),
-            properties=props,
-        )
+        if run_cpt.is_file():
+            runner = Mdrun(
+                input_tpr_path=str(run_tpr),
+                input_cpt_path=str(run_cpt),
+                output_trr_path=str(run_trr),
+                output_xtc_path=str(run_xtc),
+                output_gro_path=str(run_gro),
+                output_edr_path=str(run_edr),
+                output_log_path=str(run_log),
+                output_cpt_path=str(run_cpt),
+                properties=props,
+            )
+        else:
+            runner = Mdrun(
+                input_tpr_path=str(run_tpr),
+                output_trr_path=str(run_trr),
+                output_xtc_path=str(run_xtc),
+                output_gro_path=str(run_gro),
+                output_edr_path=str(run_edr),
+                output_log_path=str(run_log),
+                output_cpt_path=str(run_cpt),
+                properties=props,
+            )
         launch_biobb(runner)
 
         # Finally, build the Complex.

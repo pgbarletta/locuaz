@@ -1,4 +1,7 @@
 from pathlib import Path
+from logging import Logger
+import shutil as sh
+
 from projectutils import WorkProject, Epoch, Iteration
 from fileutils import DirHandle
 from mutationgenerators import mutation_generators
@@ -6,16 +9,19 @@ from mutators import mutators
 from mutator import memorize_mutations
 from molecules import catenate_pdbs
 from complex import GROComplex
-from molutils import split_solute_and_solvent
-from gromacsutils import remove_overlapping_waters
+from gromacsutils import remove_overlapping_waters, remove_overlapping_solvent
+from amberutils import fix_pdb
+from primitives import ext
 
 
-def initialize_new_epoch(work_pjct: WorkProject) -> None:
+def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
     """initialize_new_epoch(): This is a specific protocol, others will be added
 
     Args:
-        work_pjct (WorkProject): work project
+        work_pjct (WorkProject):
+        log (Logger):
     """
+    name = work_pjct.config["main"]["name"]
     old_epoch = work_pjct.epochs[-1]
     epoch_id = old_epoch.id + 1
     current_epoch = Epoch(epoch_id, iterations={}, nvt_done=False, npt_done=False)
@@ -35,15 +41,23 @@ def initialize_new_epoch(work_pjct: WorkProject) -> None:
 
     for old_iter_name, mutations in mutation_generator.items():
         old_iter = old_epoch.top_iterations[old_iter_name]
-        # Get the system's box size after the NPT run, to add it later onto the
-        # mutated PDB system. The PDB format has less precision for the box parameters
-        # than the GRO format, so there may be a difference in the last digit for the
-        # lengths (eg: 12.27215 to 12.27210) and the angles (6.13607 to 6.13605).
-        # That's why GROComplex.from_pdb() also uses editconf.
-        cryst1_record = old_iter.complex.get_cryst1_record()
-        nonwat_pdb, wation_pdb = split_solute_and_solvent(
-            old_iter.complex, work_pjct.config["md"]["gmx_bin"]
-        )
+
+        # GROMACS renumbers resSeqs to strided numbering. If using Amber's continuous
+        # numbering, this will result in the wrong mutating_resSeq.
+        if work_pjct.config["md"]["use_tleap"]:
+            # Backup the PDB before runing pdb4amber
+            pdb_path = Path(old_iter.complex.pdb)
+            pre_fix_pdb = Path(
+                old_iter.dir_handle, f"preAmberPDBFixer_{pdb_path.stem}.pdb"
+            )
+            sh.move(pdb_path, pre_fix_pdb)
+
+            old_pdb = fix_pdb(pre_fix_pdb, pdb_path)
+        else:
+            old_pdb = old_iter.complex.pdb
+        # nonwat_pdb, wation_pdb = split_solute_and_solvent_old(
+        #     old_iter.complex, work_pjct.config["md"]["gmx_bin"]
+        # )
 
         for mutation in mutations:
             iter_name, iter_resnames = mutation.new_name_resname(old_iter)
@@ -56,30 +70,43 @@ def initialize_new_epoch(work_pjct: WorkProject) -> None:
                 resnames=iter_resnames,
                 resSeqs=old_iter.resSeqs,
             )
+            log.info(
+                f"New mutation: {mutation} on Epoch-Iteration: {epoch_id}-{iter_name}"
+            )
 
-            # Mutate the complex
-            dry_mut_pdb = mutator(nonwat_pdb, mutation)
-            # Rejoin the mutated complex with water and ions
-            over_name = "overlapped_" + work_pjct.config["main"]["name"]
-            mut_pdb_fn = iter_path / (over_name + ".pdb")
-            mut_pdb = catenate_pdbs(dry_mut_pdb, wation_pdb, pdb_out_path=mut_pdb_fn)
-            mut_pdb.set_cryst1_record(cryst1_record)
-            # Remove the temporary mutated complex that lacks the solvent
-            dry_mut_pdb.unlink()
+            # Mutate the PDB
+            overlapped_pdb = mutator.on_pdb(
+                old_pdb,
+                iter_path,
+                mutation=mutation,
+                selection_protein=old_iter.complex.top.selection_protein,
+                selection_wations=old_iter.complex.top.selection_not_protein,
+            )
+            remove_overlapping_solvent(
+                overlapped_pdb,
+                mutation.resSeq,
+                Path(iter_path, f"{name}.pdb"),
+                log,
+                use_tleap=work_pjct.config["md"]["use_tleap"],
+            )
 
-            overlapped_cpx = GROComplex.from_pdb(
-                name=over_name,
+            # Copy tleap files, if necessary
+            work_pjct.get_tleap_into_iter(Path(this_iter.dir_handle))
+
+            this_iter.complex = GROComplex.from_pdb(
+                name=name,
                 input_dir=iter_path,
                 target_chains=work_pjct.config["target"]["chainID"],
                 binder_chains=work_pjct.config["binder"]["chainID"],
                 md_config=work_pjct.config["md"],
+                add_ions=True,
             )
-            #
-            this_iter.complex = remove_overlapping_waters(
-                overlapped_cpx, work_pjct.config, mutation.resSeq
-            )
-
             current_epoch[iter_name] = this_iter
+
+            #
+            # this_iter.complex = remove_overlapping_waters(
+            #     overlapped_cpx, work_pjct.config, mutation.resSeq
+            # )
 
         # TODO: check if this works with mutations on different positions
         memorize_mutations(work_pjct, current_epoch, mutations)

@@ -100,7 +100,13 @@ class SPM_4(AbstractMutationGenerator):
 
     def __get_random_pos__(self, epoch: Epoch) -> Tuple[str, int]:
         # Get an iteration to read the chainIDs and the resSeqs.
-        any_iteration = next(iter(epoch.top_iterations.values()))
+        try:
+            any_iteration = next(iter(epoch.top_iterations.values()))
+        except Exception:
+            raise RuntimeError(
+                f"No available iterations on Epoch {epoch.id}. "
+                "It's likely that all of them failed during MD."
+            )
 
         # Choose the position to mutate. This will be the same for all iterations.
         max_tries: int = sum([len(resSeq) for resSeq in any_iteration.resSeqs]) * 5

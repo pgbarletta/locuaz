@@ -68,7 +68,7 @@ def main() -> int:
             break
 
         log.info(f"Initializing new epoch {new_id} ({cnt} on this run).")
-        initialize_new_epoch(work_pjct)
+        initialize_new_epoch(work_pjct, log)
 
     return 0
 

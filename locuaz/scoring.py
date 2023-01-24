@@ -1,5 +1,5 @@
 import time
-from typing import Dict
+from typing import Dict, Optional
 import logging
 from pathlib import Path
 import concurrent.futures as cf
@@ -14,7 +14,9 @@ from biobb_analysis.gromacs.gmx_trjconv_str_ens import GMXTrjConvStrEns
 from scoringfunctions import *
 
 
-def initialize_scoring_folder(iteration: Iteration, config: Dict) -> int:
+def initialize_scoring_folder(
+    iteration: Iteration, config: Dict, *, log: Optional[logging.Logger] = None
+) -> int:
     # No amber support for now.
     assert isinstance(iteration.complex, GROComplex)
 
@@ -38,7 +40,13 @@ def initialize_scoring_folder(iteration: Iteration, config: Dict) -> int:
         properties={"binary_path": gmx_bin, "selection": "target"},
     )
     launch_biobb(get_target)
-    nframes = extract_pdbs(ens_of_pdbs, "target", new_chainID="A")
+    nframes = extract_pdbs(
+        ens_of_pdbs,
+        "target",
+        nprocs=config["scoring"]["nprocs"],
+        new_chainID="A",
+        log=log,
+    )
 
     # Extract binder PDBs
     get_binder = GMXTrjConvStrEns(
@@ -49,7 +57,13 @@ def initialize_scoring_folder(iteration: Iteration, config: Dict) -> int:
         properties={"binary_path": gmx_bin, "selection": "binder"},
     )
     launch_biobb(get_binder)
-    nframes_binder = extract_pdbs(ens_of_pdbs, "binder", new_chainID="B")
+    nframes_binder = extract_pdbs(
+        ens_of_pdbs,
+        "binder",
+        nprocs=config["scoring"]["nprocs"],
+        new_chainID="B",
+        log=log,
+    )
 
     # Complex PDBs
     assert nframes == nframes_binder
@@ -117,5 +131,5 @@ def score(work_pjct: WorkProject, iteration: Iteration) -> None:
             discard_iteration(work_pjct, iteration)
         else:
             log.info("Splitting NPT trajectory in frames.")
-            nframes = initialize_scoring_folder(iteration, work_pjct.config)
+            nframes = initialize_scoring_folder(iteration, work_pjct.config, log=log)
             score_frames(work_pjct, iteration, nframes)

@@ -1,19 +1,15 @@
 from functools import singledispatch
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Optional
 import logging
 import warnings
+import subprocess as sp
+import shutil as sh
 
 import MDAnalysis as mda
+from Bio.PDB import PDBParser
+from Bio.PDB.PDBIO import PDBIO
 
-from fileutils import FileHandle, update_header, copy_to
-from molecules import (
-    PDBStructure,
-    Trajectory,
-    XtcTrajectory,
-    get_gro_ziptop_from_pdb,
-    get_tpr,
-)
 from complex import AbstractComplex, GROComplex
 from biobb_gromacs.gromacs.gmxselect import Gmxselect
 from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
@@ -21,6 +17,16 @@ from biobb_gromacs.gromacs.solvate import Solvate
 from biobb_gromacs.gromacs.genion import Genion
 from biobb_analysis.gromacs.gmx_image import GMXImage
 from primitives import launch_biobb
+
+from primitives import AA_MAP
+from moleculesutils import get_gro_ziptop_from_pdb, fix_wat_naming
+from fileutils import FileHandle, update_header, copy_to
+from molecules import (
+    PDBStructure,
+    Trajectory,
+    XtcTrajectory,
+    get_tpr,
+)
 
 
 @singledispatch
@@ -78,9 +84,8 @@ def _(cpx: GROComplex, out_trj_fn: Path, gmx_bin: str) -> XtcTrajectory:
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         orig_pdb = Path(wrk_dir, "orig.pdb")
-        # Selection 'complex' was made using MDA and selecting 'protein'.
-        # If that changes in the future, then this'll break. Sorry.
-        orig_u.select_atoms("protein").write(str(orig_pdb))
+        # Selection
+        orig_u.select_atoms(cpx.top.selection_protein).write(str(orig_pdb))
     u = mda.Universe(str(orig_pdb), str(cluster_trj))
     u.trajectory[2]
     cluster_gro = Path(wrk_dir, "clustered.gro")
@@ -320,3 +325,113 @@ def _(complex: GROComplex, config: Dict, overlapped_resSeq: int) -> GROComplex:
     )
 
     return new_complex
+
+
+def fix_gromacs_pdb(
+    pdb_in_fn: Path, pdb_out_fn: Path, *, new_chainID: Optional[str] = None
+) -> Path:
+    """fix_gromacs_pdb uses Bio to add TER between chains, END at the end,
+    and manually make the resSeq numbers continuous.
+    Since this changes the PBD numbering it should only be used for structures
+    to be used for scoring.
+    Specifically, Haddock, that requires chains to have unique resSeq numbers.
+
+    Args:
+        pdb_in_fn (Path): Path to input PDB.
+        pdb_out_fn (Path): Path to output PDB.
+    """
+
+    parsero = PDBParser(QUIET=True)
+    pdb = parsero.get_structure("foo", file=pdb_in_fn)
+
+    # Modifying resSeq, chainID and mapping resnames to standard resnames.
+    resSeq = 1
+    for resi in pdb.get_residues():
+        juan, _, roman = resi._id
+        try:
+            # Rename non-standard residue to its standard equivalent
+            resi.resname = AA_MAP[resi.resname]
+            resi._id = (juan, resSeq, roman)
+            resSeq += 1
+        except KeyError:
+            # Not even an amino acid, removing it.
+            chain = resi.get_parent()
+            chain.detach_child(resi.id)
+            continue
+    if new_chainID is not None:
+        for chain in pdb.get_chains():
+            chain._id = new_chainID
+
+    io = PDBIO()
+    io.set_structure(pdb)
+    io.save(str(pdb_out_fn))
+
+    return pdb_in_fn
+
+
+def remove_overlapping_solvent(
+    overlapped_pdb: PDBStructure,
+    overlapped_resSeq: int,
+    nonoverlapped_out_pdb: Path,
+    log: logging.Logger,
+    *,
+    cutoff: float = 3,
+    use_tleap=False,
+) -> PDBStructure:
+    pdb_in_fn = Path(overlapped_pdb)
+    u = mda.Universe(str(pdb_in_fn))
+    overlapped_atoms = u.select_atoms(
+        f"(around {cutoff} resnum {overlapped_resSeq}) and (resname WAT or resname SOL)"
+    )
+    ions = u.select_atoms(
+        "name CL or name Cl or name NA or name Na or type CL or type Cl or type NA or type Na"
+    )
+
+    overlapped_waters = {at.residue for at in overlapped_atoms}
+    nwats = len(overlapped_waters)
+    nions = len(ions)
+    substracting_atoms = sum([wat.atoms for wat in overlapped_waters])  # type: ignore
+
+    nonoverlapped_nonwat = "init_nonoverlapped_nonwat.pdb"
+    nonoverlapped_nonwat_fn = Path(pdb_in_fn.parent, nonoverlapped_nonwat)
+    (u.atoms - substracting_atoms - ions).write(str(nonoverlapped_nonwat_fn))  # type: ignore
+
+    # insert waters
+    nonoverlapped = "init_nonoverlapped.pdb"
+    nonoverlapped_fn = Path(pdb_in_fn.parent, nonoverlapped)
+    if (nwats + nions) == 0:
+        log.info(
+            f"Not addying any water molecules.{nonoverlapped_nonwat} and "
+            f"{nonoverlapped} are the same files."
+        )
+        sh.copy(nonoverlapped_nonwat_fn, nonoverlapped_fn)
+    else:
+        log.info(
+            f"Removed {nwats} water molecules within {cutoff}A from the mutated residue. "
+            "Will replace them later."
+        )
+        comando_solv = f"gmx solvate -cp {nonoverlapped_nonwat} -o {nonoverlapped} -maxsol {nwats+nions}"
+        try:
+            log.info(
+                f"Adding {nwats} water molecules, and another {nions} "
+                "that will be replaced by ions later."
+            )
+            p = sp.run(
+                comando_solv,
+                stdout=sp.PIPE,
+                stderr=sp.PIPE,
+                cwd=nonoverlapped_fn.parent,
+                shell=True,
+                text=True,
+            )
+        except Exception as e:
+            raise Exception(f"Error running solvate: {p.stdout} \n {p.stderr}")  # type: ignore
+
+        try:
+            fix_wat_naming(nonoverlapped_fn, nonoverlapped_out_pdb, use_tleap=use_tleap)
+        except Exception as e:
+            raise Exception(
+                f"solvate failed when inserting waters: {p.stdout} \n {p.stderr}"
+            ) from e  # type: ignore
+
+    return PDBStructure.from_path(nonoverlapped_fn)

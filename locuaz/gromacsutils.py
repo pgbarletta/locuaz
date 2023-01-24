@@ -411,27 +411,22 @@ def remove_overlapping_solvent(
             "Will replace them later."
         )
         comando_solv = f"gmx solvate -cp {nonoverlapped_nonwat} -o {nonoverlapped} -maxsol {nwats+nions}"
-        try:
-            log.info(
-                f"Adding {nwats} water molecules, and another {nions} "
-                "that will be replaced by ions later."
-            )
-            p = sp.run(
-                comando_solv,
-                stdout=sp.PIPE,
-                stderr=sp.PIPE,
-                cwd=nonoverlapped_fn.parent,
-                shell=True,
-                text=True,
-            )
-        except Exception as e:
-            raise Exception(f"Error running solvate: {p.stdout} \n {p.stderr}")  # type: ignore
-
+        log.info(
+            f"Adding {nwats} water molecules, and another {nions} that will be replaced by ions later."
+        )
+        p = sp.run(
+            comando_solv,
+            stdout=sp.PIPE,
+            stderr=sp.PIPE,
+            cwd=nonoverlapped_fn.parent,
+            shell=True,
+            text=True,
+        )
         try:
             fix_wat_naming(nonoverlapped_fn, nonoverlapped_out_pdb, use_tleap=use_tleap)
         except Exception as e:
             raise Exception(
-                f"solvate failed when inserting waters: {p.stdout} \n {p.stderr}"
-            ) from e  # type: ignore
+                f"gmx solvate failed when inserting waters: {p.stdout} \n {p.stderr}"
+            ) from e
 
     return PDBStructure.from_path(nonoverlapped_fn)

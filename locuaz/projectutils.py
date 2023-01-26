@@ -46,7 +46,6 @@ def pairwise(iterable):
 
 @define
 class Iteration:
-
     dir_handle: DirHandle = field(converter=DirHandle)  # type: ignore
     iter_name: str = field(converter=str, kw_only=True)
     chainIDs: List[str] = field(kw_only=True, validator=validators.instance_of(list))
@@ -70,7 +69,7 @@ class Iteration:
         self.mean_scores = {}
 
     def set_score(
-        self, sf_name: str, scores: Iterable, log: Optional[logging.Logger] = None
+            self, sf_name: str, scores: Iterable, log: Optional[logging.Logger] = None
     ) -> float:
         if not log:
             log = logging.getLogger("root")
@@ -93,7 +92,7 @@ class Iteration:
                     f.write(str(round(s, 3)) + "\n")
 
     def read_scores(
-        self, scoring_functions: Iterable, log: Optional[logging.Logger] = None
+            self, scoring_functions: Iterable, log: Optional[logging.Logger] = None
     ) -> None:
         if not log:
             log = logging.getLogger("root")
@@ -127,9 +126,6 @@ class Iteration:
 
     def __truediv__(self, key) -> Union[FileHandle, "DirHandle"]:
         return self.dir_handle.__truediv__(key)
-
-    def __lt__(self, other) -> bool:
-        return self.iter_name < other.iter_name
 
 
 @define
@@ -175,14 +171,14 @@ class Epoch(MutableMapping):
         prev_count = 1
         while not better_iters.empty():
             # Remember, `count`, the priority, is negative.
-            count, iter = better_iters.get()
+            count, iteration = better_iters.get()
             if count > prev_count:
                 assert (
-                    len(self.top_iterations) > 0
+                        len(self.top_iterations) > 0
                 ), f"Logical error. This can't happen."
                 break
             prev_count = count
-            self.top_iterations[iter.iter_name] = iter
+            self.top_iterations[iteration.iter_name] = iteration
 
     def backup(self) -> None:
         for it in self.iterations.values():
@@ -217,7 +213,7 @@ class WorkProject:
     """WorkProject main state holder of the run
     Args:
         config (Dict): dict with the yaml input configuration parsed by cli.py.
-        start (bool): wether the working project is being run for the 1st time.
+        start (bool): whether the working project is being run for the 1st time.
     Attributes:
             config (Dict): dict with the yaml input configuration parsed by cli.py.
             name (str): project's name
@@ -227,11 +223,11 @@ class WorkProject:
                 NVT and NPT mdps.
             scorers (Dict[str, AbstractScoringFunction]): dict with the callables to
                 the scoring functions.
-            last_mutated_position (Set[int]): last mutated position
             mutated_positions (Deque[Set[int]]): last N mutated positions
             mutated_aminoacids (Deque[Set[str]]): last N added amino acids. Unused for now.
-            has_memory (bool = False): wether the protocol uses memory of mutations.
-            has_failed_memory (bool = False): wether the protocol uses memory of failed mutations.
+            has_memory (bool = False): whether the protocol uses memory of mutations.
+            has_failed_memory (bool = False): whether the protocol uses memory of failed mutations.
+            tleap_dir (Optional[DirHandle] = None): path to tleap script which should be named 'tleap'
     Raises:
         e_start_cpx: Failure to build starting complex.
         e_restart_cpx: Failure to build a complex from input iterations.
@@ -298,7 +294,7 @@ class WorkProject:
             )
             # Copy the input PDB into the iteration folder
             pdb_handle = FileHandle(input_path / (self.config["main"]["name"] + ".pdb"))
-            copy_to(pdb_handle, this_iter.dir_handle)
+            copy_to(pdb_handle, Path(this_iter.dir_handle))
 
             # Copy tleap files, if necessary
             self.get_tleap_into_iter(Path(this_iter.dir_handle))
@@ -386,11 +382,11 @@ class WorkProject:
 
             top_itrs_str = " ; ".join(
                 [
-                    f"{iter.epoch_id}-{iter.iter_name}"
-                    for iter in prev_epoch.top_iterations.values()
+                    f"{iteration.epoch_id}-{iteration.iter_name}"
+                    for iteration in prev_epoch.top_iterations.values()
                 ]
             )
-            log.info(f"Previous epoch {epoch_nbr-1} top iterations: {top_itrs_str}")
+            log.info(f"Previous epoch {epoch_nbr - 1} top iterations: {top_itrs_str}")
 
             prev_epoch.mutated_positions = set()
             self.new_epoch(prev_epoch)
@@ -422,7 +418,7 @@ class WorkProject:
                     binder_chains=self.config["binder"]["chainID"],
                     ignore_cpt=False,
                 )
-            except Exception:
+            except RuntimeError:
                 try:
                     log.info(f"{iter_path.name} didn't finish its NPT MD.")
                     current_epoch.npt_done = False
@@ -435,7 +431,7 @@ class WorkProject:
                         binder_chains=self.config["binder"]["chainID"],
                         ignore_cpt=True,
                     )
-                except:
+                except RuntimeError:
                     try:
                         log.info(f"{iter_path.name} didn't finish its NVT MD.")
                         current_epoch.nvt_done = False
@@ -470,10 +466,11 @@ class WorkProject:
                 self.config["scoring"]["nprocs"],
             )
 
+    @staticmethod
     def __get_mutating_resname__(
-        self, pdb_path: Path, chainIDs: List, resSeqs: List
+            pdb_path: Path, chainIDs: List, resSeqs: List
     ) -> List[str]:
-        u = mda.Universe(str(pdb_path))
+        u = MDA.Universe(str(pdb_path))
 
         resnames = []
         for chainID, list_resSeq in zip(chainIDs, resSeqs):
@@ -499,41 +496,39 @@ class WorkProject:
         return resnames
 
     def __generate_iteration_ID__(
-        self, input_path: Path
+            self, input_path: Path
     ) -> Tuple[str, List[str], List[List[int]], List[str]]:
         chainIDs = self.config["binder"]["mutating_chainID"]
         resSeqs = self.config["binder"]["mutating_resSeq"]
         try:
             pdb_path = input_path / (self.config["main"]["name"] + ".pdb")
             resnames = self.__get_mutating_resname__(pdb_path, chainIDs, resSeqs)
-        except FileNotFoundError as e:
+        except FileNotFoundError:
             # Give it another chance, we only need the PDB for topology info.
             pdb_path = input_path / (
-                self.config["main"]["prefix"] + self.config["main"]["name"] + ".pdb"
+                    self.config["main"]["prefix"] + self.config["main"]["name"] + ".pdb"
             )
             resnames = self.__get_mutating_resname__(pdb_path, chainIDs, resSeqs)
 
-        iter_name = "".join(
-            [f"-{chainID}_{resname}" for chainID, resname in zip(chainIDs, resnames)]
+        iter_name = "-".join(
+            [f"{chainID}_{resname}" for chainID, resname in zip(chainIDs, resnames)]
         )
-
-        # Drop the leading -:
-        return iter_name[1:], chainIDs, resSeqs, resnames
+        return iter_name, chainIDs, resSeqs, resnames
 
     def __check_input_pdb__(self, input_path: Path) -> None:
 
         # Check the chainIDs:
         pdb_path = input_path / (self.config["main"]["name"] + ".pdb")
-        u = mda.Universe(str(pdb_path))
+        u = MDA.Universe(str(pdb_path))
         segids = [s.segid for s in u.segments]  # type: ignore
         assert (
-            len(segids) > 2
+                len(segids) > 2
         ), "Too few segments in the input PDB. There should be at least 3 (target+binder+solvent)."
 
         chainIDs = self.config["target"]["chainID"] + self.config["binder"]["chainID"]
         for segid, chainID in zip(segids, chainIDs):
             assert (
-                segid == chainID
+                    segid == chainID
             ), f"PDBs chainIDs ({segid}) and input target-binder chainIDs ({chainIDs}) should be identical."
 
         # Check amino acids
@@ -576,8 +571,8 @@ class WorkProject:
                     pre_resSeq = pre_seg.residues[-1].resnum
                     resSeq = seg.residues[0].resnum
                     assert (
-                        resSeq - pre_resSeq
-                    ) == 1, f"Non-continuous resSeq ({pre_resSeq}, {resSeq}) between {pre_seg} and {seg}. "
+                                   resSeq - pre_resSeq
+                           ) == 1, f"Non-continuous resSeq ({pre_resSeq}, {resSeq}) between {pre_seg} and {seg}. "
                     "It should be continuous, according to Amber specifications. "
                     "'mutating_resSeq' should follow this same convention."
         else:
@@ -586,7 +581,7 @@ class WorkProject:
                 if segment.segid in chainIDs:
                     first_resSeq = segment.residues[0].resnum
                     assert (
-                        first_resSeq == 1
+                            first_resSeq == 1
                     ), f"First resSeq from chain {segment.segid} is {first_resSeq}. "
                     "It should be 1, according to GROMACS specifications. "
                     "'mutating_resSeq' should follow this same convention."
@@ -690,16 +685,16 @@ class WorkProject:
                 "failed_memory_positions": self.failed_mutated_positions,
             }
             assert (
-                len(previous_iterations) > 0
-                and len(current_iterations) > 0
-                and len(top_iterations) > 0
+                    len(previous_iterations) > 0
+                    and len(current_iterations) > 0
+                    and len(top_iterations) > 0
             )
 
             # Back up tracking.pkl before writing.
             track = Path(self.dir_handle, "tracking.pkl")
             try:
                 sh.move(track, Path(self.dir_handle, "bu_tracking.pkl"))
-            except Exception:
+            except (FileNotFoundError, OSError):
                 warn("No tracking.pkl file present. Writing initial one.")
 
             with open(track, "wb") as cur_file:

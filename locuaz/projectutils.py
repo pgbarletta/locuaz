@@ -333,28 +333,11 @@ class WorkProject:
             prev_epoch.top_iterations = {}
             for iter_str in self.config["paths"]["previous_iterations"]:
                 # Get `iter_name` from the input iteration dir
-                # TODO: check this works when input iterations come from different epochs.
-                iter_path = Path(iter_str)
-                _, *name_by_chain = iter_path.name.split("-")
-                iter_name = "-".join(name_by_chain)
-
-                # `iter_name` comes from the input iteration.
-                _, chainIDs, resSeqs, resnames = self.__generate_iteration_ID__(
-                    iter_path
-                )
-
-                this_iter = Iteration(
-                    DirHandle(iter_path, make=False),
-                    iter_name=iter_name,
-                    chainIDs=chainIDs,
-                    resnames=resnames,
-                    resSeqs=resSeqs,
-                )
+                iter_name, iter_path, this_iter = self.iteration_from_str(iter_str)
                 try:
                     # Previous iterations should be fully ran.
                     this_iter.complex = GROComplex.from_complex(
-                        name=self.config["main"]["prefix"]
-                        + self.config["main"]["name"],
+                        name=self.config["main"]["prefix"] + self.config["main"]["name"],
                         iter_path=iter_path,
                         target_chains=self.config["target"]["chainID"],
                         binder_chains=self.config["binder"]["chainID"],
@@ -394,20 +377,7 @@ class WorkProject:
         current_epoch = Epoch(epoch_nbr, iterations={}, nvt_done=True, npt_done=True)
         for iter_str in self.config["paths"]["current_iterations"]:
             # Get `iter_name` from the input iteration dir
-            iter_path = Path(iter_str)
-            _, *name_by_chain = iter_path.name.split("-")
-            iter_name = "-".join(name_by_chain)
-
-            # `iter_name` comes from the input iteration.
-            _, chainIDs, resSeqs, resnames = self.__generate_iteration_ID__(iter_path)
-
-            this_iter = Iteration(
-                DirHandle(iter_path, make=False),
-                iter_name=iter_name,
-                chainIDs=chainIDs,
-                resnames=resnames,
-                resSeqs=resSeqs,
-            )
+            iter_name, iter_path, this_iter = self.iteration_from_str(iter_str)
             # Create complex with coordinates and topology (should be zip)
             try:
                 cpx_name = self.config["main"]["prefix"] + self.config["main"]["name"]
@@ -457,6 +427,23 @@ class WorkProject:
             self.config["misc"]["epoch_mutated_positions"]
         )
         self.new_epoch(current_epoch)
+
+    def iteration_from_str(self, iter_str: str) -> Tuple[str, Path, Iteration]:
+        iter_path = Path(iter_str)
+        _, *name_by_chain = iter_path.name.split("-")
+        iter_name = "-".join(name_by_chain)
+        # `iter_name` comes from the input iteration.
+        _, chainIDs, resSeqs, resnames = self.__generate_iteration_ID__(
+            iter_path
+        )
+        this_iter = Iteration(
+            DirHandle(iter_path, make=False),
+            iter_name=iter_name,
+            chainIDs=chainIDs,
+            resnames=resnames,
+            resSeqs=resSeqs,
+        )
+        return iter_name, iter_path, this_iter
 
     def __add_scoring_functions__(self) -> None:
         self.scorers = {}

@@ -1,6 +1,16 @@
+import logging
 import os
+import pickle
+import shutil as sh
+import time
+from collections import deque
+from collections.abc import MutableMapping
+# TODO: replace own pairwise with itertools' on 3.10
+# from itertools import pairwise
+from itertools import tee
 from pathlib import Path
-from attrs import define, field, validators
+from queue import PriorityQueue
+from statistics import mean, stdev
 from typing import (
     Iterable,
     Iterator,
@@ -12,29 +22,19 @@ from typing import (
     Deque,
     Optional,
 )
-import logging
-from statistics import mean, stdev
-from collections import deque
-from collections.abc import MutableMapping
-
-# TODO: replace own pairwise with itertools' on 3.10
-# from itertools import pairwise
-from itertools import tee
-from queue import PriorityQueue
-import shutil as sh
-import time
-import pickle
 from warnings import warn
 
-from Bio.SeqUtils import seq1
+import MDAnalysis as MDA
 import numpy as np
-import MDAnalysis as mda
+from Bio.SeqUtils import seq1
+from attrs import define, field, validators
 
-from primitives import AA_MAP
-from fileutils import FileHandle, DirHandle, copy_to
-from complex import AbstractComplex, GROComplex
 from abstractscoringfunction import AbstractScoringFunction
+from complex import AbstractComplex, GROComplex
+from fileutils import FileHandle, DirHandle, copy_to
+from primitives import AA_MAP
 from scoringfunctions import scoringfunctions
+
 
 # TODO: replace own pairwise with itertools' on 3.10
 def pairwise(iterable):

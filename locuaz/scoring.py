@@ -1,21 +1,21 @@
-import time
-from typing import Dict, Optional
-import logging
-from pathlib import Path
 import concurrent.futures as cf
+import logging
+import time
+from pathlib import Path
+from typing import Optional
 
-from fileutils import DirHandle
+from biobb_analysis.gromacs.gmx_trjconv_str_ens import GMXTrjConvStrEns
+
 from complex import GROComplex
+from fileutils import DirHandle
+from gromacsutils import image_traj
+from primitives import launch_biobb
 from projectutils import WorkProject, Iteration
 from utils_scoring import extract_pdbs, join_target_binder, rm_aux_scoring_files
-from primitives import launch_biobb
-from gromacsutils import image_traj
-from biobb_analysis.gromacs.gmx_trjconv_str_ens import GMXTrjConvStrEns
-from scoringfunctions import *
 
 
 def initialize_scoring_folder(
-    iteration: Iteration, config: Dict, *, log: Optional[logging.Logger] = None
+        iteration: Iteration, config: dict, *, log: Optional[logging.Logger] = None
 ) -> int:
     # No amber support for now.
     assert isinstance(iteration.complex, GROComplex)
@@ -87,13 +87,13 @@ def score_frames(work_pjct: WorkProject, iteration: Iteration, nframes: int) -> 
         ), f"This shouldn't happen. Iteration: {iteration.score_dir}"
 
         if sf_name == "bluues":
-            promedio = iteration.set_score("bluues", scores[0])
-            log.info(f"{sf_name} average score: {promedio:.3f}")
-            promedio = iteration.set_score("bmf", scores[1])
-            log.info(f"bmf average score: {promedio:.3f}")
+            avg_val = iteration.set_score("bluues", scores[0])
+            log.info(f"{sf_name} average score: {avg_val:.3f}")
+            avg_val = iteration.set_score("bmf", scores[1])
+            log.info(f"bmf average score: {avg_val:.3f}")
         else:
-            promedio = iteration.set_score(sf_name, scores)
-            log.info(f"{sf_name} average score: {promedio:.3f}")
+            avg_val = iteration.set_score(sf_name, scores)
+            log.info(f"{sf_name} average score: {avg_val:.3f}")
 
     if not work_pjct.config["main"]["debug"]:
         log.info(
@@ -118,6 +118,7 @@ def discard_iteration(work_pjct: WorkProject, iteration: Iteration) -> None:
         else:
             iteration.set_score(sf_name, [0, 0])
             log.info(f"{sf_name} nullifying score.")
+    iteration.write_down_scores()
 
 
 def score(work_pjct: WorkProject, iteration: Iteration) -> None:
@@ -125,7 +126,7 @@ def score(work_pjct: WorkProject, iteration: Iteration) -> None:
     try:
         iteration.read_scores(work_pjct.scorers.keys(), log)
         log.info("Read old scores.")
-    except FileNotFoundError as e:
+    except FileNotFoundError:
         if iteration.outside_box:
             # Discard this iteration.
             discard_iteration(work_pjct, iteration)

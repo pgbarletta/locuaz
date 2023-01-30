@@ -73,7 +73,6 @@ def initialize_scoring_folder(
 
 
 def score_frames(work_pjct: WorkProject, iteration: Iteration, nframes: int) -> None:
-    start = time.time()
     log = logging.getLogger(f"{work_pjct.name}")
 
     for sf_name, scorer in work_pjct.scorers.items():
@@ -102,9 +101,6 @@ def score_frames(work_pjct: WorkProject, iteration: Iteration, nframes: int) -> 
         rm_aux_scoring_files(iteration.score_dir, work_pjct.scorers.keys(), nframes)
 
     iteration.write_down_scores()
-    log.info(
-        f"Time elapsed during {iteration.iter_name}'s {nframes} frames scoring: {time.time() - start}"
-    )
 
 
 def discard_iteration(work_pjct: WorkProject, iteration: Iteration) -> None:
@@ -131,6 +127,12 @@ def score(work_pjct: WorkProject, iteration: Iteration) -> None:
             # Discard this iteration.
             discard_iteration(work_pjct, iteration)
         else:
+            start = time.time()
             log.info("Splitting NPT trajectory in frames.")
+
             nframes = initialize_scoring_folder(iteration, work_pjct.config, log=log)
             score_frames(work_pjct, iteration, nframes)
+
+            log.info(
+                f"Time elapsed during {iteration.iter_name}'s {nframes} frames scoring: {time.time() - start}"
+            )

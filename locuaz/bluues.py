@@ -1,26 +1,21 @@
-from pathlib import Path
-from operator import itemgetter
-from typing import Tuple, List, Optional, Any
-import subprocess as sp
-import logging
-from collections.abc import Iterable
 import concurrent.futures as cf
+import subprocess as sp
+from operator import itemgetter
+from pathlib import Path
+from typing import Tuple, List, Any
 
-from fileutils import FileHandle, DirHandle
 from abstractscoringfunction import AbstractScoringFunction
+from complex import GROComplex
+from fileutils import FileHandle, DirHandle
 
 
 class Bluues(AbstractScoringFunction):
-    name: str = "bluues"
     bmf_bin_path: FileHandle
     pdb2pqr_bin_path: str = "pdb2pqr30"
     TIMEOUT_PER_FRAME: int = 60
 
-    def __init__(self, sf_dir, nprocs=2):
-        self.root_dir = DirHandle(Path(sf_dir, self.name), make=False)
-        self.nprocs = nprocs
-
-        self.bin_path = FileHandle(Path(self.root_dir, self.name))
+    def __init__(self, sf_dir, *, nprocs=2) -> None:
+        super().__init__(sf_dir, nprocs=nprocs)
         self.bmf_bin_path = FileHandle(Path(self.root_dir, "bmf"))
 
     def __pdb2pqr_worker__(self, frames_path: Path, i: int) -> int:
@@ -29,12 +24,12 @@ class Bluues(AbstractScoringFunction):
         pqr_frame = Path(self.results_dir, "complex-" + str(i) + ".pqr")
 
         comando_pdb2pqr = (
-            self.pdb2pqr_bin_path
-            + " --ff=AMBER "
-            + str(pdb_frame)
-            + " "
-            + str(pqr_frame)
-            + " --keep-chain"
+                self.pdb2pqr_bin_path
+                + " --ff=AMBER "
+                + str(pdb_frame)
+                + " "
+                + str(pqr_frame)
+                + " --keep-chain"
         )
         sp.run(comando_pdb2pqr, stdout=sp.PIPE, stderr=sp.PIPE, shell=True, text=True)
         complex_pqr_frame = Path(self.results_dir, "complex-" + str(i) + ".pqr")
@@ -62,37 +57,26 @@ class Bluues(AbstractScoringFunction):
         return i
 
     def __parse_output__(
-        self,
-        *,
-        score_stdout: Any = None,
-        score_file: Any = None,
-        original_command: Tuple[str, str] = ("", ""),
+            self,
+            *,
+            score_stdout: Any = None,
+            score_file: Any = None,
+            original_command: Tuple[str, str] = ("", ""),
     ) -> Tuple[float, float]:
-        assert (
-            score_file is not None
-        ), f"This shouldn't happen. {self} couldn't parse {score_file}\nfrom: \n{original_command}"
+
         bluues_raw = 0.0
-        try:
-            with open(str(score_file[0]) + ".solv_nrg", "r") as f:
-                for linea in f:
-                    if linea[0:26] == "Total              energy:":
-                        bluues_raw = float(linea.split()[2])
-                        break
-        except (ValueError, IndexError) as e:
-            raise ValueError(
-                f"{self} couldn't parse {score_file[0]}\nfrom: \n{original_command[0]}"
-            ) from e
+
+        with open(str(score_file[0]) + ".solv_nrg", "r") as f:
+            for linea in f:
+                if linea[0:26] == "Total              energy:":
+                    bluues_raw = float(linea.split()[2])
+                    break
         bluues = bluues_raw * 15 / (abs(bluues_raw) + 15)
 
-        try:
-            with open(score_file[1], "r") as f:
-                lineas = f.readlines()
-            bmf, bumps, tors = tuple(map(float, itemgetter(1, 3, 7)(lineas[0].split())))
-            gab = 0.17378 * bmf + 0.25789 * bumps + 0.26624 * tors + 0.16446 * bluues
-        except (ValueError, IndexError) as e:
-            raise ValueError(
-                f"{self} couldn't parse {score_file[1]}\nfrom: \n{original_command[1]}"
-            ) from e
+        with open(score_file[1], "r") as f:
+            lineas = f.readlines()
+        bmf, bumps, tors = tuple(map(float, itemgetter(1, 3, 7)(lineas[0].split())))
+        gab = 0.17378 * bmf + 0.25789 * bumps + 0.26624 * tors + 0.16446 * bluues
 
         return bluues_raw, gab
 
@@ -101,9 +85,10 @@ class Bluues(AbstractScoringFunction):
         # BLUUES
         blu_mol_out = f"bluues_{mol}-{i}.out"
         blu_mol_out_fn = Path(self.results_dir, f"bluues_{mol}-{i}.out")
+        blu_mol_out_solv_fn = Path(self.results_dir, f"bluues_{mol}-{i}.out.solv_nrg")
 
         comando_bluues = f"{self.bin_path} {pqr_mol} {blu_mol_out}"
-        sp.run(
+        pbluues = sp.run(
             comando_bluues,
             stdout=sp.PIPE,
             stderr=sp.PIPE,
@@ -111,13 +96,15 @@ class Bluues(AbstractScoringFunction):
             shell=True,
             text=True,
         )
+        self.__assert_scoring_function_outfile__(blu_mol_out_solv_fn, stdout=pbluues.stdout, stderr=pbluues.stderr,
+                                                 command=comando_bluues)
 
         # BMF
         bmf_mol_out = f"bmf_{mol}-{i}.out"
         bmf_mol_out_fn = Path(self.results_dir, bmf_mol_out)
 
         comando_bmf = f"{self.bmf_bin_path} {pqr_mol} {bmf_mol_out} -x"
-        sp.run(
+        pbmf = sp.run(
             comando_bmf,
             stdout=sp.PIPE,
             stderr=sp.PIPE,
@@ -125,6 +112,9 @@ class Bluues(AbstractScoringFunction):
             shell=True,
             text=True,
         )
+        self.__assert_scoring_function_outfile__(bmf_mol_out_fn, stdout=pbmf.stdout, stderr=pbmf.stderr,
+                                                 command=comando_bmf)
+
         bluues, bmf = self.__parse_output__(
             score_file=(blu_mol_out_fn, bmf_mol_out_fn),
             original_command=(comando_bluues, comando_bmf),
@@ -144,16 +134,17 @@ class Bluues(AbstractScoringFunction):
         return i, bluues, bmf
 
     def __call__(
-        self,
-        *,
-        nframes: int,
-        frames_path: Path,
+            self,
+            *,
+            nframes: int,
+            frames_path: Path,
+            cpx: GROComplex,
     ) -> Tuple[List[float], List[float]]:
 
         self.results_dir = DirHandle(Path(frames_path, self.name), make=True)
-        scores_bluues: List[float] = [0] * (nframes)
-        scores_bmf: List[float] = [0] * (nframes)
-        # TODO: check bluues doesn't do anything weird.
+        scores_bluues: List[float] = [0] * nframes
+        scores_bmf: List[float] = [0] * nframes
+
         with cf.ProcessPoolExecutor(max_workers=self.nprocs) as exe:
             futuros_pdb2pqr: List[cf.Future] = []
             futuros_bluues_bmf: List[cf.Future] = []
@@ -192,6 +183,6 @@ class Bluues(AbstractScoringFunction):
                     scores_bluues[k] = bluues
                     scores_bmf[k] = bmf
             except cf.TimeoutError as e:
-                print("{self.name}/bmf subprocess timed out.", flush=True)
+                print(f"{self.name}/bmf subprocess timed out.", flush=True)
                 raise e
         return scores_bluues, scores_bmf

@@ -1,17 +1,15 @@
-from pathlib import Path
+import shutil as sh
+import subprocess as sp
+import warnings
 from collections import deque
 from collections.abc import Iterable
-from typing import Tuple, Union, Optional, List, Generator, Deque, Set
-import subprocess as sp
+from pathlib import Path
+from typing import Tuple, Union, Optional, List, Generator, Deque, Set, TextIO
 from zipfile import ZipFile
-import shutil as sh
-from io import TextIOWrapper
-import warnings
-import sys
 
+import MDAnalysis as mda
 import parmed as pmd
 from pdb4amber import AmberPDBFixer
-import MDAnalysis as mda
 
 from fileutils import FileHandle, DirHandle
 from molecules import PDBStructure, GROStructure, ZipTopology
@@ -20,7 +18,7 @@ from primitives import ext
 warnings.filterwarnings("ignore")
 
 
-def chunk(f: TextIOWrapper) -> Generator:
+def chunk(f: TextIO) -> Generator:
     linea = " "
     while linea != "":
         text: List[str] = []
@@ -70,7 +68,6 @@ def create_tleap_script(local_dir: Union[DirHandle, Path], name: str) -> FileHan
 
 
 def fix_pdb(in_pdb: Union[PDBStructure, Path], out_pdb_path: Path) -> PDBStructure:
-
     pdb_path = Path(in_pdb)
 
     pdbfixer = AmberPDBFixer(str(pdb_path))
@@ -78,7 +75,13 @@ def fix_pdb(in_pdb: Union[PDBStructure, Path], out_pdb_path: Path) -> PDBStructu
     pdbfixer.rename_cys_to_cyx(sslist)
     pdbfixer.assign_histidine()
 
-    pdbfixer.parm.save(str(out_pdb_path), conect=False, overwrite=True)
+    try:
+        pdbfixer.parm.save(str(out_pdb_path), conect=False, overwrite=True)
+    except TypeError:
+        try:
+            pdbfixer.parm.save(str(out_pdb_path), overwrite=True)
+        except TypeError:
+            pdbfixer.parm.save(str(out_pdb_path))
 
     return PDBStructure(FileHandle(out_pdb_path))
 
@@ -123,7 +126,7 @@ def run_tleap(
     u: mda.Universe = mda.Universe(str(pdb_path))
 
     mda_res = len(u.residues)  # type: ignore
-    pmd_res = len(amb.residues)
+    pmd_res = len(amb.residues)  # type: ignore
     assert (
         mda_res == pmd_res
     ), f"Mismatch between parmed residues ({pmd_res}) and MDAnalysis residues ({mda_res})."
@@ -147,7 +150,15 @@ def run_tleap(
 
     top_path = Path(local_dir, f"{name}.prmtop")
     rst_path = Path(local_dir, f"{name}.rst7")
-    amb.save(str(pdb_path), conect=False, overwrite=True)
+
+    try:
+        amb.save(str(pdb_path), conect=False, overwrite=True)
+    except TypeError:
+        try:
+            amb.save(str(pdb_path), overwrite=True)
+        except TypeError:
+            amb.save(str(pdb_path))
+
     amb.save(str(top_path))
     amb.save(str(rst_path))
 
@@ -166,7 +177,6 @@ def amb_to_gmx(
     *,
     target_chains: Iterable[str],
     binder_chains: Iterable[str],
-    zip_top=True,
 ) -> Tuple[GROStructure, ZipTopology]:
     local_dir = Path(prmtop).parent
     amb = pmd.load_file(str(prmtop), str(rst))
@@ -180,19 +190,17 @@ def amb_to_gmx(
 
     gro = GROStructure(FileHandle(gro_path))
 
-    ziptop_handle = fixup_top(
+    zip_top_handle = fixup_top(
         top_path,
         name,
         target_chains=list(target_chains),
         binder_chains=list(binder_chains),
     )
-    ziptop = ZipTopology.from_path_with_chains(
-        ziptop_handle.path, target_chains=target_chains, binder_chains=binder_chains
+    zip_top = ZipTopology.from_path_with_chains(
+        zip_top_handle.path, target_chains=target_chains, binder_chains=binder_chains
     )
-    # ziptop.target_chains = tuple(target_chains)
-    # ziptop.binder_chains = tuple(binder_chains)
 
-    return gro, ziptop
+    return gro, zip_top
 
 
 def fixup_top(
@@ -280,7 +288,7 @@ def fixup_top(
             file.write(ion_text)
         file.close()
 
-    # Add posres_.itp include on each molecules.itp
+    # Add posres_.itp include on each molecule.itp
     for mol, mol_path in mol_itp_files.items():
         posres_include_text = f"""; Include Position restraint file
 #ifdef POSRES
@@ -304,20 +312,20 @@ def fixup_top(
             # rewrite 'system1', 'system2', ... with the proteins chainIDs
             if line[:6] == "system":
                 chainID = chainIDs.popleft()
-                # chainID shoul be just a char, but just in case:
+                # chainID should be just a char, but just in case:
                 line = f"{chainID}{1: >{22 - len(chainID)}}" "\n"
             file.write(line)
 
     # compress everything on a zip file
-    ziptop_path = Path(local_dir, f"{name}.zip")
-    with ZipFile(ziptop_path, mode="w") as zf:
+    zip_top_path = Path(local_dir, f"{name}.zip")
+    with ZipFile(zip_top_path, mode="w") as zf:
         zf.write(top_path, arcname=f"{name}.top")
         for mol, mol_path in mol_itp_files.items():
             zf.write(mol_path, arcname=f"{mol}.itp")
         for mol, posres_path in mol_posres_files.items():
             zf.write(posres_path, arcname=f"posre_{mol}.itp")
 
-    return FileHandle(ziptop_path)
+    return FileHandle(zip_top_path)
 
 
 # DEPRECATED
@@ -328,7 +336,6 @@ def run_acpype(
     *,
     target_chains: Iterable,
     binder_chains: Iterable,
-    zip_top=True,
 ) -> Tuple[GROStructure, ZipTopology]:
     local_dir = Path(prmtop).parent
     p = sp.run(
@@ -348,19 +355,19 @@ def run_acpype(
     gro_path = Path(acpype_dir, f"{name}.gro")
     acpype_top_path = Path(acpype_dir, f"{name}_GMX.top")
     top_path = Path(acpype_dir, f"{name}.top")
-    ziptop_path = Path(local_dir, f"{name}.zip")
+    zip_top_path = Path(local_dir, f"{name}.zip")
     try:
         sh.move(acpype_gro_path, gro_path)
         sh.move(acpype_top_path, top_path)
 
         gro = GROStructure(FileHandle(gro_path))
-        with ZipFile(ziptop_path, mode="w") as zf:
+        with ZipFile(zip_top_path, mode="w") as zf:
             zf.write(top_path, arcname=f"{name}.top")
-        ziptop = ZipTopology(FileHandle(ziptop_path))
-        ziptop.target_chains = tuple(target_chains)
-        ziptop.binder_chains = tuple(binder_chains)
+        zip_top = ZipTopology(FileHandle(zip_top_path))
+        zip_top.target_chains = tuple(target_chains)
+        zip_top.binder_chains = tuple(binder_chains)
 
     except Exception as e:
         raise FileNotFoundError(error_msg) from e
 
-    return gro, ziptop
+    return gro, zip_top

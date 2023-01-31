@@ -1,67 +1,33 @@
-from asyncio import as_completed
-import os
-import logging
-from pathlib import Path
-from socket import timeout
-from typing import Tuple, List, Any
-import subprocess as sp
-from collections.abc import Iterable
 import concurrent.futures as cf
+import os
+import subprocess as sp
+from pathlib import Path
+from typing import Tuple, List
 
-from fileutils import FileHandle, DirHandle
 from abstractscoringfunction import AbstractScoringFunction
+from complex import GROComplex
+from fileutils import DirHandle
 
 
 class Rosetta(AbstractScoringFunction):
-    name: str = "rosetta"
     TIMEOUT_PER_FRAME: int = 30
 
-    def __init__(self, sf_dir, nprocs=2):
-        self.root_dir = DirHandle(Path(sf_dir, self.name), make=False)
-        # self.bin_path = FileHandle(
-        #     Path(
-        #         self.root_dir,
-        #         "sources/rosetta_source/bin/InterfaceAnalyzer.linuxgccrelease",
-        #     )
-        # )
-        # self.executable = (
-        #     str(self.bin_path)
-        #     + " -database "
-        #     + str(Path(self.root_dir, "sources/rosetta_database"))
-        # )
-        self.bin_path = FileHandle(Path(self.root_dir, self.name))
+    def __init__(self, sf_dir, *, nprocs=2) -> None:
+        super().__init__(sf_dir, nprocs=nprocs)
         self.executable = (
             f'{self.bin_path} -database {Path(self.root_dir, "rosetta_database")}'
         )
-
-        self.nprocs = nprocs
-
-        # Set up environment:
-        # parameters_dir = DirHandle(
-        #     Path(
-        #         self.root_dir,
-        #         "sources/rosetta_source/build/src/release/linux/4.14/64/ppc64le/gcc/8.4",
-        #     ),
-        #     make=False,
-        # )
-        # parameters_external_dir = DirHandle(
-        #     Path(
-        #         self.root_dir,
-        #         "sources/rosetta_source/build/external/release/linux/4.14/64/ppc64le/gcc/8.4",
-        #     ),
-        #     make=False,
-        # )
         parameters_dir = DirHandle(Path(self.root_dir, "parameters"), make=False)
         parameters_external_dir = DirHandle(
             Path(self.root_dir, "external_parameters"), make=False
         )
 
         os.environ["LD_LIBRARY_PATH"] = (
-            os.environ["LD_LIBRARY_PATH"]
-            + ":"
-            + str(parameters_dir)
-            + ":"
-            + str(parameters_external_dir)
+                os.environ["LD_LIBRARY_PATH"]
+                + ":"
+                + str(parameters_dir)
+                + ":"
+                + str(parameters_external_dir)
         )
 
     def __parse_output__(
@@ -109,14 +75,15 @@ class Rosetta(AbstractScoringFunction):
         return i, score_rosetta
 
     def __call__(
-        self,
-        *,
-        nframes: int,
-        frames_path: Path,
+            self,
+            *,
+            nframes: int,
+            frames_path: Path,
+            cpx: GROComplex,
     ) -> List[float]:
 
         self.results_dir = DirHandle(Path(frames_path, self.name), make=True)
-        scores: List[float] = [0] * (nframes)
+        scores: List[float] = [0] * nframes
 
         with cf.ProcessPoolExecutor(max_workers=self.nprocs) as exe:
             futuros: List[cf.Future] = []
@@ -135,6 +102,6 @@ class Rosetta(AbstractScoringFunction):
                     j, score = futu.result()
                     scores[j] = score
             except cf.TimeoutError as e:
-                print("{self.name} subprocess timed out.", flush=True)
+                print(f"{self.name} subprocess timed out.", flush=True)
                 raise e
         return scores

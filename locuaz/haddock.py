@@ -1,53 +1,24 @@
-from asyncio import as_completed
-import logging
+import concurrent.futures as cf
 import os
 import re
-from pathlib import Path
-from collections.abc import Iterable
 import subprocess as sp
-import concurrent.futures as cf
+from pathlib import Path
 from typing import Tuple, List, Any
 
-from fileutils import FileHandle, DirHandle, copy_to
 from abstractscoringfunction import AbstractScoringFunction
+from complex import GROComplex
+from fileutils import FileHandle, DirHandle, copy_to
 
 
 class Haddock(AbstractScoringFunction):
-    name: str = "haddock"
     template_scoring_inp_handle: FileHandle
     haddock_protocols_dir: DirHandle
     haddock_toppar_dir: DirHandle
     rescoring_scripts_dir: DirHandle
     TIMEOUT_PER_FRAME: int = 30
 
-    def __init__(self, sf_dir, nprocs=2):
-        self.root_dir = DirHandle(Path(sf_dir, self.name), make=False)
-        self.nprocs = nprocs
-
-        # self.bin_path = FileHandle(
-        #     Path(self.root_dir, "cns_solve_1.3/ibm-ppc64le-linux/bin/cns")
-        # )
-        # self.template_scoring_inp_handle = FileHandle(
-        #     Path(self.root_dir, "template_scoring.inp")
-        # )
-        # self.haddock_protocols_dir = DirHandle(
-        #     Path(self.root_dir, "haddock2.1", "protocols"), make=False
-        # )
-        # self.haddock_toppar_dir = DirHandle(
-        #     Path(self.root_dir, "haddock2.1", "toppar"), make=False
-        # )
-        # self.rescoring_scripts_dir = DirHandle(
-        #     Path(sf_dir, "rescoring-scripts"), make=False
-        # )
-
-        # # Set up environment:
-        # os.environ["HADDOCK"] = str(Path(self.root_dir, "haddock2.1"))
-        # cns_environment_script = Path(self.root_dir, "cns_solve_1.3/cns_solve_env")
-        # sp.run("/bin/csh " + str(cns_environment_script), shell=True)
-        # haddock_configure_script = Path(
-        #     self.root_dir, "haddock2.1/haddock_configure.csh"
-        # )
-        self.bin_path = FileHandle(Path(self.root_dir, "cns"))
+    def __init__(self, sf_dir, *, nprocs=2) -> None:
+        super().__init__(sf_dir, nprocs=nprocs)
         self.template_scoring_inp_handle = FileHandle(
             Path(self.root_dir, "template_scoring.inp")
         )
@@ -68,9 +39,10 @@ class Haddock(AbstractScoringFunction):
         haddock_configure_script = Path(self.root_dir, "haddock_configure.csh")
         sp.run("/bin/csh " + str(haddock_configure_script), shell=True)
 
-    def __pdb_chain_segid__(self, file_in: Path, file_out: Path) -> None:
+    @staticmethod
+    def __pdb_chain_segid__(file_in: Path, file_out: Path) -> None:
         # For some reason, haddock requires the chainID to be repeated
-        # onto the 73th column.
+        # onto the 73rd column as a segid.
         with open(file_in, "r") as sources:
             lines = sources.readlines()
         with open(file_out, "w") as sources:
@@ -91,10 +63,10 @@ class Haddock(AbstractScoringFunction):
             f.write('"' + str(mod_pdb_frame.name) + '"')
 
         # .inp config file for haddock.
-        scorin_inp_file = Path(self.results_dir, "scoring_" + str(i) + ".inp")
+        scoring_inp_file = Path(self.results_dir, "scoring_" + str(i) + ".inp")
         with open(self.template_scoring_inp_handle, "r") as f:
             lines = f.readlines()
-        with open(scorin_inp_file, "w") as f:
+        with open(scoring_inp_file, "w") as f:
             # Idem., writing only the relative path to the .pdb file.
             linea_system_name = re.sub("XYZ", str(mutant_file_list.name), lines[0])
             f.write(linea_system_name)
@@ -102,7 +74,7 @@ class Haddock(AbstractScoringFunction):
             for i in range(1, len(lines)):
                 f.write(lines[i])
 
-        return scorin_inp_file
+        return scoring_inp_file
 
     def __parse_output__(
         self, *, score_stdout: Any = None, score_file: Any = None, original_command=""
@@ -147,15 +119,16 @@ class Haddock(AbstractScoringFunction):
         return i, score_haddock
 
     def __call__(
-        self,
-        *,
-        nframes: int,
-        frames_path: Path,
+            self,
+            *,
+            nframes: int,
+            frames_path: Path,
+            cpx: GROComplex,
     ) -> List[float]:
 
         self.results_dir = DirHandle(Path(frames_path, self.name), make=True)
         self.__initialize_scoring_dir__()
-        scores: List[float] = [0] * (nframes)
+        scores: List[float] = [0] * nframes
         with cf.ProcessPoolExecutor(max_workers=self.nprocs) as exe:
             futuros: List[cf.Future] = []
             for i in range(nframes):

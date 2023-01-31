@@ -1,30 +1,26 @@
-import logging
+import concurrent.futures as cf
+import subprocess as sp
 from pathlib import Path
 from typing import Tuple, List, Any
-import subprocess as sp
-import concurrent.futures as cf
 
-from fileutils import FileHandle, DirHandle
 from abstractscoringfunction import AbstractScoringFunction
+from complex import GROComplex
+from fileutils import FileHandle, DirHandle
 
 
 class Pisa(AbstractScoringFunction):
-    name: str = "pisa"
     parameters_handle: FileHandle
     TIMEOUT_PER_FRAME: int = 2
 
-    def __init__(self, sf_dir, nprocs=2):
-        self.root_dir = DirHandle(Path(sf_dir, self.name), make=False)
-        self.nprocs = nprocs
-
-        self.bin_path = FileHandle(Path(self.root_dir, self.name))
+    def __init__(self, sf_dir, *, nprocs=2) -> None:
+        super().__init__(sf_dir, nprocs=nprocs)
         self.parameters_handle = FileHandle(Path(self.root_dir, f"{self.name}.params"))
 
     def __parse_output__(
-        self, *, score_stdout: Any = None, score_file: Any = None, original_command=""
+            self, *, score_stdout: Any = None, score_file: Any = None, original_command=""
     ) -> float:
         assert (
-            score_stdout is not None
+                score_stdout is not None
         ), f"This shouldn't happen. {self} couldn't parse {score_stdout}\nfrom: \n{original_command}"
 
         try:
@@ -57,14 +53,15 @@ class Pisa(AbstractScoringFunction):
         return i, pisa_score
 
     def __call__(
-        self,
-        *,
-        nframes: int,
-        frames_path: Path,
+            self,
+            *,
+            nframes: int,
+            frames_path: Path,
+            cpx: GROComplex,
     ) -> List[float]:
 
         self.results_dir = DirHandle(Path(frames_path, self.name), make=True)
-        scores: List[float] = [0] * (nframes)
+        scores: List[float] = [0] * nframes
 
         with cf.ProcessPoolExecutor(max_workers=self.nprocs) as exe:
             futuros: List[cf.Future] = []
@@ -83,6 +80,6 @@ class Pisa(AbstractScoringFunction):
                     j, score = futu.result()
                     scores[j] = score
             except cf.TimeoutError as e:
-                print("{self.name} subprocess timed out.", flush=True)
+                print(f"{self.name} subprocess timed out.", flush=True)
                 raise e
         return scores

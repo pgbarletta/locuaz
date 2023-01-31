@@ -1,7 +1,6 @@
-from pathlib import Path
-from abc import ABCMeta
 from abc import ABCMeta, abstractmethod
 from collections.abc import Iterable
+from pathlib import Path
 from typing import Dict, Optional, Union
 
 from attrs import define, field
@@ -134,7 +133,6 @@ class GROComplex(AbstractComplex):
                     pdb=temp_pdb,
                     target_chains=target_chains,
                     binder_chains=binder_chains,
-                    gmx_bin=gmx_bin,
                 )
             else:
                 # The PDB should have box info in it, so it'll be pasted onto the GRO. Else,

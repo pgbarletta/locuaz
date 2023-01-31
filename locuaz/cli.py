@@ -1,15 +1,16 @@
-import os
 import argparse
-from typing import Dict, List, Final, Set, Tuple, Union, Any
+import glob
+import os
+import pickle
+import shutil as sh
+from collections import defaultdict
+from itertools import product
 from pathlib import Path
 from queue import PriorityQueue
-import glob
-from itertools import product
+from typing import Dict, List, Final, Set, Tuple, Union, Any
 from warnings import warn
-import shutil as sh
+
 import yaml
-import pickle
-from collections import defaultdict, deque
 
 from validatore import Validatore
 
@@ -49,6 +50,7 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
     else:
         config = validator.normalized(raw_config)  # type: ignore
 
+    # Check mode
     if mode != config["main"]["mode"]:
         warn(
             f"Warning, CLI input {mode} doesn't match {config['main']['mode']}."
@@ -58,21 +60,23 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
 
     config["main"]["debug"] = debug
 
+    # Check input work dir
     if Path(config["paths"]["work"]).is_dir():
         start = False
     else:
         root_dir = Path(config["paths"]["work"]).parent
         assert root_dir.is_dir(), f"Invalid input work dir: {config['paths']['work']}"
         assert (
-            mode == "evolve"
-        ), "`--mode` is not set to 'evolve', a `work` folder with vaild iterations is needed."
+                mode == "evolve"
+        ), "`--mode` is not set to 'evolve', a `work` folder with valid iterations is needed."
 
         start = True
 
+    # Check use of tleap
     if config["md"].get("use_tleap", False):
         assert "tleap" in config["paths"], f"Specify path to tleap files."
         assert (
-            get_dir_size(config["paths"]["tleap"]) < 10
+                get_dir_size(config["paths"]["tleap"]) < 10
         ), f"tleap dir is heavier than 10Mb. Choose a dir with only the necessary tleap files."
 
     return config, start
@@ -103,19 +107,18 @@ def append_iterations(
 
 
 def get_valid_iter_dirs(files_and_dirs: List[str], config: Dict) -> List[Path]:
-    """get_valid_iter_dirs Filter out paths in input and return valid iteration paths
+    """get_valid_iter_dirs(): filters out paths in input and returns valid iteration paths
 
     Args:
         files_and_dirs (List[str]): list of files and/or dirs
-        name (str): name of the project
-        max_epochs (int): max epoch number an iteration may have
+        config (dict): input config.
 
     Returns:
         List[Path]: list of valid iteration paths
     """
 
-    def is_incomplete(iter_path: Path, name: str) -> bool:
-        return not Path(iter_path, f"{name}.pdb").is_file()
+    def is_incomplete(it_path: Path, name: str) -> bool:
+        return not Path(it_path, f"{name}.pdb").is_file()
 
     iter_dirs: List[Path] = []
     incomplete_epochs: Set[str] = set()
@@ -125,7 +128,7 @@ def get_valid_iter_dirs(files_and_dirs: List[str], config: Dict) -> List[Path]:
         if dir_path.is_dir():
             try:
                 nbr, *iter_name = Path(dir_path).name.split("-")
-            except:
+            except (Exception,):
                 # not an Epoch folder
                 continue
             if nbr.isnumeric():
@@ -223,7 +226,7 @@ def get_tracking_files(config: Dict) -> bool:
                 "failed_memory_positions"
             ]
         return True
-    except Exception:
+    except (Exception,):
         warn(
             "Could not read tracking info. Will try to get the previous iterations, the "
             "current iterations and the memory of the last mutated positions from the work dir. "
@@ -240,7 +243,7 @@ def set_iterations(config: Dict) -> None:
         config (Dict): dictionary with input config
 
     Raises:
-        ValueError: when there're no valid iteration dirs.
+        ValueError: when there are no valid iteration dirs.
     """
     files_and_dirs = glob.glob(str(Path(config["paths"]["work"], "*")))
     valid_iters = get_valid_iter_dirs(files_and_dirs, config)
@@ -280,7 +283,7 @@ def get_memory(config: Dict) -> Tuple[Set, List[List]]:
     if the cause of this was the aforementioned example, or, a previous run with a shorter memory
     (or no memory at all), that mutated the same position more than once in the last N
     (N being equal to `config["protocol"]["memory_size"]`) epochs.
-    Hence, no overlap is removedand repetitive resSeqs may be found on the resulting List of Lists.
+    Hence, no overlap is removed and repetitive resSeqs may be found on the resulting List of Lists.
 
     Sets: config["misc"]["epoch_mutated_positions"] and config["protocol"]["memory_positions"],
 
@@ -381,7 +384,7 @@ def main() -> Tuple[Dict, bool]:
     parser.add_argument(
         "-m",
         "--mode",
-        help="Choose wheter to start/restart an evolution protocol or just perform a single task.",
+        help="Choose whether to start/restart an evolution protocol or just perform a single task.",
         default="evolve",
         type=str,
         required=False,

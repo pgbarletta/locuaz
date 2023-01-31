@@ -1,31 +1,29 @@
-from pathlib import Path
-from collections.abc import Iterable
-from typing import Dict, Tuple, Optional, Union
-import numpy as np
 import shutil as sh
+from collections.abc import Iterable
+from pathlib import Path
+from typing import Dict, Tuple, Optional, Union
 
 import MDAnalysis as mda
-import parmed as pmd
-from biobb_gromacs.gromacs.pdb2gmx import Pdb2gmx
-from biobb_gromacs.gromacs.grompp import Grompp
+import numpy as np
 from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
 from biobb_gromacs.gromacs.editconf import Editconf
 from biobb_gromacs.gromacs.genion import Genion
+from biobb_gromacs.gromacs.grompp import Grompp
+from biobb_gromacs.gromacs.pdb2gmx import Pdb2gmx
 
-
-from molecules import PDBStructure, GROStructure, ZipTopology
-from fileutils import FileHandle, copy_to
-from primitives import launch_biobb
 from amberutils import create_tleap_script, fix_pdb, run_tleap, amb_to_gmx
+from fileutils import FileHandle, copy_to
+from molecules import PDBStructure, GROStructure, ZipTopology
+from primitives import launch_biobb
 
 
 def get_gro_ziptop_from_pdb(
-    *,
-    pdb: PDBStructure,
-    target_chains: Iterable,
-    binder_chains: Iterable,
-    md_config: Dict,
-    add_ions: bool = False,
+        *,
+        pdb: PDBStructure,
+        target_chains: Iterable,
+        binder_chains: Iterable,
+        md_config: Dict,
+        add_ions: bool = False,
 ) -> Tuple[PDBStructure, GROStructure, ZipTopology]:
     """get_gro_ziptop_from_pdb does a pdb2gmx from the PDB and tries to keep
     the system neutral, which may alter the topology so a new PDB will be
@@ -35,9 +33,6 @@ def get_gro_ziptop_from_pdb(
         pdb (PDBStructure): input PDB
         target_chains (Iterable): these will be used to construct the ZipTopology
         binder_chains (Iterable): these will be used to construct the ZipTopology
-        binary_path (str, optional): for all the biobb tools. Defaults to "gmx".
-        water_type (str, optional): argument to pdb2gmx. Defaults to "tip3p".
-        force_field (str, optional): argument to pdb2gmx. Defaults to "amber99sb-ildn".
 
     Returns:
         Tuple[PDBStructure, GROStructure, ZipTopology]: Proper, nice, system.
@@ -162,7 +157,6 @@ def get_gro_ziptop_from_pdb_tleap(
     pdb: PDBStructure,
     target_chains: Iterable,
     binder_chains: Iterable,
-    gmx_bin="gmx",
 ) -> Tuple[PDBStructure, GROStructure, ZipTopology]:
     """get_gro_ziptop_from_pdb_tleap runs .
 
@@ -170,9 +164,6 @@ def get_gro_ziptop_from_pdb_tleap(
         pdb (PDBStructure): input PDB
         target_chains (Iterable): these will be used to construct the ZipTopology
         binder_chains (Iterable): these will be used to construct the ZipTopology
-        binary_path (str, optional): for all the biobb tools. Defaults to "gmx".
-        water_type (str, optional): argument to pdb2gmx. Defaults to "tip3p".
-        force_field (str, optional): argument to pdb2gmx. Defaults to "amber99sb-ildn".
 
     Returns:
         Tuple[PDBStructure, GROStructure, ZipTopology]: Proper, nice, system.
@@ -199,7 +190,6 @@ def get_gro_ziptop_from_pdb_tleap(
         pdb,
         prmtop,
         rst,
-        zip_top=True,
         target_chains=target_chains,
         binder_chains=binder_chains,
     )

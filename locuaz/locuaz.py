@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 
 """Main module."""
-import sys
 import logging
+import sys
 from pathlib import Path
 
 import cli
 import projectutils as pu
 from protocol import initialize_new_epoch
-from scoring import score
-from run import run_epoch, run_npt_epoch
 from prunners import prune
+from run import run_epoch, run_npt_epoch
+from scoring import score
 
 
 def main() -> int:
@@ -31,19 +31,19 @@ def main() -> int:
         return 0
     elif config["main"]["mode"] == "score":
         try:
-            prev_id = old_id = work_pjct.epochs[-2].id
+            prev_id = work_pjct.epochs[-2].id
             prev_epoch = work_pjct.epochs[-2]
-            for iter_name, iter in prev_epoch.items():
+            for iter_name, iteration in prev_epoch.items():
                 log.info(f"Scoring NPT run from iteration: {prev_id}-{iter_name}")
-                score(work_pjct, iter)
-        except Exception:
+                score(work_pjct, iteration)
+        except (Exception,):
             log.info(f"Cannot score previous epoch.")
             pass
 
-        curr_id = old_id = work_pjct.epochs[-1].id
-        for iter_name, iter in work_pjct.epochs[-1].items():
+        curr_id = work_pjct.epochs[-1].id
+        for iter_name, iteration in work_pjct.epochs[-1].items():
             log.info(f"Scoring NPT run from iteration: {curr_id}-{iter_name}")
-            score(work_pjct, iter)
+            score(work_pjct, iteration)
         return 0
 
     cnt = 0
@@ -54,11 +54,11 @@ def main() -> int:
         run_epoch(work_pjct)
 
         log.info(f"Scoring epoch {old_id} ({cnt} on this run).")
-        for iter_name, iter in work_pjct.epochs[-1].items():
+        for iter_name, iteration in work_pjct.epochs[-1].items():
             log.info(f"Scoring NPT run from iteration: {iter_name}")
-            score(work_pjct, iter)
+            score(work_pjct, iteration)
 
-        log.info(f"Prunning epoch {old_id}.")
+        log.info(f"Pruning epoch {old_id}.")
         prune(work_pjct)
 
         new_id = work_pjct.epochs[-1].id + 1

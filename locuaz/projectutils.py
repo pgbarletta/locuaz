@@ -24,7 +24,7 @@ from typing import (
 )
 from warnings import warn
 
-import MDAnalysis as MDA
+import MDAnalysis as mda
 import numpy as np
 from Bio.SeqUtils import seq1
 from attrs import define, field, validators
@@ -54,7 +54,7 @@ class Iteration:
         kw_only=True, validator=validators.instance_of(list)
     )  # Had to use validators.instance_of() instead of converter because mypy complains
     epoch_id: int = field(converter=int, init=False)
-    complex: AbstractComplex = field(init=False)
+    complex: Union[AbstractComplex, GROComplex] = field(init=False)
     score_dir: DirHandle = field(converter=DirHandle, init=False)  # type: ignore
     scores: Dict[str, tuple] = field(init=False)
     mean_scores: Dict[str, float] = field(init=False)
@@ -115,7 +115,7 @@ class Iteration:
                             "bmf", [float(linea.strip()) for linea in f], log
                         )
             except FileNotFoundError as e:
-                log.warning(f"{self.iter_name} was not scored with {SF}.")
+                log.warning(f"{self.epoch_id}-{self.iter_name} was not scored with {SF}.")
                 raise FileNotFoundError from e
 
     def __str__(self) -> str:
@@ -378,7 +378,7 @@ class WorkProject:
         for iter_str in self.config["paths"]["current_iterations"]:
             # Get `iter_name` from the input iteration dir
             iter_name, iter_path, this_iter = self.iteration_from_str(iter_str)
-            # Create complex with coordinates and topology (should be zip)
+            # Create complex with coordinates and topology (should be .zip)
             try:
                 cpx_name = self.config["main"]["prefix"] + self.config["main"]["name"]
                 this_iter.complex = GROComplex.from_complex(
@@ -450,14 +450,14 @@ class WorkProject:
         for sf in self.config["scoring"]["functions"]:
             self.scorers[str(sf)] = scoringfunctions[sf](
                 self.config["paths"]["scoring_functions"],
-                self.config["scoring"]["nprocs"],
+                nprocs=self.config["scoring"]["nprocs"],
             )
 
     @staticmethod
     def __get_mutating_resname__(
             pdb_path: Path, chainIDs: List, resSeqs: List
     ) -> List[str]:
-        u = MDA.Universe(str(pdb_path))
+        u = mda.Universe(str(pdb_path))
 
         resnames = []
         for chainID, list_resSeq in zip(chainIDs, resSeqs):
@@ -506,7 +506,7 @@ class WorkProject:
 
         # Check the chainIDs:
         pdb_path = input_path / (self.config["main"]["name"] + ".pdb")
-        u = MDA.Universe(str(pdb_path))
+        u = mda.Universe(str(pdb_path))
         segids = [s.segid for s in u.segments]  # type: ignore
         assert (
                 len(segids) > 2

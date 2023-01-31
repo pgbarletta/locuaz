@@ -1,18 +1,18 @@
-from typing import Optional, Tuple
-from attrs import define, field
 from pathlib import Path
 from shutil import SameFileError
+from typing import Tuple
 
-from biobb_gromacs.gromacs.grompp import Grompp
+from attrs import define, field
 from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
-from biobb_analysis.gromacs.gmx_image import GMXImage
+from biobb_gromacs.gromacs.grompp import Grompp
 from biobb_gromacs.gromacs.mdrun import Mdrun
-from molecules import ZipTopology, copy_mol_to
+
 from complex import AbstractComplex, GROComplex
-from molutils import fix_box
 from fileutils import DirHandle, FileHandle
-from projectutils import WorkProject
+from molecules import ZipTopology, copy_mol_to
+from molutils import fix_box
 from primitives import launch_biobb
+from projectutils import WorkProject
 
 
 @define(frozen=True)
@@ -176,10 +176,11 @@ class MDrun:
 
         # Finally, build the Complex.
         try:
-            copy_mol_to(complex.top, self.dir, self.out_name + ".zip")
+            copy_mol_to(complex.top, self.dir, f"{self.out_name}.zip")
         except SameFileError:
             # This happens when there was an attempt to run MD on a finished run
-            # and gromacs started from `name`.cpt.
+            # and gromacs started from `name`.cpt. This shouldn't happen anymore.
+            print(f"{complex.top} same as {self.out_name}.zip", flush=True)
             pass
 
         new_complex = type(complex).from_gro_zip(

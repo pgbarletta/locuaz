@@ -1,9 +1,9 @@
-from pathlib import Path
-from typing import List, Union, Set, Dict
 import itertools
-from functools import singledispatch
-
 import shutil as sh
+from functools import singledispatch
+from pathlib import Path
+from typing import Union
+
 from attrs import define, field
 
 
@@ -162,14 +162,14 @@ def catenate_pdbs(out_path: Path, *file_objs: FileHandle):
 
 
 @singledispatch
-def copy_to(obj, dir_path: Path, name=None):
+def copy_to(obj, dir_path: Union[Path, DirHandle], name=None):
     raise NotImplementedError
 
 
 @copy_to.register
-def _(obj: FileHandle, path: Path, name=None):
+def _(obj: FileHandle, dir_path: Union[Path, DirHandle], name=None):
     if name is None:
         name = obj.path.name
-    new_file = Path(path) / name
+    new_file = Path(dir_path) / name
     sh.copy(obj.path, new_file)
     return FileHandle(new_file)

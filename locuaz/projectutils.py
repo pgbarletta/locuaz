@@ -127,6 +127,18 @@ class Iteration:
     def __truediv__(self, key) -> Union[FileHandle, "DirHandle"]:
         return self.dir_handle.__truediv__(key)
 
+    def __lt__(self, other: "Iteration") -> bool:
+        """
+        Iterations will be added to a heapq during pruning. In case they have the same score,
+        iterations will be compared against each other, so a comparison function is needed, even
+        though we don't care about the order of iterations with the same score.
+        Args:
+            other (Iteration): another iteration object.
+        Returns:
+            bool: first iteration in alphabetical order according to its name.
+        """
+        return self.iter_name < other.iter_name
+
 
 @define
 class Epoch(MutableMapping):

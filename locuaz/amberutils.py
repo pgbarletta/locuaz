@@ -119,27 +119,27 @@ def run_tleap(
     pre_rst_path = Path(local_dir, f"pre_{name}.rst7")
     pdb_path = Path(local_dir, f"{name}.pdb")
     assert (
-        pre_top_path.is_file() and pre_rst_path.is_file() and pdb_path.is_file()
+            pre_top_path.is_file() and pre_rst_path.is_file() and pdb_path.is_file()
     ), f"---- Possible tleap error: ----\n{p.stdout}"
 
     amb = pmd.load_file(str(pre_top_path), str(pre_rst_path))
     u: mda.Universe = mda.Universe(str(pdb_path))
-
-    mda_res = len(u.residues)  # type: ignore
-    pmd_res = len(amb.residues)  # type: ignore
-    assert (
-        mda_res == pmd_res
-    ), f"Mismatch between parmed residues ({pmd_res}) and MDAnalysis residues ({mda_res})."
-
     # Set box size:
     amb.box = u.dimensions
 
     # Add chainID info to prmtop
     chainids: List[str] = []
-    for mda_res, pmd_res in zip(u.residues, amb.residues):  # type: ignore
+    for i, pmd_res in enumerate(amb.residues):  # type: ignore
+        try:
+            mda_res = u.residues[i]
+        except IndexError:
+            # If tleap adds/remove ions, then len(u.residues) != len(amb.residues)
+            mda_res = prev_res
         segid = mda_res.segid if mda_res.segid != "" else "X"  # type: ignore
         pmd_res.chain = segid  # type: ignore
         chainids.append(segid)  # type: ignore
+        # Doing this in case `mda_res` is unbound after an exception is thrown when trying to assign to it
+        prev_res = mda_res
 
     amb.add_flag(
         "RESIDUE_CHAINID",

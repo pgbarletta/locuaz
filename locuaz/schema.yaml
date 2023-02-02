@@ -114,7 +114,6 @@ protocol:
             required: false
             min: 0
             max: 12
-            higher_than_length_of: memory_positions
             higher_than_length_of: failed_memory_positions
         failed_memory_positions:
             type: list

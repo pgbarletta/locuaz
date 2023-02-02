@@ -1,9 +1,10 @@
 # type: ignore
 # seems that cerberus doesn't provide proper stubs for mypy
+import glob
 import os
 from pathlib import Path
-import glob
 from warnings import warn
+
 from cerberus import Validator
 
 
@@ -24,7 +25,7 @@ class Validatore(Validator):
             ):
                 warn(
                     "Warning: `current_iterations` is set, but `previous_iterations` isn't. "
-                    "Won't be able to prune the current iterations. Make sure there're enough branches."
+                    "Won't be able to prune the current iterations. Make sure there are enough branches."
                 )
 
     def _validate_step_bigger_than(self, other, field, value):
@@ -123,14 +124,14 @@ class Validatore(Validator):
         {'type': 'list'}
         """
         if others:
-            assert len(others) == 2, f"The schema should have 2 elemnts in "
+            assert len(others) == 2, f"The schema should have 2 elements in "
             f"{field}'s `warn_thread_availability`"
             mpi = self.document[others[0]]
             omp = self.document[others[1]]
             necessary = value * mpi * omp
             try:
                 available_procs = int(os.getenv("SLURM_CPUS_ON_NODE"))
-            except TypeError as e:
+            except TypeError:
                 # TODO: also try to check TORQUE PBS environmental variable.
                 available_procs = len(os.sched_getaffinity(0))
             if available_procs < necessary:
@@ -166,6 +167,16 @@ class Validatore(Validator):
                     "mutations for a single position, hence, 19 is the maximum number "
                     "of possible mutations.",
                 )
+
+    def _validate_is_file(self, flag, field, value):
+        """_validate_is_file
+
+        The rule's arguments are validated against this schema:
+        {'type': 'boolean'}
+        """
+        if flag:
+            if not Path(value).is_file():
+                self._error(field, "should be an existing file.")
 
     def _validate_is_directory(self, flag, field, value):
         """_validate_is_directory

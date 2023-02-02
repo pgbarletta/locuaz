@@ -4,6 +4,7 @@ from abstractscoringfunction import AbstractScoringFunction
 from bach import Bach
 from bluues import Bluues
 from evoef2 import Evoef2
+from gmxmmpbsa import Gmx_mmpbsa
 from haddock import Haddock
 from pisa import Pisa
 from rosetta import Rosetta
@@ -15,4 +16,5 @@ scoringfunctions: Dict[str, Type[AbstractScoringFunction]] = {
     "haddock": Haddock,
     "pisa": Pisa,
     "rosetta": Rosetta,
+    "gmx_mmpbsa": Gmx_mmpbsa,
 }

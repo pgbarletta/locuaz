@@ -1,35 +1,32 @@
-name: locuaz 
+name: locuaz
 channels:
   - conda-forge
-  - bioconda
 dependencies:
   - conda-forge::python==3.9.15
   - conda-forge::scipy
   - conda-forge::ipykernel
   - conda-forge::jupyterlab
-  - conda-forge::black
-  - conda-forge::mypy
-  - conda-forge::mypy_extensions
-  - conda-forge::pytest
-  - conda-forge::flake8
-  - conda-forge::flake8-bugbear
-  - conda-forge::sphinx
-  - conda-forge::yaml
-  - conda-forge::types-pyyaml
-  - conda-forge::cerberus
   - conda-forge::ambertools
-  - bioconda::biobb_structure_utils==3.9.0
-  - bioconda::biobb_common==3.9.0
-  - biobb_io==3.9.0
   - conda-forge::mpi4py=3.1.3
   - conda-forge::compilers=1.2.0
   - conda-forge::parmed==4.0.0
   - pip
   - pip:
+    - black
+    - mypy
+    - mypy_extensions
+    - pytest
+    - flake8
+    - sphinx
+    - pyyaml
+    - types-pyyaml
+    - cerberus
+    - mdanalysis==2.3.0
     - git+https://github.com/bioexcel/biobb_analysis.git@596d71c918a515786ed1d8b89f6a6f0357fc98f8
     - biobb_gromacs==3.9.0
     - biobb_model==3.9.0
+    - biobb_common==3.9.0
+    - biobb_io==3.9.0                  
     - pdb2pqr
-    - mdanalysis==2.3.0
     - gmx-mmpbsa
     - tqdm

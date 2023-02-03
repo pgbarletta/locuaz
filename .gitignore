@@ -3,16 +3,6 @@ log*out
 *nc
 *xtc
 *trr
-borre.sh
-amcento.sh
-afra.sh
-avega.sh
 .vscode
-bin
-dist
-aux
-daux
 __*__*
-nice_example
-BIND*sh
 nohup.out

@@ -429,5 +429,9 @@ def main() -> Tuple[Dict, bool]:
 
     # Set up environment
     os.environ["OMP_PLACES"] = "threads"
+    omp_procs_str = str(config["md"]["omp_procs"])
+    if os.environ.get("OMP_NUM_THREADS", "") != omp_procs_str:
+        warnings.warn(f"Setting 'OMP_NUM_THREADS' environment variable to input 'omp_procs' {omp_procs_str}")
+        os.environ["OMP_NUM_THREADS"] = omp_procs_str
 
     return config, starts

@@ -3,12 +3,12 @@ import glob
 import os
 import pickle
 import shutil as sh
+import warnings
 from collections import defaultdict
 from itertools import product
 from pathlib import Path
 from queue import PriorityQueue
 from typing import Dict, List, Final, Set, Tuple, Union, Any
-from warnings import warn
 
 import yaml
 
@@ -52,7 +52,7 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
 
     # Check mode
     if mode != config["main"]["mode"]:
-        warn(
+        warnings.warn(
             f"Warning, CLI input {mode} doesn't match {config['main']['mode']}."
             f"Overwriting option."
         )
@@ -78,6 +78,8 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
         assert (
                 get_dir_size(config["paths"]["tleap"]) < 10
         ), f"tleap dir is heavier than 10Mb. Choose a dir with only the necessary tleap files."
+        warnings.warn(
+            "tleap script will be used. Options: 'water_type', 'force_field' and 'use_box' will be ignored.")
 
     return config, start
 
@@ -85,9 +87,8 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
 def backup_iteration(it_fn: Union[str, Path]) -> None:
     it_path = Path(it_fn)
     new_path = Path(it_path.parent, "bu_" + it_path.name)
-    # TODO: won't be necessary to cast after 3.9 upgrade
-    sh.move(str(it_path), str(new_path))
-    warn(f"Found incomplete epoch. Will backup {it_path} to {new_path}")
+    warnings.warn(f"Found incomplete epoch. Will backup {it_path} to {new_path}")
+    sh.move(it_path, new_path)
 
 
 def append_iterations(
@@ -205,7 +206,7 @@ def get_tracking_files(config: Dict) -> bool:
             tracking["epoch_mutated_positions"]
         )
         if "memory_positions" in config["protocol"]:
-            warn(
+            warnings.warn(
                 f"Tracking file memory_positions ignored: "
                 f'{tracking["memory_positions"]}.\n'
                 f"Using input config memory_positions instead: "
@@ -215,7 +216,7 @@ def get_tracking_files(config: Dict) -> bool:
             config["protocol"]["memory_positions"] = tracking["memory_positions"]
 
         if "failed_memory_positions" in config["protocol"]:
-            warn(
+            warnings.warn(
                 f"Tracking file failed_memory_positions ignored: "
                 f'{tracking["failed_memory_positions"]}.\n'
                 f"Using input config failed_memory_positions instead: "
@@ -227,7 +228,7 @@ def get_tracking_files(config: Dict) -> bool:
             ]
         return True
     except (Exception,):
-        warn(
+        warnings.warn(
             "Could not read tracking info. Will try to get the previous iterations, the "
             "current iterations and the memory of the last mutated positions from the work dir. "
             "Memory of failed mutations won't be loaded."
@@ -324,14 +325,14 @@ def get_memory(config: Dict) -> Tuple[Set, List[List]]:
         # Check in case the mutating chains/residues have changed:
         for iterchains in epoch_iternames:
             if len(iterchains) != input_n_chains:
-                warn(
+                warnings.warn(
                     f"Can't fill requested memory since input 'mutating_chainID' does not "
                     f" match the 'mutating_chainID' previously used on this workspace."
                 )
                 return set(), [[]]
             old_n_resSeqs = [len(itername[2:]) for itername in iterchains]
             if old_n_resSeqs != input_n_resSeqs:
-                warn(
+                warnings.warn(
                     f"Can't fill requested memory since input 'mutating_resSeq' does not "
                     f" match the 'mutating_resSeq' previously used on this workspace."
                 )
@@ -376,6 +377,7 @@ def define_box_settings(config: Dict) -> Dict:
 
 def main() -> Tuple[Dict, bool]:
     """Console script for locuaz."""
+    warnings.simplefilter("default")
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "config_file",

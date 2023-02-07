@@ -1,25 +1,21 @@
+import logging
+import shutil as sh
+import subprocess as sp
+import warnings
 from functools import singledispatch
 from pathlib import Path
 from typing import Dict, Tuple, Optional
-import logging
-import warnings
-import subprocess as sp
-import shutil as sh
 
 import MDAnalysis as mda
 from Bio.PDB import PDBParser
 from Bio.PDB.PDBIO import PDBIO
+from biobb_analysis.gromacs.gmx_image import GMXImage
+from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
+from biobb_gromacs.gromacs.genion import Genion
+from biobb_gromacs.gromacs.gmxselect import Gmxselect
+from biobb_gromacs.gromacs.solvate import Solvate
 
 from complex import AbstractComplex, GROComplex
-from biobb_gromacs.gromacs.gmxselect import Gmxselect
-from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
-from biobb_gromacs.gromacs.solvate import Solvate
-from biobb_gromacs.gromacs.genion import Genion
-from biobb_analysis.gromacs.gmx_image import GMXImage
-from primitives import launch_biobb
-
-from primitives import AA_MAP
-from moleculesutils import get_gro_ziptop_from_pdb, fix_wat_naming
 from fileutils import FileHandle, update_header, copy_to
 from molecules import (
     PDBStructure,
@@ -27,6 +23,9 @@ from molecules import (
     XtcTrajectory,
     get_tpr,
 )
+from moleculesutils import get_gro_ziptop_from_pdb, fix_wat_naming
+from primitives import AA_MAP
+from primitives import launch_biobb
 
 
 @singledispatch
@@ -36,7 +35,6 @@ def image_traj(cpx: AbstractComplex, out_trj_fn: Path, gmx_bin: str) -> Trajecto
 
 @image_traj.register
 def _(cpx: GROComplex, out_trj_fn: Path, gmx_bin: str) -> XtcTrajectory:
-
     wrk_dir = out_trj_fn.parent
 
     # I have to specify `fit_selection` and `center_selection` even though I'm not
@@ -87,7 +85,7 @@ def _(cpx: GROComplex, out_trj_fn: Path, gmx_bin: str) -> XtcTrajectory:
         # Selection
         orig_u.select_atoms(cpx.top.selection_protein).write(str(orig_pdb))
     u = mda.Universe(str(orig_pdb), str(cluster_trj))
-    u.trajectory[2]
+    u.trajectory[2]  # type: ignore
     cluster_gro = Path(wrk_dir, "clustered.gro")
     u.atoms.write(str(cluster_gro))  # type: ignore
 
@@ -121,15 +119,29 @@ def _(cpx: GROComplex, out_trj_fn: Path, gmx_bin: str) -> XtcTrajectory:
             "output_selection": "Protein",
             "ur": "compact",
             "center": True,
-            "center_selection": "Protein",
         },
     )
     launch_biobb(center)
 
+    # Finally, get the last frame of the trajectory and leave it in case the user
+    # wants to check it. chainID info will be lost though.
+    out_pdb_fn = Path(out_trj_fn.parent, out_trj_fn.stem + ".pdb")
+    trjconv = GMXTrjConvStr(
+        input_structure_path=str(out_trj_fn),
+        input_top_path=str(cluster_gro),
+        input_index_path=str(cpx.ndx),
+        output_str_path=str(out_pdb_fn),
+        properties={
+            "binary_path": gmx_bin,
+            "selection": "Protein",
+            "dev": "-dump 999999",
+        },
+    )
+    launch_biobb(trjconv)
+
     # Remove temporary files
     whole_trj.unlink()
     cluster_trj.unlink()
-    # orig_zip.unlink()
     orig_pdb.unlink()
     cluster_gro.unlink()
     nojump_trj.unlink()

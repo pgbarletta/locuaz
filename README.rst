@@ -84,11 +84,15 @@ Additional requirements for specific SFs:
     The 'cns_solve' or 'cns_solve_X.Y' (where 'X'.'Y' is the version number) folder
         has to be at the top level of the haddock
 
-    ln -s ./cns_solve_1.3/ibm-ppc64le-linux/bin/cns cns
+    The following smybolic links have to be created. Version number and
+    specific folder names and locations may change.
+    ```
+    ln -s ./cns_solve_1.3/ibm-ppc64le-linux/bin/cns haddock
     ln -s haddock/protocols protocols
     ln -s haddock/toppar/ toppar
     ln -s cns_solve_1.3/cns_solve_env cns_solve_env
     ln -s haddock/haddock_configure.csh haddock_configure.csh
+    ```
 
 Features
 --------

@@ -1,18 +1,17 @@
-from pathlib import Path
-import subprocess as sp
-from typing import Optional, Union, List
 import shutil as sh
+import subprocess as sp
+from pathlib import Path
+from typing import Optional, Union, List
 
 import MDAnalysis as mda
 from Bio.PDB import PDBParser
 from Bio.PDB.PDBIO import PDBIO
 
+from fileutils import FileHandle
 from molecules import PDBStructure
-from primitives import AA_MAP
-from fileutils import FileHandle, catenate_pdbs
-from mutator import AbstractMutator, Mutation
 from molutils import split_solute_solvent
-from amberutils import fix_pdb
+from mutator import AbstractMutator, Mutation
+from primitives import AA_MAP
 
 
 class MutatorEvoEF2(AbstractMutator):
@@ -155,6 +154,17 @@ class MutatorEvoEF2(AbstractMutator):
         return PDBStructure.from_path(out_path)
 
     def __fix_pdb__(self, pdb_in: Union[Path, PDBStructure]) -> Path:
+        """
+        Uses AA_MAP to map non-standard amino acids to standard ones (eg: 'CY2' to 'CYS')
+        and then removes non-amino acidic molecules (eg: 'ZN' and other ligands).
+        This is to prevent mutators from choking on some proteins.
+        Args:
+            pdb_in: input dried PDB without water nor ions which may contain non-standard
+            residues and non-amino acidic molecules
+
+        Returns:
+            Path: PDB without non-amino acidic molecules and with standardized resnames
+        """
         pdb_in_fn = Path(pdb_in)
         u = mda.Universe(str(pdb_in_fn))
         not_prot: List[str] = []
@@ -163,9 +173,12 @@ class MutatorEvoEF2(AbstractMutator):
                 res.resname = AA_MAP[res.resname]
             except KeyError:
                 not_prot.append(res.resname)
-        sel = "not resname " + " not resname and ".join([res for res in not_prot])
+        not_prot_sel = " and ".join(f"not resname {res}" for res in not_prot)
 
         pdb_out_fn = Path(pdb_in_fn.parent, "init_nonwat_fix.pdb")
-        u.select_atoms(sel).write(str(pdb_out_fn))
+        if not_prot_sel == '':
+            u.atoms.write(str(pdb_out_fn))
+        else:
+            u.select_atoms(not_prot_sel).write(str(pdb_out_fn))
 
         return pdb_out_fn

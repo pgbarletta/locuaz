@@ -17,6 +17,19 @@ from utils_scoring import extract_pdbs, join_target_binder, rm_aux_scoring_files
 def initialize_scoring_folder(
         iteration: Iteration, config: dict, *, log: Optional[logging.Logger] = None
 ) -> int:
+    """
+    Creates scoring folder inside the iteration dir, fixes PBC issues with the original NPT trajectory
+    to create a 'fix_{name}.xtc' trajectory and a 'fix_{name}.pdb'.
+    'target' and 'binder' will get chainIDs of 'A' and 'B', no matter  their original chainIDs
+    or number of chains. This is to prevent scoring functions from choking.
+    Args:
+        iteration (Iteration): Iteration object
+        config (dict): input config file
+        log (logging.Logger): logger
+
+    Returns:
+        nframes(int): number of frames
+    """
     # No amber support for now.
     assert isinstance(iteration.complex, GROComplex)
 
@@ -77,7 +90,7 @@ def score_frames(work_pjct: WorkProject, iteration: Iteration, nframes: int) -> 
 
     for sf_name, scorer in work_pjct.scorers.items():
         try:
-            scores = scorer(nframes=nframes, frames_path=Path(iteration.score_dir))
+            scores = scorer(nframes=nframes, frames_path=Path(iteration.score_dir), cpx=iteration.complex)
         except cf.TimeoutError as e:
             raise e
 

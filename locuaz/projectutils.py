@@ -127,6 +127,7 @@ class Iteration:
     def __truediv__(self, key) -> Union[FileHandle, "DirHandle"]:
         return self.dir_handle.__truediv__(key)
 
+    # noinspection PyDataclass
     def __lt__(self, other: "Iteration") -> bool:
         """
         Iterations will be added to a heapq during pruning. In case they have the same score,
@@ -200,7 +201,7 @@ class Epoch(MutableMapping):
                 unique_str = "_".join(time.ctime().split()).replace(":", "_")
                 dest = Path(orig.parent, f"bu_{unique_str}_{orig.name}")
             # TODO: won't be necessary to cast after 3.9 upgrade
-            sh.move(str(orig), str(dest))
+            sh.move(orig, dest)
 
     def __getitem__(self, key) -> Iteration:
         return self.iterations[key]
@@ -296,9 +297,10 @@ class WorkProject:
                 input_path
             )
 
-            iter_folder = "0-" + iter_name
+            iter_path = Path(self.dir_handle, f"0-{iter_name}")
+            assert not (iter_path.is_dir() or iter_path.is_file()), f"{iter_path} exists. Wrong input path."
             this_iter = Iteration(
-                DirHandle(self.dir_handle.dir_path / iter_folder, make=True),
+                DirHandle(iter_path, make=True),
                 iter_name=iter_name,
                 chainIDs=chainIDs,
                 resnames=resnames,

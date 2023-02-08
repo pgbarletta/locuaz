@@ -145,11 +145,11 @@ def get_gro_ziptop_from_pdb(
     pre_gro_fn.unlink()
     pre_top_fn.unlink()
 
-    top = ZipTopology.from_path(top_fn)
-    top.target_chains = tuple(target_chains)
-    top.binder_chains = tuple(binder_chains)
+    zip_top = ZipTopology.from_path_with_chains(
+        top_fn, target_chains=target_chains, binder_chains=binder_chains
+    )
 
-    return PDBStructure.from_path(pdb_fn), GROStructure.from_path(gro_fn), top
+    return PDBStructure.from_path(pdb_fn), GROStructure.from_path(gro_fn), zip_top
 
 
 def get_gro_ziptop_from_pdb_tleap(

@@ -35,17 +35,18 @@ def launch_biobb(biobb_obj, can_write_console_log: bool = False) -> None:
     biobb_obj.can_write_console_log = can_write_console_log
     err = biobb_obj.launch()
     assert (
-        err is 0 or err is None
+            err == 0 or err is None
     ), f"{biobb_obj} failed. Check {biobb_obj.out_log} and {biobb_obj.err_log}."
 
 
-def ext(name: str, ext: str) -> str:
+def ext(name: str, suffix: str) -> str:
     """ext utility function so I don't have to worry about the extension.
 
     Args:
         name (str): filename with or without the extension.
+        suffix (str): desired extension.
 
     Returns:
         str: filename with the extension.
     """
-    return f"{name.split('.')[0]}.{ext}"
+    return f"{name.split('.')[0]}.{suffix}"

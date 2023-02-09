@@ -1,17 +1,16 @@
-from pathlib import Path
-from logging import Logger
 import shutil as sh
+import warnings
+from logging import Logger
+from pathlib import Path
 
-from projectutils import WorkProject, Epoch, Iteration
-from fileutils import DirHandle
-from mutationgenerators import mutation_generators
-from mutators import mutators
-from mutator import memorize_mutations
-from molecules import catenate_pdbs
-from complex import GROComplex
-from gromacsutils import remove_overlapping_waters, remove_overlapping_solvent
 from amberutils import fix_pdb
-from primitives import ext
+from complex import GROComplex
+from fileutils import DirHandle
+from gromacsutils import remove_overlapping_solvent
+from mutationgenerators import mutation_generators
+from mutator import memorize_mutations
+from mutators import mutators
+from projectutils import WorkProject, Epoch, Iteration
 
 
 def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
@@ -72,13 +71,15 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
             )
 
             # Mutate the PDB
-            overlapped_pdb = mutator.on_pdb(
-                old_pdb,
-                iter_path,
-                mutation=mutation,
-                selection_protein=old_iter.complex.top.selection_protein,
-                selection_wations=old_iter.complex.top.selection_not_protein,
-            )
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                overlapped_pdb = mutator.on_pdb(
+                    old_pdb,
+                    iter_path,
+                    mutation=mutation,
+                    selection_protein=old_iter.complex.top.selection_protein,
+                    selection_wations=old_iter.complex.top.selection_not_protein,
+                )
             remove_overlapping_solvent(
                 overlapped_pdb,
                 mutation.resSeq,

@@ -11,15 +11,17 @@ class AbstractScoringFunction(metaclass=ABCMeta):
     root_dir: DirHandle
     results_dir: DirHandle
     bin_path: Union[FileHandle, str]
-    nprocs: int
+    nthreads: int
+    mpiprocs: int
     TIMEOUT: int = 50
 
     @abstractmethod
-    def __init__(self, sf_dir, *, nprocs=2) -> None:
+    def __init__(self, sf_dir, *, nthreads=2, mpiprocs=2) -> None:
         self.name = str(self)
         self.root_dir = DirHandle(Path(sf_dir, self.name), make=False)
         self.bin_path = FileHandle(Path(self.root_dir, self.name))
-        self.nprocs = nprocs
+        self.nthreads = nthreads
+        self.mpiprocs = mpiprocs
 
     # Can't annotate output since bluues outputs 2 Lists and the rest 1
     @abstractmethod

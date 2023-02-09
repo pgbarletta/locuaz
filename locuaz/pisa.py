@@ -12,8 +12,8 @@ class Pisa(AbstractScoringFunction):
     parameters_handle: FileHandle
     TIMEOUT_PER_FRAME: int = 2
 
-    def __init__(self, sf_dir, *, nprocs=2) -> None:
-        super().__init__(sf_dir, nprocs=nprocs)
+    def __init__(self, sf_dir, *, nthreads=2, mpiprocs=2) -> None:
+        super().__init__(sf_dir, nthreads=nthreads, mpiprocs=mpiprocs)
         self.parameters_handle = FileHandle(Path(self.root_dir, f"{self.name}.params"))
 
     def __parse_output__(
@@ -63,7 +63,7 @@ class Pisa(AbstractScoringFunction):
         self.results_dir = DirHandle(Path(frames_path, self.name), make=True)
         scores: List[float] = [0] * nframes
 
-        with cf.ProcessPoolExecutor(max_workers=self.nprocs) as exe:
+        with cf.ProcessPoolExecutor(max_workers=self.nthreads) as exe:
             futuros: List[cf.Future] = []
             for i in range(nframes):
                 futuros.append(exe.submit(self.__pisa_worker__, frames_path, i))

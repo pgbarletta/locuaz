@@ -12,9 +12,9 @@ class Evoef2(AbstractScoringFunction):
     CPU_TO_MEM_RATIO: int = 1000
     TIMEOUT_PER_FRAME: int = 1
 
-    def __init__(self, sf_dir, *, nprocs=2) -> None:
-        super().__init__(sf_dir, nprocs=nprocs)
-        self.max_concurrent_jobs = self.CPU_TO_MEM_RATIO * self.nprocs
+    def __init__(self, sf_dir, *, nthreads=2, mpiprocs=2) -> None:
+        super().__init__(sf_dir, nthreads=nthreads, mpiprocs=mpiprocs)
+        self.max_concurrent_jobs = self.CPU_TO_MEM_RATIO * self.nthreads
 
     def __evoef2_worker__(self, frames_path: Path, i: int) -> Tuple[int, float]:
         # Using relative path to `pdb_frame` to shorten path to input PDB.
@@ -63,7 +63,7 @@ class Evoef2(AbstractScoringFunction):
         self.results_dir = DirHandle(Path(frames_path, self.name), make=True)
         scores: List[float] = [0] * nframes
 
-        with cf.ProcessPoolExecutor(max_workers=self.nprocs) as exe:
+        with cf.ProcessPoolExecutor(max_workers=self.nthreads) as exe:
             futuros: List[cf.Future] = []
 
             for i in range(nframes):

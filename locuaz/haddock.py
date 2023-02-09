@@ -17,8 +17,8 @@ class Haddock(AbstractScoringFunction):
     rescoring_scripts_dir: DirHandle
     TIMEOUT_PER_FRAME: int = 30
 
-    def __init__(self, sf_dir, *, nprocs=2) -> None:
-        super().__init__(sf_dir, nprocs=nprocs)
+    def __init__(self, sf_dir, *, nthreads=2, mpiprocs=2) -> None:
+        super().__init__(sf_dir, nthreads=nthreads, mpiprocs=mpiprocs)
         self.template_scoring_inp_handle = FileHandle(
             Path(self.root_dir, "template_scoring.inp")
         )
@@ -129,7 +129,7 @@ class Haddock(AbstractScoringFunction):
         self.results_dir = DirHandle(Path(frames_path, self.name), make=True)
         self.__initialize_scoring_dir__()
         scores: List[float] = [0] * nframes
-        with cf.ProcessPoolExecutor(max_workers=self.nprocs) as exe:
+        with cf.ProcessPoolExecutor(max_workers=self.nthreads) as exe:
             futuros: List[cf.Future] = []
             for i in range(nframes):
                 futuros.append(exe.submit(self.__haddock_worker__, frames_path, i))

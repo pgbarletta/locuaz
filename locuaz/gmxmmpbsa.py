@@ -15,15 +15,15 @@ class Gmx_mmpbsa(AbstractScoringFunction):
     bin_name = "gmx_MMPBSA"
     TIMEOUT_PER_FRAME: int = 20
 
-    def __init__(self, sf_dir, *, nprocs=2) -> None:
-        super().__init__(sf_dir, nprocs=nprocs)
+    def __init__(self, sf_dir, *, nthreads=2, mpiprocs=2) -> None:
+        super().__init__(sf_dir, nthreads=nthreads, mpiprocs=mpiprocs)
         # `gmx_mmpbsa` isn't actually the binary, but the config file
         self.in_path = self.bin_path
-        if nprocs > 1:
-            self.bin_name = f"mpirun -np {min(48, nprocs)} gmx_MMPBSA MPI"
+        if mpiprocs > 1:
+            self.bin_name = f"mpirun -np {mpiprocs} gmx_MMPBSA MPI"
 
     def __parse_output__(
-        self, *, score_stdout: Any = None, score_file: Any = None, original_command=""
+            self, *, score_stdout: Any = None, score_file: Any = None, original_command=""
     ) -> List[float]:
 
         with open(Path(score_file), 'r') as csv_file:

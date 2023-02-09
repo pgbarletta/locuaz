@@ -297,10 +297,13 @@ scoring:
             max: 20
             required: true
             lower_than_length_of: functions
-        nprocs:
+        nthreads:
             type: integer
             min: 1
             max: 256
             required: true
-            warn_when_above: 64
-
+        mpiprocs:
+            type: integer
+            min: 1
+            max: 256
+            required: true

@@ -12,8 +12,8 @@ from fileutils import DirHandle
 class Rosetta(AbstractScoringFunction):
     TIMEOUT_PER_FRAME: int = 30
 
-    def __init__(self, sf_dir, *, nprocs=2) -> None:
-        super().__init__(sf_dir, nprocs=nprocs)
+    def __init__(self, sf_dir, *, nthreads=2, mpiprocs=2) -> None:
+        super().__init__(sf_dir, nthreads=nthreads, mpiprocs=mpiprocs)
         self.executable = (
             f'{self.bin_path} -database {Path(self.root_dir, "rosetta_database")}'
         )
@@ -85,7 +85,7 @@ class Rosetta(AbstractScoringFunction):
         self.results_dir = DirHandle(Path(frames_path, self.name), make=True)
         scores: List[float] = [0] * nframes
 
-        with cf.ProcessPoolExecutor(max_workers=self.nprocs) as exe:
+        with cf.ProcessPoolExecutor(max_workers=self.nthreads) as exe:
             futuros: List[cf.Future] = []
             for i in range(nframes):
                 futuros.append(exe.submit(self.__rosetta_worker__, frames_path, i))

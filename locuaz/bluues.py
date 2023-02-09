@@ -14,8 +14,8 @@ class Bluues(AbstractScoringFunction):
     pdb2pqr_bin_path: str = "pdb2pqr30"
     TIMEOUT_PER_FRAME: int = 60
 
-    def __init__(self, sf_dir, *, nprocs=2) -> None:
-        super().__init__(sf_dir, nprocs=nprocs)
+    def __init__(self, sf_dir, *, nthreads=2, mpiprocs=2) -> None:
+        super().__init__(sf_dir, nthreads=nthreads, mpiprocs=mpiprocs)
         self.bmf_bin_path = FileHandle(Path(self.root_dir, "bmf"))
 
     def __pdb2pqr_worker__(self, frames_path: Path, i: int) -> int:
@@ -145,7 +145,7 @@ class Bluues(AbstractScoringFunction):
         scores_bluues: List[float] = [0] * nframes
         scores_bmf: List[float] = [0] * nframes
 
-        with cf.ProcessPoolExecutor(max_workers=self.nprocs) as exe:
+        with cf.ProcessPoolExecutor(max_workers=self.nthreads) as exe:
             futuros_pdb2pqr: List[cf.Future] = []
             futuros_bluues_bmf: List[cf.Future] = []
             for i in range(nframes):

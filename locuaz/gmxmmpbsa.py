@@ -18,6 +18,8 @@ class Gmx_mmpbsa(AbstractScoringFunction):
     def __init__(self, sf_dir, *, nthreads=2, mpiprocs=2) -> None:
         super().__init__(sf_dir, nthreads=nthreads, mpiprocs=mpiprocs)
         # `gmx_mmpbsa` isn't actually the binary, but the config file
+        # This happens because gmx_MMPBSA is the only SF that comes with the protocol instead of
+        # being an external binary.
         self.in_path = self.bin_path
         if mpiprocs > 1:
             self.bin_name = f"mpirun -np {mpiprocs} gmx_MMPBSA MPI"

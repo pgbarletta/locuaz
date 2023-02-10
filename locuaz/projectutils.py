@@ -464,7 +464,8 @@ class WorkProject:
         for sf in self.config["scoring"]["functions"]:
             self.scorers[str(sf)] = scoringfunctions[sf](
                 self.config["paths"]["scoring_functions"],
-                nprocs=self.config["scoring"]["nprocs"],
+                nthreads=self.config["scoring"]["nthreads"],
+                mpiprocs=self.config["scoring"]["mpiprocs"],
             )
 
     @staticmethod
@@ -545,7 +546,8 @@ class WorkProject:
         aas = {res.resname for res in prot.residues}
         all_aas = set(AA_MAP.keys())
         if not aas.issubset(all_aas):
-            warn(f"Unrecognized residues: {aas - all_aas}")
+            warn(f"Unrecognized residues: {aas - all_aas}. Make sure you can build "
+                 "a topology for them and that they are not necessary for scoring.")
 
         # Check solvent
         solvent_sel = "resname WAT" if self.config["md"]["use_tleap"] else "resname SOL"
@@ -694,9 +696,10 @@ class WorkProject:
             # Back up tracking.pkl before writing.
             track = Path(self.dir_handle, "tracking.pkl")
             try:
-                sh.move(track, Path(self.dir_handle, "bu_tracking.pkl"))
+                unique_str = "_".join(time.ctime().split()).replace(":", "_")
+                sh.move(track, Path(self.dir_handle, f"{unique_str}_tracking.pkl"))
             except (FileNotFoundError, OSError):
-                warn("No tracking.pkl file present. Writing initial one.")
+                pass
 
             with open(track, "wb") as cur_file:
                 pickle.dump(tracking, cur_file)

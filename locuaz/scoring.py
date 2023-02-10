@@ -1,5 +1,6 @@
 import concurrent.futures as cf
 import logging
+import sys
 import time
 from pathlib import Path
 from typing import Optional
@@ -56,7 +57,7 @@ def initialize_scoring_folder(
     nframes = extract_pdbs(
         ens_of_pdbs,
         "target",
-        nprocs=config["scoring"]["nprocs"],
+        nprocs=config["scoring"]["nthreads"],
         new_chainID="A",
         log=log,
     )
@@ -73,7 +74,7 @@ def initialize_scoring_folder(
     nframes_binder = extract_pdbs(
         ens_of_pdbs,
         "binder",
-        nprocs=config["scoring"]["nprocs"],
+        nprocs=config["scoring"]["nthreads"],
         new_chainID="B",
         log=log,
     )
@@ -121,11 +122,11 @@ def discard_iteration(work_pjct: WorkProject, iteration: Iteration) -> None:
 
     for sf_name, _ in work_pjct.scorers.items():
         if sf_name == "bluues":
-            iteration.set_score("bluues", [0, 0])
-            iteration.set_score("bmf", [0, 0])
+            iteration.set_score("bluues", [sys.maxsize, sys.maxsize])
+            iteration.set_score("bmf", [sys.maxsize, sys.maxsize])
             log.info(f"{sf_name} nullifying score.")
         else:
-            iteration.set_score(sf_name, [0, 0])
+            iteration.set_score(sf_name, [sys.maxsize, sys.maxsize])
             log.info(f"{sf_name} nullifying score.")
     iteration.write_down_scores()
 

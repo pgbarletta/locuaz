@@ -1,21 +1,19 @@
-from itertools import chain
-from functools import singledispatch
-import MDAnalysis as mda
-from pathlib import Path
-import numpy as np
 from abc import ABCMeta
 from collections.abc import Iterable
-from typing import List, Dict, Tuple, Any
+from functools import singledispatch
+from itertools import chain
+from pathlib import Path
+from typing import List, Dict, Tuple, Any, Union
 
+import MDAnalysis as mda
+import numpy as np
 from attrs import define, field
-
-from biobb_gromacs.gromacs.pdb2gmx import Pdb2gmx
+from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
 from biobb_gromacs.gromacs.gmxselect import Gmxselect
 from biobb_gromacs.gromacs.grompp import Grompp
-from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
+from biobb_gromacs.gromacs.pdb2gmx import Pdb2gmx
 
-
-from fileutils import FileHandle, copy_to, update_header
+from fileutils import FileHandle, DirHandle, copy_to, update_header
 from primitives import launch_biobb
 
 

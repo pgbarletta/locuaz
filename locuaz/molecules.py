@@ -21,22 +21,14 @@ from primitives import launch_biobb
 class AbstractFileObject(metaclass=ABCMeta):
     """AbstractFileObject Abstract Base Class for all objects associated to a file
 
-    Args:
-        path ([str, Path]): path to file, will use to construct the FileHandle object
     Attributes:
         file (FileHandle): FileHandle to the object
         name (str): name of the file
-        extension (str): extension, filetype, of the file
+        ext (str): extension, filetype, of the file
     """
-
     file: FileHandle = field(converter=FileHandle)  # type: ignore
     name: str = field(init=False)
     ext: str = field(init=False)
-
-    # def __init__(self, file_str: Path):
-    #     file_path = Path(file_str)
-    #     self.file = FileHandle(file_path)
-    #     self.name, self.ext = file_path.name.split(".")
 
     def __attrs_post_init__(self):
         self.name, self.ext = self.file.path.name.split(".")
@@ -80,6 +72,7 @@ class PDBStructure(Structure):
         file (FileHandle): path to the file
     """
 
+    # TODO: turn __init__ to __attrs_post_init__
     def __init__(self, file: FileHandle):
         super().__init__(file)
         if self.ext != "pdb":
@@ -385,6 +378,15 @@ def generate_ndx(
 
 
 def read_ndx(ndx_path: Path) -> Dict:
+    """
+    read_ndx(): reads GROMACS .ndx file. Watch out, it also performs 0-index
+    correction. That is, it substracts 1 from the atom indices.
+    Args:
+        ndx_path(Path):
+
+    Returns:
+        Dict: 0-indexed selections from the .ndx file
+    """
     indices: List[str] = []
     group_name = None
     grupos: Dict[str, Any] = {}

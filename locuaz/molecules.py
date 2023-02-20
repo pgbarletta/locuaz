@@ -403,18 +403,18 @@ def read_ndx(ndx_path: Path) -> Dict:
 
 
 @singledispatch
-def copy_mol_to(obj, dir_path: Path, name=None):
+def copy_mol_to(obj, dir_path: Union[Path, DirHandle], name=None):
     raise NotImplementedError
 
 
 @copy_mol_to.register
-def _(obj: Structure, dir_path: Path, name=None):
+def _(obj: Structure, dir_path: Union[Path, DirHandle], name=None):
     new_file = copy_to(obj.file, dir_path, name=name)
     return Structure(new_file)
 
 
 @copy_mol_to.register
-def _(obj: ZipTopology, dir_path: Path, name=None):
+def _(obj: ZipTopology, dir_path: Union[Path, DirHandle], name=None):
     new_file = copy_to(obj.file, dir_path, name=name)
     ZipTopology.from_path_with_chains(
         new_file.path, target_chains=obj.target_chains, binder_chains=obj.binder_chains
@@ -422,12 +422,12 @@ def _(obj: ZipTopology, dir_path: Path, name=None):
 
 
 @copy_mol_to.register
-def _(obj: Trajectory, dir_path: Path, name=None):
+def _(obj: Trajectory, dir_path: Union[Path, DirHandle], name=None):
     new_file = copy_to(obj.file, dir_path, name=name)
     return Trajectory(new_file)
 
 
-def try_copy_to(obj, dir_path: Path, name=None) -> Any:
+def try_copy_to(obj, dir_path: Union[Path, DirHandle], name=None) -> Any:
     try:
         new_obj = copy_to(obj, dir_path, name)
     except FileNotFoundError as e:

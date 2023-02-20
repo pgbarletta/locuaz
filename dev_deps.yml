@@ -1,6 +1,7 @@
 name: locuaz
 channels:
   - conda-forge
+  - bioconda
 dependencies:
   - conda-forge::python==3.9.15
   - conda-forge::scipy
@@ -22,8 +23,9 @@ dependencies:
     - types-pyyaml
     - cerberus
     - mdanalysis==2.3.0
-    - git+https://github.com/bioexcel/biobb_analysis.git@596d71c918a515786ed1d8b89f6a6f0357fc98f8
     - biobb_gromacs==3.9.0
+    - git+https://github.com/bioexcel/biobb_common.git@a59d4b15ef88943386e929df4d7ff72262ee0b9f
+    - git+https://github.com/bioexcel/biobb_analysis.git@596d71c918a515786ed1d8b89f6a6f0357fc98f8
     - biobb_model==3.9.0
     - biobb_common==3.9.0
     - biobb_io==3.9.0                  

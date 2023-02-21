@@ -32,3 +32,4 @@ dependencies:
     - pdb2pqr
     - gmx-mmpbsa
     - tqdm
+    - openbabel

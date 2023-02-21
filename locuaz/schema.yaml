@@ -307,3 +307,16 @@ scoring:
             min: 1
             max: 256
             required: true
+        start:
+            type: integer
+            default: 0
+            min: 0
+            max: 999999
+            required: false
+        end:
+            type: integer
+            default: -1
+            min: -1
+            max: 999999
+            required: false
+            scoring_end: true

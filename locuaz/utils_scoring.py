@@ -1,26 +1,27 @@
-import re
-from collections.abc import Iterable
-from typing import Optional, List
-import zipfile
-from pathlib import Path
+import concurrent.futures as cf
 import glob
 import logging
-import concurrent.futures as cf
-
+import re
+import zipfile
+from collections.abc import Iterable
+from pathlib import Path
+from typing import Optional, List, Tuple
 
 from fileutils import DirHandle, FileHandle, catenate_pdbs
 from gromacsutils import fix_gromacs_pdb
 
 
 def extract_pdbs(
-    zip_file: Path,
-    out_prefix: str,
-    *,
-    nprocs: int = 1,
-    new_chainID: Optional[str] = None,
-    delete_zip_file: bool = True,
-    log: Optional[logging.Logger] = None,
-) -> int:
+        zip_file: Path,
+        out_prefix: str,
+        *,
+        nprocs: int = 1,
+        new_chainID: Optional[str] = None,
+        start: int,
+        end: int,
+        delete_zip_file: bool = True,
+        log: Optional[logging.Logger] = None,
+) -> Tuple[int, int]:
     """extract_pdbs Extracts `zip_file`, fixes the PDBs and, optionally, deletes
     the original zipfile.
 
@@ -44,6 +45,9 @@ def extract_pdbs(
             for nombre in zipped_pdbs.filelist
         ]
     )
+    end = nframes if end == -1 else end
+    assert (end - start) <= nframes, f"Bad start ({start}) and end ({end}) frames. " \
+                                     f"Only got {nframes} out of the trajectory"
 
     with zipped_pdbs as sipesipe:
         sipesipe.extractall(current_dir)
@@ -53,9 +57,14 @@ def extract_pdbs(
         for i in range(nframes):
             old_pdb = Path(current_dir / (f"output{i}.pdb"))
             new_pdb = Path(current_dir / (f"{out_prefix}-{i}.pdb"))
-            futuros.append(
-                ex.submit(fix_gromacs_pdb, old_pdb, new_pdb, new_chainID=new_chainID)
-            )
+
+            if i >= start and i < end:
+                futuros.append(
+                    ex.submit(fix_gromacs_pdb, old_pdb, new_pdb, new_chainID=new_chainID)
+                )
+            else:
+                # Discard this frame
+                old_pdb.unlink()
 
         for futu in cf.as_completed(futuros):
             if futu.exception():
@@ -68,17 +77,19 @@ def extract_pdbs(
     if delete_zip_file:
         zip_file.unlink()
 
-    return nframes
+    return start, end
 
 
 def join_target_binder(
-    pdbs_path: Path,
-    nframes: int,
-    tar: str = "target",
-    bin: str = "binder",
-    cpx: str = "complex",
+        pdbs_path: Path,
+        *,
+        start: int,
+        end: int,
+        tar: str = "target",
+        bin: str = "binder",
+        cpx: str = "complex",
 ) -> None:
-    for i in range(nframes):
+    for i in range(start, end):
         tmp_fn = pdbs_path / f"tmp-{i}.pdb"
         catenate_pdbs(
             tmp_fn,
@@ -90,9 +101,9 @@ def join_target_binder(
 
 
 def rm_aux_scoring_files(
-    frames_path: DirHandle, scoring_functions: Iterable, nframes: int
+        frames_path: DirHandle, scoring_functions: Iterable, *, start: int, end: int
 ) -> None:
-    for i in range(nframes):
+    for i in range(start, end):
         Path(frames_path, f"target-{i}.pdb").unlink()
         Path(frames_path, f"binder-{i}.pdb").unlink()
         Path(frames_path, f"complex-{i}.pdb").unlink()

@@ -121,17 +121,20 @@ class Haddock(AbstractScoringFunction):
     def __call__(
             self,
             *,
-            nframes: int,
+            start: int,
+            end: int,
             frames_path: Path,
             cpx: GROComplex,
     ) -> List[float]:
 
         self.results_dir = DirHandle(Path(frames_path, self.name), make=True)
+        nframes = end - start
         self.__initialize_scoring_dir__()
-        scores: List[float] = [0] * nframes
+        # The first unused frames will be discarded later
+        scores: List[float] = [0] * end
         with cf.ProcessPoolExecutor(max_workers=self.nthreads) as exe:
             futuros: List[cf.Future] = []
-            for i in range(nframes):
+            for i in range(start, end):
                 futuros.append(exe.submit(self.__haddock_worker__, frames_path, i))
 
             timeout = self.TIMEOUT_PER_FRAME * nframes
@@ -152,7 +155,8 @@ class Haddock(AbstractScoringFunction):
                 )
                 raise e
 
-        return scores
+        # Discard the first 0 frames
+        return scores[start:]
 
     def __initialize_scoring_dir__(self) -> None:
 

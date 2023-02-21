@@ -54,11 +54,13 @@ def initialize_scoring_folder(
         properties={"binary_path": gmx_bin, "selection": "target"},
     )
     launch_biobb(get_target)
-    nframes = extract_pdbs(
+    start, end = extract_pdbs(
         ens_of_pdbs,
         "target",
         nprocs=config["scoring"]["nthreads"],
         new_chainID="A",
+        start=config["scoring"]["start"],
+        end=config["scoring"]["end"],
         log=log,
     )
 
@@ -71,32 +73,37 @@ def initialize_scoring_folder(
         properties={"binary_path": gmx_bin, "selection": "binder"},
     )
     launch_biobb(get_binder)
-    nframes_binder = extract_pdbs(
+    start_binder, end_binder = extract_pdbs(
         ens_of_pdbs,
         "binder",
         nprocs=config["scoring"]["nthreads"],
         new_chainID="B",
+        start=config["scoring"]["start"],
+        end=config["scoring"]["end"],
         log=log,
     )
 
     # Complex PDBs
-    assert nframes == nframes_binder
-    join_target_binder(Path(iteration.score_dir), nframes)
+    assert start == start_binder, f"target start frame ({start}) and binder start frame ({start_binder}) " \
+                                  f"don't match. This shouldn't happen."
+    assert end == end_binder, f"target end frame ({end}) and binder end frame ({end_binder}) " \
+                              f"don't match. This shouldn't happen."
+    join_target_binder(Path(iteration.score_dir), start=start, end=end)
 
-    return nframes
+    return start, end
 
 
-def score_frames(work_pjct: WorkProject, iteration: Iteration, nframes: int) -> None:
+def score_frames(work_pjct: WorkProject, iteration: Iteration, *, start: int, end: int) -> None:
     log = logging.getLogger(f"{work_pjct.name}")
 
     for sf_name, scorer in work_pjct.scorers.items():
         try:
-            scores = scorer(nframes=nframes, frames_path=Path(iteration.score_dir), cpx=iteration.complex)
+            scores = scorer(start=start, end=end, frames_path=Path(iteration.score_dir), cpx=iteration.complex)
         except cf.TimeoutError as e:
             raise e
 
         assert (
-            scores is not None
+                scores is not None
         ), f"This shouldn't happen. Iteration: {iteration.score_dir}"
 
         if sf_name == "bluues":
@@ -112,7 +119,7 @@ def score_frames(work_pjct: WorkProject, iteration: Iteration, nframes: int) -> 
         log.info(
             "Removing PDB, PSF, PQR frames and auxiliary scoring files. Set `--debug` to skip this."
         )
-        rm_aux_scoring_files(iteration.score_dir, work_pjct.scorers.keys(), nframes)
+        rm_aux_scoring_files(iteration.score_dir, work_pjct.scorers.keys(), start=start, end=end)
 
     iteration.write_down_scores()
 
@@ -141,12 +148,12 @@ def score(work_pjct: WorkProject, iteration: Iteration) -> None:
             # Discard this iteration.
             discard_iteration(work_pjct, iteration)
         else:
-            start = time.time()
+            start_time = time.time()
             log.info("Splitting NPT trajectory in frames.")
 
-            nframes = initialize_scoring_folder(iteration, work_pjct.config, log=log)
-            score_frames(work_pjct, iteration, nframes)
+            start, end = initialize_scoring_folder(iteration, work_pjct.config, log=log)
+            score_frames(work_pjct, iteration, start=start, end=end)
 
             log.info(
-                f"Time elapsed during {iteration.iter_name}'s {nframes} frames scoring: {time.time() - start}"
+                f"Time elapsed during {iteration.iter_name}'s {end - start} frames scoring: {time.time() - start_time}"
             )

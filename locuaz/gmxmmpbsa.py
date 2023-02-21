@@ -4,6 +4,7 @@ import subprocess as sp
 import zipfile
 from pathlib import Path
 from typing import List, Any
+from warnings import warn
 
 from abstractscoringfunction import AbstractScoringFunction
 from complex import GROComplex
@@ -40,16 +41,18 @@ class Gmx_mmpbsa(AbstractScoringFunction):
         return mmpbsa_score
 
     def __call__(
-        self,
-        *,
-        nframes: int,
-        frames_path: Path,
-        cpx: GROComplex,
+            self,
+            *,
+            start: int,
+            end: int,
+            frames_path: Path,
+            cpx: GROComplex,
     ) -> List[float]:
 
         results_dir = self.__initialize_scoring_dir__(frames_path, cpx)
+        nframes = end - start
         score_gmxmmpbsa = Path(results_dir, "score_gmxmmpbsa.csv")
-        comando_gmx_MMPBSA = f"{self.bin_name} -O -i {self.in_path} -cp {self.top} -cs {cpx.tpr} "\
+        comando_gmx_MMPBSA = f"{self.bin_name} -O -i {self.in_path} -cp {self.top} -cs {cpx.tpr} " \
                              f"-ci {cpx.ndx} -cg 0 1 -ct {self.trj} -eo {score_gmxmmpbsa} -nogui"
 
         try:
@@ -70,9 +73,16 @@ class Gmx_mmpbsa(AbstractScoringFunction):
                                                  command=comando_gmx_MMPBSA)
         mmpbsa_score = self.__parse_output__(score_file=score_gmxmmpbsa, original_command=comando_gmx_MMPBSA)
 
+        if len(mmpbsa_score) != (end - start):
+            warn(
+                f"Asked the scoring of {end - start} frames but got {len(mmpbsa_score)} scores. "
+                "Will discard the extra scores, but you can set 'startframe' and 'endframe' on "
+                "your gmx_mmpbsa script to silence this warning.")
+            mmpbsa_score = mmpbsa_score[start:end]
+
         return mmpbsa_score
 
-    def __initialize_scoring_dir__(self, frames_path: Path, cpx: GROComplex,) -> DirHandle:
+    def __initialize_scoring_dir__(self, frames_path: Path, cpx: GROComplex, ) -> DirHandle:
         results_dir = DirHandle(Path(frames_path, self.name), make=True)
 
         if isinstance(cpx.top, ZipTopology):

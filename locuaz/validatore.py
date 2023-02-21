@@ -248,6 +248,17 @@ class Validatore(Validator):
                 f"Warning: both `{field}` and {other} are set, the former will override the latter. "
             )
 
+    def _validate_scoring_end(self, flag, field, value):
+        """_validate_scoring_end
+
+        The rule's arguments are validated against this schema:
+        {'type': 'boolean'}
+        """
+        if flag:
+            start = self.document.get("start", False)
+            if value != -1 and value < start:
+                self._error(field, f"{value} is less than the starting frame: {start} ")
+
     def _check_with_box_check(self, field, value):
         box_options = ("box_type", "dist_to_box", "box")
         if value:

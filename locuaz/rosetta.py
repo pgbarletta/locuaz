@@ -77,17 +77,20 @@ class Rosetta(AbstractScoringFunction):
     def __call__(
             self,
             *,
-            nframes: int,
+            start: int,
+            end: int,
             frames_path: Path,
             cpx: GROComplex,
     ) -> List[float]:
 
         self.results_dir = DirHandle(Path(frames_path, self.name), make=True)
-        scores: List[float] = [0] * nframes
+        nframes = end - start
+        # The first unused frames will be discarded later
+        scores: List[float] = [0] * end
 
         with cf.ProcessPoolExecutor(max_workers=self.nthreads) as exe:
             futuros: List[cf.Future] = []
-            for i in range(nframes):
+            for i in range(start, end):
                 futuros.append(exe.submit(self.__rosetta_worker__, frames_path, i))
 
             timeout = self.TIMEOUT_PER_FRAME * nframes
@@ -104,4 +107,5 @@ class Rosetta(AbstractScoringFunction):
             except cf.TimeoutError as e:
                 print(f"{self.name} subprocess timed out.", flush=True)
                 raise e
-        return scores
+        # Discard the first 0 frames
+        return scores[start:]

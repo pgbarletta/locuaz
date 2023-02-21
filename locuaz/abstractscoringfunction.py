@@ -25,7 +25,7 @@ class AbstractScoringFunction(metaclass=ABCMeta):
 
     # Can't annotate output since bluues outputs 2 Lists and the rest 1
     @abstractmethod
-    def __call__(self, *, nframes: int, frames_path: Path, cpx: GROComplex) -> Any:
+    def __call__(self, *, start: int, end: int, frames_path: Path, cpx: GROComplex) -> Any:
         pass
 
     @abstractmethod

@@ -136,19 +136,22 @@ class Bluues(AbstractScoringFunction):
     def __call__(
             self,
             *,
-            nframes: int,
+            start: int,
+            end: int,
             frames_path: Path,
             cpx: GROComplex,
     ) -> Tuple[List[float], List[float]]:
 
         self.results_dir = DirHandle(Path(frames_path, self.name), make=True)
-        scores_bluues: List[float] = [0] * nframes
-        scores_bmf: List[float] = [0] * nframes
+        nframes = end - start
+        # The first frames will be discarded later.
+        scores_bluues: List[float] = [0] * end
+        scores_bmf: List[float] = [0] * end
 
         with cf.ProcessPoolExecutor(max_workers=self.nthreads) as exe:
             futuros_pdb2pqr: List[cf.Future] = []
             futuros_bluues_bmf: List[cf.Future] = []
-            for i in range(nframes):
+            for i in range(start, end):
                 futuros_pdb2pqr.append(
                     exe.submit(self.__pdb2pqr_worker__, frames_path, i)
                 )
@@ -185,4 +188,4 @@ class Bluues(AbstractScoringFunction):
             except cf.TimeoutError as e:
                 print(f"{self.name}/bmf subprocess timed out.", flush=True)
                 raise e
-        return scores_bluues, scores_bmf
+        return scores_bluues[start:], scores_bmf[start:]

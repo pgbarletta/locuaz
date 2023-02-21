@@ -147,6 +147,11 @@ class MutatorEvoEF2(AbstractMutator):
         u = mda.Universe(str(solute_path))
         v = mda.Universe(str(solvent_path))
 
+        # TODO: get a `charge_diff` parameter, if not 0, count NA/Na and CL/Cl ions from the solvent
+        # TODO: 1st try to remove an ion to match the `charge_diff`, if impossible, then
+        # TODO: add `charge_diff` NA/Na or CL/Cl ions by using the `ion_contour` code
+        # TODO: (using mda.Merge to get proper numbering) this code should be in AbstractMutator.
+
         # Prevent MDA from creating its own chainID like 'X' or 'SYSTEM'
         v.atoms.segments.segids = " "  # type: ignore
         mda.Merge(u.atoms, v.atoms).atoms.write(str(out_path))  # type: ignore

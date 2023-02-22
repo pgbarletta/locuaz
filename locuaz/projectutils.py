@@ -287,7 +287,8 @@ class WorkProject:
             self.__track_project__(log)
 
     def __start_work__(self, log: logging.Logger):
-        zero_epoch = Epoch(0, iterations={}, nvt_done=False, npt_done=False)
+        starting_epoch = self.config["main"]["starting_epoch"]
+        zero_epoch = Epoch(starting_epoch, iterations={}, nvt_done=False, npt_done=False)
         for data_str in self.config["paths"]["input"]:
 
             # Check input PDB to create name and attributes for the starting iteration.
@@ -297,7 +298,7 @@ class WorkProject:
                 input_path
             )
 
-            iter_path = Path(self.dir_handle, f"0-{iter_name}")
+            iter_path = Path(self.dir_handle, f"{starting_epoch}-{iter_name}")
             assert not (iter_path.is_dir() or iter_path.is_file()), f"{iter_path} exists. Wrong input path."
             this_iter = Iteration(
                 DirHandle(iter_path, make=True),
@@ -331,7 +332,7 @@ class WorkProject:
             zero_epoch[iter_name] = this_iter
 
         zero_epoch.mutated_positions = set()
-        # Finally, add the epoch 0.
+        # Finally, add the initial epoch.
         self.new_epoch(zero_epoch)
 
     def __restart_work__(self, log: logging.Logger):

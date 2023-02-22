@@ -51,6 +51,10 @@ main:
             type: string
             required: false
             default: "npt_"
+        starting_epoch:
+            type: integer
+            default: 0
+
 protocol:
     type: dict
     required: false

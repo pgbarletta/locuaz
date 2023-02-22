@@ -155,24 +155,26 @@ def get_valid_iter_dirs(files_and_dirs: List[str], config: Dict) -> List[Path]:
     return valid_iters
 
 
-def is_not_epoch_0(iterations: Union[List[str], List[Path]]):
+def is_not_epoch_0(iterations: Union[List[str], List[Path]], starting_epoch: int):
     for it_fn in iterations:
         it_path = Path(it_fn)
-        if it_path.name.split("-")[0] == "0":
+        if int(it_path.name.split("-")[0]) == starting_epoch:
             return False
     return True
 
 
 def lacks_branches(
-    current_iterations: Union[List[str], List[Path]],
-    branches: int,
-    prevent_fewer_branches: bool,
+        current_iterations: Union[List[str], List[Path]],
+        *,
+        branches: int,
+        starting_epoch: int,
+        prevent_fewer_branches: bool,
 ) -> bool:
     if prevent_fewer_branches:
         # Check that the epoch wasn't cut short during its initialization. This may
         # happen if last run was cut during initialize_new_epoch().
         nbr_branches = len(current_iterations)
-        if nbr_branches < branches and is_not_epoch_0(current_iterations):
+        if nbr_branches < branches and is_not_epoch_0(current_iterations, starting_epoch):
             for it_fn in current_iterations:
                 backup_iteration(it_fn)
             return True
@@ -194,8 +196,9 @@ def get_tracking_files(config: Dict) -> bool:
 
         if lacks_branches(
             current_iterations,
-            config["protocol"]["branches"],
-            config["protocol"]["prevent_fewer_branches"],
+            branches = config["protocol"]["branches"],
+            starting_epoch = config["main"]["starting_epoch"],
+            prevent_fewer_branches = config["protocol"]["prevent_fewer_branches"],
         ):
             return False
 
@@ -259,9 +262,10 @@ def set_iterations(config: Dict) -> None:
         iter_str = append_iterations(iters, config["paths"]["current_iterations"], 1)
 
         if lacks_branches(
-            config["paths"]["current_iterations"],
-            config["protocol"]["branches"],
-            config["protocol"]["prevent_fewer_branches"],
+                config["paths"]["current_iterations"],
+                branches=config["protocol"]["branches"],
+                starting_epoch=config["main"]["starting_epoch"],
+                prevent_fewer_branches=config["protocol"]["prevent_fewer_branches"],
         ):
             # Start over, this time, the incomplete epoch will not be in `iters`.
             continue

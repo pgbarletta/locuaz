@@ -8,6 +8,7 @@ from gmxmmpbsa import Gmx_mmpbsa
 from haddock import Haddock
 from pisa import Pisa
 from rosetta import Rosetta
+from autodockvina import AutodockVina
 
 scoringfunctions: Dict[str, Type[AbstractScoringFunction]] = {
     "bach": Bach,
@@ -17,4 +18,5 @@ scoringfunctions: Dict[str, Type[AbstractScoringFunction]] = {
     "pisa": Pisa,
     "rosetta": Rosetta,
     "gmx_mmpbsa": Gmx_mmpbsa,
+    "autodockvina": AutodockVina,
 }

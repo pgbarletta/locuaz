@@ -294,7 +294,7 @@ scoring:
             required: true
             schema:
                 type: string
-                allowed: ["bach", "bluues", "evoef2", "haddock", "pisa", "rosetta", "gmx_mmpbsa"]
+                allowed: ["bach", "bluues", "evoef2", "haddock", "pisa", "rosetta", "gmx_mmpbsa", "autodockvina"]
         consensus_threshold:
             type: integer
             min: 1

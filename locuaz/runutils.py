@@ -10,7 +10,7 @@ from biobb_gromacs.gromacs.mdrun import Mdrun
 from complex import AbstractComplex, GROComplex
 from fileutils import DirHandle, FileHandle
 from molecules import ZipTopology, copy_mol_to
-from molutils import fix_box
+from fixbox import fix_box_cpx
 from primitives import launch_biobb
 from projectutils import WorkProject
 
@@ -194,7 +194,7 @@ class MDrun:
         all_atoms_in_box = True
         if self.image_after:
             run_pdb = Path(self.dir, f"{self.out_name}.pdb")
-            all_atoms_in_box, _ = fix_box(new_complex, run_pdb, str(self.binary_path))
+            all_atoms_in_box, _ = fix_box_cpx(new_complex, run_pdb, str(self.binary_path))
         else:
             # Convert output .gro to PDB.
             run_pdb = Path(self.dir) / (self.out_name + ".pdb")

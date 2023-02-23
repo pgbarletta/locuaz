@@ -33,3 +33,4 @@ dependencies:
     - gmx-mmpbsa
     - tqdm
     - openbabel
+    - freesasa

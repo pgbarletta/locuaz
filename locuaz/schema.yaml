@@ -85,10 +85,10 @@ protocol:
             warn_overrides: prune
         generator:
             type: string 
-            default: "SPM_4"
+            default: "SPM4"
             required: false
             crosscheck: [branches] 
-            allowed: ["SPM_4", "SPM_R&B"]
+            allowed: ["SPM4", "iSPM4", "SPM_R&B"]
         mutator:
             type: string
             default: "evoef2"
@@ -281,6 +281,21 @@ binder:
                     type: integer
                     min: 1
                     max: 99999
+                    required: true
+        mutating_resname:
+            type: list
+            minlength: 1
+            maxlength: 10
+            required: true
+            same_length: mutating_chainID
+            schema:
+                type: list
+                minlength: 1
+                maxlength: 20
+                required: true
+                schema:
+                    type: string
+                    allowed: [A,C,D,E,F,G,H,I,K,L,M,N,P,Q,R,S,T,V,W,Y]
                     required: true
 
 scoring:

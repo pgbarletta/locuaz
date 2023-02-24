@@ -85,10 +85,10 @@ protocol:
             warn_overrides: prune
         generator:
             type: string 
-            default: "SPM4"
+            default: "SPM4i"
             required: false
             crosscheck: [branches] 
-            allowed: ["SPM4", "iSPM4", "SPM_R&B"]
+            allowed: ["SPM4i"]
         mutator:
             type: string
             default: "evoef2"

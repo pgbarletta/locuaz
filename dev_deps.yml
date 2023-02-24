@@ -11,6 +11,7 @@ dependencies:
   - conda-forge::mpi4py=3.1.3
   - conda-forge::compilers=1.2.0
   - conda-forge::parmed==4.0.0
+  - conda-forge::openbabel
   - pip
   - pip:
     - black
@@ -32,5 +33,4 @@ dependencies:
     - pdb2pqr
     - gmx-mmpbsa
     - tqdm
-    - openbabel
     - freesasa

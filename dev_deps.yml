@@ -25,7 +25,7 @@ dependencies:
     - cerberus
     - mdanalysis==2.3.0
     - biobb_gromacs==3.9.0
-    - git+https://github.com/bioexcel/biobb_common.git@a59d4b15ef88943386e929df4d7ff72262ee0b9f
+    - git+https://github.com/bioexcel/biobb_common.git@b5451508bd6d0622242e03723a381eca460e04b0
     - git+https://github.com/bioexcel/biobb_analysis.git@596d71c918a515786ed1d8b89f6a6f0357fc98f8
     - biobb_model==3.9.0
     - biobb_common==3.9.0

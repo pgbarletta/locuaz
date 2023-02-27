@@ -123,7 +123,7 @@ class SPM4i(AbstractMutationGenerator):
 
         logger.info(f"Residues at the interface: {interface_resSeq}.\n"
                     f"'mutataing_resSeq': {any_iteration.resSeqs}.\n"
-                    f"'mutataing_resSeq' that may be mutated: {mutating_interface_resSeq}.\n")
+                    f"'mutataing_resSeq' that may be mutated: {mutating_interface_resSeq}.")
 
         # Choose the position to mutate. This will be the same for all iterations.
         max_tries: int = sum([len(resSeq) for resSeq in any_iteration.resSeqs]) * 5

@@ -1,6 +1,7 @@
 from pathlib import Path
 from shutil import SameFileError
 from typing import Tuple
+import subprocess as sp
 
 from attrs import define, field
 from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
@@ -11,7 +12,7 @@ from complex import AbstractComplex, GROComplex
 from fileutils import DirHandle, FileHandle
 from molecules import ZipTopology, copy_mol_to
 from fixbox import fix_box_cpx
-from primitives import launch_biobb
+from primitives import launch_biobb, GromacsError
 from projectutils import WorkProject
 
 
@@ -150,29 +151,51 @@ class MDrun:
         }
 
         if run_cpt.is_file():
-            runner = Mdrun(
-                input_tpr_path=str(run_tpr),
-                input_cpt_path=str(run_cpt),
-                output_trr_path=str(run_trr),
-                output_xtc_path=str(run_xtc),
-                output_gro_path=str(run_gro),
-                output_edr_path=str(run_edr),
-                output_log_path=str(run_log),
-                output_cpt_path=str(run_cpt),
-                properties=props,
-            )
+            # runner = Mdrun(
+            #     input_tpr_path=str(run_tpr),
+            #     input_cpt_path=str(run_cpt),
+            #     output_trr_path=str(run_trr),
+            #     output_xtc_path=str(run_xtc),
+            #     output_gro_path=str(run_gro),
+            #     output_edr_path=str(run_edr),
+            #     output_log_path=str(run_log),
+            #     output_cpt_path=str(run_cpt),
+            #     properties=props,
+            # )
+            comando_md = f'{self.binary_path} -nobackup -nocopyright mdrun'
+            comando_md += f' -s {run_tpr} -c {run_gro} -cpi {run_cpt}'
+            comando_md += f' -px {run_pux} -pf {run_puf}'
+            comando_md += f' -o {run_trr} -x {run_xtc} -g {run_log} -cpo {run_cpt}'
+            comando_md += f' -gpu_id {self.gpu_id} -ntmpi {self.num_threads_mpi} -ntomp {self.num_threads_omp}'
         else:
-            runner = Mdrun(
-                input_tpr_path=str(run_tpr),
-                output_trr_path=str(run_trr),
-                output_xtc_path=str(run_xtc),
-                output_gro_path=str(run_gro),
-                output_edr_path=str(run_edr),
-                output_log_path=str(run_log),
-                output_cpt_path=str(run_cpt),
-                properties=props,
+            # runner = Mdrun(
+            #     input_tpr_path=str(run_tpr),
+            #     output_trr_path=str(run_trr),
+            #     output_xtc_path=str(run_xtc),
+            #     output_gro_path=str(run_gro),
+            #     output_edr_path=str(run_edr),
+            #     output_log_path=str(run_log),
+            #     output_cpt_path=str(run_cpt),
+            #     properties=props,
+            # )
+            comando_md = f'{self.binary_path} -nobackup -nocopyright mdrun'
+            comando_md += f' -s {run_tpr} -c {run_gro}'
+            comando_md += f' -px {run_pux} -pf {run_puf}'
+            comando_md += f' -o {run_trr} -x {run_xtc} -g {run_log} -cpo {run_cpt}'
+            comando_md += f' -gpu_id {self.gpu_id} -ntmpi {self.num_threads_mpi} -ntomp {self.num_threads_omp}'
+        # launch_biobb(runner)
+
+        try:
+            p = sp.run(
+                comando_md,
+                stdout=sp.PIPE,
+                stderr=sp.PIPE,
+                cwd=Path(self.dir),
+                shell=True,
+                text=True,
             )
-        launch_biobb(runner)
+        except (RuntimeError, Exception):
+            raise GromacsError(f"MDRun error. stdout:\n{p.stdout}\n"f"stderr:\n{p.stderr}")
 
         # Finally, build the Complex.
         try:

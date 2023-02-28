@@ -564,27 +564,33 @@ class WorkProject:
         # And also check against freesasa
         freesasa_resis = get_freesasa_residues(pdb_path, mutating_chainID)
 
+        resis_not_present = set()
+        resis_not_present_freesasa = set()
         for chainID, resSeqs, resnames in zip(mutating_chainID, mutating_resSeq, mutating_resname):
             for chain in u.segments:  # type: ignore
                 if chain.segid == chainID:
                     selected_resis = {(resSeq, resname) for resSeq, resname in zip(resSeqs, resnames)}
                     available_resis = {(residue.resnum, seq1(residue.resname)) for residue in chain.residues}
 
-                    resis_not_present = selected_resis - available_resis
-                    if len(resis_not_present) > 0:
-                        correct_resis = [(residue.resnum, seq1(residue.resname)) for residue in chain.residues if
-                                         residue.resnum in resSeqs]
-                        raise ValueError(
-                            f"The following residues are not present in the input PDB: {resis_not_present}.\n"
-                            f"These are the (resSeq, resname) pairs for the input 'mutating_resSeq': {correct_resis}")
-
+                    resis_not_present += selected_resis - available_resis
                     resis_not_present_freesasa = selected_resis - freesasa_resis
-                    if len(resis_not_present_freesasa) > 0:
-                        raise ValueError(
-                            "BUG: the following residues are not present according to freesasa: "
-                            f"{resis_not_present_freesasa}.\n"
-                            f"These are the (resSeq, resname) pairs for chains {mutating_chainID} "
-                            f"according to freesasa: {sorted(freesasa_resis, key=lambda x: x[0])}")
+
+        if len(resis_not_present) > 0:
+            correct_resis = [(residue.resnum, seq1(residue.resname)) for residue in chain.residues if
+                             residue.resnum in resSeqs]
+            correct_resis_resSeq = [ res[0] for res in correct_resis ]
+            correct_resis_resname = [res[1] for res in correct_resis]
+            raise ValueError(
+                f"The following residues are not present in the input PDB: {resis_not_present}.\n"
+                f"These are the (resSeq, resname) pairs for the input "
+                f"'{correct_resis_resSeq}': {correct_resis_resname}")
+
+        resis_not_present_freesasa = selected_resis - freesasa_resis
+        if len(resis_not_present_freesasa) > 0:
+            raise ValueError(
+                f"BUG: the following residues are not present according to freesasa: {resis_not_present_freesasa}.\n"
+                f"These are the (resSeq, resname) pairs for chains {mutating_chainID} "
+                f"according to freesasa: {sorted(freesasa_resis, key=lambda x: x[0])}")
 
         # Check residue numbering
         if self.config["md"]["use_tleap"]:

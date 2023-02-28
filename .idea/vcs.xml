@@ -2,7 +2,5 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/bin/FASPR" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/bin/evoef2" vcs="Git" />
   </component>
 </project>

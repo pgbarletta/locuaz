@@ -31,7 +31,7 @@ class Haddock(AbstractScoringFunction):
         )
 
         # Set up environment:
-        os.environ["HADDOCK"] = str(Path(self.root_dir, "haddock"))
+        os.environ["HADDOCK"] = str(Path(self.root_dir))
 
         cns_environment_script = Path(self.root_dir, "cns_solve_env")
         sp.run("/bin/csh " + str(cns_environment_script), shell=True)
@@ -102,7 +102,7 @@ class Haddock(AbstractScoringFunction):
         output = Path(self.results_dir, f"log_{i}.out")
 
         comando_haddock = f"{self.bin_path} <  {scorin_inp_file} > {output}"
-        sp.run(
+        p = sp.run(
             comando_haddock,
             stdout=sp.PIPE,
             stderr=sp.PIPE,
@@ -112,6 +112,8 @@ class Haddock(AbstractScoringFunction):
         )
 
         output_haddock_file = Path(self.results_dir, f"mod_complex-{i}_conv.psf")
+        self.__assert_scoring_function_outfile__(output_haddock_file, stdout=p.stdout, stderr=p.stderr,
+                                                 command=comando_haddock)
         score_haddock = self.__parse_output__(
             score_file=output_haddock_file, original_command=comando_haddock
         )

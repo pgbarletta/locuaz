@@ -81,6 +81,11 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
         warnings.warn(
             "tleap script will be used. Options: 'water_type', 'force_field' and 'use_box' will be ignored.")
 
+    # Check matching lengths of mutating_resSeq and mutating_resname.
+    for resnames, resSeqs in zip(config["binder"]["mutating_resname"], config["binder"]["mutating_resSeq"]):
+            assert len(resnames) == len(resSeqs), f"mutating_resname({resnames}) and mutating_resSeq ({resSeqs}) have " \
+                                                f"different lengths: {len(resnames)} and {len(resSeqs)}, respectively."
+
     return config, start
 
 
@@ -92,7 +97,7 @@ def backup_iteration(it_fn: Union[str, Path]) -> None:
 
 
 def append_iterations(
-    sorted_iters: PriorityQueue, iterations: List, prev_epoch: int
+        sorted_iters: PriorityQueue, iterations: List, prev_epoch: int
 ) -> str:
     if sorted_iters.empty():
         return ""
@@ -195,10 +200,10 @@ def get_tracking_files(config: Dict) -> bool:
         top_iterations = get_valid_iter_dirs(tracking["top_iterations"], config)
 
         if lacks_branches(
-            current_iterations,
-            branches = config["protocol"]["branches"],
-            starting_epoch = config["main"]["starting_epoch"],
-            prevent_fewer_branches = config["protocol"]["prevent_fewer_branches"],
+                current_iterations,
+                branches=config["protocol"]["branches"],
+                starting_epoch=config["main"]["starting_epoch"],
+                prevent_fewer_branches=config["protocol"]["prevent_fewer_branches"],
         ):
             return False
 

@@ -39,7 +39,7 @@ def get_interfacing_residues(pdb_input: Union[PDBStructure, FileHandle, Path],
     # Silence warnings from freesasa
     capture_warnings = py.io.StdCaptureFD(out=True, in_=False)
     structs = freesasa.structureArray(str(temp_pdb),
-                                          {"separate-chains": False, "chain-groups": ''.join(chainIDs)})
+                                          {"separate-chains": False, "chain-groups": ''.join(set(chainIDs))})
     capture_warnings.reset()
 
     sasa_whole = freesasa.calc(structs[0])

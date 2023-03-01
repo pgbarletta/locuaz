@@ -537,13 +537,7 @@ class WorkProject:
 
         # Check amino acids
         all_residues = "protein or " + " or ".join(
-            [
-                f"segid {chainID}"
-                for chainID in (
-                    self.config["target"]["chainID"] + self.config["binder"]["chainID"]
-                )
-            ]
-        )
+            [f"segid {chainID}" for chainID in (self.config["target"]["chainID"] + self.config["binder"]["chainID"])])
         prot = u.atoms.select_atoms(all_residues)  # type: ignore
         aas = {res.resname for res in prot.residues}
         all_aas = set(AA_MAP.keys())
@@ -566,26 +560,30 @@ class WorkProject:
 
         resis_not_present = set()
         resis_not_present_freesasa = set()
+        correct_resis_resSeq = []
+        correct_resis_resname = []
         for chainID, resSeqs, resnames in zip(mutating_chainID, mutating_resSeq, mutating_resname):
             for chain in u.segments:  # type: ignore
                 if chain.segid == chainID:
                     selected_resis = {(resSeq, resname) for resSeq, resname in zip(resSeqs, resnames)}
                     available_resis = {(residue.resnum, seq1(residue.resname)) for residue in chain.residues}
 
-                    resis_not_present += selected_resis - available_resis
-                    resis_not_present_freesasa = selected_resis - freesasa_resis
+                    bad_resis = selected_resis - available_resis
+                    resis_not_present.update(bad_resis)
+                    if len(bad_resis) > 0:
+                        correct_resis = [(residue.resnum, seq1(residue.resname)) for residue in chain.residues if
+                                         residue.resnum in resSeqs]
+                        correct_resis_resSeq += [res[0] for res in correct_resis]
+                        correct_resis_resname += [res[1] for res in correct_resis]
+
+                    resis_not_present_freesasa.update(selected_resis - freesasa_resis)
 
         if len(resis_not_present) > 0:
-            correct_resis = [(residue.resnum, seq1(residue.resname)) for residue in chain.residues if
-                             residue.resnum in resSeqs]
-            correct_resis_resSeq = [ res[0] for res in correct_resis ]
-            correct_resis_resname = [res[1] for res in correct_resis]
             raise ValueError(
                 f"The following residues are not present in the input PDB: {resis_not_present}.\n"
-                f"These are the (resSeq, resname) pairs for the input "
+                f"This is the 'mutating_resSeq' for the input 'mutating_resSeq' "
                 f"'{correct_resis_resSeq}': {correct_resis_resname}")
 
-        resis_not_present_freesasa = selected_resis - freesasa_resis
         if len(resis_not_present_freesasa) > 0:
             raise ValueError(
                 f"BUG: the following residues are not present according to freesasa: {resis_not_present_freesasa}.\n"

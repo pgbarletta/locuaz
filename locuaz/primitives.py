@@ -40,8 +40,11 @@ def launch_biobb(biobb_obj, can_write_console_log: bool = False) -> None:
     biobb_obj.can_write_console_log = can_write_console_log
     err = biobb_obj.launch()
     if err == 0 or err is None:
-        Path(biobb_obj.out_log.name).unlink()
-        Path(biobb_obj.err_log.name).unlink()
+        try:
+            Path(biobb_obj.out_log.name).unlink()
+            Path(biobb_obj.err_log.name).unlink()
+        except (FileNotFoundError, Exception):
+            pass
     else:
         raise GromacsError(f"{biobb_obj} failed. Check {biobb_obj.out_log} and {biobb_obj.err_log}.")
 

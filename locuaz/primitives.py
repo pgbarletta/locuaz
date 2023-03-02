@@ -44,6 +44,8 @@ def launch_biobb(biobb_obj, can_write_console_log: bool = False) -> None:
             Path(biobb_obj.out_log.name).unlink()
             Path(biobb_obj.err_log.name).unlink()
         except (FileNotFoundError, Exception):
+            # log files may get the same name when running parallel biobb processes
+            # and one run may try to delete a log file that was already deleted.
             pass
     else:
         raise GromacsError(f"{biobb_obj} failed. Check {biobb_obj.out_log} and {biobb_obj.err_log}.")

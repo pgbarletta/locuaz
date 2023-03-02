@@ -150,40 +150,12 @@ class MDrun:
             "dev": f"{self.dev} -px {run_pux} -pf {run_puf}",
         }
 
-        if run_cpt.is_file():
-            # runner = Mdrun(
-            #     input_tpr_path=str(run_tpr),
-            #     input_cpt_path=str(run_cpt),
-            #     output_trr_path=str(run_trr),
-            #     output_xtc_path=str(run_xtc),
-            #     output_gro_path=str(run_gro),
-            #     output_edr_path=str(run_edr),
-            #     output_log_path=str(run_log),
-            #     output_cpt_path=str(run_cpt),
-            #     properties=props,
-            # )
-            comando_md = f'{self.binary_path} -nobackup -nocopyright mdrun'
-            comando_md += f' -s {run_tpr} -c {run_gro} -cpi {run_cpt}'
-            comando_md += f' -px {run_pux} -pf {run_puf}'
-            comando_md += f' -o {run_trr} -x {run_xtc} -g {run_log} -cpo {run_cpt}'
-            comando_md += f' -gpu_id {self.gpu_id} -ntmpi {self.num_threads_mpi} -ntomp {self.num_threads_omp}'
-        else:
-            # runner = Mdrun(
-            #     input_tpr_path=str(run_tpr),
-            #     output_trr_path=str(run_trr),
-            #     output_xtc_path=str(run_xtc),
-            #     output_gro_path=str(run_gro),
-            #     output_edr_path=str(run_edr),
-            #     output_log_path=str(run_log),
-            #     output_cpt_path=str(run_cpt),
-            #     properties=props,
-            # )
-            comando_md = f'{self.binary_path} -nobackup -nocopyright mdrun'
-            comando_md += f' -s {run_tpr} -c {run_gro}'
-            comando_md += f' -px {run_pux} -pf {run_puf}'
-            comando_md += f' -o {run_trr} -x {run_xtc} -g {run_log} -cpo {run_cpt}'
-            comando_md += f' -gpu_id {self.gpu_id} -ntmpi {self.num_threads_mpi} -ntomp {self.num_threads_omp}'
-        # launch_biobb(runner)
+        comando_md = f'{self.binary_path} -nobackup -nocopyright mdrun'
+        comando_md += f' -s {run_tpr} -c {run_gro}'
+        comando_md += f' -cpi {run_cpt}' if run_cpt.is_file() else ""
+        comando_md += f' -px {run_pux} -pf {run_puf}'
+        comando_md += f' -o {run_trr} -x {run_xtc} -g {run_log} -cpo {run_cpt}'
+        comando_md += f' {self.dev} -gpu_id {self.gpu_id} -ntmpi {self.num_threads_mpi} -ntomp {self.num_threads_omp}'
 
         try:
             p = sp.run(

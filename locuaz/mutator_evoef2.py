@@ -20,7 +20,8 @@ class MutatorEvoEF2(AbstractMutator):
     def __init__(self, bin_dir: Path) -> None:
         self.bin_path = FileHandle(Path(bin_dir, "EvoEF2"))
 
-    def __evoef2_file__(self, mut: Mutation, local_dir: Path) -> FileHandle:
+    @staticmethod
+    def __evoef2_file__(mut: Mutation, local_dir: Path) -> FileHandle:
         """__evoef2_file__ creates a .txt file for EvoEF2's --command=BuildMutant
 
         Returns:
@@ -50,7 +51,7 @@ class MutatorEvoEF2(AbstractMutator):
         # Using relative paths to keep them short.
         comando_evoef2 = f"{self.bin_path} --command=BuildMutant --pdb={input_pdb_fn.name} --mutant_file={mutlist}"
 
-        sp.run(
+        p = sp.run(
             comando_evoef2,
             stdout=sp.PIPE,
             stderr=sp.PIPE,
@@ -60,6 +61,7 @@ class MutatorEvoEF2(AbstractMutator):
         )
         # This is EvoEF2's naming convention
         mut_path = Path(local_dir, f"{input_pdb_fn.stem}_Model_0001.pdb")
+        self.__assert_outfile__(mut_path, stdout=p.stdout, stderr=p.stderr, command=comando_evoef2)
         out_path = Path(local_dir, "init_mutated.pdb")
 
         sh.move(mut_path, out_path)
@@ -110,8 +112,8 @@ class MutatorEvoEF2(AbstractMutator):
 
         return overlapped_pdb
 
+    @staticmethod
     def __port_mutation__(
-        self,
         *,
         mutated_pdb: Union[Path, PDBStructure],
         original_pdb: Union[Path, PDBStructure],
@@ -138,8 +140,8 @@ class MutatorEvoEF2(AbstractMutator):
 
         return out_path
 
+    @staticmethod
     def __add_water__(
-        self,
         solute_path: Union[Path, PDBStructure],
         solvent_path: Union[Path, PDBStructure],
         out_path: Path,
@@ -158,7 +160,8 @@ class MutatorEvoEF2(AbstractMutator):
 
         return PDBStructure.from_path(out_path)
 
-    def __fix_pdb__(self, pdb_in: Union[Path, PDBStructure]) -> Path:
+    @staticmethod
+    def __fix_pdb__(pdb_in: Union[Path, PDBStructure]) -> Path:
         """
         Uses AA_MAP to map non-standard amino acids to standard ones (eg: 'CY2' to 'CYS')
         and then removes non-amino acidic molecules (eg: 'ZN' and other ligands).

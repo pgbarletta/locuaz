@@ -59,7 +59,10 @@ class MutatorEvoEF2(AbstractMutator):
         )
         # This is EvoEF2's naming convention
         mut_path = Path(local_dir, f"{input_pdb_fn.stem}_Model_0001.pdb")
-        self.__assert_outfile__(mut_path, stdout=p.stdout, stderr=p.stderr, command=comando_evoef2)
+        try:
+            self.__assert_outfile__(mut_path, stdout=p.stdout, stderr=p.stderr, command=comando_evoef2)
+        except AssertionError as e:
+            raise e
         out_path = Path(local_dir, "init_mutated.pdb")
 
         sh.move(mut_path, out_path)
@@ -93,7 +96,10 @@ class MutatorEvoEF2(AbstractMutator):
         )
 
         nonwat_fix_pdb = self.__fix_pdb__(nonwat_pdb)
-        init_mutated_pdb = self.__run__(nonwat_fix_pdb, mutation)
+        try:
+            init_mutated_pdb = self.__run__(nonwat_fix_pdb, mutation)
+        except AssertionError as e:
+            raise e
 
         dry_mut_pdb_fn = self.__port_mutation__(
             mutated_pdb=init_mutated_pdb,

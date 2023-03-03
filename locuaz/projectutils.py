@@ -474,8 +474,8 @@ class WorkProject:
     def __get_mutating_resname__(
             pdb_path: Path, chainIDs: List, resSeqs: List
     ) -> List[str]:
-        u = mda.Universe(str(pdb_path))
 
+        u = mda.Universe(str(pdb_path))
         resnames = []
         for chainID, list_resSeq in zip(chainIDs, resSeqs):
             ch_resnames = []
@@ -732,7 +732,7 @@ class WorkProject:
 
         except Exception as e:
             if log:
-                log.warning(f"Not a full WorkProject yet, could not track it. {e}")
+                log.warning(f"Not a full WorkProject yet, could not track it.")
 
     def get_first_iter(self) -> Tuple[str, Iteration]:
         return next(iter(self.epochs[0].items()))

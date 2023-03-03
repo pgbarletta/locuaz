@@ -270,8 +270,9 @@ def fixup_top(
 
         if mol in protein:
             file.write(header)
-
-            u = mda.Universe(str(mol_path))
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                u = mda.Universe(str(mol_path))
             at = u.select_atoms("not type H and not type H?")
             for a in at:
                 file.write(f"{a.id:>6d}     1  1000  1000  1000" "\n")

@@ -1,4 +1,5 @@
 import shutil as sh
+import warnings
 from collections.abc import Iterable
 from pathlib import Path
 from typing import Dict, Tuple, Optional, Union
@@ -201,7 +202,10 @@ def fix_wat_naming(
     pdb_in: Union[PDBStructure, Path], pdb_out: Path, *, use_tleap: bool = False
 ) -> PDBStructure:
 
-    u = mda.Universe(str(pdb_in))
+    # Will get some warnings due to new waters added by gmx solvate not having the element column
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        u = mda.Universe(str(pdb_in))
     if use_tleap:
         sol_atomgroup = u.select_atoms("resname SOL")
         if len(sol_atomgroup) > 0:
@@ -215,6 +219,8 @@ def fix_wat_naming(
                 r.resname = "SOL"
                 r.atoms.names = np.array(["OW", "HW1", "HW2"])
 
-    u.atoms.write(str(pdb_out))  # type: ignore
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        u.atoms.write(str(pdb_out))  # type: ignore
 
     return PDBStructure.from_path(pdb_out)

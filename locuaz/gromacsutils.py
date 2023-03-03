@@ -409,7 +409,10 @@ def remove_overlapping_solvent(
 
     nonoverlapped_nonwat = "init_nonoverlapped_nonwat.pdb"
     nonoverlapped_nonwat_fn = Path(pdb_in_fn.parent, nonoverlapped_nonwat)
-    (u.atoms - overlapped_wat_atoms - ions).write(str(nonoverlapped_nonwat_fn))  # type: ignore
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        (u.atoms - overlapped_wat_atoms - ions).write(str(nonoverlapped_nonwat_fn))  # type: ignore
 
     # insert waters
     nonoverlapped = "init_nonoverlapped.pdb"

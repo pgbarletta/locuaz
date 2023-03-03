@@ -1,5 +1,6 @@
 import shutil as sh
 import subprocess as sp
+import warnings
 from pathlib import Path
 from typing import Optional, Union, List
 
@@ -44,9 +45,6 @@ class MutatorEvoEF2(AbstractMutator):
         local_dir = input_pdb_fn.parent
 
         mutlist = self.__evoef2_file__(mutation, local_dir)
-
-        # premut = Path(local_dir, "premut.pdb")
-        # fix_gromacs_pdb(input_pdb.file.path, premut)
 
         # Using relative paths to keep them short.
         comando_evoef2 = f"{self.bin_path} --command=BuildMutant --pdb={input_pdb_fn.name} --mutant_file={mutlist}"
@@ -156,7 +154,9 @@ class MutatorEvoEF2(AbstractMutator):
 
         # Prevent MDA from creating its own chainID like 'X' or 'SYSTEM'
         v.atoms.segments.segids = " "  # type: ignore
-        mda.Merge(u.atoms, v.atoms).atoms.write(str(out_path))  # type: ignore
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            mda.Merge(u.atoms, v.atoms).atoms.write(str(out_path))  # type: ignore
 
         return PDBStructure.from_path(out_path)
 
@@ -184,9 +184,12 @@ class MutatorEvoEF2(AbstractMutator):
         not_prot_sel = " and ".join(f"not resname {res}" for res in not_prot)
 
         pdb_out_fn = Path(pdb_in_fn.parent, "init_nonwat_fix.pdb")
-        if not_prot_sel == '':
-            u.atoms.write(str(pdb_out_fn))
-        else:
-            u.select_atoms(not_prot_sel).write(str(pdb_out_fn))
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            if not_prot_sel == '':
+                # No non-protein residues
+                u.atoms.write(str(pdb_out_fn))
+            else:
+                u.select_atoms(not_prot_sel).write(str(pdb_out_fn))
 
         return pdb_out_fn

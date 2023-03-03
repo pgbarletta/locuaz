@@ -144,7 +144,9 @@ def fix_box_cpx(
     launch_biobb(make_whole)
 
     # Now, run FixBox
-    u = mda.Universe(str(whole_pdb), in_memory=True)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        u = mda.Universe(str(whole_pdb), in_memory=True)
     indices = read_ndx(cpx.ndx.path)
     all_in, u = fix_box(u, target_indices=indices["target"],
                         binder_indices=indices["binder"],

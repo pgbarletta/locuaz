@@ -1,3 +1,4 @@
+import warnings
 from pathlib import Path
 from typing import Union, List, Set
 import py
@@ -34,7 +35,10 @@ def get_interfacing_residues(pdb_input: Union[PDBStructure, FileHandle, Path],
     # to start at 1 on each chain
     if use_tleap:
         protein.residues.resids = range(1, len(protein.residues.resnums) + 1)
-    protein.write(str(temp_pdb))
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        protein.write(str(temp_pdb))
 
     # Silence warnings from freesasa
     capture_warnings = py.io.StdCaptureFD(out=True, in_=False)
@@ -64,7 +68,9 @@ def get_freesasa_residues(pdb_input: Union[PDBStructure, FileHandle, Path], chai
     pdb_path = Path(pdb_input)
     u = mda.Universe(str(pdb_path))
     temp_pdb = Path(pdb_path.parent, "temp.pdb")
-    u.select_atoms("not resname SOL and not resname WAT").write(str(temp_pdb))
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        u.select_atoms("not resname SOL and not resname WAT").write(str(temp_pdb))
 
     # Silence warnings from freesasa
     capture_warnings = py.io.StdCaptureFD(out=True, in_=False)

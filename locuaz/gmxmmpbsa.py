@@ -76,8 +76,7 @@ class Gmx_mmpbsa(AbstractScoringFunction):
         if len(mmpbsa_score) != (end - start):
             warn(
                 f"Asked the scoring of {end - start} frames but got {len(mmpbsa_score)} scores. "
-                "Will discard the extra scores, but you can set 'startframe' and 'endframe' on "
-                "your gmx_mmpbsa script to silence this warning.")
+                "You can set 'startframe' and 'endframe' on your gmx_mmpbsa script to silence this warning.")
             mmpbsa_score = mmpbsa_score[start:end]
 
         return mmpbsa_score

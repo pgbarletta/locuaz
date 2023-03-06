@@ -107,7 +107,7 @@ protocol:
             maxlength: 12
             schema:
                 type: list
-                minlength: 1
+                minlength: 0
                 maxlength: 36
                 schema:
                     type: integer
@@ -127,7 +127,7 @@ protocol:
             maxlength: 12
             schema:
                 type: list
-                minlength: 1
+                minlength: 0
                 maxlength: 36
                 schema:
                     type: integer

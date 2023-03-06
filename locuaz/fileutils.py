@@ -50,6 +50,9 @@ class FileHandle:
         with open(self.path, "w") as f:
             f.write(lineas)
 
+    def name_ext(self) -> str:
+        return self.path.name
+
 
 @define
 class DirHandle:

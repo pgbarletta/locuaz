@@ -88,9 +88,10 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
                         )
                     except AssertionError as e:
                         # Mutator failed
-                        log.info(f"Mutation of {iter_name} failed. Will try with another one later. Deleting {iter_path} .")
+                        log.info(f"Mutation of {iter_name} failed. Will try with another one later. Backing-up {iter_path} .")
                         print(e, file=sys.stderr)
-                        sh.rmtree(iter_path)
+                        failed_iter_path = Path(work_pjct.dir_handle, f"failed_{epoch_id}-{iter_name}")
+                        sh.move(iter_path, failed_iter_path)
                         continue
                 remove_overlapping_solvent(
                     overlapped_pdb,

@@ -242,7 +242,7 @@ def _(complex: GROComplex, config: Dict, overlapped_resSeq: int) -> GROComplex:
         complex.pdb.file.path,
         complex.ndx,
         overlapped_resSeq,
-        gmx_bin=config["md"]["gmx_bin"],
+        gmx_bin="gmx",
     )
 
     log.info(
@@ -259,7 +259,7 @@ def _(complex: GROComplex, config: Dict, overlapped_resSeq: int) -> GROComplex:
         input_index_path=str(ndx.path),
         output_str_path=str(nonwat_pdb_fn),
         properties={
-            "binary_path": config["md"]["gmx_bin"],
+            "binary_path": "gmx",
             "selection": "non_overlapping",
         },
     )
@@ -287,7 +287,7 @@ def _(complex: GROComplex, config: Dict, overlapped_resSeq: int) -> GROComplex:
             # parameter doesn't make much sense.
             output_top_zip_path=str(nonwat_top),
             properties={
-                "binary_path": config["md"]["gmx_bin"],
+                "binary_path": "gmx",
                 "dev": f"-maxsol {wat_count}",
             },
         )
@@ -308,7 +308,7 @@ def _(complex: GROComplex, config: Dict, overlapped_resSeq: int) -> GROComplex:
     )
 
     # Build a temporary .tpr for genion
-    wet_tpr = get_tpr(gro=wet_gro, top=wet_top, gmx_bin=config["md"]["gmx_bin"])
+    wet_tpr = get_tpr(gro=wet_gro, top=wet_top, gmx_bin="gmx")
 
     # Re-add ions as necessary. SOL group will be continous, so gmx genion
     # won't complain.
@@ -320,7 +320,7 @@ def _(complex: GROComplex, config: Dict, overlapped_resSeq: int) -> GROComplex:
         output_gro_path=str(gro_fn),
         output_top_zip_path=str(top_fn),
         properties={
-            "binary_path": config["md"]["gmx_bin"],
+            "binary_path": "gmx",
             "neutral": True,
             "concentration": 0.0,
         },
@@ -333,7 +333,7 @@ def _(complex: GROComplex, config: Dict, overlapped_resSeq: int) -> GROComplex:
         input_dir=Path(complex.dir),
         target_chains=complex.top.target_chains,
         binder_chains=complex.top.binder_chains,
-        gmx_bin=config["md"]["gmx_bin"],
+        gmx_bin="gmx",
     )
 
     return new_complex

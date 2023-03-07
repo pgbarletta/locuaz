@@ -35,7 +35,7 @@ def initialize_scoring_folder(
     assert isinstance(iteration.complex, GROComplex)
 
     iteration.score_dir = DirHandle(Path(iteration, "scoring"), make=True, replace=True)
-    gmx_bin: str = config["md"]["gmx_bin"]
+    gmx_bin: str = "gmx"
 
     # First, fix all the imaging issues
     fix_trj_fn = Path(iteration.score_dir, "fix_" + iteration.complex.name + ".xtc")

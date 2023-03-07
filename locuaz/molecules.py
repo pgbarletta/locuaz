@@ -246,7 +246,7 @@ def fix_pdb_gro(
     # Hydrogens and getting a good output PDB, so the output has to be
     # a .gro file
     props = {
-        "binary_path": str(gmx_bin),
+        "binary_path": gmx_bin,
         "water_type": "tip3p",
         "force_field": "amber99sb-ildn",
         "ignh": True,

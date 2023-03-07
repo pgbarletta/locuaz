@@ -83,8 +83,8 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
 
     # Check matching lengths of mutating_resSeq and mutating_resname.
     for resnames, resSeqs in zip(config["binder"]["mutating_resname"], config["binder"]["mutating_resSeq"]):
-            assert len(resnames) == len(resSeqs), f"mutating_resname({resnames}) and mutating_resSeq ({resSeqs}) have " \
-                                                f"different lengths: {len(resnames)} and {len(resSeqs)}, respectively."
+        assert len(resnames) == len(resSeqs), f"mutating_resname({resnames}) and mutating_resSeq ({resSeqs}) have " \
+                                              f"different lengths: {len(resnames)} and {len(resSeqs)}, respectively."
 
     return config, start
 
@@ -192,7 +192,10 @@ def get_tracking_files(config: Dict) -> bool:
     try:
         with open(tracking_pkl, "rb") as file:
             tracking: Dict[str, Any] = pickle.load(file)
-
+    except (Exception,):
+        warnings.warn("Could not read tracking file.")
+        return False
+    try:
         previous_iterations = get_valid_iter_dirs(
             tracking["previous_iterations"], config
         )
@@ -205,6 +208,7 @@ def get_tracking_files(config: Dict) -> bool:
                 starting_epoch=config["main"]["starting_epoch"],
                 prevent_fewer_branches=config["protocol"]["prevent_fewer_branches"],
         ):
+            warnings.warn("Will ignore the tracking file. The current iterations field is invalid.")
             return False
 
         config["paths"]["previous_iterations"] = previous_iterations
@@ -236,11 +240,7 @@ def get_tracking_files(config: Dict) -> bool:
             ]
         return True
     except (Exception,):
-        warnings.warn(
-            "Could not read tracking info. Will try to get the previous iterations, the "
-            "current iterations and the memory of the last mutated positions from the work dir. "
-            "Memory of failed mutations won't be loaded."
-        )
+        warnings.warn("Will ignore the tracking file. It is in an invalid state with respect to the working dir.")
         return False
 
 
@@ -422,6 +422,10 @@ def main() -> Tuple[Dict, bool]:
         if get_tracking_files(config):
             print("Read tracking file from work dir.", flush=True)
         else:
+            print(
+                "Will try to get the previous iterations, the current iterations and the memory of the "
+                "last mutated positions from the work dir. Memory of failed mutations won't be loaded.",
+                flush=True)
             set_iterations(config)
             # Set up the memory
             requested_memory = "memory_size" in config["protocol"]

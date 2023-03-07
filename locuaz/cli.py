@@ -283,7 +283,7 @@ def set_iterations(config: Dict) -> None:
 
 
 def get_memory(config: Dict) -> Tuple[Set, List[List]]:
-    """get_memory compare character by character of the iteration folders resnames to
+    """get_memory() compares character by character of the iteration folders resnames to
     find differences among them that would correspond to previously done mutations.
     Small issue in this function: when an epoch was generated from more than 1 top iteration,
     the mutations performed on that epoch will be memorized and also the ones that were actually

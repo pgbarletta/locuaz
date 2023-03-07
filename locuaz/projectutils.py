@@ -630,7 +630,6 @@ class WorkProject:
                 self.mutated_positions.appendleft(set(set_of_positions))
         except KeyError:
             self.mutated_positions.appendleft(set())
-        # TODO: implement memory of amino acids?
 
     def __set_failed_memory__(self):
         try:

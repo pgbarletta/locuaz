@@ -1,12 +1,11 @@
 from pathlib import Path
 from shutil import SameFileError
-from typing import Tuple
+from typing import Tuple, Union
 import subprocess as sp
 
 from attrs import define, field
 from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
 from biobb_gromacs.gromacs.grompp import Grompp
-from biobb_gromacs.gromacs.mdrun import Mdrun
 
 from complex import AbstractComplex, GROComplex
 from fileutils import DirHandle, FileHandle
@@ -28,16 +27,17 @@ class MDrun:
     dev: str = field(converter=str, kw_only=True)
     out_name: str = field(converter=str, kw_only=True)
     image_after: bool = field(converter=bool, kw_only=True, default=False)
+    maxwarn: bool = field(converter=int, kw_only=True, default=0)
 
     @classmethod
     def min(
-        cls,
-        root_dir: Path,
-        *,
-        work_pjct: WorkProject,
-        gpu_id: int = 0,
-        pinoffset: int = 0,
-        out_name="min",
+            cls,
+            root_dir: Path,
+            *,
+            work_pjct: WorkProject,
+            gpu_id: int = 0,
+            pinoffset: int = 0,
+            out_name="min",
     ) -> "MDrun":
 
         obj = cls(
@@ -56,13 +56,13 @@ class MDrun:
 
     @classmethod
     def nvt(
-        cls,
-        root_dir: Path,
-        *,
-        work_pjct: WorkProject,
-        gpu_id: int = 0,
-        pinoffset: int = 0,
-        out_name="nvt",
+            cls,
+            root_dir: Path,
+            *,
+            work_pjct: WorkProject,
+            gpu_id: int = 0,
+            pinoffset: int = 0,
+            out_name="nvt",
     ) -> "MDrun":
 
         obj = cls(
@@ -75,20 +75,21 @@ class MDrun:
             num_threads_mpi=work_pjct.config["md"]["mpi_procs"],
             dev=f"-nb gpu -pme gpu -bonded gpu -pmefft gpu -pin on -pinoffset {pinoffset}",
             out_name=out_name,
+            maxwarn=work_pjct.config["md"]["maxwarn"],
         )
 
         return obj
 
     @classmethod
     def npt(
-        cls,
-        root_dir: Path,
-        *,
-        work_pjct: WorkProject,
-        gpu_id: int = 0,
-        pinoffset: int = 0,
-        out_name="npt",
-        image_after=True,
+            cls,
+            root_dir: Path,
+            *,
+            work_pjct: WorkProject,
+            gpu_id: int = 0,
+            pinoffset: int = 0,
+            out_name="npt",
+            image_after=True,
     ) -> "MDrun":
 
         obj = cls(
@@ -102,6 +103,7 @@ class MDrun:
             dev=f"-nb gpu -pme gpu -bonded gpu -pmefft gpu -pin on -pinoffset {pinoffset}",
             out_name=out_name,
             image_after=image_after,
+            maxwarn=work_pjct.config["md"]["maxwarn"],
         )
 
         return obj
@@ -120,7 +122,7 @@ class MDrun:
                 input_cpt_path=str(complex.cpt),
                 input_ndx_path=str(complex.ndx),
                 output_tpr_path=str(run_tpr),
-                properties={"binary_path": "gmx"},
+                properties={"binary_path": "gmx", "maxwarn": self.maxwarn},
             )
         else:
             grompepe = Grompp(
@@ -129,7 +131,7 @@ class MDrun:
                 input_top_zip_path=str(complex.top.file.path),
                 input_ndx_path=str(complex.ndx),
                 output_tpr_path=str(run_tpr),
-                properties={"binary_path": "gmx"},
+                properties={"binary_path": "gmx", "maxwarn": self.maxwarn},
             )
         launch_biobb(grompepe, backup_dict=Path(self.dir))
 
@@ -142,15 +144,8 @@ class MDrun:
         run_cpt = Path(self.dir) / (self.out_name + ".cpt")
         run_pux = Path(self.dir) / (f"pullx_{self.out_name}.xvg")
         run_puf = Path(self.dir) / (f"pullf_{self.out_name}.xvg")
-        props = {
-            "binary_path": str(self.binary_path),
-            "num_threads_omp": self.num_threads_omp,
-            "num_threads_mpi": self.num_threads_mpi,
-            "gpu_id": self.gpu_id,
-            "dev": f"{self.dev} -px {run_pux} -pf {run_puf}",
-        }
 
-        comando_md = f'{self.binary_path} -nobackup -nocopyright mdrun'
+        comando_md = f'{self.binary_path} -nobackup -nocopyright'
         comando_md += f' -s {run_tpr} -c {run_gro}'
         comando_md += f' -cpi {run_cpt}' if run_cpt.is_file() else ""
         comando_md += f' -px {run_pux} -pf {run_puf}'
@@ -168,6 +163,8 @@ class MDrun:
             )
         except (RuntimeError, Exception):
             raise GromacsError(f"MDRun error. stdout:\n{p.stdout}\n"f"stderr:\n{p.stderr}")
+
+        self.__assert_outfile__(run_gro, stdout=p.stdout, stderr=p.stderr, command=comando_md)
 
         # Finally, build the Complex.
         try:
@@ -220,3 +217,16 @@ class MDrun:
 
         assert isinstance(complex.top, ZipTopology), f"Topology from input complex "
         f"should be in zip format. Current topology: {complex.top}."
+
+    def __assert_outfile__(self, out_file: Union[str, Path, FileHandle], *, stdout: str, stderr: str,
+                           command: str) -> Path:
+        out_file_path = Path(out_file)
+        assert out_file_path.is_file(), f"""{self} error. Can't parse: {out_file_path}
+from:
+{command}
+with stdout:
+{stdout}
+and stderr:
+{stderr}
+"""
+        return out_file_path

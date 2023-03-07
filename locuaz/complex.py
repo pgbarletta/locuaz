@@ -119,7 +119,7 @@ class GROComplex(AbstractComplex):
         md_config: Dict,
         add_ions: bool = False,
     ) -> "GROComplex":
-        gmx_bin: str = md_config.get("gmx_bin", "gmx")
+        gmx_bin: str = "gmx"
         try:
             in_pdb = Path(input_dir, f"{name}.pdb")
             # This PDB will be backed up and replaced with a fixed up PDB.

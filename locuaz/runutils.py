@@ -120,7 +120,7 @@ class MDrun:
                 input_cpt_path=str(complex.cpt),
                 input_ndx_path=str(complex.ndx),
                 output_tpr_path=str(run_tpr),
-                properties={"binary_path": str(self.binary_path)},
+                properties={"binary_path": "gmx"},
             )
         else:
             grompepe = Grompp(
@@ -129,7 +129,7 @@ class MDrun:
                 input_top_zip_path=str(complex.top.file.path),
                 input_ndx_path=str(complex.ndx),
                 output_tpr_path=str(run_tpr),
-                properties={"binary_path": str(self.binary_path)},
+                properties={"binary_path": "gmx"},
             )
         launch_biobb(grompepe, backup_dict=Path(self.dir))
 
@@ -183,7 +183,7 @@ class MDrun:
             input_dir=Path(self.dir),
             target_chains=complex.top.target_chains,
             binder_chains=complex.top.binder_chains,
-            gmx_bin=self.binary_path,
+            gmx_bin="gmx",
         )
 
         all_atoms_in_box = True
@@ -193,7 +193,7 @@ class MDrun:
         else:
             # Convert output .gro to PDB.
             run_pdb = Path(self.dir) / (self.out_name + ".pdb")
-            props = {"binary_path": str(self.binary_path), "selection": "System"}
+            props = {"binary_path": "gmx", "selection": "System"}
             gro_to_pdb = GMXTrjConvStr(
                 input_structure_path=str(run_gro),
                 input_top_path=str(run_tpr),
@@ -208,7 +208,7 @@ class MDrun:
             iter_path=Path(self.dir),
             target_chains=complex.top.target_chains,
             binder_chains=complex.top.binder_chains,
-            gmx_bin=self.binary_path,
+            gmx_bin="gmx",
         )
 
         return all_atoms_in_box, new_complex

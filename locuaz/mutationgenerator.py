@@ -160,7 +160,7 @@ class SPM4i(AbstractMutationGenerator):
             self.remaining_categories = set(range(self.N_CAT))
             for i in range(self.N_CAT):
                 if set(self.CAT_AAS[i]).issubset(self.excluded_aas):
-                    # All AAs from thise category have already been chosen
+                    # All AAs from this category have already been chosen
                     self.remaining_categories.difference_update({i})
         return old_aa, new_aa
 

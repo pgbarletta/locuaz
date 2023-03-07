@@ -116,32 +116,26 @@ class SPM4i(AbstractMutationGenerator):
         mutating_interface_resSeq: List[int] = []
         for cdr in any_iteration.resSeqs:
             for resSeq in cdr:
-                if resSeq in interface_resSeq:
+                if resSeq in interface_resSeq and resSeq not in self.excluded_pos:
                     mutating_interface_resSeq.append(resSeq)
         if len(mutating_interface_resSeq) == 0:
             raise RuntimeError(f"No CDR residue on the interface")
 
-        logger.info(f"Residues at the interface: {interface_resSeq}.\n"
+        logger.info(f"Generating mutations with: {self}.\n"
+                    f"resSeq at the interface: {interface_resSeq}.\n"
                     f"'mutataing_resSeq': {any_iteration.resSeqs}.\n"
+                    f"excluded resSeq: {self.excluded_pos}.\n"
                     f"'mutataing_resSeq' that may be mutated: {mutating_interface_resSeq}.")
 
         # Choose the position to mutate. This will be the same for all iterations.
-        max_tries: int = sum([len(resSeq) for resSeq in any_iteration.resSeqs]) * 5
-        for i in range(max_tries):
-
-            mut_resSeq = choice(mutating_interface_resSeq)
-            # Now, get the remaining details associated to `mut_resSeq`, including the chain from where it came from
-            if mut_resSeq not in self.excluded_pos:
-                for j, resSeqs in enumerate(any_iteration.resSeqs):
-                    if mut_resSeq in resSeqs:
-                        mut_idx_chain = j
-                        mut_chainID = any_iteration.chainIDs[mut_idx_chain]
-                        mut_idx_residue = resSeqs.index(mut_resSeq)
-                        return mut_idx_chain, mut_chainID, mut_idx_residue, mut_resSeq
-        raise RuntimeError(
-            f"Can't generate novel position after {max_tries} tries. This shouldn't happen.\n"
-            f"Excluded positions: {self.excluded_pos}.\n"f"Interface residues: {interface_resSeq}"
-        )
+        mut_resSeq = choice(mutating_interface_resSeq)
+        # Now, get the remaining details associated to `mut_resSeq`, including the chain from where it came from
+        for j, resSeqs in enumerate(any_iteration.resSeqs):
+            if mut_resSeq in resSeqs:
+                mut_idx_chain = j
+                mut_chainID = any_iteration.chainIDs[mut_idx_chain]
+                mut_idx_residue = resSeqs.index(mut_resSeq)
+                return mut_idx_chain, mut_chainID, mut_idx_residue, mut_resSeq
 
     def __pop_random_aa__(self) -> str:
         cat_idx = choice(tuple(self.remaining_categories))
@@ -184,3 +178,6 @@ class SPM4i(AbstractMutationGenerator):
 
     def __items__(self) -> ItemsView:
         return self.mutations.items()
+
+    def __str__(self) -> str:
+        return "Single Point Mutation from 4 amino acid groups and use of the interface."

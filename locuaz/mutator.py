@@ -78,12 +78,11 @@ and stderr:
 def memorize_mutations(
         work_pjct: WorkProject, new_epoch: Epoch, mutations: Iterable[Mutation]
 ) -> None:
-    # mutated_aminoacids = [mutation.new_aa for mutation in mutations]
     mutated_positions = [mutation.resSeq for mutation in mutations]
     new_epoch.mutated_positions = set(mutated_positions)
 
-    if not work_pjct.has_memory:
-        return
-    else:
-        # TODO: memorize amino acid as well.
+    if work_pjct.has_memory:
         work_pjct.mutated_positions.appendleft(new_epoch.mutated_positions)
+    else:
+        return
+

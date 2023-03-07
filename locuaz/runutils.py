@@ -186,7 +186,7 @@ class MDrun:
         all_atoms_in_box = True
         if self.image_after:
             run_pdb = Path(self.dir, f"{self.out_name}.pdb")
-            all_atoms_in_box, _ = fix_box_cpx(new_complex, run_pdb, str(self.binary_path))
+            all_atoms_in_box, _ = fix_box_cpx(new_complex, run_pdb)
         else:
             # Convert output .gro to PDB.
             run_pdb = Path(self.dir) / (self.out_name + ".pdb")

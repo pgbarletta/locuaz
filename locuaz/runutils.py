@@ -131,7 +131,7 @@ class MDrun:
                 output_tpr_path=str(run_tpr),
                 properties={"binary_path": str(self.binary_path)},
             )
-        launch_biobb(grompepe)
+        launch_biobb(grompepe, backup_dict=Path(self.dir))
 
         # Run
         run_trr = Path(self.dir) / (self.out_name + ".trr")
@@ -200,7 +200,7 @@ class MDrun:
                 output_str_path=str(run_pdb),
                 properties=props,
             )
-            launch_biobb(gro_to_pdb)
+            launch_biobb(gro_to_pdb, backup_dict=Path(self.dir))
 
         # Build the new complex
         new_complex = type(complex).from_complex(

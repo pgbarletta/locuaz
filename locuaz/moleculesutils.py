@@ -38,7 +38,7 @@ def get_gro_ziptop_from_pdb(
     Returns:
         Tuple[PDBStructure, GROStructure, ZipTopology]: Proper, nice, system.
     """
-    gmx_bin: str = md_config.get("gmx_bin", "gmx")
+    gmx_bin: str = "gmx"
     water_type: str = md_config.get("water_type", "tip3p")
     force_field: str = md_config.get("force_field", "amber99sb-ildn")
 

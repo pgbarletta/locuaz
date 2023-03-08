@@ -345,3 +345,13 @@ scoring:
             max: 999999
             required: false
             scoring_end: true
+        allowed_nonstandard_residues:
+            type: list
+            minlength: 1
+            maxlength: 12
+            required: false
+            schema:
+                type: string
+                minlength: 3
+                maxlength: 3
+

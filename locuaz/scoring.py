@@ -61,6 +61,7 @@ def initialize_scoring_folder(
         new_chainID="A",
         start=config["scoring"]["start"],
         end=config["scoring"]["end"],
+        allowed_nonstandard_residues=set(config["scoring"]["allowed_nonstandard_residues"]),
         log=log,
     )
 
@@ -80,6 +81,7 @@ def initialize_scoring_folder(
         new_chainID="B",
         start=config["scoring"]["start"],
         end=config["scoring"]["end"],
+        allowed_nonstandard_residues=set(config["scoring"]["allowed_nonstandard_residues"]),
         log=log,
     )
 

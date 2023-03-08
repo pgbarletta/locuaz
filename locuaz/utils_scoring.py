@@ -5,7 +5,7 @@ import re
 import zipfile
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Optional, List, Tuple
+from typing import Optional, List, Tuple, Set
 
 from fileutils import DirHandle, FileHandle, catenate_pdbs
 from gromacsutils import fix_gromacs_pdb
@@ -19,6 +19,7 @@ def extract_pdbs(
         new_chainID: Optional[str] = None,
         start: int,
         end: int,
+        allowed_nonstandard_residues: Set,
         delete_zip_file: bool = True,
         log: Optional[logging.Logger] = None,
 ) -> Tuple[int, int]:
@@ -60,7 +61,8 @@ def extract_pdbs(
 
             if i >= start and i < end:
                 futuros.append(
-                    ex.submit(fix_gromacs_pdb, old_pdb, new_pdb, new_chainID=new_chainID)
+                    ex.submit(fix_gromacs_pdb, old_pdb, new_pdb, new_chainID=new_chainID,
+                              allowed_nonstandard_residues = allowed_nonstandard_residues)
                 )
             else:
                 # Discard this frame

@@ -119,7 +119,7 @@ class SPM4i(AbstractMutationGenerator):
                 if resSeq in interface_resSeq and resSeq not in self.excluded_pos:
                     mutating_interface_resSeq.append(resSeq)
         if len(mutating_interface_resSeq) == 0:
-            raise RuntimeError(f"No CDR residue on the interface")
+            raise RuntimeError(f"No CDR residue on the interface that isn't excluded.")
 
         logger.info(f"Generating mutations with: {self}.\n"
                     f"resSeq at the interface: {interface_resSeq}.\n"

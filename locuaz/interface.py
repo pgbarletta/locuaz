@@ -15,7 +15,7 @@ def get_interfacing_residues(pdb_input: Union[PDBStructure, FileHandle, Path],
                              chainIDs: List[str], use_tleap: bool = False) -> Set[int]:
     """
     get_interfacing_residues(): use freesasa to get the resSeq of the binder residues that are in contact with
-    the target. These can be used to guide the choice of the next mutated position.
+    the target. These can be used to guide the 2choice of the next mutated position.
     Args:
         pdb_input (Union[PDBStructure, FileHandle, Path]): input PDB.
         chainIDs (List[str]): only residues belonging to these chains will be reported.
@@ -30,20 +30,22 @@ def get_interfacing_residues(pdb_input: Union[PDBStructure, FileHandle, Path],
     pdb_path = Path(pdb_input)
     u = mda.Universe(str(pdb_path))
     temp_pdb = Path(pdb_path.parent, "temp.pdb")
-    protein = u.select_atoms("not (resname SOL or resname WAT or resname CL or resname NA or resname Cl or resname Na)")
+    complex = u.select_atoms("not (resname SOL or resname WAT or resname CL or resname NA or resname Cl or resname Na)")
     # Renumber resSeq when using Amber numbering since GROMACS will have renumbered the PDB
     # to start at 1 on each chain
     if use_tleap:
-        protein.residues.resids = range(1, len(protein.residues.resnums) + 1)
+        complex.residues.resids = range(1, len(complex.residues.resnums) + 1)
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        protein.write(str(temp_pdb))
+        complex.write(str(temp_pdb))
 
     # Silence warnings from freesasa
     capture_warnings = py.io.StdCaptureFD(out=True, in_=False)
     structs = freesasa.structureArray(str(temp_pdb),
-                                          {"separate-chains": False, "chain-groups": ''.join(set(chainIDs))})
+                                      {"separate-chains": False,
+                                       "hetatm": True,
+                                       "chain-groups": ''.join(set(chainIDs))})
     capture_warnings.reset()
 
     sasa_whole = freesasa.calc(structs[0])
@@ -55,7 +57,7 @@ def get_interfacing_residues(pdb_input: Union[PDBStructure, FileHandle, Path],
         for (resnum, sasa_whole), (_, sasa_binder) in zip(residuos_whole[chainID].items(),
                                                           residuos_binder[chainID].items()):
             sasa_diff = sasa_binder.total - sasa_whole.total
-            if sasa_diff > 2.:
+            if sasa_diff > 0.5:
                 interfacing_resis.add(int(resnum))
 
     # Remove temporaries
@@ -75,7 +77,9 @@ def get_freesasa_residues(pdb_input: Union[PDBStructure, FileHandle, Path], chai
     # Silence warnings from freesasa
     capture_warnings = py.io.StdCaptureFD(out=True, in_=False)
     structs = freesasa.structureArray(str(temp_pdb),
-                                      {"separate-chains": False, "chain-groups": ''.join(set(chainIDs))})
+                                      {"separate-chains": False,
+                                       "hetatm": False,
+                                       "chain-groups": ''.join(set(chainIDs))})
     capture_warnings.reset()
 
     freesasa_resis = {(int(structs[1].residueNumber(i)), seq1(structs[1].residueName(i))) for i in

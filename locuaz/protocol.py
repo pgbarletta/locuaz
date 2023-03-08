@@ -83,12 +83,12 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
                             old_pdb,
                             iter_path,
                             mutation=mutation,
-                            selection_protein=old_iter.complex.top.selection_protein,
-                            selection_wations=old_iter.complex.top.selection_not_protein,
+                            selection_complex=old_iter.complex.top.selection_complex,
+                            selection_wations=old_iter.complex.top.selection_not_complex,
                         )
                     except AssertionError as e:
                         # Mutator failed
-                        log.info(f"Mutation of {iter_name} failed. Will try with another one later. Backing-up {iter_path} .")
+                        log.info(f"Mutation of {iter_name} failed. Will try with another one. Backing-up {iter_path} .")
                         print(e, file=sys.stderr)
                         failed_iter_path = Path(work_pjct.dir_handle, f"failed_{epoch_id}-{iter_name}")
                         sh.move(iter_path, failed_iter_path)

@@ -75,7 +75,7 @@ class MutatorEvoEF2(AbstractMutator):
         local_dir: Path,
         *,
         mutation: Mutation,
-        selection_protein: Optional[str] = None,
+        selection_complex: Optional[str] = None,
         selection_wations: Optional[str] = None,
     ) -> PDBStructure:
         # Get the system's box size after the NPT run, to add it later onto the
@@ -91,7 +91,7 @@ class MutatorEvoEF2(AbstractMutator):
 
         nonwat_pdb, wation_pdb = split_solute_solvent(
             wt_pdb_fn,
-            selection_protein=selection_protein,
+            selection_protein=selection_complex,
             selection_wations=selection_wations,
         )
 

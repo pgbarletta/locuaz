@@ -56,7 +56,7 @@ class AbstractMutator(metaclass=ABCMeta):
             local_dir: Path,
             *,
             mutation: Mutation,
-            selection_protein: Optional[str] = None,
+            selection_complex: Optional[str] = None,
             selection_wations: Optional[str] = None,
     ) -> PDBStructure:
         pass

@@ -83,7 +83,7 @@ def _(cpx: GROComplex, out_trj_fn: Path, gmx_bin: str) -> XtcTrajectory:
         warnings.simplefilter("ignore")
         orig_pdb = Path(wrk_dir, "orig.pdb")
         # Selection
-        orig_u.select_atoms(cpx.top.selection_protein).write(str(orig_pdb))
+        orig_u.select_atoms(cpx.top.selection_complex).write(str(orig_pdb))
     u = mda.Universe(str(orig_pdb), str(cluster_trj))
     u.trajectory[2]  # type: ignore
     cluster_gro = Path(wrk_dir, "clustered.gro")

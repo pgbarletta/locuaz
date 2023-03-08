@@ -68,7 +68,6 @@ class PDBStructure(Structure):
     """PDBStructure
 
     Args:
-        name (str):
         file (FileHandle): path to the file
     """
 
@@ -108,10 +107,10 @@ class GROStructure(Structure):
     """GROStructure
 
     Args:
-        name (str):
         file (FileHandle): path to the file
     """
 
+    # TODO: turn into __attrs_post_init__
     def __init__(self, file: FileHandle):
         super().__init__(file)
         if self.ext != "gro":
@@ -125,8 +124,8 @@ class Topology(AbstractFileObject):
 
     selection_target: str = field(init=False)
     selection_binder: str = field(init=False)
-    selection_protein: str = field(init=False)
-    selection_not_protein: str = field(init=False)
+    selection_complex: str = field(init=False)
+    selection_not_complex: str = field(init=False)
     selection_water: str = field(init=False)
 
     @classmethod
@@ -143,10 +142,10 @@ class Topology(AbstractFileObject):
         self.selection_binder = " or ".join(
             [f"segid {chainID}" for chainID in binder_chains]
         )
-        self.selection_protein = " or ".join(
+        self.selection_complex = " or ".join(
             ["protein", self.selection_target, self.selection_binder]
         )
-        self.selection_not_protein = " and not ".join(
+        self.selection_not_complex = " and not ".join(
             ["not protein", self.selection_target, self.selection_binder]
         )
         self.selection_water = "resname WAT or resname SOL"
@@ -175,10 +174,10 @@ class ZipTopology(Topology):
         self.selection_binder = " or ".join(
             [f"segid {chainID}" for chainID in binder_chains]
         )
-        self.selection_protein = " or ".join(
+        self.selection_complex = " or ".join(
             ["protein", self.selection_target, self.selection_binder]
         )
-        self.selection_not_protein = " and not ".join(
+        self.selection_not_complex = " and not ".join(
             ["not protein", self.selection_target, self.selection_binder]
         )
         self.selection_water = "resname WAT or resname SOL"
@@ -357,7 +356,7 @@ def generate_ndx(
 
         # TODO: this won't work with glyco mods and stuff
         # sel_protein = " or ".join(["protein", sel_target, sel_binder])
-        uni_pdb.select_atoms(top.selection_protein).write(
+        uni_pdb.select_atoms(top.selection_complex).write(
             ndx_file, name="Protein", mode="a"
         )
 
@@ -366,7 +365,7 @@ def generate_ndx(
         # sel_not_protein = " and not ".join(
         #     ["not protein", sel_not_target, sel_not_binder]
         # )
-        uni_pdb.select_atoms(top.selection_not_protein).write(
+        uni_pdb.select_atoms(top.selection_not_complex).write(
             ndx_file, name="Non-Protein", mode="a"
         )
         uni_pdb.select_atoms("all").write(ndx_file, name="sistema", mode="a")

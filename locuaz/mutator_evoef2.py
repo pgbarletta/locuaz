@@ -91,7 +91,7 @@ class MutatorEvoEF2(AbstractMutator):
 
         nonwat_pdb, wation_pdb = split_solute_solvent(
             wt_pdb_fn,
-            selection_protein=selection_complex,
+            selection_complex=selection_complex,
             selection_wations=selection_wations,
         )
 

@@ -93,6 +93,8 @@ Additional requirements for specific SFs:
     ln -s cns_solve_1.3/cns_solve_env cns_solve_env
     ln -s haddock/haddock_configure.csh haddock_configure.csh
     ```
+    The included file `template_scoring.inp` should also be present in the top level
+    directory.
 
 Features
 --------

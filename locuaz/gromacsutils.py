@@ -4,7 +4,7 @@ import subprocess as sp
 import warnings
 from functools import singledispatch
 from pathlib import Path
-from typing import Dict, Tuple, Optional
+from typing import Dict, Tuple, Optional, Set
 
 import MDAnalysis as mda
 from Bio.PDB import PDBParser
@@ -150,14 +150,13 @@ def _(cpx: GROComplex, out_trj_fn: Path, gmx_bin: str) -> XtcTrajectory:
 
 
 def write_non_overlapping_ndx(
-    pdb_path: Path,
-    ndx_fn_in: FileHandle,
-    resSeq: int,
-    *,
-    dist_threshold: float = 0.3,
-    gmx_bin: str = "gmx",
+        pdb_path: Path,
+        ndx_fn_in: FileHandle,
+        resSeq: int,
+        *,
+        dist_threshold: float = 0.3,
+        gmx_bin: str = "gmx",
 ) -> Tuple[FileHandle, int]:
-
     # First, get the number of waters that overlap
     ndx_fn_wat_out = str(pdb_path.parent / "overlapping.ndx")
     select_overlapping_waters = Gmxselect(
@@ -167,7 +166,7 @@ def write_non_overlapping_ndx(
         properties={
             "binary_path": gmx_bin,
             "selection": f"(same residue as resname SOL and "
-            f"within {dist_threshold} of (group binder and resid {resSeq}))",
+                         f"within {dist_threshold} of (group binder and resid {resSeq}))",
         },
     )
     launch_biobb(select_overlapping_waters)
@@ -199,8 +198,8 @@ def write_non_overlapping_ndx(
         properties={
             "binary_path": gmx_bin,
             "selection": f"not (same residue as resname SOL and "
-            f"within {dist_threshold} of (group binder and resid {resSeq})) "
-            "and (not name CL) and (not name NA)",
+                         f"within {dist_threshold} of (group binder and resid {resSeq})) "
+                         "and (not name CL) and (not name NA)",
         },
     )
     launch_biobb(select_not_overlapping)
@@ -215,7 +214,7 @@ def write_non_overlapping_ndx(
 
 @singledispatch
 def remove_overlapping_waters(
-    complex: AbstractComplex, config: Dict, overlapped_resSeq: int
+        complex: AbstractComplex, config: Dict, overlapped_resSeq: int
 ) -> AbstractComplex:
     raise NotImplementedError
 
@@ -340,7 +339,8 @@ def _(complex: GROComplex, config: Dict, overlapped_resSeq: int) -> GROComplex:
 
 
 def fix_gromacs_pdb(
-    pdb_in_fn: Path, pdb_out_fn: Path, *, new_chainID: Optional[str] = None
+        pdb_in_fn: Path, pdb_out_fn: Path, *, new_chainID: Optional[str] = None,
+        allowed_nonstandard_residues: Optional[Set] = None,
 ) -> Path:
     """fix_gromacs_pdb uses Bio to add TER between chains, END at the end,
     and manually make the resSeq numbers continuous.
@@ -363,13 +363,14 @@ def fix_gromacs_pdb(
         try:
             # Rename non-standard residue to its standard equivalent
             resi.resname = AA_MAP[resi.resname]
-            resi._id = (juan, resSeq, roman)
-            resSeq += 1
         except KeyError:
-            # Not even an amino acid, removing it.
-            chain = resi.get_parent()
-            chain.detach_child(resi.id)
-            continue
+            if allowed_nonstandard_residues and resi.resname not in allowed_nonstandard_residues:
+                # Not even an amino acid, removing it.
+                chain = resi.get_parent()
+                chain.detach_child(resi.id)
+                continue
+        resi._id = (juan, resSeq, roman)
+        resSeq += 1
     if new_chainID is not None:
         for chain in pdb.get_chains():
             chain._id = new_chainID
@@ -382,13 +383,13 @@ def fix_gromacs_pdb(
 
 
 def remove_overlapping_solvent(
-    overlapped_pdb: PDBStructure,
-    overlapped_resSeq: int,
-    nonoverlapped_out_pdb: Path,
-    log: logging.Logger,
-    *,
-    cutoff: float = 3,
-    use_tleap=False,
+        overlapped_pdb: PDBStructure,
+        overlapped_resSeq: int,
+        nonoverlapped_out_pdb: Path,
+        log: logging.Logger,
+        *,
+        cutoff: float = 3,
+        use_tleap=False,
 ) -> PDBStructure:
     pdb_in_fn = Path(overlapped_pdb)
     u = mda.Universe(str(pdb_in_fn))
@@ -398,8 +399,8 @@ def remove_overlapping_solvent(
     ).residues.atoms
     nwats_atm = len(overlapped_wat_atoms)
     assert (
-        nwats_atm % 3
-    ) == 0, f"Invalid number of overlapped water atoms: {nwats_atm}"
+                   nwats_atm % 3
+           ) == 0, f"Invalid number of overlapped water atoms: {nwats_atm}"
     nwats = len(overlapped_wat_atoms) // 3
 
     ions = u.select_atoms(
@@ -428,7 +429,7 @@ def remove_overlapping_solvent(
             f"Removed {nwats} water molecules within {cutoff}A from the mutated residue. "
             "Will replace them later."
         )
-        comando_solv = f"gmx solvate -cp {nonoverlapped_nonwat} -o {nonoverlapped} -maxsol {nwats+nions}"
+        comando_solv = f"gmx solvate -cp {nonoverlapped_nonwat} -o {nonoverlapped} -maxsol {nwats + nions}"
         log.info(
             f"Adding {nwats} water molecules, and another {nions} that will be replaced by ions later."
         )

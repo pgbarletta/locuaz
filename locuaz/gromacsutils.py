@@ -352,7 +352,8 @@ def fix_gromacs_pdb(
         pdb_in_fn (Path): Path to input PDB.
         pdb_out_fn (Path): Path to output PDB.
     """
-
+    if not allowed_nonstandard_residues:
+        allowed_nonstandard_residues = set()
     parsero = PDBParser(QUIET=True)
     pdb = parsero.get_structure("foo", file=pdb_in_fn)
 
@@ -364,7 +365,7 @@ def fix_gromacs_pdb(
             # Rename non-standard residue to its standard equivalent
             resi.resname = AA_MAP[resi.resname]
         except KeyError:
-            if allowed_nonstandard_residues and resi.resname not in allowed_nonstandard_residues:
+            if resi.resname not in allowed_nonstandard_residues:
                 # Not even an amino acid, removing it.
                 chain = resi.get_parent()
                 chain.detach_child(resi.id)

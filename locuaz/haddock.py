@@ -27,7 +27,7 @@ class Haddock(AbstractScoringFunction):
         )
         self.haddock_toppar_dir = DirHandle(Path(self.root_dir, "toppar"), make=False)
         self.rescoring_scripts_dir = DirHandle(
-            Path(sf_dir, "rescoring-scripts"), make=False
+            Path(root_dir, "rescoring-scripts"), make=False
         )
 
         # Set up environment:

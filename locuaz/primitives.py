@@ -49,19 +49,23 @@ def launch_biobb(biobb_obj, *, can_write_console_log: bool = False, backup_dict:
             # and one run may try to delete a log file that was already deleted.
             pass
     else:
+        log_out = Path(biobb_obj.out_log.name)
+        log_err = Path(biobb_obj.err_log.name)
         if backup_dict:
-            log_out = Path(biobb_obj.out_log.name)
-            new_log_out = backup_dict / f"{log_out.name}_out.txt"
-            sh.move(log_out, new_log_out)
+            try:
+                new_log_out = backup_dict / f"{log_out.name}_out.txt"
+                sh.move(log_out, new_log_out)
+                log_out = new_log_out
 
-            log_err = Path(biobb_obj.err_log.name)
-            new_log_err = backup_dict / f"{log_err.name}_err.txt"
-            sh.move(log_out, new_log_err)
-        else:
-            new_log_out = Path(biobb_obj.out_log.name)
-            new_log_err = Path(biobb_obj.err_log.name)
+                new_log_err = backup_dict / f"{log_err.name}_err.txt"
+                sh.move(log_err, new_log_err)
+                log_err = new_log_err
+            except FileNotFoundError:
+                # There may be concurrent biobb processes so this file may have been copied already. In this case,
+                # the user will probably get a log file in the wrong `backup_dict`, but I can't do much about this
+                pass
 
-        raise GromacsError(f"{biobb_obj} failed. Check {new_log_out} and {new_log_err} .")
+        raise GromacsError(f"{biobb_obj} failed. Check {log_out} and {log_err} .")
 
 
 def ext(name: str, suffix: str) -> str:

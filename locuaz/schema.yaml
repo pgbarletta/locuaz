@@ -347,11 +347,10 @@ scoring:
             scoring_end: true
         allowed_nonstandard_residues:
             type: list
-            minlength: 1
+            minlength: 0
             maxlength: 12
-            required: false
             schema:
                 type: string
                 minlength: 3
                 maxlength: 3
-
+            default: []

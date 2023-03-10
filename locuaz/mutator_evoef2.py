@@ -30,7 +30,7 @@ class MutatorEvoEF2(AbstractMutator):
                 WT_AA_OneLetterCode Chain Resnum MUT_AA_OneLetterCode (no whitespace)
         """
         mut_string = f"{mut.old_aa}{mut.chainID}{mut.resSeq}{mut.new_aa};"
-        mutlist_path = local_dir / f"mutlist_{mut_string[:-1]}.txt"
+        mutlist_path = local_dir / f"mutlist_evoef2_{mut_string[:-1]}.txt"
 
         with open(mutlist_path, "w") as file:
             file.write(mut_string)

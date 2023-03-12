@@ -144,10 +144,12 @@ def discard_iteration(work_pjct: WorkProject, iteration: Iteration) -> None:
 
 def score(work_pjct: WorkProject, iteration: Iteration) -> None:
     log = logging.getLogger(f"{work_pjct.name}")
-    try:
-        iteration.read_scores(work_pjct.scorers.keys(), log)
+
+    if iteration.read_scores(work_pjct.scorers.keys(), log):
         log.info("Read old scores.")
-    except FileNotFoundError:
+        return
+    else:
+        # TODO iteration.outside_box should be saved on tracking
         if iteration.outside_box:
             # Discard this iteration.
             discard_iteration(work_pjct, iteration)

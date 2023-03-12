@@ -94,16 +94,18 @@ class Iteration:
 
     def read_scores(
             self, scoring_functions: Iterable, log: Optional[logging.Logger] = None
-    ) -> None:
+    ) -> bool:
         if not log:
             log = logging.getLogger("root")
         if not getattr(self, "score_dir", None):
             try:
                 self.score_dir = DirHandle(Path(self.dir_handle, "scoring"), make=False)
             except FileNotFoundError as e:
-                raise FileNotFoundError(
-                    f"read_scores(): {self.iter_name} has no scores."
-                ) from e
+                # No scoring folder
+                return False
+                # raise FileNotFoundError(
+                #     f"read_scores(): {self.iter_name} has no scores."
+                # ) from e
         for SF in scoring_functions:
             try:
                 scores_fn = Path(self.score_dir, "scores_" + SF)
@@ -117,7 +119,8 @@ class Iteration:
                         )
             except FileNotFoundError as e:
                 log.warning(f"{self.epoch_id}-{self.iter_name} was not scored with {SF}.")
-                raise FileNotFoundError from e
+                return False
+        return True
 
     def __str__(self) -> str:
         return str(self.dir_handle)

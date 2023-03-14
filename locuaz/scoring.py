@@ -124,13 +124,8 @@ def discard_iteration(work_pjct: WorkProject, iteration: Iteration) -> None:
     log = logging.getLogger(f"{work_pjct.name}")
 
     for sf_name, _ in work_pjct.scorers.items():
-        if sf_name == "bluues":
-            iteration.set_score("bluues", [sys.maxsize, sys.maxsize])
-            iteration.set_score("bmf", [sys.maxsize, sys.maxsize])
-            log.info(f"{sf_name} nullifying score.")
-        else:
-            iteration.set_score(sf_name, [sys.maxsize, sys.maxsize])
-            log.info(f"{sf_name} nullifying score.")
+        iteration.set_score(sf_name, [sys.maxsize, sys.maxsize])
+        log.info(f"{sf_name} nullifying score.")
     # Initialize the scoring folder
     iteration.score_dir = DirHandle(Path(iteration, "scoring"), make=True, replace=True)
     iteration.write_down_scores()

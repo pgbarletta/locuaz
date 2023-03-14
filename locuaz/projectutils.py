@@ -111,12 +111,6 @@ class Iteration:
                 scores_fn = Path(self.score_dir, "scores_" + SF)
                 with open(scores_fn, "r") as f:
                     self.set_score(SF, [float(linea.strip()) for linea in f], log)
-                if SF == "bluues":
-                    scores_fn = Path(self.score_dir, "scores_" + "bmf")
-                    with open(scores_fn, "r") as f:
-                        self.set_score(
-                            "bmf", [float(linea.strip()) for linea in f], log
-                        )
             except FileNotFoundError as e:
                 log.warning(f"{self.epoch_id}-{self.iter_name} was not scored with {SF}.")
                 return False

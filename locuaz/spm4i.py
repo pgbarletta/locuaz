@@ -1,41 +1,14 @@
-from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from typing import List, Tuple, Dict, Set, Iterator
 from random import choice, sample
 from collections import defaultdict
-from collections.abc import ItemsView, Mapping
+from collections.abc import ItemsView
 from logging import Logger
 
 from projectutils import Iteration, Epoch
 from mutator import Mutation
 from interface import get_interfacing_residues
-
-
-class AbstractMutationGenerator(ABC, Mapping):
-    @abstractmethod
-    def __init__(
-            self,
-            epoch: Epoch,
-            branches: int,
-            *,
-            excluded_aas: Set[str],
-            excluded_pos: Set[int],
-            use_tleap: bool = False,
-            logger: Logger = None
-    ) -> None:
-        pass
-
-    @abstractmethod
-    def __getitem__(self, key: Iteration) -> Mutation:
-        pass
-
-    @abstractmethod
-    def __iter__(self) -> Iterator:
-        pass
-
-    @abstractmethod
-    def __contains__(self, value: Iteration) -> bool:
-        pass
+from abstractmutationgenerator import AbstractMutationGenerator
 
 
 class SPM4i(AbstractMutationGenerator):
@@ -93,7 +66,7 @@ class SPM4i(AbstractMutationGenerator):
 
             self.mutations[iteration.iter_name].append(mutation)
             if len(remaining_iterations) == 0:
-                # If all iterations have been mutated at least once and we still
+                # If all iterations have been mutated at least once, and we still
                 # have branches to generate, restart `remaining_iterations`.
                 remaining_iterations = set(epoch.top_iterations.keys())
             remaining_branches -= 1

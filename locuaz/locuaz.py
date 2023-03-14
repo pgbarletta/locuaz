@@ -32,7 +32,8 @@ def main() -> int:
     elif config["main"]["mode"] == "score":
         try:
             prev_id = work_pjct.epochs[-2].id
-            prev_epoch = work_pjct.epochs[-2]
+            prev_epoch = work_pjct.epochs[-2
+            ]
             for iter_name, iteration in prev_epoch.items():
                 log.info(f"Scoring NPT run from iteration: {prev_id}-{iter_name}")
                 score(work_pjct, iteration)

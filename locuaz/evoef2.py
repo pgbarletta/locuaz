@@ -1,7 +1,7 @@
 import concurrent.futures as cf
 import subprocess as sp
 from pathlib import Path
-from typing import List, Tuple, Any
+from typing import List, Tuple
 
 from abstractscoringfunction import AbstractScoringFunction
 from complex import GROComplex
@@ -31,15 +31,13 @@ class Evoef2(AbstractScoringFunction):
             text=True,
         )
 
-        evoef2_score = self.__parse_output__(
+        evoef2_score = self.__parse_stdout__(
             score_stdout=p.stdout, original_command=comando_evoef2
         )
 
         return i, evoef2_score
 
-    def __parse_output__(
-        self, *, score_stdout: Any = None, score_file: Any = None, original_command=""
-    ) -> float:
+    def __parse_stdout__(self, score_stdout: str, original_command: str) -> float:
         assert (
             score_stdout is not None
         ), f"This shouldn't happen. {self} couldn't parse {score_stdout}\nfrom: \n{original_command}"

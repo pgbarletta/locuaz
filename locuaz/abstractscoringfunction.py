@@ -28,10 +28,13 @@ class AbstractScoringFunction(metaclass=ABCMeta):
     def __call__(self, *, start: int, end: int, frames_path: Path, cpx: GROComplex) -> Any:
         pass
 
-    @abstractmethod
-    def __parse_output__(
-            self, *, score_stdout: Any = None, score_file: Any = None, original_command=""
-    ) -> Union[float, List[float]]:
+    def __parse_outfile__(self, score_file: Union[Path, FileHandle], original_command: str) -> float:
+        pass
+
+    def __parse_outfile_list__(self, score_file: Union[Path, FileHandle], original_command: str) -> List[float]:
+        pass
+
+    def __parse_stdout__(self, score_stdout: str, original_command: str) -> float:
         pass
 
     # Quite hacky, but it works.

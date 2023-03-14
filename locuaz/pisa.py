@@ -1,7 +1,7 @@
 import concurrent.futures as cf
 import subprocess as sp
 from pathlib import Path
-from typing import Tuple, List, Any
+from typing import Tuple, List
 
 from abstractscoringfunction import AbstractScoringFunction
 from complex import GROComplex
@@ -16,9 +16,7 @@ class Pisa(AbstractScoringFunction):
         super().__init__(sf_dir, nthreads=nthreads, mpiprocs=mpiprocs)
         self.parameters_handle = FileHandle(Path(self.root_dir, f"{self.name}.params"))
 
-    def __parse_output__(
-            self, *, score_stdout: Any = None, score_file: Any = None, original_command=""
-    ) -> float:
+    def __parse_stdout__(self, score_stdout: str, original_command: str) -> float:
         assert (
                 score_stdout is not None
         ), f"This shouldn't happen. {self} couldn't parse {score_stdout}\nfrom: \n{original_command}"
@@ -46,7 +44,7 @@ class Pisa(AbstractScoringFunction):
             shell=True,
             text=True,
         )
-        pisa_score = self.__parse_output__(
+        pisa_score = self.__parse_stdout__(
             score_stdout=p.stdout, original_command=comando_pisa
         )
 

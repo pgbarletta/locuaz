@@ -2,11 +2,11 @@ import concurrent.futures as cf
 import os
 import subprocess as sp
 from pathlib import Path
-from typing import Tuple, List
+from typing import Tuple, List, Union
 
 from abstractscoringfunction import AbstractScoringFunction
 from complex import GROComplex
-from fileutils import DirHandle
+from fileutils import DirHandle, FileHandle
 
 
 class Rosetta(AbstractScoringFunction):
@@ -30,9 +30,7 @@ class Rosetta(AbstractScoringFunction):
                 + str(parameters_external_dir)
         )
 
-    def __parse_output__(
-        self, *, score_stdout=None, score_file=None, original_command=""
-    ) -> float:
+    def __parse_outfile__(self, score_file: Union[Path, FileHandle], original_command: str) -> float:
 
         assert (
             score_file is not None
@@ -68,7 +66,7 @@ class Rosetta(AbstractScoringFunction):
             shell=True,
             text=True,
         )
-        score_rosetta = self.__parse_output__(
+        score_rosetta = self.__parse_outfile__(
             score_file=out_rosetta_fn, original_command=comando_rosetta
         )
 

@@ -3,7 +3,7 @@ import shutil as sh
 import subprocess as sp
 import zipfile
 from pathlib import Path
-from typing import List, Any
+from typing import List, Union
 from warnings import warn
 
 from abstractscoringfunction import AbstractScoringFunction
@@ -25,9 +25,7 @@ class Gmx_mmpbsa(AbstractScoringFunction):
         if mpiprocs > 1:
             self.bin_name = f"mpirun -np {mpiprocs} gmx_MMPBSA MPI"
 
-    def __parse_output__(
-            self, *, score_stdout: Any = None, score_file: Any = None, original_command=""
-    ) -> List[float]:
+    def __parse_outfile_list__(self, score_file: Union[Path, FileHandle], original_command: str) -> List[float]:
 
         with open(Path(score_file), 'r') as csv_file:
             text = csv.reader(csv_file)
@@ -71,7 +69,7 @@ class Gmx_mmpbsa(AbstractScoringFunction):
 
         self.__assert_scoring_function_outfile__(score_gmxmmpbsa, stdout=p.stdout, stderr=p.stderr,
                                                  command=comando_gmx_MMPBSA)
-        mmpbsa_score = self.__parse_output__(score_file=score_gmxmmpbsa, original_command=comando_gmx_MMPBSA)
+        mmpbsa_score = self.__parse_outfile_list__(score_gmxmmpbsa, comando_gmx_MMPBSA)
 
         if len(mmpbsa_score) != (end - start):
             warn(
@@ -104,3 +102,7 @@ class Gmx_mmpbsa(AbstractScoringFunction):
             raise RuntimeError(f"gmx_mmpbsa: cannot find fix_{cpx.name} in {frames_path}") from e
 
         return results_dir
+
+    def __parse_stdout__(self, score_stdout: str, original_command: str) -> float:
+        # Unused
+        pass

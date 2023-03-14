@@ -1,7 +1,7 @@
 import concurrent.futures as cf
 import subprocess as sp
 from pathlib import Path
-from typing import Tuple, List, Any
+from typing import Tuple, List
 
 from abstractscoringfunction import AbstractScoringFunction
 from complex import GROComplex
@@ -44,19 +44,13 @@ class Bach(AbstractScoringFunction):
             shell=True,
             text=True,
         )
-        bach_score = self.__parse_output__(
+        bach_score = self.__parse_stdout__(
             score_stdout=p.stdout, original_command=comando_bach
         )
 
         return i, bach_score
 
-    def __parse_output__(
-        self,
-        *,
-        score_stdout: Any = None,
-        score_file: Any = None,
-        original_command="",
-    ) -> float:
+    def __parse_stdout__(self, score_stdout: str, original_command: str) -> float:
         assert (
             score_stdout is not None
         ), f"This shouldn't happen. {self} couldn't parse {score_stdout}\nfrom: \n{original_command}"

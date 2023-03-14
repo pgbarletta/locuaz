@@ -3,7 +3,7 @@ import os
 import re
 import subprocess as sp
 from pathlib import Path
-from typing import Tuple, List, Any
+from typing import Tuple, List, Union
 
 from abstractscoringfunction import AbstractScoringFunction
 from complex import GROComplex
@@ -76,9 +76,7 @@ class Haddock(AbstractScoringFunction):
 
         return scoring_inp_file
 
-    def __parse_output__(
-        self, *, score_stdout: Any = None, score_file: Any = None, original_command=""
-    ) -> float:
+    def __parse_outfile__(self, score_file: Union[Path, FileHandle], original_command: str) -> float:
         assert (
             score_file is not None
         ), f"This shouldn't happen. {self} couldn't parse {score_file}\nfrom: \n{original_command}"
@@ -114,9 +112,7 @@ class Haddock(AbstractScoringFunction):
         output_haddock_file = Path(self.results_dir, f"mod_complex-{i}_conv.psf")
         self.__assert_scoring_function_outfile__(output_haddock_file, stdout=p.stdout, stderr=p.stderr,
                                                  command=comando_haddock)
-        score_haddock = self.__parse_output__(
-            score_file=output_haddock_file, original_command=comando_haddock
-        )
+        score_haddock = self.__parse_outfile__(output_haddock_file, comando_haddock)
 
         return i, score_haddock
 

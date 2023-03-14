@@ -1,12 +1,12 @@
 import concurrent.futures as cf
 import subprocess as sp
 from pathlib import Path
-from typing import List, Tuple, Any
+from typing import List, Tuple, Union
 import re
 
 from abstractscoringfunction import AbstractScoringFunction
 from complex import GROComplex
-from fileutils import DirHandle
+from fileutils import DirHandle, FileHandle
 
 
 class AutodockVina(AbstractScoringFunction):
@@ -66,15 +66,13 @@ class AutodockVina(AbstractScoringFunction):
             text=True,
         )
 
-        autodockvina_score = self.__parse_output__(
+        autodockvina_score = self.__parse_stdout__(
             score_stdout=p.stdout, original_command=comando_vina
         )
 
         return i, autodockvina_score
 
-    def __parse_output__(
-        self, *, score_stdout: Any = None, score_file: Any = None, original_command=""
-    ) -> float:
+    def __parse_stdout__(self, score_stdout: str, original_command: str) -> float:
 
         try:
             autodockvina_score = float(self.rgx.search(score_stdout).group(1))
@@ -120,3 +118,6 @@ class AutodockVina(AbstractScoringFunction):
 
         # Discard the first 0 frames
         return scores[start:]
+
+    def __parse_outfile__(self, score_file: Union[Path, FileHandle], original_command: str) -> float:
+        pass

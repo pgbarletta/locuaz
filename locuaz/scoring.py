@@ -108,14 +108,8 @@ def score_frames(work_pjct: WorkProject, iteration: Iteration, *, start: int, en
                 scores is not None
         ), f"This shouldn't happen. Iteration: {iteration.score_dir}"
 
-        if sf_name == "bluues":
-            avg_val = iteration.set_score("bluues", scores[0])
-            log.info(f"{sf_name} average score: {avg_val:.3f}")
-            avg_val = iteration.set_score("bmf", scores[1])
-            log.info(f"bmf average score: {avg_val:.3f}")
-        else:
-            avg_val = iteration.set_score(sf_name, scores)
-            log.info(f"{sf_name} average score: {avg_val:.3f}")
+        avg_val = iteration.set_score(sf_name, scores)
+        log.info(f"{sf_name} average score: {avg_val:.3f}")
 
     if not work_pjct.config["main"]["debug"]:
         log.info(

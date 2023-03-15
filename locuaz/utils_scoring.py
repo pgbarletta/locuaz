@@ -129,3 +129,10 @@ def rm_aux_scoring_files(
             Path(out_file).unlink()
         for inp_file in glob.glob(str(Path(haddock_dir, "*inp"))):
             Path(inp_file).unlink()
+
+    if "gmx_mmpbsa" in scoring_functions:
+        haddock_dir = frames_path / "gmx_mmpbsa"
+        for xtc_file in glob.glob(str(Path(haddock_dir, "*xtc"))):
+            Path(xtc_file).unlink()
+        for mdcrd_file in glob.glob(str(Path(haddock_dir, "*mdcrd*"))):
+            Path(mdcrd_file).unlink()

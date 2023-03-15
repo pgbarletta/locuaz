@@ -2,7 +2,6 @@ import logging
 import shutil as sh
 import subprocess as sp
 import warnings
-from functools import singledispatch
 from pathlib import Path
 from typing import Dict, Tuple, Optional, Set
 
@@ -19,7 +18,6 @@ from complex import AbstractComplex, GROComplex
 from fileutils import FileHandle, update_header, copy_to
 from molecules import (
     PDBStructure,
-    Trajectory,
     XtcTrajectory,
     get_tpr,
 )
@@ -28,13 +26,7 @@ from primitives import AA_MAP
 from primitives import launch_biobb
 
 
-@singledispatch
-def image_traj(cpx: AbstractComplex, out_trj_fn: Path, gmx_bin: str) -> Trajectory:
-    raise NotImplementedError
-
-
-@image_traj.register
-def _(cpx: GROComplex, out_trj_fn: Path, gmx_bin: str) -> XtcTrajectory:
+def image_traj(cpx: GROComplex, out_trj_fn: Path, gmx_bin: str) -> XtcTrajectory:
     wrk_dir = out_trj_fn.parent
 
     # I have to specify `fit_selection` and `center_selection` even though I'm not
@@ -211,16 +203,7 @@ def write_non_overlapping_ndx(
 
     return ndx, wat_count
 
-
-@singledispatch
-def remove_overlapping_waters(
-        complex: AbstractComplex, config: Dict, overlapped_resSeq: int
-) -> AbstractComplex:
-    raise NotImplementedError
-
-
-@remove_overlapping_waters.register
-def _(complex: GROComplex, config: Dict, overlapped_resSeq: int) -> GROComplex:
+def remove_overlapping_waters(complex: GROComplex, config: Dict, overlapped_resSeq: int) -> GROComplex:
     """remove_overlapping_waters takes a complex and removes all the waters that
     are within a certain cutoff from `overlapped_resSeq`. Then it replaces them.
     It does a lot of gymnastics to deal with Gromacs weirdness.

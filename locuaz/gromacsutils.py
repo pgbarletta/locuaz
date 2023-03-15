@@ -70,6 +70,7 @@ def image_traj(cpx: GROComplex, out_trj_fn: Path, gmx_bin: str) -> XtcTrajectory
 
     # Use MDAnalysis to get a good reference frame for -pbc nojump
     orig_u = mda.Universe(str(cpx.tpr), str(cpx.tra))
+    orig_u.add_TopologyAttr('chainID', orig_u.atoms.segids)
     # First, get a PDB with the same topology as `cluster_trj`.
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
@@ -115,21 +116,11 @@ def image_traj(cpx: GROComplex, out_trj_fn: Path, gmx_bin: str) -> XtcTrajectory
     )
     launch_biobb(center)
 
-    # Finally, get the last frame of the trajectory and leave it in case the user
-    # wants to check it. chainID info will be lost though.
+    # Finally, get the last frame of the trajectory and leave it in case the user wants to check it.
     out_pdb_fn = Path(out_trj_fn.parent, out_trj_fn.stem + ".pdb")
-    trjconv = GMXTrjConvStr(
-        input_structure_path=str(out_trj_fn),
-        input_top_path=str(cluster_gro),
-        input_index_path=str(cpx.ndx),
-        output_str_path=str(out_pdb_fn),
-        properties={
-            "binary_path": gmx_bin,
-            "selection": "Protein",
-            "dev": "-dump 999999",
-        },
-    )
-    launch_biobb(trjconv)
+    u = mda.Universe(str(orig_pdb), str(out_trj_fn))
+    u.trajectory[-1]
+    u.atoms.write(str(out_pdb_fn))
 
     # Remove temporary files
     whole_trj.unlink()

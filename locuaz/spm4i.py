@@ -1,8 +1,7 @@
-from collections.abc import Iterable
+from collections.abc import Iterable, ItemsView
 from typing import List, Tuple, Dict, Set, Iterator
 from random import choice, sample
 from collections import defaultdict
-from collections.abc import ItemsView
 from logging import Logger
 
 from projectutils import Iteration, Epoch
@@ -48,7 +47,23 @@ class SPM4i(AbstractMutationGenerator):
         self.excluded_pos = excluded_pos
 
         mut_idx_chain, mut_chainID, mut_idx_residue, mut_resSeq = self.__generate_position__(epoch, use_tleap, logger)
-        # Now, generate up to `branches` mutations
+        self.__fill_mutations__(epoch, branches, mut_idx_chain, mut_chainID, mut_idx_residue, mut_resSeq)
+
+    def __fill_mutations__(self, epoch: Epoch, branches: int, mut_idx_chain: int, mut_chainID: str,
+                           mut_idx_residue: int, mut_resSeq: int):
+        """
+        __fill_mutation__(): generates up to `branches` different mutations
+        Args:
+            epoch:
+            branches:
+            mut_idx_chain:
+            mut_chainID:
+            mut_idx_residue:
+            mut_resSeq:
+
+        Returns: None. It fills the Generator with Mutation objects.
+
+        """
         remaining_branches = branches
         remaining_iterations = set(epoch.top_iterations.keys())
         while remaining_branches != 0:
@@ -153,4 +168,4 @@ class SPM4i(AbstractMutationGenerator):
         return self.mutations.items()
 
     def __str__(self) -> str:
-        return "Single Point Mutation from 4 amino acid groups and use of the interface."
+        return "Single Point Mutation from 4 amino acid groups and use of the interface"

@@ -142,7 +142,7 @@ class GROComplex(AbstractComplex):
                     target_chains=target_chains,
                     binder_chains=binder_chains,
                     md_config=md_config,
-                    add_ions=add_ions,
+                    add_ions=add_ions
                 )
         except Exception as e:
             print(f"Could not get zip tology .gro files from: {temp_pdb}", flush=True)

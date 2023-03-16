@@ -9,14 +9,20 @@ from complex import GROComplex
 from fileutils import FileHandle, DirHandle
 
 
-class Bluues(AbstractScoringFunction):
+class BluuesBmf(AbstractScoringFunction):
     bmf_bin_path: FileHandle
     pdb2pqr_bin_path: str = "pdb2pqr30"
     TIMEOUT_PER_FRAME: int = 60
 
     def __init__(self, sf_dir, *, nthreads=2, mpiprocs=2) -> None:
-        super().__init__(sf_dir, nthreads=nthreads, mpiprocs=mpiprocs)
+        # super().__init__(sf_dir, nthreads=nthreads, mpiprocs=mpiprocs)
+        self.name = str(self)
+        self.root_dir = DirHandle(Path(sf_dir, self.name), make=False)
+        self.bin_path = FileHandle(Path(self.root_dir, "bluues"))
+        self.nthreads = nthreads
+        self.mpiprocs = mpiprocs
         self.bmf_bin_path = FileHandle(Path(self.root_dir, "bmf"))
+
 
     def __pdb2pqr_worker__(self, frames_path: Path, i: int) -> int:
 
@@ -56,31 +62,25 @@ class Bluues(AbstractScoringFunction):
 
         return i
 
-    def __parse_output__(
-            self,
-            *,
-            score_stdout: Any = None,
-            score_file: Any = None,
-            original_command: Tuple[str, str] = ("", ""),
-    ) -> Tuple[float, float]:
+    def __parse_output__(self, score_files: Tuple[Path, Path]) -> float:
 
         bluues_raw = 0.0
 
-        with open(str(score_file[0]) + ".solv_nrg", "r") as f:
+        with open(str(score_files[0]) + ".solv_nrg", "r") as f:
             for linea in f:
                 if linea[0:26] == "Total              energy:":
                     bluues_raw = float(linea.split()[2])
                     break
         bluues = bluues_raw * 15 / (abs(bluues_raw) + 15)
 
-        with open(score_file[1], "r") as f:
+        with open(score_files[1], "r") as f:
             lineas = f.readlines()
         bmf, bumps, tors = tuple(map(float, itemgetter(1, 3, 7)(lineas[0].split())))
         gab = 0.17378 * bmf + 0.25789 * bumps + 0.26624 * tors + 0.16446 * bluues
 
-        return bluues_raw, gab
+        return gab
 
-    def __bluues_bmf_molecule__(self, mol: str, i: int) -> Tuple[float, float]:
+    def __bluues_bmf_molecule__(self, mol: str, i: int) -> float:
         pqr_mol = f"{mol}-{i}.pqr"
         # BLUUES
         blu_mol_out = f"bluues_{mol}-{i}.out"
@@ -115,23 +115,21 @@ class Bluues(AbstractScoringFunction):
         self.__assert_scoring_function_outfile__(bmf_mol_out_fn, stdout=pbmf.stdout, stderr=pbmf.stderr,
                                                  command=comando_bmf)
 
-        bluues, bmf = self.__parse_output__(
-            score_file=(blu_mol_out_fn, bmf_mol_out_fn),
-            original_command=(comando_bluues, comando_bmf),
-        )
+        bmf = self.__parse_output__((blu_mol_out_fn, bmf_mol_out_fn))
 
-        return bluues, bmf
+        # bluues = self.__parse_outfile__(score_file=blu_mol_out_fn, original_command=comando_bluues)
+        # bmf = self.__parse_outfile__(score_file=bmf_mol_out_fn, original_command=comando_bmf)
 
-    def __bluues_bmf_worker__(self, i: int) -> Tuple[int, float, float]:
+        return bmf
 
-        bluues_tar, bmf_tar = self.__bluues_bmf_molecule__("target", i)
-        bluues_bin, bmf_bin = self.__bluues_bmf_molecule__("binder", i)
-        bluues_cpx, bmf_cpx = self.__bluues_bmf_molecule__("complex", i)
+    def __bluues_bmf_worker__(self, i: int) -> Tuple[int, float]:
 
-        bluues = bluues_cpx - bluues_tar - bluues_bin
+        bmf_tar = self.__bluues_bmf_molecule__("target", i)
+        bmf_bin = self.__bluues_bmf_molecule__("binder", i)
+        bmf_cpx = self.__bluues_bmf_molecule__("complex", i)
         bmf = bmf_cpx - bmf_tar - bmf_bin
 
-        return i, bluues, bmf
+        return i, bmf
 
     def __call__(
             self,
@@ -140,12 +138,11 @@ class Bluues(AbstractScoringFunction):
             end: int,
             frames_path: Path,
             cpx: GROComplex,
-    ) -> Tuple[List[float], List[float]]:
+    ) -> List[float]:
 
         self.results_dir = DirHandle(Path(frames_path, self.name), make=True)
         nframes = end - start
         # The first frames will be discarded later.
-        scores_bluues: List[float] = [0] * end
         scores_bmf: List[float] = [0] * end
 
         with cf.ProcessPoolExecutor(max_workers=self.nthreads) as exe:
@@ -182,10 +179,9 @@ class Bluues(AbstractScoringFunction):
                         )
                         raise futu.exception()  # type: ignore
 
-                    k, bluues, bmf = futu.result()
-                    scores_bluues[k] = bluues
+                    k, bmf = futu.result()
                     scores_bmf[k] = bmf
             except cf.TimeoutError as e:
                 print(f"{self.name}/bmf subprocess timed out.", flush=True)
                 raise e
-        return scores_bluues[start:], scores_bmf[start:]
+        return scores_bmf[start:]

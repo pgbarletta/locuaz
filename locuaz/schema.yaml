@@ -208,27 +208,11 @@ md:
             default: "tip3p"
             required: false
             allowed: ["tip3p", "tip4p", "tip4pew", "tip5p", "spc", "spce"]
-        use_box:
-            type: boolean
-            required: true
-            default: false
-            check_with: box_check
         box_type:
             type: string
-            required: false
-            allowed: ["triclinic", "cubic", "dodecahedron", "octahedron"]
-        dist_to_box:
-            type: float 
-            required: false
-            min: 0.5
-            max: 9.0
-        box:
-            type: list
-            required: false
-            minlength: 3
-            maxlength: 3
-            schema:
-                type: float
+            required: true
+            default: "triclinic"
+            allowed: ["triclinic", "dodecahedron", "octahedron"]
         maxwarn:
             type: integer
             min: 0
@@ -315,7 +299,7 @@ scoring:
             required: true
             schema:
                 type: string
-                allowed: ["bach", "bluues", "evoef2", "haddock", "pisa", "rosetta", "gmx_mmpbsa", "autodockvina"]
+                allowed: ["bach", "bluues", "bluuesbmf", "evoef2", "haddock", "pisa", "rosetta", "gmx_mmpbsa", "autodockvina"]
         consensus_threshold:
             type: integer
             min: 1

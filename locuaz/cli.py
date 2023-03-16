@@ -79,7 +79,7 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
                 get_dir_size(config["paths"]["tleap"]) < 10
         ), f"tleap dir is heavier than 10Mb. Choose a dir with only the necessary tleap files."
         warnings.warn(
-            "tleap script will be used. Options: 'water_type', 'force_field' and 'use_box' will be ignored.")
+            "tleap script will be used. Options: 'water_type' and 'force_field' will be ignored.")
 
     # Check matching lengths of mutating_resSeq and mutating_resname.
     for resnames, resSeqs in zip(config["binder"]["mutating_resname"], config["binder"]["mutating_resSeq"]):
@@ -371,19 +371,6 @@ def get_memory(config: Dict) -> Tuple[Set, List[List]]:
     return set(all_memory_positions[0]), all_memory_positions
 
 
-def define_box_settings(config: Dict) -> Dict:
-    # config["md"]["box"] overrides config["md"]["dist_to_box"]
-    if "box" in config["md"]:
-        config["md"]["dist_to_box"] = None
-        config["md"]["box"] = " ".join([str(length) for length in config["md"]["box"]])
-    else:
-        if "dist_to_box" in config["md"]:
-            pass
-        else:
-            config["md"]["dist_to_box"] = 1.0
-    return config
-
-
 def main() -> Tuple[Dict, bool]:
     """Console script for locuaz."""
     warnings.simplefilter("default")
@@ -437,8 +424,6 @@ def main() -> Tuple[Dict, bool]:
                     config["protocol"]["memory_positions"] = memory_positions
             else:
                 config["misc"]["epoch_mutated_positions"] = set()
-
-    config = define_box_settings(config)
 
     # Set up environment
     os.environ["OMP_PLACES"] = "threads"

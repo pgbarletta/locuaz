@@ -26,9 +26,10 @@ def get_gro_ziptop_from_pdb(
         md_config: Dict,
         add_ions: bool = False,
 ) -> Tuple[PDBStructure, GROStructure, ZipTopology]:
-    """get_gro_ziptop_from_pdb does a pdb2gmx from the PDB and tries to keep
-    the system neutral, which may alter the topology so a new PDB will be
-    written with the same name as the original, which will be backed up by GROMACS.
+    """get_gro_ziptop_from_pdb does a pdb2gmx from the PDB and tries to keep the system neutral,
+    which may alter the topology so a new PDB will be written with the same name as the original,
+    which will be backed up by GROMACS. No 'editconf' or 'solvate' is run.
+    The system is assumed to have solvent and a CRYST1 record with box info.
 
     Args:
         pdb (PDBStructure): input PDB
@@ -52,71 +53,15 @@ def get_gro_ziptop_from_pdb(
         "force_field": force_field,
         "ignh": True,
     }
-    pre_gro_fn = local_dir / ("pre" + name + ".gro")
-    pre_top_fn = local_dir / "pre_topol.zip"
+    gro_fn = local_dir / (name + ".gro")
+    top_fn = local_dir / "topol.zip"
     pdb_to_gro_zip = Pdb2gmx(
         input_pdb_path=str(pdb.file),
-        output_gro_path=str(pre_gro_fn),
-        output_top_zip_path=str(pre_top_fn),
+        output_gro_path=str(gro_fn),
+        output_top_zip_path=str(top_fn),
         properties=props,
     )
     launch_biobb(pdb_to_gro_zip)
-
-    if md_config.get("use_box", False):
-        # Set the box dimensions
-        box: Optional[str] = md_config.get("box")
-        if box:
-            props = {
-                "distance_to_molecule": None,
-                "box_type": "triclinic",
-                "dev": f"-box {box}",
-            }
-        else:
-            dist_to_box: float = md_config.get("dist_to_box", 1.0)
-            box_type: str = md_config.get("box_type", "triclinic")
-            props = {
-                "distance_to_molecule": dist_to_box,
-                "box_type": box_type,
-            }
-
-        box_gro_fn = local_dir / ("box" + name + ".gro")
-        set_box = Editconf(
-            input_gro_path=str(pre_gro_fn),
-            output_gro_path=str(box_gro_fn),
-            properties=props,
-        )
-        launch_biobb(set_box)
-
-        pre_gro_fn = copy_to(FileHandle(box_gro_fn), local_dir, f"pre{name}.gro").path
-        box_gro_fn.unlink()
-
-    if add_ions:
-        # Build a .tpr for genion
-        gen_tpr_fn = local_dir / ("genion_" + name + ".tpr")
-        grompepe = Grompp(
-            input_gro_path=str(pre_gro_fn),
-            input_top_zip_path=str(pre_top_fn),
-            output_tpr_path=str(gen_tpr_fn),
-            properties={"binary_path": gmx_bin, "maxwarn": 2},
-        )
-        launch_biobb(grompepe)
-
-        # Add ions
-        gro_fn = local_dir / (name + ".gro")
-        top_fn = local_dir / (name + ".zip")
-        genio = Genion(
-            input_tpr_path=str(gen_tpr_fn),
-            input_top_zip_path=str(pre_top_fn),
-            output_gro_path=str(gro_fn),
-            output_top_zip_path=str(top_fn),
-            properties={"binary_path": gmx_bin, "neutral": True, "concentration": 0.0},
-        )
-        launch_biobb(genio)
-        # Remove temporary file
-        # gen_tpr_fn.unlink()
-    else:
-        gro_fn = copy_to(FileHandle(pre_gro_fn), local_dir, name + ".gro").path
-        top_fn = copy_to(FileHandle(pre_top_fn), local_dir, name + ".zip").path
 
     # Build a temporary tpr file for the next step
     temp_tpr_fn = local_dir / ("temp_" + name + ".tpr")
@@ -143,8 +88,6 @@ def get_gro_ziptop_from_pdb(
 
     # Remove temporary files
     temp_tpr_fn.unlink()
-    pre_gro_fn.unlink()
-    pre_top_fn.unlink()
 
     zip_top = ZipTopology.from_path_with_chains(
         top_fn, target_chains=target_chains, binder_chains=binder_chains

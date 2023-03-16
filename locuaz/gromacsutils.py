@@ -195,7 +195,7 @@ def write_non_overlapping_ndx(
     return ndx, wat_count
 
 def remove_overlapping_waters(complex: GROComplex, config: Dict, overlapped_resSeq: int) -> GROComplex:
-    """remove_overlapping_waters takes a complex and removes all the waters that
+    """DEPRECATED remove_overlapping_waters takes a complex and removes all the waters that
     are within a certain cutoff from `overlapped_resSeq`. Then it replaces them.
     It does a lot of gymnastics to deal with Gromacs weirdness.
 
@@ -244,7 +244,6 @@ def remove_overlapping_waters(complex: GROComplex, config: Dict, overlapped_resS
         target_chains=complex.top.target_chains,
         binder_chains=complex.top.binder_chains,
         md_config=config["md"],
-        add_ions=False,
     )
 
     # Re-add waters to keep the N of the system constant
@@ -277,7 +276,6 @@ def remove_overlapping_waters(complex: GROComplex, config: Dict, overlapped_resS
         target_chains=complex.top.target_chains,
         binder_chains=complex.top.binder_chains,
         md_config=config["md"],
-        add_ions=False,
     )
 
     # Build a temporary .tpr for genion

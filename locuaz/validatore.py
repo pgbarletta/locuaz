@@ -258,18 +258,3 @@ class Validatore(Validator):
             start = self.document.get("start", False)
             if value != -1 and value < start:
                 self._error(field, f"{value} is less than the starting frame: {start} ")
-
-    def _check_with_box_check(self, field, value):
-        box_options = ("box_type", "dist_to_box", "box")
-        if value:
-            if not any([box_opt in self.document for box_opt in box_options]):
-                self._error(
-                    field, f"is true, at least one of {box_options} needs to be set."
-                )
-            if self.document.get("use_tleap", False):
-                self._error(field, "'use_tleap' is True, so box parameters are set by tleap.")
-        else:
-            for box_opt in box_options:
-                if box_opt in self.document:
-                    self._error(field, f"is false, cannot set {box_opt}.")
-            

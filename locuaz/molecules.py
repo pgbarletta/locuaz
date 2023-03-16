@@ -197,21 +197,31 @@ class XtcTrajectory(Trajectory):
 
 def get_tpr(
     *,
-    gro: GROStructure,
-    top: ZipTopology,
+    gro: Union[Path, GROStructure],
+    top: Union[Path, ZipTopology],
     gmx_bin: str = "gmx",
 ) -> TPRFile:
+    """
+    get_tpr(): build a quick tpr, useful for simple runs asa call to genion and not for MD.
+    Args:
+        gro:
+        top:
+        gmx_bin:
 
-    tpr = Path(gro.file.path.parent) / (gro.name + ".tpr")
+    Returns:
+        TPRFile
+    """
+    gro_fn = Path(gro)
+    tpr_fn = gro_fn.parent / (gro_fn.stem + ".tpr")
     grompepe = Grompp(
-        input_gro_path=str(gro.file.path),
-        input_top_zip_path=str(top.file.path),
-        output_tpr_path=str(tpr),
+        input_gro_path=str(gro_fn),
+        input_top_zip_path=str(top),
+        output_tpr_path=str(tpr_fn),
         properties={"binary_path": gmx_bin, "simulation_type": "index"},
     )
     launch_biobb(grompepe)
 
-    return TPRFile.from_path(tpr)
+    return TPRFile.from_path(tpr_fn)
 
 
 def get_pdb_tpr(

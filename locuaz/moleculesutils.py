@@ -2,19 +2,16 @@ import shutil as sh
 import warnings
 from collections.abc import Iterable
 from pathlib import Path
-from typing import Dict, Tuple, Optional, Union
+from typing import Dict, Tuple, Union
 
 import MDAnalysis as mda
 import numpy as np
 from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
-from biobb_gromacs.gromacs.editconf import Editconf
 from biobb_gromacs.gromacs.genion import Genion
-from biobb_gromacs.gromacs.grompp import Grompp
 from biobb_gromacs.gromacs.pdb2gmx import Pdb2gmx
 
 from amberutils import create_tleap_script, fix_pdb, run_tleap, amb_to_gmx
-from fileutils import FileHandle, copy_to
-from molecules import PDBStructure, GROStructure, ZipTopology
+from molecules import PDBStructure, GROStructure, ZipTopology, get_tpr
 from primitives import launch_biobb
 
 
@@ -35,6 +32,9 @@ def get_gro_ziptop_from_pdb(
         pdb (PDBStructure): input PDB
         target_chains (Iterable): these will be used to construct the ZipTopology
         binder_chains (Iterable): these will be used to construct the ZipTopology
+        md_config (Dict): user's config input
+        add_ions (bool): wether to neutralize with genion or not. Useful after a mutation was done on the
+        input PDB.
 
     Returns:
         Tuple[PDBStructure, GROStructure, ZipTopology]: Proper, nice, system.
@@ -53,28 +53,41 @@ def get_gro_ziptop_from_pdb(
         "force_field": force_field,
         "ignh": True,
     }
-    gro_fn = local_dir / (name + ".gro")
-    top_fn = local_dir / "topol.zip"
+    pre_ion_gro_fn = local_dir / f"pre_ion_{name}.gro"
+    pre_ion_top_fn = local_dir / f"pre_ion_{name}.zip"
     pdb_to_gro_zip = Pdb2gmx(
         input_pdb_path=str(pdb.file),
-        output_gro_path=str(gro_fn),
-        output_top_zip_path=str(top_fn),
+        output_gro_path=str(pre_ion_gro_fn),
+        output_top_zip_path=str(pre_ion_top_fn),
         properties=props,
     )
     launch_biobb(pdb_to_gro_zip)
 
+    gro_fn = local_dir / f"{name}.gro"
+    top_fn = local_dir / f"{name}.zip"
+    if add_ions:
+        # Build a temporary .tpr for genion
+        temp_tpr_fn = get_tpr(gro=pre_ion_gro_fn, top=pre_ion_top_fn)
+
+        # Re-add ions as necessary. SOL group will be continuous, so gmx genion won't complain.
+        genio = Genion(
+            input_tpr_path=str(temp_tpr_fn),
+            input_top_zip_path=str(pre_ion_top_fn),
+            output_gro_path=str(gro_fn),
+            output_top_zip_path=str(top_fn),
+            properties={
+                "binary_path": gmx_bin,
+                "neutral": True,
+                "concentration": 0.0,
+            },
+        )
+        launch_biobb(genio)
+    else:
+        sh.move(pre_ion_gro_fn, gro_fn)
+        sh.move(pre_ion_top_fn, top_fn)
+
     # Build a temporary tpr file for the next step
-    temp_tpr_fn = local_dir / ("temp_" + name + ".tpr")
-    grompepe = Grompp(
-        input_gro_path=str(gro_fn),
-        input_top_zip_path=str(top_fn),
-        output_tpr_path=str(temp_tpr_fn),
-        properties={
-            "binary_path": gmx_bin,
-            "maxwarn": 2,
-        },
-    )
-    launch_biobb(grompepe)
+    temp_tpr_fn = get_tpr(gro=gro_fn, top=top_fn)
 
     # Get PDB from GRO file. Gromacs should back up the older input PDB, maybe?
     pdb_fn = local_dir / (name + ".pdb")
@@ -97,10 +110,10 @@ def get_gro_ziptop_from_pdb(
 
 
 def get_gro_ziptop_from_pdb_tleap(
-    *,
-    pdb: PDBStructure,
-    target_chains: Iterable,
-    binder_chains: Iterable,
+        *,
+        pdb: PDBStructure,
+        target_chains: Iterable,
+        binder_chains: Iterable,
 ) -> Tuple[PDBStructure, GROStructure, ZipTopology]:
     """get_gro_ziptop_from_pdb_tleap runs .
 
@@ -142,9 +155,8 @@ def get_gro_ziptop_from_pdb_tleap(
 
 
 def fix_wat_naming(
-    pdb_in: Union[PDBStructure, Path], pdb_out: Path, *, use_tleap: bool = False
+        pdb_in: Union[PDBStructure, Path], pdb_out: Path, *, use_tleap: bool = False
 ) -> PDBStructure:
-
     # Will get some warnings due to new waters added by gmx solvate not having the element column
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")

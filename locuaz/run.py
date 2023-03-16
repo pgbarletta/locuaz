@@ -74,6 +74,7 @@ def run_npt_epoch(work_pjct: WorkProject) -> None:
     ngpus = work_pjct.config["md"]["ngpus"]
     prefix = work_pjct.config["main"]["prefix"]
     pinoffsets = work_pjct.config["md"]["pinoffsets"]
+    box_type = work_pjct.config["md"]["box_type"]
 
     with ProcessPoolExecutor(max_workers=ngpus) as ex:
         gpu_id = {}
@@ -104,7 +105,7 @@ def run_npt_epoch(work_pjct: WorkProject) -> None:
             
             iter = epoch[iter_name]
             iter.complex = npt_complex
-            if not all_atoms_in_box:
+            if not all_atoms_in_box and box_type == "triclinic":
                 log.error(f"{epoch.id}-{iter_name} has atoms outside the box. "
                 "This run may not be apt to continue.")
                 iter.outside_box = True

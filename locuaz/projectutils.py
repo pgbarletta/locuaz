@@ -578,8 +578,9 @@ class WorkProject:
         if len(resis_not_present) > 0:
             raise ValueError(
                 f"The following residues are not present in the input PDB: {resis_not_present}.\n"
-                f"This is the 'mutating_resSeq' for the input 'mutating_resSeq' "
-                f"'{correct_resis_resSeq}': {correct_resis_resname}")
+                f"This is the 'mutating_resname' for the input 'mutating_resSeq' "
+                f"'{correct_resis_resSeq}': {correct_resis_resname}\n"
+                "Don't just copy them, make sure your trying to mutate the right residues.")
 
         if len(resis_not_present_freesasa) > 0:
             raise ValueError(

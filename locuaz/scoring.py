@@ -31,8 +31,6 @@ def initialize_scoring_folder(
     Returns:
         nframes(int): number of frames
     """
-    # No amber support for now.
-    assert isinstance(iteration.complex, GROComplex)
 
     iteration.score_dir = DirHandle(Path(iteration, "scoring"), make=True, replace=True)
     gmx_bin: str = "gmx"

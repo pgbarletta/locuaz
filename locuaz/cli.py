@@ -281,6 +281,37 @@ def set_iterations(config: Dict) -> None:
         return
     raise ValueError("No valid iterations in work_dir. Aborting.")
 
+def set_generator_probe_radius(config: Dict) -> None:
+    """
+    set_generator_probe_radius(): accepted generators: SPM4, SPM4i, SPM4i`probe_radius`. Default probe radius = 1.4
+    Updates the user config in place.
+    Args:
+        config (Dict): input user config
+
+    Returns:
+        None
+    """
+    generator = config["protocol"]["generator"]
+    err_msg = f"Could not parse {generator} into a valid generator. Valid generators: " \
+              f"[SPM4, SPM4i, SPM4i'probe_radius'], where 'probe_radius' is a number between .1 and 4.0 " \
+              "Eg: 'SPM4i1.4'"
+    probe_radius = 1.4
+
+    if generator == "SPM4":
+        pass
+    elif generator == "SPM4i":
+        pass
+    elif generator[:5] == "SPM4i":
+        config["protocol"]["generator"] = "SPM4i"
+        try:
+            probe_radius = float(generator[5:])
+            assert (0.1 <= probe_radius <= 4.0)
+        except (Exception, AssertionError):
+            raise RuntimeError(err_msg)
+    else:
+        raise RuntimeError(err_msg)
+    config["protocol"]["probe_radius"] = probe_radius
+    return
 
 def get_memory(config: Dict) -> Tuple[Set, List[List]]:
     """get_memory() compares character by character of the iteration folders resnames to
@@ -397,6 +428,7 @@ def main() -> Tuple[Dict, bool]:
 
     raw_config = get_raw_config(args.config_file)
     config, starts = validate_input(raw_config, args.mode, args.debug)
+    set_generator_probe_radius(config)
     config["misc"] = {}
     if starts:
         # Set up working dir

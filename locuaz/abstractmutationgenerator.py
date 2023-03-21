@@ -16,6 +16,7 @@ class AbstractMutationGenerator(ABC, Mapping):
             *,
             excluded_aas: Set[str],
             excluded_pos: Set[int],
+            probe_radius: float = 1.4,
             use_tleap: bool = False,
             logger: Logger = None
     ) -> None:

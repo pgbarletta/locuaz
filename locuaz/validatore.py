@@ -21,7 +21,7 @@ class Validatore(Validator):
                 self._error(field, f"Must contain any of: {constraints}")
 
             if ("current_iterations" in set_fields) and (
-                "previous_iterations" not in set_fields
+                    "previous_iterations" not in set_fields
             ):
                 warn(
                     "Warning: `current_iterations` is set, but `previous_iterations` isn't. "
@@ -113,9 +113,7 @@ class Validatore(Validator):
         {'type': 'integer'}
         """
         if threshold and value > threshold:
-            warn(
-                f"Warning: {field} set to {value}. Make sure you have enough resources.",
-            )
+            warn(f"Warning: {field} set to {value}. Make sure you have enough resources.")
 
     def _validate_warn_thread_availability(self, others, field, value):
         """_validate_warn_thread_availability

@@ -40,7 +40,8 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
             excluded_aas=work_pjct.get_mem_aminoacids(),
             excluded_pos=work_pjct.get_mem_positions(),
             use_tleap=work_pjct.config["md"]["use_tleap"],
-            logger=log
+            logger=log,
+            probe_radius=work_pjct.config["protocol"]["probe_radius"]
         )
 
         for old_iter_name, mutations in mutation_generator.items():

@@ -11,8 +11,8 @@ from molecules import PDBStructure
 from fileutils import FileHandle
 
 
-def get_interfacing_residues(pdb_input: Union[PDBStructure, FileHandle, Path],
-                             chainIDs: List[str], use_tleap: bool = False) -> Set[int]:
+def get_interfacing_residues(pdb_input: Union[PDBStructure, FileHandle, Path], chainIDs: List[str],
+                             probe_radius: float = 1.4, use_tleap: bool = False) -> Set[int]:
     """
     get_interfacing_residues(): use freesasa to get the resSeq of the binder residues that are in contact with
     the target. These can be used to guide the 2choice of the next mutated position.
@@ -48,8 +48,15 @@ def get_interfacing_residues(pdb_input: Union[PDBStructure, FileHandle, Path],
                                        "chain-groups": ''.join(set(chainIDs))})
     capture_warnings.reset()
 
-    sasa_whole = freesasa.calc(structs[0])
-    sasa_binder = freesasa.calc(structs[1])
+    parameters = freesasa.Parameters({
+        'algorithm': "LeeRichards",
+        'probe-radius': probe_radius,
+        'n-points': 200,
+        'n-slices': 20,
+        'n-threads': 1})
+    sasa_whole = freesasa.calc(structs[0], parameters)
+    sasa_binder = freesasa.calc(structs[1], parameters)
+
     residuos_whole = sasa_whole.residueAreas()
     residuos_binder = sasa_binder.residueAreas()
     interfacing_resis: Set[int] = set()

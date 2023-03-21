@@ -88,7 +88,6 @@ protocol:
             default: "SPM4i"
             required: false
             crosscheck: [branches] 
-            allowed: ["SPM4i", "SPM4ie"]
         mutator:
             type: string
             default: "evoef2"

@@ -528,9 +528,8 @@ class WorkProject:
 
         chainIDs = self.config["target"]["chainID"] + self.config["binder"]["chainID"]
         for segid, chainID in zip(segids, chainIDs):
-            assert (
-                    segid == chainID
-            ), f"PDBs chainIDs ({segid}) and input target-binder chainIDs ({chainIDs}) should be identical."
+            assert (segid == chainID), f"PDBs chainIDs ({segid}) and input target-binder chainIDs "
+            f"({chainIDs}) from the config should be identical and the target chains should go first."
 
         # Check amino acids
         all_residues = "protein or " + " or ".join(

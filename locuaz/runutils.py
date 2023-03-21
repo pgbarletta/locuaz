@@ -170,9 +170,11 @@ class MDrun:
         try:
             copy_mol_to(complex.top, self.dir, f"{self.out_name}.zip")
         except SameFileError:
-            # This happens when there was an attempt to run MD on a finished run
-            # and gromacs started from `name`.cpt. This shouldn't happen anymore.
-            print(f"{complex.top} same as {self.out_name}.zip", flush=True)
+            # This happens when there was an attempt to run MD on a finished run and gromacs started from `name`.cpt.
+            # This only happens when a run was interrupted after some iterations were finished and others weren't.
+            # Otherwise, the `npt_done` flag of the epoch would be set and this step would be skipped.
+            run_dir = Path(self.dir).name
+            print(f"Run from {run_dir} had already finished. {complex.top} same as {self.out_name}.zip", flush=True)
             pass
 
         new_complex = type(complex).from_gro_zip(

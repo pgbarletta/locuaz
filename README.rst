@@ -96,6 +96,20 @@ Additional requirements for specific SFs:
     The included file `template_scoring.inp` should also be present in the top level
     directory.
 
+ - piepisa:
+   get pie from `https://clsbweb.oden.utexas.edu/dock_details.html`. If you can run the binary, good,
+   if you can't, then you probably won't be able to run it, since compiling and running it in a
+   modern PC is quite cumbersome. Then, normalize the directory to the scoring functions standard:
+    - rename `pie` to `piepisa`
+    - set the binaries and parameters to the proper names. Inside the `piepisa` dir:
+      ```
+      ln -s bin/pie_score pie
+      ln -s bin/pie.params pie.params
+      ln -s pisa/pisaEnergy_linux pisa
+      ln -s pisa/pisa.params pisa.params
+      ```
+   
+
 Features
 --------
 

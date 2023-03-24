@@ -1,0 +1,3 @@
+[submodule "locuaz/DLPacker"]
+	path = locuaz/DLPacker
+	url = https://github.com/pgbarletta/DLPacker

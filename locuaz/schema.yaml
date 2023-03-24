@@ -86,12 +86,10 @@ protocol:
         generator:
             type: string 
             default: "SPM4i"
-            required: false
             crosscheck: [branches] 
         mutator:
             type: string
             default: "evoef2"
-            allowed: ["evoef2", "biobb"]
         memory_size:
             type: integer
             required: false

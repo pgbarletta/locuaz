@@ -29,7 +29,7 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
 
     # Create required mutator
     mutator = mutators[work_pjct.config["protocol"]["mutator"]](
-        work_pjct.config["paths"]["mutator"]
+        work_pjct.config["paths"]["mutator"],work_pjct.config["protocol"]["reconstruct_radius"]
     )
     # Create required mutation generator and generate mutation.
     generator = mutation_generators[work_pjct.config["protocol"]["generator"]]

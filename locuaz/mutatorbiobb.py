@@ -5,10 +5,11 @@ from biobb_model.model.mutate import Mutate
 
 from molecules import PDBStructure
 from primitives import launch_biobb
-from mutator import AbstractMutator, Mutation
+from basemutator import BaseMutator
+from mutation import Mutation
 
 
-class MutatorBiobb(AbstractMutator):
+class MutatorBiobb(BaseMutator):
     def __init__(self, bin_dir: Path) -> None:
         pass
 

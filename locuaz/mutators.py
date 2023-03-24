@@ -1,13 +1,16 @@
-from typing import Dict, Union, Type
+from typing import Dict, Type
 
-from mutator_biobb import MutatorBiobb
-from mutator_evoef2 import MutatorEvoEF2
-from mutator import AbstractMutator
+from mutatordlpr import MutatorDLPackerReconstruct
+from mutatordlp import MutatorDLPacker
+from mutatorevoef2 import MutatorEvoEF2
+from mutatorbiobb import MutatorBiobb
+from basemutator import BaseMutator
 
 __all__ = ("mutators",)
 
-# Union[Type[MutatorBiobb], Type[MutatorEvoEF2]]
-mutators: Dict[str, Type[AbstractMutator]] = {
+mutators: Dict[str, Type[BaseMutator]] = {
     "evoef2": MutatorEvoEF2,
+    "dlp": MutatorDLPacker,
+    "dlpr": MutatorDLPackerReconstruct,
     "biobb": MutatorBiobb,
 }

@@ -1,7 +1,6 @@
 from pathlib import Path
-from typing import Tuple, Optional, Union
+from typing import Tuple
 
-import MDAnalysis as mda
 from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
 
 from complex import GROComplex
@@ -49,30 +48,3 @@ def split_solute_and_solvent_old(
     wation_pdb = PDBStructure.from_path(wation_pdb_fn)
 
     return nonwat_pdb, wation_pdb
-
-
-def split_solute_solvent(
-    pdb_in: Union[PDBStructure, Path],
-    *,
-    selection_complex: Optional[str] = None,
-    selection_wations: Optional[str] = None,
-) -> Tuple[PDBStructure, PDBStructure]:
-
-    pdb_in_path = Path(pdb_in)
-    u = mda.Universe(str(pdb_in_path))
-
-    # Protein
-    nonwat_pdb_fn = Path(pdb_in_path.parent, "init_nonwat.pdb")
-    if selection_complex:
-        u.atoms.select_atoms(selection_complex).write(str(nonwat_pdb_fn))  # type: ignore
-    else:
-        u.atoms.select_atoms("protein").write(str(nonwat_pdb_fn))  # type: ignore
-
-    # Water and ions
-    wation_pdb_fn = Path(pdb_in_path.parent, "init_wation.pdb")
-    if selection_wations:
-        u.atoms.select_atoms(selection_wations).write(str(wation_pdb_fn))  # type: ignore
-    else:
-        u.atoms.select_atoms("not protein").write(str(wation_pdb_fn))  # type: ignore
-
-    return PDBStructure.from_path(nonwat_pdb_fn), PDBStructure.from_path(wation_pdb_fn)

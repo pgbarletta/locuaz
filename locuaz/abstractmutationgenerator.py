@@ -4,7 +4,7 @@ from collections.abc import Mapping
 from logging import Logger
 
 from projectutils import Iteration, Epoch
-from mutator import Mutation
+from mutation import Mutation
 
 
 class AbstractMutationGenerator(ABC, Mapping):

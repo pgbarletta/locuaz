@@ -164,7 +164,7 @@ class MDrun:
         except (RuntimeError, Exception):
             raise GromacsError(f"MDRun error. stdout:\n{p.stdout}\n"f"stderr:\n{p.stderr}")
 
-        self.__assert_outfile__(run_gro, stdout=p.stdout, stderr=p.stderr, command=comando_md)
+        self.assert_outfile(run_gro, stdout=p.stdout, stderr=p.stderr, command=comando_md)
 
         # Finally, build the Complex.
         try:
@@ -220,7 +220,7 @@ class MDrun:
         assert isinstance(complex.top, ZipTopology), f"Topology from input complex "
         f"should be in zip format. Current topology: {complex.top}."
 
-    def __assert_outfile__(self, out_file: Union[str, Path, FileHandle], *, stdout: str, stderr: str,
+    def assert_outfile(self, out_file: Union[str, Path, FileHandle], *, stdout: str, stderr: str,
                            command: str) -> Path:
         out_file_path = Path(out_file)
         assert out_file_path.is_file(), f"""{self} error. Can't parse: {out_file_path}

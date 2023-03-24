@@ -8,8 +8,9 @@ from amberutils import fix_pdb
 from complex import GROComplex
 from fileutils import DirHandle
 from gromacsutils import remove_overlapping_solvent
+from molecules import PDBStructure
 from mutationgenerators import mutation_generators
-from mutator import memorize_mutations
+from basemutator import memorize_mutations
 from mutators import mutators
 from projectutils import WorkProject, Epoch, Iteration
 
@@ -72,6 +73,9 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
                     resnames=iter_resnames,
                     resSeqs=old_iter.resSeqs,
                 )
+
+                init_wt = Path(iter_path, "init_wt.pdb")
+                sh.copy(old_pdb, init_wt)
                 log.info(
                     f"New mutation: {mutation} on Epoch-Iteration: {epoch_id}-{iter_name}"
                 )
@@ -81,7 +85,7 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
                     warnings.simplefilter("ignore")
                     try:
                         overlapped_pdb = mutator.on_pdb(
-                            old_pdb,
+                            PDBStructure.from_path(init_wt),
                             iter_path,
                             mutation=mutation,
                             selection_complex=old_iter.complex.top.selection_complex,

@@ -5,7 +5,7 @@ from collections import defaultdict
 from logging import Logger
 
 from projectutils import Iteration, Epoch
-from mutator import Mutation
+from mutation import Mutation
 from abstractmutationgenerator import AbstractMutationGenerator
 
 

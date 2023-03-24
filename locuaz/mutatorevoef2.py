@@ -18,7 +18,7 @@ from primitives import AA_MAP
 class MutatorEvoEF2(AbstractMutator):
     bin_path: FileHandle
 
-    def __init__(self, bin_dir: Path) -> None:
+    def __init__(self, bin_dir: Path, radius: float = 5) -> None:
         self.bin_path = FileHandle(Path(bin_dir, "EvoEF2"))
 
     @staticmethod

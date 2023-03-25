@@ -330,7 +330,7 @@ def set_mutator(config: Dict) -> None:
               "Eg: 'dlpr5.0'"
     radius = 5.
 
-    if mutator in {"evoef2", "biobb", "dlp"}:
+    if mutator in {"evoef2", "biobb", "dlp", "dlpr"}:
         pass
     elif mutator[:4] == "dlpr":
         config["protocol"]["generator"] = "SPM4i"
@@ -461,6 +461,7 @@ def main() -> Tuple[Dict, bool]:
     raw_config = get_raw_config(args.config_file)
     config, starts = validate_input(raw_config, args.mode, args.debug)
     set_generator(config)
+    set_mutator(config)
     config["misc"] = {}
     if starts:
         # Set up working dir

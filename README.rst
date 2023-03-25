@@ -108,7 +108,19 @@ Additional requirements for specific SFs:
       ln -s pisa/pisaEnergy_linux pisa
       ln -s pisa/pisa.params pisa.params
       ```
-   
+
+Mutators:
+------
+
+-  DLPacker is included as a submodule. To download it:
+  ```
+  git submodule init
+  ```
+  Then, in a `dlpacker` directory, the following files have to be present:
+  `charges.rtp`, `library.npz` and `DLPacker_weights.h5`. The first 2 can be copied
+  from the recently downloaded directory (`locuaz/DLPacker`). The weights have to be
+  [downloaded](https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQseE0LQ/view?usp=sharing).
+
 
 Features
 --------

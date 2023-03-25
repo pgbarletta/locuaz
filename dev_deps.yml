@@ -12,6 +12,7 @@ dependencies:
   - conda-forge::compilers=1.2.0
   - conda-forge::parmed==4.0.0
   - conda-forge::openbabel
+  - conda-forge::tensorflow
   - pip
   - pip:
     - black

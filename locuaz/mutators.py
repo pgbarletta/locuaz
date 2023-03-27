@@ -16,7 +16,7 @@ try:
     from mutatordlpr import MutatorDLPackerReconstruct
     from mutatordlp import MutatorDLPacker
 
-    mutators["dlp"] = MutatorDLPacker,
-    mutators["dlpr"] = MutatorDLPackerReconstruct,
+    mutators["dlp"] = MutatorDLPacker
+    mutators["dlpr"] = MutatorDLPackerReconstruct
 except ModuleNotFoundError:
     warnings.warn("Could not import DLPacker, dlp and dlpr mutators won't be available.")

@@ -34,3 +34,6 @@ class Mutation:
 
         # Drop the leading '-'
         return iter_name[1:], new_iteration_resnames
+
+    def get_mda_sel(self, backbone_only=True) -> str:
+        return f"segid {self.chainID} and resnum {self.resSeq}" + (" and backbone" if backbone_only else "")

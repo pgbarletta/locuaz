@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from pathlib import Path
-from typing import List, Iterable, Tuple, Optional, Union
+from typing import List, Iterable, Tuple, Optional, Union, Set
 import warnings
 
 import MDAnalysis as mda
@@ -123,7 +123,7 @@ class BaseMutator:
 
     @staticmethod
     def port_mutation(mutated_pdb: Union[Path, PDBStructure], original_pdb: Union[Path, PDBStructure],
-                      mut: Mutation,
+                      mut: Mutation, surrounding_residues: Optional[Set[Tuple[int, str, str]]] = None
                       ) -> Path:
         mutated_pdb_fn = Path(mutated_pdb)
         parsero = PDBParser(QUIET=True)
@@ -131,13 +131,23 @@ class BaseMutator:
         orig_pdb = parsero.get_structure("bar", file=Path(original_pdb))
 
         new_model = mut_pdb[0]
-        new_segment = new_model[mut.chainID]
-        new_aa = new_segment.child_dict[(" ", mut.resSeq, " ")]
-
         model = orig_pdb[0]
-        segment = model[mut.chainID]
-        first_resSeq = segment.child_list[0].id[1]
-        segment.child_list[mut.resSeq - first_resSeq] = new_aa
+
+        if surrounding_residues:
+            for resSeq, chainID, resname in surrounding_residues:
+                new_segment = new_model[chainID]
+                new_aa = new_segment.child_dict[(" ", resSeq, " ")]
+
+                segment = model[chainID]
+                first_resSeq = segment.child_list[0].id[1]
+                segment.child_list[resSeq - first_resSeq] = new_aa
+        else:
+            new_segment = new_model[mut.chainID]
+            new_aa = new_segment.child_dict[(" ", mut.resSeq, " ")]
+
+            segment = model[mut.chainID]
+            first_resSeq = segment.child_list[0].id[1]
+            segment.child_list[mut.resSeq - first_resSeq] = new_aa
 
         io = PDBIO()
         io.set_structure(orig_pdb)

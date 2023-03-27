@@ -333,7 +333,7 @@ def set_mutator(config: Dict) -> None:
     if mutator in {"evoef2", "biobb", "dlp", "dlpr"}:
         pass
     elif mutator[:4] == "dlpr":
-        config["protocol"]["generator"] = "SPM4i"
+        config["protocol"]["mutator"] = "dlpr"
         try:
             radius = float(mutator[4:])
             assert (1. <= radius <= 20.0)

@@ -115,6 +115,7 @@ Mutators:
 -  DLPacker is included as a submodule. To download it:
   ```
   git submodule init
+  git submodule update
   ```
   Then, in a `dlpacker` directory, the following files have to be present:
   `charges.rtp`, `library.npz` and `DLPacker_weights.h5`. The first 2 can be copied

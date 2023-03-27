@@ -3,6 +3,5 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/locuaz/DLPacker" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/sample_bin/dlpacker" vcs="Git" />
   </component>
 </project>

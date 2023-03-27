@@ -5,3 +5,5 @@ log*out
 *trr
 __*__*
 nohup.out
+DLPacker_weights.h5
+library.npz

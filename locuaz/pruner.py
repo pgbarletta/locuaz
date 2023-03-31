@@ -46,8 +46,8 @@ def choose_top_iters(
     return better_iters
 
 
-def top_prunner(better_iters: PriorityQueue, prune: int) -> Dict[str, Iteration]:
-    """top_prunner select, at least, the first `prun` iterations above the threshold
+def top_pruner(better_iters: PriorityQueue, prune: int) -> Dict[str, Iteration]:
+    """top_pruner select, at least, the first `prun` iterations above the threshold
 
     Args:
         better_iters (PriorityQueue[Tuple[int, Iteration]]): iterations above the threshold,
@@ -65,8 +65,8 @@ def top_prunner(better_iters: PriorityQueue, prune: int) -> Dict[str, Iteration]
     return top_iterations
 
 
-def adaptive_prunner(better_iters: PriorityQueue, prune: int) -> Dict[str, Iteration]:
-    """adaptive_prunner select all iterations that have the maximum number of approved SFs
+def adaptive_pruner(better_iters: PriorityQueue, prune: int) -> Dict[str, Iteration]:
+    """adaptive_pruner select all iterations that have the maximum number of approved SFs
 
     Args:
         better_iters (PriorityQueue[Tuple[int, Iteration]]): iterations above the threshold,
@@ -89,8 +89,8 @@ def adaptive_prunner(better_iters: PriorityQueue, prune: int) -> Dict[str, Itera
     return top_iterations
 
 
-def threshold_prunner(better_iters: PriorityQueue, prune: int) -> Dict[str, Iteration]:
-    """threshold_prunner select all iterations that satisfy the threshold of approved SFs
+def threshold_pruner(better_iters: PriorityQueue, prune: int) -> Dict[str, Iteration]:
+    """threshold_pruner select all iterations that satisfy the threshold of approved SFs
 
     Args:
         better_iters (PriorityQueue[Tuple[int, Iteration]]): iterations above the threshold,

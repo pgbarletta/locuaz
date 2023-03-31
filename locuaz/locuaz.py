@@ -8,7 +8,7 @@ from pathlib import Path
 import cli
 import projectutils as pu
 from protocol import initialize_new_epoch
-from prunners import prune
+from pruners import prune
 from run import run_epoch, run_npt_epoch
 from scoring import score
 

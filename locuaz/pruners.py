@@ -2,13 +2,13 @@ from typing import Dict, Callable, Set, Optional
 import logging
 
 from projectutils import WorkProject
-from prunner import choose_top_iters, adaptive_prunner, top_prunner, threshold_prunner
+from pruner import choose_top_iters, adaptive_pruner, top_pruner, threshold_pruner
 
 
-prunners: Dict[str, Callable] = {
-    "adaptive": adaptive_prunner,
-    "top": top_prunner,
-    "threshold": threshold_prunner,
+pruners: Dict[str, Callable] = {
+    "adaptive": adaptive_pruner,
+    "top": top_pruner,
+    "threshold": threshold_pruner,
 }
 
 
@@ -39,10 +39,10 @@ def prune(work_pjct: WorkProject) -> None:
         log.info(
             f"Successful epoch after mutating resSeqs: {this_epoch.mutated_positions} ."
         )
-        prunner_func = prunners[work_pjct.config["protocol"]["prunner"]]
+        pruner_func = pruners[work_pjct.config["protocol"]["pruner"]]
         prune = work_pjct.config["protocol"].get("prune")
-        # Prune as many branches as requested, using the required prunner.
-        this_epoch.top_iterations = prunner_func(better_iters_queue, prune)
+        # Prune as many branches as requested, using the required pruner.
+        this_epoch.top_iterations = pruner_func(better_iters_queue, prune)
 
     if work_pjct.has_failed_memory:
         work_pjct.failed_mutated_positions.appendleft(failed_pos)

@@ -12,13 +12,13 @@ from fileutils import DirHandle, FileHandle
 from molecules import ZipTopology
 
 
-class Gmx_mmpbsa(AbstractScoringFunction):
+class GmxMmpbsa(AbstractScoringFunction):
     bin_name = "gmx_MMPBSA"
     TIMEOUT_PER_FRAME: int = 20
 
     def __init__(self, sf_dir, *, nthreads=2, mpiprocs=2) -> None:
         super().__init__(sf_dir, nthreads=nthreads, mpiprocs=mpiprocs)
-        # `gmx_mmpbsa` isn't actually the binary, but the config file
+        # `gmxmmpbsa` isn't actually the binary, but the config file
         # This happens because gmx_MMPBSA is the only SF that comes with the protocol instead of
         # being an external binary.
         self.in_path = self.bin_path
@@ -74,7 +74,7 @@ class Gmx_mmpbsa(AbstractScoringFunction):
         if len(mmpbsa_score) != (end - start):
             warn(
                 f"Asked the scoring of {end - start} frames but got {len(mmpbsa_score)} scores. "
-                "You can set 'startframe' and 'endframe' on your gmx_mmpbsa script to silence this warning.")
+                "You can set 'startframe' and 'endframe' on your gmxmmpbsa script to silence this warning.")
             mmpbsa_score = mmpbsa_score[start:end]
 
         return mmpbsa_score
@@ -99,7 +99,7 @@ class Gmx_mmpbsa(AbstractScoringFunction):
             ext = Path(cpx.tra).suffix
             self.trj = FileHandle(Path(frames_path, f"fix_{cpx.name}{ext}"))
         except FileNotFoundError as e:
-            raise RuntimeError(f"gmx_mmpbsa: cannot find fix_{cpx.name} in {frames_path}") from e
+            raise RuntimeError(f"gmxmmpbsa: cannot find fix_{cpx.name} in {frames_path}") from e
 
         return results_dir
 

@@ -5,7 +5,7 @@ from bach import Bach
 from bluues import Bluues
 from bluuesbmf import BluuesBmf
 from evoef2 import Evoef2
-from gmxmmpbsa import Gmx_mmpbsa
+from gmxmmpbsa import GmxMmpbsa
 from haddock import Haddock
 from pisa import Pisa
 from piepisa import PiePisa
@@ -21,6 +21,6 @@ scoringfunctions: Dict[str, Type[AbstractScoringFunction]] = {
     "pisa": Pisa,
     "piepisa": PiePisa,
     "rosetta": Rosetta,
-    "gmx_mmpbsa": Gmx_mmpbsa,
+    "gmxmmpbsa": GmxMmpbsa,
     "autodockvina": AutodockVina,
 }

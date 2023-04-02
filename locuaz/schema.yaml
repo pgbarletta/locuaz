@@ -1,7 +1,7 @@
 paths:
     type: dict
     required: true
-    contains_any_of: [input, work ]
+    contains_any_of: [input, work]
     schema:
         gmxrc:
             type: string
@@ -294,6 +294,7 @@ scoring:
             minlength: 1
             maxlength: 20
             required: true
+            unique_values: true
             schema:
                 type: string
                 allowed: ["bach", "bluues", "bluuesbmf", "evoef2", "haddock", "piepisa", "pisa", "rosetta", "gmxmmpbsa", "autodockvina"]
@@ -335,3 +336,65 @@ scoring:
                 minlength: 3
                 maxlength: 3
             default: []
+statistics:
+    type: dict
+    required: false
+    schema:
+        interface:
+            type: dict
+            schema:
+                warn_above:
+                    type: float
+                    min: 0.0
+                    max: 999.0
+                    higher_than: warn_below
+                warn_below:
+                    type: float
+                    min: 0.0
+                    max: 999.0
+                warn_above_relative:
+                    type: float
+                    min: 1.0
+                    max: 10.0
+                warn_below_relative:
+                    type: float
+                    min: 0.0
+                    max: 1.0
+                warn_variance:
+                    type: float
+                    min: 0.0
+                    max: 99999.0
+                warn_variance_relative:
+                    type: float
+                    min: 0.0
+                    max: 5.0
+        cmdistance:
+            type: dict
+            schema:
+                warn_above:
+                    type: float
+                    min: 0.0
+                    max: 999.0
+                    higher_than: warn_below
+                warn_below:
+                    type: float
+                    min: 0.0
+                    max: 999.0
+                warn_above_relative:
+                    type: float
+                    min: 1.0
+                    max: 10.0
+                warn_below_relative:
+                    type: float
+                    min: 0.0
+                    max: 1.0
+                warn_variance:
+                    type: float
+                    min: 0.0
+                    max: 99999.0
+        nthreads:
+            type: integer
+            min: 1
+            max: 24
+            default: 1
+

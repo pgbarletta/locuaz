@@ -38,6 +38,7 @@ class BaseStatistic:
         pass
 
     def __warn__(self, stat_name: str, offset: int):
+        assert len(self.result) > 0, f"ERROR. {stat_name} failed to get any results."
         for opt, func in self.visitor.items():
             threshold: float = self.stats_config["opt"]
             warn, frames = func(threshold, offset)

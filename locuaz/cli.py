@@ -345,6 +345,22 @@ def set_mutator(config: Dict) -> None:
     return
 
 
+def set_statistics(config: Dict) -> None:
+    """
+    set_statistics(): sets a bool in case the user asked for statistics.
+    Args:
+        config (Dict): input user config
+
+    Returns:
+        None
+    """
+    for stat in config["statistics"].keys():
+        if stat in {"cmdistance", "interface"}:
+            config["statistics"]["get_statistics"] = True
+            return
+    config["statistics"]["get_statistics"] = False
+
+
 def get_memory(config: Dict) -> Tuple[Set, List[List]]:
     """get_memory() compares character by character of the iteration folders resnames to
     find differences among them that would correspond to previously done mutations.
@@ -462,6 +478,7 @@ def main() -> Tuple[Dict, bool]:
     config, starts = validate_input(raw_config, args.mode, args.debug)
     set_generator(config)
     set_mutator(config)
+    set_statistics(config)
     config["misc"] = {}
     if starts:
         # Set up working dir

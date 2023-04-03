@@ -50,8 +50,9 @@ class GmxMmpbsa(AbstractScoringFunction):
         results_dir = self.__initialize_scoring_dir__(frames_path, cpx)
         nframes = end - start
         score_gmxmmpbsa = Path(results_dir, "score_gmxmmpbsa.csv")
+        decomp_gmxmmpbsa = Path(results_dir, "decomp_gmxmmpbsa.csv")
         comando_gmx_MMPBSA = f"{self.bin_name} -O -i {self.in_path} -cp {self.top} -cs {cpx.tpr} " \
-                             f"-ci {cpx.ndx} -cg 0 1 -ct {self.trj} -eo {score_gmxmmpbsa} -nogui"
+                             f"-ci {cpx.ndx} -cg 0 1 -ct {self.trj} -eo {score_gmxmmpbsa} -deo {decomp_gmxmmpbsa} -nogui"
 
         try:
             p = sp.run(

@@ -252,7 +252,7 @@ class WorkProject:
     dir_handle: DirHandle
     epochs: List[Epoch]
     mdps: Dict[str, FileHandle]
-    scorers: Dict[str, AbstractScoringFunction]
+    scorers: Dict[str, AbstractScoringFunction] = {}
     mutated_positions: Deque[Set[int]] = deque(set())
     mutated_aminoacids: Deque[Set[str]] = deque(set())
     failed_mutated_positions: Deque[Set[int]] = deque(set())
@@ -459,7 +459,6 @@ class WorkProject:
         return iter_name, iter_path, this_iter
 
     def __add_scoring_functions__(self) -> None:
-        self.scorers = {}
         for sf in self.config["scoring"]["functions"]:
             self.scorers[str(sf)] = scoringfunctions[sf](
                 self.config["paths"]["scoring_functions"],

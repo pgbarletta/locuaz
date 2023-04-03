@@ -79,7 +79,7 @@ class GmxMmpbsa(AbstractScoringFunction):
 
         return mmpbsa_score
 
-    def __initialize_scoring_dir__(self, frames_path: Path, cpx: GROComplex, ) -> DirHandle:
+    def __initialize_scoring_dir__(self, frames_path: Path, cpx: GROComplex) -> DirHandle:
         results_dir = DirHandle(Path(frames_path, self.name), make=True)
 
         if isinstance(cpx.top, ZipTopology):

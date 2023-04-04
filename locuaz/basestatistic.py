@@ -2,6 +2,7 @@ import warnings
 from pathlib import Path
 from typing import Dict, Tuple, Callable
 from abc import abstractmethod
+
 import numpy as np
 from numpy.typing import NDArray
 
@@ -21,6 +22,7 @@ class BaseStatistic:
         self.frames_path = Path(iteration.score_dir)
         self.trj_suffix = Path(iteration.complex.tra).suffix
         self.name = iteration.complex.name
+        self.nthreads = stats_config.get("nthreads", 1)
 
         self.visitor = {"warn_above": self.__warn_above__,
                         "warn_below": self.__warn_below__,
@@ -28,19 +30,18 @@ class BaseStatistic:
                         "warn_below_relative": self.__warn_below_relative__,
                         "warn_variance": self.__warn_variance__}
 
-        for opt in self.visitor.keys():
-            if opt not in stats_config:
-                del self.visitor[opt]
+        for miss_opt in [ opt for opt in self.visitor.keys() if opt not in stats_config ]:
+            del self.visitor[miss_opt]
         self.stats_config = stats_config
 
     @abstractmethod
-    def __call__(self, start: int, end: int):
+    def __call__(self, start: int, end: int) -> NDArray[float]:
         pass
 
-    def __warn__(self, stat_name: str, offset: int):
+    def __warn__(self, stat_name: str, offset: int) -> None:
         assert len(self.result) > 0, f"ERROR. {stat_name} failed to get any results."
         for opt, func in self.visitor.items():
-            threshold: float = self.stats_config["opt"]
+            threshold: float = self.stats_config[opt]
             warn, frames = func(threshold, offset)
             if warn:
                 if len(frames) > 0:

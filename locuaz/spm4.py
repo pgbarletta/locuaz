@@ -104,9 +104,9 @@ class SPM4(AbstractMutationGenerator):
             raise RuntimeError(f"Cannot mutate. No CDR residue on the interface that isn't excluded.")
 
         logger.info(f"Generating mutations with: {self}.\n"
-                    f"'mutataing_resSeq': {any_iteration.resSeqs}.\n"
+                    f"'mutating_resSeq': {any_iteration.resSeqs}.\n"
                     f"excluded resSeq: {self.excluded_pos}.\n"
-                    f"'mutataing_resSeq' that may be mutated: {candidates_resSeq}.")
+                    f"'mutating_resSeq' that may be mutated: {candidates_resSeq}.")
 
         # Choose the position to mutate. This will be the same for all iterations.
         mut_resSeq = choice(candidates_resSeq)

@@ -106,6 +106,19 @@ class Validatore(Validator):
             except KeyError:
                 pass
 
+    def _validate_higher_than(self, other, field, value):
+        """_validate_higher_than
+
+        The rule's arguments are validated against this schema:
+        {'type': 'string'}
+        """
+        if other and other in self.document:
+            try:
+                if value <= self.document[other]:
+                    self._error(field, f"cannot be lower than {other}.")
+            except KeyError:
+                pass
+
     def _validate_warn_when_above(self, threshold, field, value):
         """_validate_warn_when_above
 
@@ -256,3 +269,13 @@ class Validatore(Validator):
             start = self.document.get("start", False)
             if value != -1 and value < start:
                 self._error(field, f"{value} is less than the starting frame: {start} ")
+
+    def _validate_unique_values(self, flag, field, value):
+        """
+        _validate_unique_values
+        The rule's arguments are validated against this schema:
+        {'type': 'boolean'}
+        """
+        if flag:
+            if len(set(value)) != len(value):
+                self._error(field, f"should have unique values.")

@@ -15,7 +15,7 @@ def beats_old_iter(
     old_SFs = set(old_iter.scores.keys())
     new_SFs = set(new_iter.scores.keys())
     scoring_functions = old_SFs & new_SFs
-    if len(scoring_functions):
+    if len(scoring_functions) == 0:
         raise RuntimeError(f"No common scoring functions between the ones from the old iteration ({old_SFs}) "
                            f"and those from the new one ({new_SFs}). Cannot prune.")
     log.info(f"Scoring functions: {scoring_functions}")

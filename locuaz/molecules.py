@@ -175,10 +175,10 @@ class ZipTopology(Topology):
             [f"segid {chainID}" for chainID in binder_chains]
         )
         self.selection_complex = " or ".join(
-            ["protein", self.selection_target, self.selection_binder]
+            ["protein", f"({self.selection_target})", f"({self.selection_binder})"]
         )
         self.selection_not_complex = " and not ".join(
-            ["not protein", self.selection_target, self.selection_binder]
+            ["not protein", f"({self.selection_target})", f"({self.selection_binder})"]
         )
         self.selection_water = "resname WAT or resname SOL"
 

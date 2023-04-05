@@ -1,9 +1,8 @@
-from ast import Call
-from typing import Tuple, Dict, Callable
+from typing import Tuple, Dict
 from queue import PriorityQueue
 import logging
 
-from projectutils import Epoch, Iteration, WorkProject
+from projectutils import Epoch, Iteration
 
 
 def beats_old_iter(

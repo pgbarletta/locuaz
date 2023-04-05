@@ -36,6 +36,8 @@ AA_MAP: Dict[str, str] = {
 class GromacsError(Exception):
     pass
 
+class UserInputError(Exception):
+    pass
 
 def launch_biobb(biobb_obj, *, can_write_console_log: bool = False, backup_dict: Optional[Path] = None) -> None:
     biobb_obj.can_write_console_log = can_write_console_log

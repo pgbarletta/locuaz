@@ -163,22 +163,6 @@ class Validatore(Validator):
             if len(value) != len(set(value)):
                 self._error(field, "should be a list of sorted unique values.")
 
-    def _validate_crosscheck(self, others, field, value):
-        """_validate_crosscheck
-
-        The rule's arguments are validated against this schema:
-        {'type': 'list'}
-        """
-        if others:
-            branches = self.document[others[0]]
-            if ("SPM" in value) and (branches > 19):
-                self._error(
-                    field,
-                    f"{others[0]} set to {branches} but this binder generator outputs "
-                    "mutations for a single position, hence, 19 is the maximum number "
-                    "of possible mutations.",
-                )
-
     def _validate_is_file(self, flag, field, value):
         """_validate_is_file
 
@@ -279,3 +263,16 @@ class Validatore(Validator):
         if flag:
             if len(set(value)) != len(value):
                 self._error(field, f"should have unique values.")
+
+    def _validate_crosscheck_radius(self, flag, field, value):
+        """_validate_crosscheck_radius
+
+        The rule's arguments are validated against this schema:
+        {'type': 'boolean'}
+        """
+        if flag:
+            r = self.document.get("reconstruct_radius")
+            if value == "dlpr" and not r:
+                self._error(field, f"{value} needs a `reconstruct_radius`")
+            elif value != "dlpr" and r:
+                warn(f"Warning: `{value}` does not make use of `reconstruct_radius`.")

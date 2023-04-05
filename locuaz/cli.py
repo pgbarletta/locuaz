@@ -318,11 +318,13 @@ def set_statistics(config: Dict) -> None:
     Returns:
         None
     """
-    for stat in config["statistics"].keys():
-        if stat in {"cmdistance", "interface"}:
-            config["statistics"]["get_statistics"] = True
-            return
-    config["statistics"]["get_statistics"] = False
+    if "statistics" in config:
+        for stat in config["statistics"].keys():
+            if stat in {"cmdistance", "interface"}:
+                config["statistics"]["get_statistics"] = True
+                return
+    else:
+        config["statistics"] = {"get_statistics": False}
 
 
 def get_memory(config: Dict) -> Tuple[Set, List[List]]:

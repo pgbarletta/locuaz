@@ -3,6 +3,7 @@ import glob
 import os
 import pickle
 import shutil as sh
+import sys
 import warnings
 from collections import defaultdict
 from itertools import product
@@ -13,6 +14,7 @@ from typing import Dict, List, Final, Set, Tuple, Union, Any
 import yaml
 
 from validatore import Validatore
+from primitives import UserInputError
 
 
 def get_dir_size(folder: Path) -> float:
@@ -85,6 +87,12 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
     for resnames, resSeqs in zip(config["binder"]["mutating_resname"], config["binder"]["mutating_resSeq"]):
         assert len(resnames) == len(resSeqs), f"mutating_resname({resnames}) and mutating_resSeq ({resSeqs}) have " \
                                               f"different lengths: {len(resnames)} and {len(resSeqs)}, respectively."
+
+    # Check 'branches' and 'generator'
+    if ("SPM4" in config["generation"]["generator"]) and (config["protocol"]["branches"] > 19):
+        raise UserInputError(f"SPM4 mutation generators cannot generate more than 19 branches")
+
+    check_gmxmmpbsa(config)
 
     return config, start
 
@@ -282,67 +290,23 @@ def set_iterations(config: Dict) -> None:
     raise ValueError("No valid iterations in work_dir. Aborting.")
 
 
-def set_generator(config: Dict) -> None:
-    """
-    set_generator(): sets the proper name for the generator. Updates the user config in place.
-    Default probe radius = 1.4
-    Args:
-        config (Dict): input user config
-
-    Returns:
-        None
-    """
-    generator = config["protocol"]["generator"]
-    err_msg = f"Could not parse {generator} into a valid generator. Valid generators: " \
-              f"[SPM4, SPM4i, SPM4i'probe_radius'], where 'probe_radius' is a number between .1 and 4.0 " \
-              "Eg: 'SPM4i1.4'"
-    probe_radius = 1.4
-
-    if generator in {"SPM4", "SPM4i"}:
-        pass
-    elif generator[:5] == "SPM4i":
-        config["protocol"]["generator"] = "SPM4i"
-        try:
-            probe_radius = float(generator[5:])
-            assert (0.1 <= probe_radius <= 4.0)
-        except (Exception, AssertionError):
-            raise RuntimeError(err_msg)
-    else:
-        raise RuntimeError(err_msg)
-    config["protocol"]["probe_radius"] = probe_radius
-    return
-
-
-def set_mutator(config: Dict) -> None:
-    """
-    set_mutator(): sets the proper name for the mutator. Updates the user config in place.
-    Default reconstruct radius = 5.0
-    Args:
-        config (Dict): input user config
-
-    Returns:
-        None
-    """
-
-    mutator = config["protocol"]["mutator"]
-    err_msg = f"Could not parse {mutator} into a valid mutator. Valid mutator: " \
-              f"['biobb', 'evoef2', 'dlp', 'dlpr', 'dlpr'radius''], where 'radius' is a number between 1.0 and 20.0 " \
-              "Eg: 'dlpr5.0'"
-    radius = 5.
-
-    if mutator in {"evoef2", "biobb", "dlp", "dlpr"}:
-        pass
-    elif mutator[:4] == "dlpr":
-        config["protocol"]["mutator"] = "dlpr"
-        try:
-            radius = float(mutator[4:])
-            assert (1. <= radius <= 20.0)
-        except (Exception, AssertionError):
-            raise RuntimeError(err_msg)
-    else:
-        raise RuntimeError(err_msg)
-    config["protocol"]["reconstruct_radius"] = radius
-    return
+def check_gmxmmpbsa(config: Dict) -> None:
+    if config["generation"]["generator"] == "SPM4gmxmmpbsa":
+        if "gmxmmpbsa" not in config["scoring"]["functions"]:
+            print(f"'gmxmmbpsa' function is necessary to use the 'SPM4mmpbsa' mutator",
+                  flush=True, file=sys.stderr)
+            raise UserInputError
+        else:
+            with open(Path(config["paths"]["scoring_functions"], "gmxmmpbsa", "gmxmmpbsa"), 'r') as file:
+                for line in file:
+                    if "idecomp" in line:
+                        return
+                    else:
+                        continue
+                print(f"Input 'gmxmmbpsa' is not performing 'idecomp' residue decomposition. "
+                      "This is a prerequisite for the SPM4gmxmmpbsa Mutation Generator.",
+                      flush=True, file=sys.stderr)
+                raise UserInputError
 
 
 def set_statistics(config: Dict) -> None:
@@ -476,8 +440,6 @@ def main() -> Tuple[Dict, bool]:
 
     raw_config = get_raw_config(args.config_file)
     config, starts = validate_input(raw_config, args.mode, args.debug)
-    set_generator(config)
-    set_mutator(config)
     set_statistics(config)
     config["misc"] = {}
     if starts:

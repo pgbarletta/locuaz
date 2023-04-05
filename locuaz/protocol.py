@@ -28,11 +28,11 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
     current_epoch = Epoch(epoch_id, iterations={}, nvt_done=False, npt_done=False)
 
     # Create required mutator
-    mutator = mutators[work_pjct.config["protocol"]["mutator"]](
-        work_pjct.config["paths"]["mutator"],work_pjct.config["protocol"]["reconstruct_radius"]
+    mutator = mutators[work_pjct.config["mutation"]["mutator"]](
+        work_pjct.config["paths"]["mutator"], work_pjct.config["mutation"]["reconstruct_radius"]
     )
     # Create required mutation generator and generate mutation.
-    generator = mutation_generators[work_pjct.config["protocol"]["generator"]]
+    generator = mutation_generators[work_pjct.config["generation"]["generator"]]
     successful_mutations = 0
     while successful_mutations < work_pjct.config["protocol"]["branches"]:
         mutation_generator = generator(
@@ -42,7 +42,7 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
             excluded_pos=work_pjct.get_mem_positions(),
             use_tleap=work_pjct.config["md"]["use_tleap"],
             logger=log,
-            probe_radius=work_pjct.config["protocol"]["probe_radius"]
+            probe_radius=work_pjct.config["generation"]["probe_radius"]
         )
 
         for old_iter_name, mutations in mutation_generator.items():
@@ -76,9 +76,7 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
 
                 init_wt = Path(iter_path, "init_wt.pdb")
                 sh.copy(old_pdb, init_wt)
-                log.info(
-                    f"New mutation: {mutation} on Epoch-Iteration: {epoch_id}-{iter_name}"
-                )
+                log.info(f"New mutation: {mutation} on Epoch-Iteration: {epoch_id}-{iter_name}")
 
                 # Mutate the PDB
                 with warnings.catch_warnings():

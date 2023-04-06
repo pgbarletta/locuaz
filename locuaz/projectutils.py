@@ -7,7 +7,7 @@ from collections import deque
 from collections.abc import MutableMapping
 # TODO: replace own pairwise with itertools' on 3.10
 # from itertools import pairwise
-from itertools import tee
+from itertools import tee, zip_longest
 from pathlib import Path
 from queue import PriorityQueue
 from statistics import mean, stdev
@@ -539,14 +539,18 @@ class WorkProject:
         pdb_path = input_path / (self.config["main"]["name"] + ".pdb")
         u = mda.Universe(str(pdb_path))
         segids = [s.segid for s in u.segments]  # type: ignore
-        assert (
-                len(segids) > 2
-        ), "Too few segments in the input PDB. There should be at least 3 (target+binder+solvent)."
+        assert len(segids) > 2, "Too few segments in the input PDB. " \
+                                "There should be at least 3 (target+binder+solvent)."
 
         chainIDs = self.config["target"]["chainID"] + self.config["binder"]["chainID"]
-        for segid, chainID in zip(segids, chainIDs):
-            assert (segid == chainID), f"PDBs chainIDs ({segid}) and input target-binder chainIDs "
-            f"({chainIDs}) from the config should be identical and the target chains should go first."
+        for segid, chainID in zip_longest(segids, chainIDs):
+            if chainID:
+                assert (segid == chainID), f"PDBs chainIDs ({segids}) and input target-binder chainIDs "\
+                f"({chainIDs}) from the config should have the same ordering and the target chains should go first."
+            else:
+                assert (segid == '' or segid == 'X'), f"There're unaccounted segments. {segid} has to either be, " \
+                                                      f"target or binder. If it's solvent or ions, then its segid " \
+                                                      "and chainID should be empty ('') or 'X'."
 
         # Check amino acids
         all_residues = "protein or " + " or ".join(

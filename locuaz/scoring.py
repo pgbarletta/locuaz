@@ -3,21 +3,21 @@ import logging
 import sys
 import time
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Tuple
 
 from biobb_analysis.gromacs.gmx_trjconv_str_ens import GMXTrjConvStrEns
 
-from complex import GROComplex
 from fileutils import DirHandle
 from gromacsutils import image_traj
 from primitives import launch_biobb
 from projectutils import WorkProject, Iteration
 from utils_scoring import extract_pdbs, join_target_binder, rm_aux_scoring_files
+from stats import run_stats
 
 
 def initialize_scoring_folder(
         iteration: Iteration, config: dict, *, log: Optional[logging.Logger] = None
-) -> int:
+) -> Tuple[int, int]:
     """
     Creates scoring folder inside the iteration dir, fixes PBC issues with the original NPT trajectory
     to create a 'fix_{name}.xtc' trajectory and a 'fix_{name}.pdb'.
@@ -31,13 +31,13 @@ def initialize_scoring_folder(
     Returns:
         nframes(int): number of frames
     """
-
+    log.info("Splitting NPT trajectory in frames.")
     iteration.score_dir = DirHandle(Path(iteration, "scoring"), make=True, replace=True)
     gmx_bin: str = "gmx"
 
     # First, fix all the imaging issues
     fix_trj_fn = Path(iteration.score_dir, "fix_" + iteration.complex.name + ".xtc")
-    fix_trj = image_traj(iteration.complex, fix_trj_fn, gmx_bin)
+    fix_trj = image_traj(iteration.complex, fix_trj_fn, config["md"]["use_tleap"], gmx_bin)
 
     # Zip filename with the extracted PDBs
     ens_of_pdbs = Path(
@@ -102,17 +102,13 @@ def score_frames(work_pjct: WorkProject, iteration: Iteration, *, start: int, en
         except cf.TimeoutError as e:
             raise e
 
-        assert (
-                scores is not None
-        ), f"This shouldn't happen. Iteration: {iteration.score_dir}"
+        assert scores is not None, f"This shouldn't happen. Iteration: {iteration.score_dir}"
 
         avg_val = iteration.set_score(sf_name, scores)
         log.info(f"{sf_name} average score: {avg_val:.3f}")
 
     if not work_pjct.config["main"]["debug"]:
-        log.info(
-            "Removing PDB, PSF, PQR frames and auxiliary scoring files. Set `--debug` to skip this."
-        )
+        log.info("Removing PDB, PSF, PQR frames and auxiliary scoring files. Set `--debug` to skip this.")
         rm_aux_scoring_files(iteration.score_dir, work_pjct.scorers.keys(), start=start, end=end)
 
     iteration.write_down_scores()
@@ -142,11 +138,9 @@ def score(work_pjct: WorkProject, iteration: Iteration) -> None:
             discard_iteration(work_pjct, iteration)
         else:
             start_time = time.time()
-            log.info("Splitting NPT trajectory in frames.")
-
             start, end = initialize_scoring_folder(iteration, work_pjct.config, log=log)
+            run_stats(iteration, work_pjct.config, start=start, end=end, log=log)
             score_frames(work_pjct, iteration, start=start, end=end)
-
             log.info(
-                f"Time elapsed during {iteration.iter_name}'s {end - start} frames scoring: {time.time() - start_time}"
-            )
+                f"Time elapsed during {iteration.iter_name}'s {end - start} "
+                f"frames scoring: {time.time() - start_time}")

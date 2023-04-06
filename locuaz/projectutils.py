@@ -23,6 +23,7 @@ from typing import (
     Optional,
 )
 from warnings import warn
+from numpy.typing import NDArray
 
 import MDAnalysis as mda
 import numpy as np
@@ -59,6 +60,7 @@ class Iteration:
     score_dir: DirHandle = field(converter=DirHandle, init=False)  # type: ignore
     scores: Dict[str, tuple] = field(init=False)
     mean_scores: Dict[str, float] = field(init=False)
+    stats: Dict[str, NDArray] = field(init=False)
     outside_box: bool = field(init=False, default=False)
 
     def __attrs_post_init__(self) -> None:
@@ -68,6 +70,7 @@ class Iteration:
             raise ValueError("Bad iteration name.") from bad_iter_name
         self.scores = {}
         self.mean_scores = {}
+        self.stats = {}
 
     def set_score(
             self, sf_name: str, scores: Iterable, log: Optional[logging.Logger] = None
@@ -86,11 +89,26 @@ class Iteration:
             )
         return self.mean_scores[sf_name]
 
+    def set_stat(
+            self, stat_name: str, stat: NDArray[float], log: Optional[logging.Logger] = None
+    ) -> float:
+        self.stats[stat_name] = stat
+        avg_stat: float = np.mean(stat)
+        if log:
+            log.info(f"'{stat_name}': {avg_stat:.3f} +/- {np.std(stat):.3f}")
+        return avg_stat
+
     def write_down_scores(self):
         for sf_name, score in self.scores.items():
             with open(Path(self.score_dir, "scores_" + sf_name), "w") as f:
                 for s in score:
                     f.write(str(round(s, 3)) + "\n")
+
+    def write_down_stats(self):
+        for stat_name, result in self.stats.items():
+            with open(Path(self.score_dir, f"stat_{stat_name}"), "w") as f:
+                for val in result:
+                    f.write(str(round(val, 3)) + "\n")
 
     def read_scores(
             self, scoring_functions: Iterable, log: Optional[logging.Logger] = None

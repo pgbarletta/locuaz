@@ -1,6 +1,6 @@
 import warnings
 from pathlib import Path
-from typing import Union, List, Set
+from typing import Union, List, Set, Optional, Tuple
 import py
 
 import freesasa
@@ -19,6 +19,7 @@ def get_interfacing_residues(pdb_input: Union[PDBStructure, FileHandle, Path], c
     Args:
         pdb_input (Union[PDBStructure, FileHandle, Path]): input PDB.
         chainIDs (List[str]): only residues belonging to these chains will be reported.
+        probe_radius: probe_radius for freesasa
         use_tleap (bool): if True, it will renumber the resSeqs of the input PDB (on another temporary PDB)
         as per Amber numbering scheme, that is, continuous resSeq numbers as opposed to GROMACS numbering
         which starts at 1 on each chain.
@@ -94,3 +95,38 @@ def get_freesasa_residues(pdb_input: Union[PDBStructure, FileHandle, Path], chai
     temp_pdb.unlink()
 
     return freesasa_resis
+
+
+def get_interface_surface(pdb_path: Path, i: Optional[int] = None) -> Tuple[int, Optional[float]]:
+    """
+    get_interface_surface(): `i` could be the index of the input PBD, in case the function is called
+    on a concurrent manner and order is needed when populating an array
+    Args:
+        pdb_path: input PDB
+        i: optional index of the input PBD, it'll be returned as is. Useful in case the function
+            is called on a concurrent manner and order is needed when populating an array
+
+    Returns:
+        Tuple[int, float] = i, surface in A^2
+    """
+
+    # Silence warnings from freesasa
+    capture_warnings = py.io.StdCaptureFD(out=True, in_=False)
+    # Assume A=target, B=binder convention
+    structs = freesasa.structureArray(str(pdb_path),
+                                      {"separate-chains": False,
+                                       "hetatm": False,
+                                       "chain-groups": "A+B"})
+    capture_warnings.reset()
+
+    parameters = freesasa.Parameters({
+        'algorithm': "LeeRichards",
+        'probe-radius': 1.4,
+        'n-points': 200,
+        'n-slices': 20,
+        'n-threads': 1})
+    sasa_whole = freesasa.calc(structs[0], parameters)
+    sasa_a = freesasa.calc(structs[1], parameters)
+    sasa_b = freesasa.calc(structs[2], parameters)
+
+    return i, (sasa_a.totalArea() + sasa_b.totalArea() - sasa_whole.totalArea())

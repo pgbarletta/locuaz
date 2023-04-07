@@ -1,0 +1,111 @@
+eval($filelist="filelist.list")
+eval($psffile="/home/abonvin/capri9/target24-rescoring/pdb-matched/target24_000_conv.psf")
+
+evaluate($data.ncomponents=2)
+evaluate($Toppar.prot_segid_1="A")
+evaluate($Toppar.prot_segid_2="B")
+
+eval($epsilon = 10)
+eval($Data.flags.dihed = FALSE)
+eval($Data.flags.sani = FALSE)
+eval($Data.flags.coup = FALSE)
+eval($Data.flags.vean = FALSE)
+eval($Data.flags.cdih = FALSE)
+eval($Data.flags.noe = TRUE)
+eval($Data.flags.sym= FALSE)
+eval($Data.flags.ncs= FALSE)
+eval($Data.noecv= FALSE)
+
+evaluate ($data.ksym=1.0)
+evaluate ($data.numc2sym=1)
+evaluate ($data.numc3sym=0)
+evaluate ($data.numc5sym=0)
+evaluate ($toppar.c2sym_sta1_1="7")
+evaluate ($toppar.c2sym_end1_1="317")
+evaluate ($toppar.c2sym_seg1_1="A")
+evaluate ($toppar.c2sym_sta2_1="7")
+evaluate ($toppar.c2sym_end2_1="317")
+evaluate ($toppar.c2sym_seg2_1="B")
+
+
+evaluate ($par_nonbonded = "HADDOCK:/toppar/parallhdg5.3.pro" )
+parameter @@$par_nonbonded end
+parameter @@HADDOCK:/toppar/ion.param end
+parameter @@HADDOCK:/toppar/parallhdg.sol end
+!parameter @@gtp.param end
+
+evaluate ($link_file = "HADDOCK:/toppar/topallhdg5.3.pep" )
+evaluate ($top_file = "HADDOCK:/toppar/topallhdg5.3.pro" )
+
+eval($auto_break=true)
+eval($break_cutoff=2.5)
+eval($prot_break_infile="HADDOCK:/toppar/protein_break.top")
+topology
+  @@$top_file
+  @@$prot_break_infile
+  @@HADDOCK:/toppar/ion.top
+  @@ gtp.top
+end
+
+evaluate ($log_level=quiet)
+
+evaluate ($count = 0)
+
+structure @$psffile end
+
+parameter 
+  nbonds
+    nbxmod=5 atom cdie shift
+    cutnb=9.5 ctofnb=8.5 ctonnb=6.5 eps=$epsilon e14fac=0.4 inhibit 0.25
+    wmin=0.5
+    tolerance  0.5
+    repel=0.0
+  end
+end
+
+flags excl * incl noe end
+
+noe
+        reset
+        nrestraints = 1000000   ! allocate space for NOEs
+        ceiling 100
+
+        set echo off message off end
+        class      ambi @@ambig.tbl
+        set echo on message on end
+
+        averaging  * sum
+        potential  * soft
+        scale      * 50.0
+        sqconstant * 1.0
+        sqexponent * 2
+        soexponent * 1
+        rswitch    * 1.0
+        sqoffset   * 0.0
+        asymptote  * 2.0
+
+        msoexponent * 1
+        masymptote  * -2.0
+        mrswitch    * 1.0
+
+        avexpo hbond 20
+end
+
+set display=ana_airs.disp end
+display #AIR restraints
+display #structure rms-noe #viol>0.5A #Enoe
+
+for $file in ( @@$filelist ) loop readpdb
+  eval($count=$count+1)
+  evaluate ($filename= $file - ".pdb" + "_conv.pdb")
+ 
+  coordinates @@$filename
+  energy end
+
+  evaluate ($violations = 0)
+  evaluate ($result = 0)
+  noe  print thresh=0.5 end
+  display $filename $rms $violations $noe
+
+end loop readpdb
+stop

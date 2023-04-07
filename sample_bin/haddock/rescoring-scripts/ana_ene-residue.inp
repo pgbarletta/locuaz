@@ -1,0 +1,202 @@
+eval($filelist="filelist.list")
+eval($psffile="/home/abonvin/docking/prion-rungs/trimer-model1-metperif/prion-rungsfit_4_conv.psf")
+
+eval($filelist="filelist.list")
+
+evaluate($data.ncomponents=3)
+evaluate($Toppar.prot_segid_1="A")
+evaluate($Toppar.prot_segid_2="B")
+evaluate($Toppar.prot_segid_3="C")
+
+eval($epsilon = 1)
+eval($Data.flags.dihed = FALSE)
+eval($Data.flags.sani = FALSE)
+eval($Data.flags.coup = FALSE)
+eval($Data.flags.vean = FALSE)
+eval($Data.flags.cdih = FALSE)
+eval($Data.flags.noe = FALSE)
+eval($Data.flags.sym= FALSE)
+eval($Data.flags.ncs= FALSE)
+eval($Data.noecv= FALSE)
+
+evaluate ($data.ksym=1.0)
+evaluate ($data.numc2sym=0)
+evaluate ($data.numc3sym=1)
+evaluate ($data.numc5sym=0)
+evaluate ($toppar.c3sym_sta1_1="1")
+evaluate ($toppar.c3sym_end1_1="76")
+evaluate ($toppar.c3sym_seg1_1="A")
+evaluate ($toppar.c3sym_sta2_1="1")
+evaluate ($toppar.c3sym_end2_1="76")
+evaluate ($toppar.c3sym_seg2_1="B")
+evaluate ($toppar.c3sym_sta3_1="1")
+evaluate ($toppar.c3sym_end3_1="76")
+evaluate ($toppar.c3sym_seg3_1="C")
+
+evaluate ($toppar.hisd_resid_1_1=35)
+evaluate ($toppar.hisd_resid_1_2=73)
+evaluate ($toppar.hisd_resid_1_3=0)
+evaluate ($toppar.hisd_resid_1_4=0)
+evaluate ($toppar.hisd_resid_1_5=0)
+evaluate ($toppar.hisd_resid_1_6=0)
+evaluate ($toppar.hisd_resid_1_7=0)
+evaluate ($toppar.hisd_resid_1_8=0)
+evaluate ($toppar.hisd_resid_1_9=0)
+evaluate ($toppar.hisd_resid_1_10=0)
+
+evaluate ($toppar.hise_resid_1_1=0)
+evaluate ($toppar.hise_resid_1_2=0)
+evaluate ($toppar.hise_resid_1_3=0)
+evaluate ($toppar.hise_resid_1_4=0)
+evaluate ($toppar.hise_resid_1_5=0)
+evaluate ($toppar.hise_resid_1_6=0)
+evaluate ($toppar.hise_resid_1_7=0)
+evaluate ($toppar.hise_resid_1_8=0)
+evaluate ($toppar.hise_resid_1_9=0)
+evaluate ($toppar.hise_resid_1_10=0)
+
+evaluate ($toppar.hisd_resid_2_1=35)
+evaluate ($toppar.hisd_resid_2_2=73)
+evaluate ($toppar.hisd_resid_2_3=0)
+evaluate ($toppar.hisd_resid_2_4=0)
+evaluate ($toppar.hisd_resid_2_5=0)
+evaluate ($toppar.hisd_resid_2_6=0)
+evaluate ($toppar.hisd_resid_2_7=0)
+evaluate ($toppar.hisd_resid_2_8=0)
+evaluate ($toppar.hisd_resid_2_9=0)
+evaluate ($toppar.hisd_resid_2_10=0)
+
+evaluate ($toppar.hise_resid_2_1=0)
+evaluate ($toppar.hise_resid_2_2=0)
+evaluate ($toppar.hise_resid_2_3=0)
+evaluate ($toppar.hise_resid_2_4=0)
+evaluate ($toppar.hise_resid_2_5=0)
+evaluate ($toppar.hise_resid_2_6=0)
+evaluate ($toppar.hise_resid_2_7=0)
+evaluate ($toppar.hise_resid_2_8=0)
+evaluate ($toppar.hise_resid_2_9=0)
+evaluate ($toppar.hise_resid_2_10=0)
+
+evaluate ($toppar.hisd_resid_3_1=35)
+evaluate ($toppar.hisd_resid_3_2=73)
+evaluate ($toppar.hisd_resid_3_3=0)
+evaluate ($toppar.hisd_resid_3_4=0)
+evaluate ($toppar.hisd_resid_3_5=0)
+evaluate ($toppar.hisd_resid_3_6=0)
+evaluate ($toppar.hisd_resid_3_7=0)
+evaluate ($toppar.hisd_resid_3_8=0)
+evaluate ($toppar.hisd_resid_3_9=0)
+evaluate ($toppar.hisd_resid_3_10=0)
+
+evaluate ($toppar.hise_resid_3_1=0)
+evaluate ($toppar.hise_resid_3_2=0)
+evaluate ($toppar.hise_resid_3_3=0)
+evaluate ($toppar.hise_resid_3_4=0)
+evaluate ($toppar.hise_resid_3_5=0)
+evaluate ($toppar.hise_resid_3_6=0)
+evaluate ($toppar.hise_resid_3_7=0)
+evaluate ($toppar.hise_resid_3_8=0)
+evaluate ($toppar.hise_resid_3_9=0)
+evaluate ($toppar.hise_resid_3_10=0)
+
+evaluate ($par_nonbonded = "HADDOCK:/toppar/parallhdg5.3.pro" )
+parameter @@$par_nonbonded end
+parameter @@HADDOCK:/toppar/ion.param end
+parameter @@HADDOCK:/toppar/parallhdg.sol end
+
+
+evaluate ($log_level=quiet)
+
+evaluate ($count = 0)
+
+structure @$psffile end
+
+parameter 
+  nbonds
+    nbxmod=5 atom cdie shift
+    cutnb=9.5 ctofnb=8.5 ctonnb=6.5 eps=$epsilon e14fac=0.4 inhibit 0.25
+    wmin=0.5
+    tolerance  0.5
+    repel=0.0
+  end
+end
+
+
+evaluate ($count=0)
+do (store1 = 0) (all)
+for $file in ( @@$filelist ) loop readpdb
+  eval($count=$count+1)
+  evaluate ($filename= $file - ".pdb" + "_conv.pdb")
+ 
+  coor init end
+  coordinates @@$filename
+  eval($nchain1 = 0)
+  while ($nchain1 < $data.ncomponents) loop nloop1
+    eval($nchain1 = $nchain1 + 1)
+    do (store1 = 1) (byres (segid $Toppar.prot_segid_$nchain1 and 
+                           (not segid $Toppar.prot_segid_$nchain1) around 5.0))
+  end loop nloop1
+
+end loop readpdb
+
+set display=ene-residue.disp end
+
+for $id in id (attr store1 = 1 and tag) loop loop2
+  show (resid) (id $id)
+  evaluate ($ires = $result)
+  show (resn) (id $id)
+  evaluate ($nres = $result)
+  show (segid) (id $id)
+  evaluate ($iseg = $result)
+  igroup interaction (segid $iseg and resid $ires) (not segid $iseg and not (resn TIP3 or resn DMSO)) end
+  display #
+  display #
+  display #Residue $nres $ires $iseg - intermolecular energies
+  display #file Etot Evdw Eelec 
+
+  evaluate ($sum_tot = 0)
+  evaluate ($sumsq_tot = 0)
+  evaluate ($sum_vdw = 0)
+  evaluate ($sumsq_vdw = 0)
+  evaluate ($sum_elec = 0)
+  evaluate ($sumsq_elec = 0)
+
+  evaluate ($nstruc1=0)
+  for $file in ( @@$filelist ) loop loop3
+    eval($count=$count+1)
+    evaluate ($filename= $file - ".pdb" + "_conv.pdb")
+ 
+    coor init end
+    if ($filename ne "") then
+      coor @@$filename
+      evaluate ($nstruc1 = $nstruc1 + 1)
+      energy end
+      evaluate ($sum_tot = $sum_tot + $ener)
+      evaluate ($sumsq_tot = $sumsq_tot + $ener**2)
+      evaluate ($sum_vdw = $sum_vdw + $vdw)
+      evaluate ($sumsq_vdw = $sumsq_vdw + $vdw**2)
+      evaluate ($sum_elec = $sum_elec + $elec)
+      evaluate ($sumsq_elec = $sumsq_elec + $elec**2)
+ 
+      display # $file $ener $vdw $elec
+
+   end if
+   evaluate ($count = $count + 1)
+  end loop loop3
+
+  evaluate ($mean_tot = $sum_tot / $nstruc1)
+  evaluate ($stdev_tot = sqrt(($sumsq_tot - $nstruc1*$mean_tot**2)/ $nstruc1))
+  evaluate ($mean_vdw = $sum_vdw / $nstruc1)
+  evaluate ($stdev_vdw = sqrt(($sumsq_vdw - $nstruc1*$mean_vdw**2)/ $nstruc1))
+  evaluate ($mean_elec = $sum_elec / $nstruc1)
+  evaluate ($stdev_elec = sqrt(($sumsq_elec - $nstruc1*$mean_elec**2)/ $nstruc1))
+
+  display # mean values for interaction with residue $nres $ires $iseg
+  display # $nres $ires $iseg : Etot   $mean_tot (+/- $stdev_tot ) [kcal/Mol]
+  display # $nres $ires $iseg : Evdw   $mean_vdw (+/- $stdev_vdw ) [kcal/Mol]
+  display # $nres $ires $iseg : Eelec  $mean_elec (+/- $stdev_elec ) [kcal/Mol]
+ 
+end loop loop2
+
+
+stop

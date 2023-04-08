@@ -5,8 +5,8 @@ from typing import Dict, Optional, Union
 
 from attrs import define, field
 
-from fileutils import DirHandle, FileHandle, copy_to
-from molecules import (
+from locuaz.fileutils import DirHandle, FileHandle, copy_to
+from locuaz.molecules import (
     PDBStructure,
     GROStructure,
     Topology,
@@ -21,7 +21,7 @@ from molecules import (
     copy_mol_to,
     try_copy_to,
 )
-from moleculesutils import get_gro_ziptop_from_pdb, get_gro_ziptop_from_pdb_tleap
+from locuaz.moleculesutils import get_gro_ziptop_from_pdb, get_gro_ziptop_from_pdb_tleap
 
 
 @define(frozen=True)
@@ -82,27 +82,6 @@ class AbstractComplex(metaclass=ABCMeta):
 
 @define(frozen=True)
 class GROComplex(AbstractComplex):
-    """GROComplex Main model of the optimized complex. It's immutable and always ready for
-    MD. Each time a Complex is built (either from a PDB, a set of GRO and ZIP topology,
-    or another complex), all its attributes are filled out and its associated files are
-    created. Some of them, as checkpoint and trajectoy, are optional.
-
-    Attributes:
-        name (str): name of the complex. All of the associated files (through filehandles)
-            will be named as f'name.{extension}'.
-        dir (Union[DirHandle, Path]): path to the complex.
-        pdb (PDBStructure):
-        top (ZipTopology): zip topolo
-        tra (Optional[Trajectory]):
-        gro (GROStructure):
-        tpr (TPRFile):
-        cpt (Optional[FileHandle]):
-        ndx (FileHandle): index file with selections for target, binder, protein,
-            not protein and System.
-    Raises:
-        RuntimeError: failure to build the complex.
-    """
-
     gro: GROStructure = field(kw_only=True, default=None)
     tpr: TPRFile = field(kw_only=False, default=None)
     cpt: Optional[FileHandle] = field(kw_only=False, default=None)

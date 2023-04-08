@@ -30,12 +30,12 @@ import numpy as np
 from Bio.SeqUtils import seq1
 from attrs import define, field, validators
 
-from abstractscoringfunction import AbstractScoringFunction
-from complex import AbstractComplex, GROComplex
-from fileutils import FileHandle, DirHandle, copy_to
-from primitives import AA_MAP
-from scoringfunctions import scoringfunctions
-from interface import get_freesasa_residues
+from locuaz.abstractscoringfunction import AbstractScoringFunction
+from locuaz.complex import AbstractComplex, GROComplex
+from locuaz.fileutils import FileHandle, DirHandle, copy_to
+from locuaz.primitives import AA_MAP
+from locuaz.scoringfunctions import scoringfunctions
+from locuaz.interface import get_freesasa_residues
 
 
 # TODO: replace own pairwise with itertools' on 3.10
@@ -239,32 +239,6 @@ class Epoch(MutableMapping):
 
 
 class WorkProject:
-    """WorkProject main state holder of the run
-    Args:
-        config (Dict): dict with the yaml input configuration parsed by cli.py.
-        start (bool): whether the working project is being run for the 1st time.
-    Attributes:
-            config (Dict): dict with the yaml input configuration parsed by cli.py.
-            name (str): project's name
-            dir_handle (DirHandle): working directory
-            epochs (List[Epoch]): list of all the epochs generated on this run
-            mdps (Dict[str, FileHandle]): dict with handles to the minimization,
-                NVT and NPT mdps.
-            scorers (Dict[str, AbstractScoringFunction]): dict with the callables to
-                the scoring functions.
-            mutated_positions (Deque[Set[int]]): last N mutated positions
-            mutated_aminoacids (Deque[Set[str]]): last N added amino acids. Unused for now.
-            has_memory (bool = False): whether the protocol uses memory of mutations.
-            has_failed_memory (bool = False): whether the protocol uses memory of failed mutations.
-            tleap_dir (Optional[DirHandle] = None): path to tleap script which should be named 'tleap'
-    Raises:
-        e_start_cpx: Failure to build starting complex.
-        e_restart_cpx: Failure to build a complex from input iterations.
-        e_score: Failure to read scores from previous iterations.
-        e_top_iter: Failure to set the top iterations from previous iterations.
-        e: Other failures, like file issues or bad iteration names.
-    """
-
     config: Dict
     name: str
     dir_handle: DirHandle

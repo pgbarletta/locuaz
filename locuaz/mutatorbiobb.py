@@ -3,10 +3,10 @@ from pathlib import Path
 from Bio.SeqUtils import seq3
 from biobb_model.model.mutate import Mutate
 
-from molecules import PDBStructure
-from primitives import launch_biobb
-from basemutator import BaseMutator
-from mutation import Mutation
+from locuaz.molecules import PDBStructure
+from locuaz.primitives import launch_biobb
+from locuaz.basemutator import BaseMutator
+from locuaz.mutation import Mutation
 
 
 class MutatorBiobb(BaseMutator):

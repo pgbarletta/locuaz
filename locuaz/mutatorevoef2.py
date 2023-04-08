@@ -3,10 +3,10 @@ import subprocess as sp
 from pathlib import Path
 from typing import Optional, Union
 
-from fileutils import FileHandle
-from molecules import PDBStructure
-from mutation import Mutation
-from basemutator import BaseMutator
+from locuaz.fileutils import FileHandle
+from locuaz.molecules import PDBStructure
+from locuaz.mutation import Mutation
+from locuaz.basemutator import BaseMutator
 
 
 class MutatorEvoEF2(BaseMutator):

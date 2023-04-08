@@ -4,9 +4,9 @@ import subprocess as sp
 from pathlib import Path
 from typing import Tuple, List, Union
 
-from abstractscoringfunction import AbstractScoringFunction
-from complex import GROComplex
-from fileutils import DirHandle, FileHandle
+from locuaz.abstractscoringfunction import AbstractScoringFunction
+from locuaz.complex import GROComplex
+from locuaz.fileutils import DirHandle, FileHandle
 
 
 class Rosetta(AbstractScoringFunction):

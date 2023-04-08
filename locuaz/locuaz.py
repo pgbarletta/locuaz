@@ -1,27 +1,24 @@
-#!/usr/bin/env python
-
-"""Main module."""
 import logging
 import sys
 from pathlib import Path
 
-import cli
-import projectutils as pu
-from protocol import initialize_new_epoch
-from pruners import prune
-from run import run_epoch, run_npt_epoch
-from scoring import score
+import locuaz.cli
+from locuaz.projectutils import set_logger, WorkProject
+from locuaz.protocol import initialize_new_epoch
+from locuaz.pruners import prune
+from locuaz.run import run_epoch, run_npt_epoch
+from locuaz.scoring import score
 
 
 def main() -> int:
 
-    config, start = cli.main()
-    log = pu.set_logger(config["main"]["name"], Path(config["paths"]["work"]))
+    config, start = locuaz.cli.main()
+    log = set_logger(config["main"]["name"], Path(config["paths"]["work"]))
     log.info("-----------------------------")
-    log.info(f"Setting up work project.")
-    work_pjct = pu.WorkProject(config, start)
+    log.info("Setting up work project.")
+    work_pjct = WorkProject(config, start)
     log = logging.getLogger(work_pjct.name)
-    log.info(f"Launching.")
+    log.info("Launching.")
 
     if config["main"]["mode"] == "run":
         run_epoch(work_pjct)
@@ -37,7 +34,7 @@ def main() -> int:
                 log.info(f"Scoring NPT run from iteration: {prev_id}-{iter_name}")
                 score(work_pjct, iteration)
         except (Exception,):
-            log.info(f"Cannot score previous epoch.")
+            log.info("Cannot score previous epoch.")
             pass
 
         curr_id = work_pjct.epochs[-1].id
@@ -64,7 +61,7 @@ def main() -> int:
         new_id = work_pjct.epochs[-1].id + 1
         cnt += 1
         if new_id > config["protocol"]["epochs"]:
-            log.info(f"Done with protocol.")
+            log.info("Done with protocol.")
             break
 
         log.info(f"Initializing new epoch {new_id} ({cnt} on this run).")

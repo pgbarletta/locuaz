@@ -13,19 +13,12 @@ from biobb_gromacs.gromacs.gmxselect import Gmxselect
 from biobb_gromacs.gromacs.grompp import Grompp
 from biobb_gromacs.gromacs.pdb2gmx import Pdb2gmx
 
-from fileutils import FileHandle, DirHandle, copy_to, update_header
-from primitives import launch_biobb
+from locuaz.fileutils import FileHandle, DirHandle, copy_to, update_header
+from locuaz.primitives import launch_biobb
 
 
 @define
 class AbstractFileObject(metaclass=ABCMeta):
-    """AbstractFileObject Abstract Base Class for all objects associated to a file
-
-    Attributes:
-        file (FileHandle): FileHandle to the object
-        name (str): name of the file
-        ext (str): extension, filetype, of the file
-    """
     file: FileHandle = field(converter=FileHandle)  # type: ignore
     name: str = field(init=False)
     ext: str = field(init=False)

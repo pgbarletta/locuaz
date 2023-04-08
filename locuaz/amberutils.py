@@ -11,9 +11,9 @@ import MDAnalysis as mda
 import parmed as pmd
 from pdb4amber import AmberPDBFixer
 
-from fileutils import FileHandle, DirHandle
-from molecules import PDBStructure, GROStructure, ZipTopology
-from primitives import ext
+from locuaz.fileutils import FileHandle, DirHandle
+from locuaz.molecules import PDBStructure, GROStructure, ZipTopology
+from locuaz.primitives import ext
 
 warnings.filterwarnings("ignore")
 

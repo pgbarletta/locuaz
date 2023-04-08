@@ -20,13 +20,9 @@ class Validatore(Validator):
             if len(set_fields.intersection(constraints)) == 0:
                 self._error(field, f"Must contain any of: {constraints}")
 
-            if ("current_iterations" in set_fields) and (
-                    "previous_iterations" not in set_fields
-            ):
-                warn(
-                    "Warning: `current_iterations` is set, but `previous_iterations` isn't. "
-                    "Won't be able to prune the current iterations. Make sure there are enough branches."
-                )
+            if ("current_iterations" in set_fields) and ("previous_iterations" not in set_fields):
+                warn("Warning: `current_iterations` is set, but `previous_iterations` isn't. "
+                    "Won't be able to prune the current iterations. Make sure there are enough branches.")
 
     def _validate_step_bigger_than(self, other, field, value):
         """_validate_step_bigger_than
@@ -54,7 +50,7 @@ class Validatore(Validator):
                 self._error(field, "should be an incrementally sorted list.")
 
     def _validate_same_length(self, other, field, value):
-        """_validate_same_length _summary_
+        """_validate_same_length
 
         The rule's arguments are validated against this schema:
         {'type': 'string'}

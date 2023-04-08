@@ -7,12 +7,12 @@ from attrs import define, field
 from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
 from biobb_gromacs.gromacs.grompp import Grompp
 
-from complex import AbstractComplex, GROComplex
-from fileutils import DirHandle, FileHandle
-from molecules import ZipTopology, copy_mol_to
-from fixbox import fix_box_cpx
-from primitives import launch_biobb, GromacsError
-from projectutils import WorkProject
+from locuaz.complex import AbstractComplex, GROComplex
+from locuaz.fileutils import DirHandle, FileHandle
+from locuaz.molecules import ZipTopology, copy_mol_to
+from locuaz.fixbox import fix_box_cpx
+from locuaz.primitives import launch_biobb, GromacsError
+from locuaz.projectutils import WorkProject
 
 
 @define(frozen=True)

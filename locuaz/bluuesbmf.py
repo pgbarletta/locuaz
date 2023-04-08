@@ -4,9 +4,9 @@ from operator import itemgetter
 from pathlib import Path
 from typing import Tuple, List, Any
 
-from abstractscoringfunction import AbstractScoringFunction
-from complex import GROComplex
-from fileutils import FileHandle, DirHandle
+from locuaz.abstractscoringfunction import AbstractScoringFunction
+from locuaz.complex import GROComplex
+from locuaz.fileutils import FileHandle, DirHandle
 
 
 class BluuesBmf(AbstractScoringFunction):

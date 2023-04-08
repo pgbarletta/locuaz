@@ -7,8 +7,8 @@ import freesasa
 import MDAnalysis as mda
 from Bio.SeqUtils import seq1
 
-from molecules import PDBStructure
-from fileutils import FileHandle
+from locuaz.molecules import PDBStructure
+from locuaz.fileutils import FileHandle
 
 
 def get_interfacing_residues(pdb_input: Union[PDBStructure, FileHandle, Path], chainIDs: List[str],
@@ -103,8 +103,7 @@ def get_interface_surface(pdb_path: Path, i: Optional[int] = None) -> Tuple[int,
     on a concurrent manner and order is needed when populating an array
     Args:
         pdb_path: input PDB
-        i: optional index of the input PBD, it'll be returned as is. Useful in case the function
-            is called on a concurrent manner and order is needed when populating an array
+        i: optional index of the input PBD, it'll be returned as is. Useful in case the function is called on a concurrent manner and order is needed when populating an array
 
     Returns:
         Tuple[int, float] = i, surface in A^2

@@ -4,15 +4,15 @@ import warnings
 from logging import Logger
 from pathlib import Path
 
-from amberutils import fix_pdb
-from complex import GROComplex
-from fileutils import DirHandle
-from gromacsutils import remove_overlapping_solvent
-from molecules import PDBStructure
-from mutationgenerators import mutation_generators
-from basemutator import memorize_mutations
-from mutators import mutators
-from projectutils import WorkProject, Epoch, Iteration
+from locuaz.amberutils import fix_pdb
+from locuaz.complex import GROComplex
+from locuaz.fileutils import DirHandle
+from locuaz.gromacsutils import remove_overlapping_solvent
+from locuaz.molecules import PDBStructure
+from locuaz.mutationgenerators import mutation_generators
+from locuaz.basemutator import memorize_mutations
+from locuaz.mutators import mutators
+from locuaz.projectutils import WorkProject, Epoch, Iteration
 
 
 def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
@@ -53,9 +53,7 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
             if work_pjct.config["md"]["use_tleap"]:
                 # Backup the PDB before runing pdb4amber
                 pdb_path = Path(old_iter.complex.pdb)
-                pre_fix_pdb = Path(
-                    old_iter.dir_handle, f"preAmberPDBFixer_{pdb_path.stem}.pdb"
-                )
+                pre_fix_pdb = Path(old_iter.dir_handle, f"preAmberPDBFixer_{pdb_path.stem}.pdb")
                 sh.move(pdb_path, pre_fix_pdb)
 
                 old_pdb = fix_pdb(pre_fix_pdb, pdb_path)
@@ -71,8 +69,7 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
                     iter_name=iter_name,
                     chainIDs=old_iter.chainIDs,
                     resnames=iter_resnames,
-                    resSeqs=old_iter.resSeqs,
-                )
+                    resSeqs=old_iter.resSeqs)
 
                 init_wt = Path(iter_path, "init_wt.pdb")
                 sh.copy(old_pdb, init_wt)

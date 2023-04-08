@@ -3,9 +3,9 @@ import subprocess as sp
 from pathlib import Path
 from typing import List, Tuple
 
-from abstractscoringfunction import AbstractScoringFunction
-from complex import GROComplex
-from fileutils import DirHandle
+from locuaz.abstractscoringfunction import AbstractScoringFunction
+from locuaz.complex import GROComplex
+from locuaz.fileutils import DirHandle
 
 
 class Evoef2(AbstractScoringFunction):

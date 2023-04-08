@@ -7,4 +7,5 @@ from spm4 import SPM4
 mutation_generators: Dict[str, Type[AbstractMutationGenerator]] = {
     "SPM4": SPM4,
     "SPM4i": SPM4i,
+    "SPM4gmxmmpbsa": SPM4gmxmmpbsa,
 }

@@ -3,7 +3,7 @@ log*out
 *nc
 *xtc
 *trr
-__*__*
+__pycache__
 nohup.out
 DLPacker_weights.h5
 library.npz

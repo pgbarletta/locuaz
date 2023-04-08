@@ -5,6 +5,7 @@ import warnings
 from pathlib import Path
 from typing import Dict, Tuple, Optional, Set
 
+import numpy as np
 import MDAnalysis as mda
 from Bio.PDB import PDBParser
 from Bio.PDB.PDBIO import PDBIO
@@ -120,6 +121,13 @@ def image_traj(cpx: GROComplex, out_trj_fn: Path, gmx_bin: str) -> XtcTrajectory
     out_pdb_fn = Path(out_trj_fn.parent, out_trj_fn.stem + ".pdb")
     u = mda.Universe(str(orig_pdb), str(out_trj_fn))
     u.trajectory[-1]
+    if not use_tleap:
+        # Staggered resSeq
+        for s in u.segments:
+            if s.segid in {'', 'X'}:
+                break
+            s.residues.resids = np.array(range(1, len(s.residues) + 1))
+    # Continuous resSeq
     u.atoms.write(str(out_pdb_fn))
 
     # Remove temporary files

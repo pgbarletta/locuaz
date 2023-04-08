@@ -21,6 +21,7 @@ dependencies:
     - pytest
     - flake8
     - sphinx
+    - sphinx-rtd-theme
     - pyyaml
     - types-pyyaml
     - cerberus

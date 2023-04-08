@@ -1,6 +1,6 @@
-====
+========
 locuaz
-====
+========
 
 
 .. image:: https://img.shields.io/pypi/v/locuaz.svg
@@ -20,124 +20,198 @@ Looping Uniquely Catered Amino Acid Sequences
 * Free software: MIT license
 * Documentation: https://locuaz.readthedocs.io.
 
-* Not tested for multiple chains
-
-
 Install
-------
+--------
 
-Download Mambaforge from:
+Mambaforge is recommended instead of pure conda. Download Mambaforge from:
 
 https://github.com/conda-forge/miniforge
 
-if on POWER9, go to the bottom, or just search 'POWER9'.
+Clone this repo and, optionally, get the **DLPacker**  submodule as well::
 
-Can't install biobb using conda because It'll try to get packages that are not ppc64 compatible,
-eg: gromacs, and some old babel version.
+    git clone https://github.com/pgbarletta/locuaz
+    git submodule int
+    git submodule update
+You'll also have to get DLPacker's `weights <https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQseE0LQ/view?usp=sharing>`_.
 
-* Make sure your cmake version is >3.17. If on MARCONI100:
+Post-Install
+-------------
+If on MDAnalysis 2.4.3 or older, edit the file ``MDAnalysis/topology/tpr/utils.py`` line 330::
+    
+  segid = f"seg_{i}_{molblock}"
+replace it with::
 
-```
-module load autoload cmake
-```
-
-If on MDAnalysis 2.4.2 or older:
-- On MDAnalysis/topology/tpr/utils.py line 330:
-```
-segid = f"seg_{i}_{molblock}"
-```
-
-    replace with:
-
-```
-segid = molblock[14:] if molblock[:14] == "Protein_chain_" else molblock
-```
-
+    segid = molblock[14:] if molblock[:14] == "Protein_chain_" else molblock
 
 
 On scoring
---------
+----------------
 
-All scoring functions (SFs) should be inside the config['paths']['scoring_functions'] directory.
+All scoring functions (SFs) should be inside the ``['paths']['scoring_functions']`` (see input config yaml) directory.
 Their folder names should match the exact SF names used in the config file and their binaries
-should be on the top level of their folders and also be named with the exact SF name. 
-Eg: for the pisa scoring function and config['paths']['scoring_functions']='home/user/my_SFs'
+should be on the top level of their folders and also be named with the exact SF name.
+Some scoring functions have additional requirements, like parameter files,
+or the case of **gmxmmpbsa** which is included with the protocol and only needs an input text file.
 
-pisa directory: 'home/user/my_SFs/pisa'
-pisa binary: 'home/user/my_SFs/pisa/pisa'
-pisa parameters (pisa's a special case): 'home/user/my_SFs/pisa/pisa.params'
+Additional requirements for specific SFs
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Additional requirements for specific SFs:
- - pisa: see above.
- - rosetta: symbolic links on the top rosetta folder should be added, pointing the InterfaceAnalyzer,
-   the database, the parameters directory and the external parameters directory. 
-   Eg: inside the main rosetta folder
+Assuming a scoring functions folder set to: ``['paths']['scoring_functions']=home/user/my_SFs``.
+
+gmxmmpbsa
+""""""""""
+| gmxmmpbsa directory: ``home/user/my_SFs/gmxmmpbsa``
+
+This is the only scoring function that comes bundled with the protocol.
+Inside the **gmxmmpbsa** folder, a **gmxmmpbsa** input text file is needed.
+The contents are up to the user. For example, for a simple MM-GBSA::
+
+    &general
+    sys_name="Prot-Prot",
+    startframe=51,
+    endframe=250,
+    /
+    &gb
+    igb=2, saltcon=0.150,
+    /
+And if residue decomposition is needed (for a mmpbsa generator)::
+
+    &general
+    sys_name="Prot-Prot",
+    startframe=51,
+    endframe=250,
+    /
+    &gb
+    igb=2, saltcon=0.150,
+    /
+    &decomp
+    idecomp=2, dec_verbose=0,
+    print_res="within 4"
+    /
+
+pisa
+"""""
+| pisa directory: ``home/user/my_SFs/pisa``
+| pisa binary: ``home/user/my_SFs/pisa/pisa``
+| pisa parameters: ``home/user/my_SFs/pisa/pisa.params``
+
+rosetta
+"""""""""
+| rosetta directory: ``home/user/my_SFs/rosetta``
+
+Symbolic links on the top rosetta folder should be added, pointing to files in the rosetta installation
+Eg: inside the main rosetta folder, with the rosetta directory called **sources**::
+
     ln -s sources/rosetta_source/bin/InterfaceAnalyzer.linuxgccrelease rosetta
     ln -s sources/rosetta_database/ rosetta_database
     ln -s sources/rosetta_source/build/src/release/linux/4.14/64/ppc64le/gcc/8.4/ parameters
-    ln -s sources/rosetta_source/build/external/release/linux/4.14/64/ppc64le/gcc/8.4 external_parameters
+    ln -s sources/rosetta_source/build/external/release/linux/4.14/64/ppc64le/gcc/8.4/ external_parameters
 
- - haddock:
-    The 'template_scoring.inp' has to be at the top level of the haddock
-    The 'rescoring-scripts' folder has to be at the top level of the haddock
-    The 'haddock' folder has to be at the top level of the haddock
-    The 'cns_solve' or 'cns_solve_X.Y' (where 'X'.'Y' is the version number) folder
-        has to be at the top level of the haddock
+haddock
+""""""""
+| haddock directory: ``home/user/my_SFs/haddock``
 
-    The following smybolic links have to be created. Version number and
-    specific folder names and locations may change.
-    ```
+As with all the scoring functions, all the necessary files have to be at the top level.
+The **template_scoring.inp** file has to be at the top level of the haddock, as the **rescoring-scripts** folder
+(included with the protocol insed the **sample_bin** folder).
+Then, the following smybolic links have to be created.
+Version number and specific folder names and locations may change::
+
     ln -s ./cns_solve_1.3/ibm-ppc64le-linux/bin/cns haddock
-    ln -s haddock/protocols protocols
+    ln -s haddock/protocols/ protocols
     ln -s haddock/toppar/ toppar
     ln -s cns_solve_1.3/cns_solve_env cns_solve_env
     ln -s haddock/haddock_configure.csh haddock_configure.csh
-    ```
-    The included file `template_scoring.inp` should also be present in the top level
-    directory.
 
- - piepisa:
-   get pie from `https://clsbweb.oden.utexas.edu/dock_details.html`. If you can run the binary, good,
-   if you can't, then you probably won't be able to run it, since compiling and running it in a
-   modern PC is quite cumbersome. Then, normalize the directory to the scoring functions standard:
-    - rename `pie` to `piepisa`
-    - set the binaries and parameters to the proper names. Inside the `piepisa` dir:
-      ```
-      ln -s bin/pie_score pie
-      ln -s bin/pie.params pie.params
-      ln -s pisa/pisaEnergy_linux pisa
-      ln -s pisa/pisa.params pisa.params
-      ```
+piepisa
+""""""""
+| piepisa directory: ``home/user/my_SFs/piepisa``
 
-Mutators:
-------
+Download `pie <https://clsbweb.oden.utexas.edu/dock_details.html>`_. If you can run the binary, good,
+if you can't, then you probably won't be able to run it, since compiling and running it in a
+modern PC is quite cumbersome. Then, normalize the directory to the scoring functions standard:
 
--  DLPacker is included as a submodule. To download it:
-  ```
-  git submodule init
-  git submodule update
-  ```
-  Then, in a `dlpacker` directory, the following files have to be present:
-  `charges.rtp`, `library.npz` and `DLPacker_weights.h5`. The first 2 can be copied
-  from the recently downloaded directory (`locuaz/DLPacker`). The weights have to be
-  [downloaded](https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQseE0LQ/view?usp=sharing).
+* rename the **pie** folder to **piepisa**
+* be sure to also have the **pisa** scoring function
+* Inside the **piepisa** folder, make symbolic links to the binaries and parameters so they have proper names::
 
+    ln -s bin/pie_score pie
+    ln -s bin/pie.params pie.params
+    ln -s ../pisa/pisaEnergy_linux pisa
+    ln -s ../pisa/pisa.params pisa.params
 
-Features
---------
+evoef2
+""""""
+| evoef2 directory: ``home/user/my_SFs/evoef2``
 
- - If you want to use amber topologies:
+Download and compile `evoef2 <https://github.com/tommyhuangthu/EvoEF2>`_.
 
-```
-mamba install ambertools 
-```
+* rename the **EvoEF2** folder to **evoef2**
+* Inside the **evoef2** folder, make a symbolic link to the binary so it has a proper name::
 
+    ln -s bin/evoef2 evoef2
+
+bluues
+""""""""
+| bluues directory: ``home/user/my_SFs/bluues``
+
+* Inside the **bluues** folder, make symbolic links to the binaries so it has a proper name::
+
+    ln -s bin/bluues_new_2 bluues
+
+bluuesbmf
+"""""""""
+| bluuesbmf directory: ``home/user/my_SFs/bluuesbmf``
+
+* Inside the **bluuesbmf** folder, make symbolic links to the binary so it has a proper name::
+
+    ln -s bin/bluues_new_2 bluues
+    ln -s bin/score_bmf_3 bmf
+
+autodockvina
+""""""""""""
+| autodockvina directory: ``home/user/my_SFs/autodockvina``
+
+Download `autodockvina <https://github.com/ccsb-scripps/AutoDock-Vina/releases>`_.
+Then, normalize the directory to the scoring functions standard:
+* create a folder named **autodockvina** with the downloaded binary
+* Inside the **autodockvina** folder, make symbolic links to the binary so it has a proper name::
+
+    ln -s vina_1.2.3_linux_x86_64 autodockvina
+
+Mutators
+---------
+
+-  DLPacker is included as a submodule. To download it::
+
+    git submodule init
+    git submodule update
+Then, in a ``dlpacker`` directory, the following files have to be present:
+
+1. ``charges.rtp``
+2. ``library.npz``
+3. ``DLPacker_weights.h5``
+
+The first 2 can be copied from the recently downloaded directory (``locuaz/DLPacker``).
+The weights have to be `downloaded <https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQseE0LQ/view?usp=sharing>`_.
+Then, the path to the ``dlpacker`` directory has to be specified in the input config under the
+``paths`` key, on the  ``mutator`` option.
+
+Generators
+-----------
+
+- ``gmxmmpbsa`` based generators like ``SPM4gmxmmpbsa`` need a residue decomposition file from ``gmxmmpbsa``,
+  so the **gmxmmpbsa** script needs to include something along the lines of::
+
+    /
+    &decomp
+    idecomp=2, dec_verbose=0,
+    print_res="within 4"
+    /
 
 Credits
 -------
 
-- Biobb:
-    https://mmb.irbbarcelona.org/biobb/documentation/source
-    https://mmb.irbbarcelona.org/biobb/workflows/tutorials/md_setup
-
-
+- `Biobb <https://mmb.irbbarcelona.org/biobb/documentation/source>`_
+- `MDAnalysis <https://github.com/MDAnalysis/mdanalysis>`_
+- `FreeSASA <https://github.com/freesasa/freesasa-python>`_

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>locuaz.scoring &mdash; locuaz 0.2.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            locuaz
+          </a>
+              <div class="version">
+                0.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">locuaz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Learning:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">locuaz</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">locuaz</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">locuaz.scoring</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for locuaz.scoring</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">concurrent.futures</span> <span class="k">as</span> <span class="nn">cf</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span> <span class="nn">biobb_analysis.gromacs.gmx_trjconv_str_ens</span> <span class="kn">import</span> <span class="n">GMXTrjConvStrEns</span>
+
+<span class="kn">from</span> <span class="nn">locuaz.fileutils</span> <span class="kn">import</span> <span class="n">DirHandle</span>
+<span class="kn">from</span> <span class="nn">locuaz.gromacsutils</span> <span class="kn">import</span> <span class="n">image_traj</span>
+<span class="kn">from</span> <span class="nn">locuaz.primitives</span> <span class="kn">import</span> <span class="n">launch_biobb</span>
+<span class="kn">from</span> <span class="nn">locuaz.projectutils</span> <span class="kn">import</span> <span class="n">WorkProject</span><span class="p">,</span> <span class="n">Iteration</span>
+<span class="kn">from</span> <span class="nn">locuaz.utils_scoring</span> <span class="kn">import</span> <span class="n">extract_pdbs</span><span class="p">,</span> <span class="n">join_target_binder</span><span class="p">,</span> <span class="n">rm_aux_scoring_files</span>
+<span class="kn">from</span> <span class="nn">locuaz.stats</span> <span class="kn">import</span> <span class="n">run_stats</span>
+
+
+<div class="viewcode-block" id="initialize_scoring_folder"><a class="viewcode-back" href="../../locuaz.html#locuaz.scoring.initialize_scoring_folder">[docs]</a><span class="k">def</span> <span class="nf">initialize_scoring_folder</span><span class="p">(</span>
+        <span class="n">iteration</span><span class="p">:</span> <span class="n">Iteration</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates scoring folder inside the iteration dir, fixes PBC issues with the original NPT trajectory</span>
+<span class="sd">    to create a &#39;fix_{name}.xtc&#39; trajectory and a &#39;fix_{name}.pdb&#39;.</span>
+<span class="sd">    &#39;target&#39; and &#39;binder&#39; will get chainIDs of &#39;A&#39; and &#39;B&#39;, no matter  their original chainIDs</span>
+<span class="sd">    or number of chains. This is to prevent scoring functions from choking.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        iteration (Iteration): Iteration object</span>
+<span class="sd">        config (dict): input config file</span>
+<span class="sd">        log (logging.Logger): logger</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        nframes(int): number of frames</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Splitting NPT trajectory in frames.&quot;</span><span class="p">)</span>
+    <span class="n">iteration</span><span class="o">.</span><span class="n">score_dir</span> <span class="o">=</span> <span class="n">DirHandle</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">iteration</span><span class="p">,</span> <span class="s2">&quot;scoring&quot;</span><span class="p">),</span> <span class="n">make</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">gmx_bin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gmx&quot;</span>
+
+    <span class="c1"># First, fix all the imaging issues</span>
+    <span class="n">fix_trj_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">iteration</span><span class="o">.</span><span class="n">score_dir</span><span class="p">,</span> <span class="s2">&quot;fix_&quot;</span> <span class="o">+</span> <span class="n">iteration</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.xtc&quot;</span><span class="p">)</span>
+    <span class="n">fix_trj</span> <span class="o">=</span> <span class="n">image_traj</span><span class="p">(</span><span class="n">iteration</span><span class="o">.</span><span class="n">complex</span><span class="p">,</span> <span class="n">fix_trj_fn</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;md&quot;</span><span class="p">][</span><span class="s2">&quot;use_tleap&quot;</span><span class="p">],</span> <span class="n">gmx_bin</span><span class="p">)</span>
+
+    <span class="c1"># Zip filename with the extracted PDBs</span>
+    <span class="n">ens_of_pdbs</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
+        <span class="n">iteration</span><span class="o">.</span><span class="n">score_dir</span><span class="p">,</span> <span class="s2">&quot;ensemble_&quot;</span> <span class="o">+</span> <span class="n">iteration</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.zip&quot;</span>
+    <span class="p">)</span>
+    <span class="c1"># Target</span>
+    <span class="n">get_target</span> <span class="o">=</span> <span class="n">GMXTrjConvStrEns</span><span class="p">(</span>
+        <span class="n">input_traj_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">fix_trj</span><span class="p">),</span>
+        <span class="n">input_top_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">iteration</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">tpr</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="p">),</span>
+        <span class="n">input_index_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">iteration</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">ndx</span><span class="o">.</span><span class="n">path</span><span class="p">),</span>
+        <span class="n">output_str_ens_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">ens_of_pdbs</span><span class="p">),</span>
+        <span class="n">properties</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;binary_path&quot;</span><span class="p">:</span> <span class="n">gmx_bin</span><span class="p">,</span> <span class="s2">&quot;selection&quot;</span><span class="p">:</span> <span class="s2">&quot;target&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">launch_biobb</span><span class="p">(</span><span class="n">get_target</span><span class="p">)</span>
+    <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">extract_pdbs</span><span class="p">(</span>
+        <span class="n">ens_of_pdbs</span><span class="p">,</span>
+        <span class="s2">&quot;target&quot;</span><span class="p">,</span>
+        <span class="n">nprocs</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;scoring&quot;</span><span class="p">][</span><span class="s2">&quot;nthreads&quot;</span><span class="p">],</span>
+        <span class="n">new_chainID</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">,</span>
+        <span class="n">start</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;scoring&quot;</span><span class="p">][</span><span class="s2">&quot;start&quot;</span><span class="p">],</span>
+        <span class="n">end</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;scoring&quot;</span><span class="p">][</span><span class="s2">&quot;end&quot;</span><span class="p">],</span>
+        <span class="n">allowed_nonstandard_residues</span><span class="o">=</span><span class="nb">set</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;scoring&quot;</span><span class="p">][</span><span class="s2">&quot;allowed_nonstandard_residues&quot;</span><span class="p">]),</span>
+        <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Extract binder PDBs</span>
+    <span class="n">get_binder</span> <span class="o">=</span> <span class="n">GMXTrjConvStrEns</span><span class="p">(</span>
+        <span class="n">input_traj_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">fix_trj</span><span class="p">),</span>
+        <span class="n">input_top_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">iteration</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">tpr</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="p">),</span>
+        <span class="n">input_index_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">iteration</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">ndx</span><span class="o">.</span><span class="n">path</span><span class="p">),</span>
+        <span class="n">output_str_ens_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">ens_of_pdbs</span><span class="p">),</span>
+        <span class="n">properties</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;binary_path&quot;</span><span class="p">:</span> <span class="n">gmx_bin</span><span class="p">,</span> <span class="s2">&quot;selection&quot;</span><span class="p">:</span> <span class="s2">&quot;binder&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">launch_biobb</span><span class="p">(</span><span class="n">get_binder</span><span class="p">)</span>
+    <span class="n">start_binder</span><span class="p">,</span> <span class="n">end_binder</span> <span class="o">=</span> <span class="n">extract_pdbs</span><span class="p">(</span>
+        <span class="n">ens_of_pdbs</span><span class="p">,</span>
+        <span class="s2">&quot;binder&quot;</span><span class="p">,</span>
+        <span class="n">nprocs</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;scoring&quot;</span><span class="p">][</span><span class="s2">&quot;nthreads&quot;</span><span class="p">],</span>
+        <span class="n">new_chainID</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">,</span>
+        <span class="n">start</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;scoring&quot;</span><span class="p">][</span><span class="s2">&quot;start&quot;</span><span class="p">],</span>
+        <span class="n">end</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;scoring&quot;</span><span class="p">][</span><span class="s2">&quot;end&quot;</span><span class="p">],</span>
+        <span class="n">allowed_nonstandard_residues</span><span class="o">=</span><span class="nb">set</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;scoring&quot;</span><span class="p">][</span><span class="s2">&quot;allowed_nonstandard_residues&quot;</span><span class="p">]),</span>
+        <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Complex PDBs</span>
+    <span class="k">assert</span> <span class="n">start</span> <span class="o">==</span> <span class="n">start_binder</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;target start frame (</span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s2">) and binder start frame (</span><span class="si">{</span><span class="n">start_binder</span><span class="si">}</span><span class="s2">) &quot;</span> \
+                                  <span class="sa">f</span><span class="s2">&quot;don&#39;t match. This shouldn&#39;t happen.&quot;</span>
+    <span class="k">assert</span> <span class="n">end</span> <span class="o">==</span> <span class="n">end_binder</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;target end frame (</span><span class="si">{</span><span class="n">end</span><span class="si">}</span><span class="s2">) and binder end frame (</span><span class="si">{</span><span class="n">end_binder</span><span class="si">}</span><span class="s2">) &quot;</span> \
+                              <span class="sa">f</span><span class="s2">&quot;don&#39;t match. This shouldn&#39;t happen.&quot;</span>
+    <span class="n">join_target_binder</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">iteration</span><span class="o">.</span><span class="n">score_dir</span><span class="p">),</span> <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span></div>
+
+
+<div class="viewcode-block" id="score_frames"><a class="viewcode-back" href="../../locuaz.html#locuaz.scoring.score_frames">[docs]</a><span class="k">def</span> <span class="nf">score_frames</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">:</span> <span class="n">WorkProject</span><span class="p">,</span> <span class="n">iteration</span><span class="p">:</span> <span class="n">Iteration</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">sf_name</span><span class="p">,</span> <span class="n">scorer</span> <span class="ow">in</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">scorers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">scores</span> <span class="o">=</span> <span class="n">scorer</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> <span class="n">frames_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">iteration</span><span class="o">.</span><span class="n">score_dir</span><span class="p">),</span> <span class="n">cpx</span><span class="o">=</span><span class="n">iteration</span><span class="o">.</span><span class="n">complex</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">cf</span><span class="o">.</span><span class="n">TimeoutError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">e</span>
+
+        <span class="k">assert</span> <span class="n">scores</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;This shouldn&#39;t happen. Iteration: </span><span class="si">{</span><span class="n">iteration</span><span class="o">.</span><span class="n">score_dir</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="n">avg_val</span> <span class="o">=</span> <span class="n">iteration</span><span class="o">.</span><span class="n">set_score</span><span class="p">(</span><span class="n">sf_name</span><span class="p">,</span> <span class="n">scores</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sf_name</span><span class="si">}</span><span class="s2"> average score: </span><span class="si">{</span><span class="n">avg_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;debug&quot;</span><span class="p">]:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Removing PDB, PSF, PQR frames and auxiliary scoring files. Set `--debug` to skip this.&quot;</span><span class="p">)</span>
+        <span class="n">rm_aux_scoring_files</span><span class="p">(</span><span class="n">iteration</span><span class="o">.</span><span class="n">score_dir</span><span class="p">,</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">scorers</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">)</span>
+
+    <span class="n">iteration</span><span class="o">.</span><span class="n">write_down_scores</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="discard_iteration"><a class="viewcode-back" href="../../locuaz.html#locuaz.scoring.discard_iteration">[docs]</a><span class="k">def</span> <span class="nf">discard_iteration</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">:</span> <span class="n">WorkProject</span><span class="p">,</span> <span class="n">iteration</span><span class="p">:</span> <span class="n">Iteration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">sf_name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">scorers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">iteration</span><span class="o">.</span><span class="n">set_score</span><span class="p">(</span><span class="n">sf_name</span><span class="p">,</span> <span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">maxsize</span><span class="p">])</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sf_name</span><span class="si">}</span><span class="s2"> nullifying score.&quot;</span><span class="p">)</span>
+    <span class="c1"># Initialize the scoring folder</span>
+    <span class="n">iteration</span><span class="o">.</span><span class="n">score_dir</span> <span class="o">=</span> <span class="n">DirHandle</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">iteration</span><span class="p">,</span> <span class="s2">&quot;scoring&quot;</span><span class="p">),</span> <span class="n">make</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">iteration</span><span class="o">.</span><span class="n">write_down_scores</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="score"><a class="viewcode-back" href="../../locuaz.html#locuaz.scoring.score">[docs]</a><span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">:</span> <span class="n">WorkProject</span><span class="p">,</span> <span class="n">iteration</span><span class="p">:</span> <span class="n">Iteration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">iteration</span><span class="o">.</span><span class="n">read_scores</span><span class="p">(</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">scorers</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">log</span><span class="p">):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Read old scores.&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># TODO iteration.outside_box should be saved on tracking</span>
+        <span class="k">if</span> <span class="n">iteration</span><span class="o">.</span><span class="n">outside_box</span><span class="p">:</span>
+            <span class="c1"># Discard this iteration.</span>
+            <span class="n">discard_iteration</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">,</span> <span class="n">iteration</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">initialize_scoring_folder</span><span class="p">(</span><span class="n">iteration</span><span class="p">,</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">)</span>
+            <span class="n">run_stats</span><span class="p">(</span><span class="n">iteration</span><span class="p">,</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">)</span>
+            <span class="n">score_frames</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">,</span> <span class="n">iteration</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Time elapsed during </span><span class="si">{</span><span class="n">iteration</span><span class="o">.</span><span class="n">iter_name</span><span class="si">}</span><span class="s2">&#39;s </span><span class="si">{</span><span class="n">end</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;frames scoring: </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Patricio Barletta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

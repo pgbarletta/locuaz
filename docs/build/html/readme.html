@@ -47,42 +47,38 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">locuaz</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#install">Install</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#on-scoring">On scoring</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mutators">Mutators:</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#features">Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#post-install">Post-Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#on-scoring">On scoring</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#additional-requirements-for-specific-sfs">Additional requirements for specific SFs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gmxmmpbsa">gmxmmpbsa</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pisa">pisa</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rosetta">rosetta</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#haddock">haddock</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#piepisa">piepisa</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#evoef2">evoef2</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bluues">bluues</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bluuesbmf">bluuesbmf</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#autodockvina">autodockvina</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#mutators">Mutators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#generators">Generators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#credits">Credits</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Learning:</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">locuaz</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#install">Install</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#on-scoring">On scoring</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mutators">Mutators:</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#features">Features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#credits">Credits</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference:</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">locuaz</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#install">Install</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#on-scoring">On scoring</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mutators">Mutators:</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#features">Features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#credits">Credits</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">locuaz</a></li>
 </ul>
 
         </div>
@@ -118,132 +114,234 @@
 <ul class="simple">
 <li><p>Free software: MIT license</p></li>
 <li><p>Documentation: <a class="reference external" href="https://locuaz.readthedocs.io">https://locuaz.readthedocs.io</a>.</p></li>
-<li><p>Not tested for multiple chains</p></li>
 </ul>
 <section id="install">
 <h2>Install<a class="headerlink" href="#install" title="Permalink to this heading"></a></h2>
-<p>Download Mambaforge from:</p>
+<p>Mambaforge is recommended instead of pure conda. Download Mambaforge from:</p>
 <p><a class="reference external" href="https://github.com/conda-forge/miniforge">https://github.com/conda-forge/miniforge</a></p>
-<p>if on POWER9, go to the bottom, or just search ‘POWER9’.</p>
-<p>Can’t install biobb using conda because It’ll try to get packages that are not ppc64 compatible,
-eg: gromacs, and some old babel version.</p>
-<ul class="simple">
-<li><p>Make sure your cmake version is &gt;3.17. If on MARCONI100:</p></li>
-</ul>
-<p><code class="docutils literal notranslate"><span class="pre">`</span>
-<span class="pre">module</span> <span class="pre">load</span> <span class="pre">autoload</span> <span class="pre">cmake</span>
-<span class="pre">`</span></code></p>
-<p>If on MDAnalysis 2.4.2 or older:
-- On MDAnalysis/topology/tpr/utils.py line 330:</p>
+<p>Clone this repo and, optionally, get the <strong>DLPacker</strong>  submodule as well:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">pgbarletta</span><span class="o">/</span><span class="n">locuaz</span>
+<span class="n">git</span> <span class="n">submodule</span> <span class="nb">int</span>
+<span class="n">git</span> <span class="n">submodule</span> <span class="n">update</span>
+</pre></div>
+</div>
+<p>You’ll also have to get DLPacker’s <a class="reference external" href="https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQseE0LQ/view?usp=sharing">weights</a>.</p>
+</section>
+<section id="post-install">
+<h2>Post-Install<a class="headerlink" href="#post-install" title="Permalink to this heading"></a></h2>
+<p>If on MDAnalysis 2.4.3 or older, edit the file <code class="docutils literal notranslate"><span class="pre">MDAnalysis/topology/tpr/utils.py</span></code> line 330:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">segid</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;seg_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">molblock</span><span class="si">}</span><span class="s2">&quot;</span>
 </pre></div>
 </div>
-<p>replace with:</p>
+<p>replace it with:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">segid</span> <span class="o">=</span> <span class="n">molblock</span><span class="p">[</span><span class="mi">14</span><span class="p">:]</span> <span class="k">if</span> <span class="n">molblock</span><span class="p">[:</span><span class="mi">14</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Protein_chain_&quot;</span> <span class="k">else</span> <span class="n">molblock</span>
 </pre></div>
 </div>
 </section>
 <section id="on-scoring">
 <h2>On scoring<a class="headerlink" href="#on-scoring" title="Permalink to this heading"></a></h2>
-<p>All scoring functions (SFs) should be inside the config[‘paths’][‘scoring_functions’] directory.
+<p>All scoring functions (SFs) should be inside the <code class="docutils literal notranslate"><span class="pre">['paths']['scoring_functions']</span></code> (see input config yaml) directory.
 Their folder names should match the exact SF names used in the config file and their binaries
 should be on the top level of their folders and also be named with the exact SF name.
-Eg: for the pisa scoring function and config[‘paths’][‘scoring_functions’]=’home/user/my_SFs’</p>
-<p>pisa directory: ‘home/user/my_SFs/pisa’
-pisa binary: ‘home/user/my_SFs/pisa/pisa’
-pisa parameters (pisa’s a special case): ‘home/user/my_SFs/pisa/pisa.params’</p>
-<dl>
-<dt>Additional requirements for specific SFs:</dt><dd><ul class="simple">
-<li><p>pisa: see above.</p></li>
-<li><p>rosetta: symbolic links on the top rosetta folder should be added, pointing the InterfaceAnalyzer,
-the database, the parameters directory and the external parameters directory.
-Eg: inside the main rosetta folder</p></li>
-</ul>
-<dl class="simple">
-<dt><a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a></dt><dd><p>ln -s sources/rosetta_source/bin/InterfaceAnalyzer.linuxgccrelease rosetta
-ln -s sources/rosetta_database/ rosetta_database
-ln -s sources/rosetta_source/build/src/release/linux/4.14/64/ppc64le/gcc/8.4/ parameters
-ln -s sources/rosetta_source/build/external/release/linux/4.14/64/ppc64le/gcc/8.4 external_parameters</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p><a href="#id5"><span class="problematic" id="id6">``</span></a><a href="#id7"><span class="problematic" id="id8">`</span></a></p>
-<blockquote>
-<div><ul>
-<li><dl>
-<dt>haddock: The ‘template_scoring.inp’ has to be at the top level of the haddock</dt><dd><p>The ‘rescoring-scripts’ folder has to be at the top level of the haddock
-The ‘haddock’ folder has to be at the top level of the haddock
-The ‘cns_solve’ or ‘cns_solve_X.Y’ (where ‘X’.’Y’ is the version number) folder has to be at the top level of the haddock</p>
-<p>The following smybolic links have to be created. Version number and
-specific folder names and locations may change.
-<code class="docutils literal notranslate"><span class="pre">`</span>
-<span class="pre">ln</span> <span class="pre">-s</span> <span class="pre">./cns_solve_1.3/ibm-ppc64le-linux/bin/cns</span> <span class="pre">haddock</span>
-<span class="pre">ln</span> <span class="pre">-s</span> <span class="pre">haddock/protocols</span> <span class="pre">protocols</span>
-<span class="pre">ln</span> <span class="pre">-s</span> <span class="pre">haddock/toppar/</span> <span class="pre">toppar</span>
-<span class="pre">ln</span> <span class="pre">-s</span> <span class="pre">cns_solve_1.3/cns_solve_env</span> <span class="pre">cns_solve_env</span>
-<span class="pre">ln</span> <span class="pre">-s</span> <span class="pre">haddock/haddock_configure.csh</span> <span class="pre">haddock_configure.csh</span>
-<span class="pre">`</span></code>
-The included file <cite>template_scoring.inp</cite> should also be present in the top level
-directory.</p>
-</dd>
-</dl>
-</li>
-<li><p>piepisa:
-get pie from <cite>https://clsbweb.oden.utexas.edu/dock_details.html</cite>. If you can run the binary, good,
+Some scoring functions have additional requirements, like parameter files,
+or the case of <strong>gmxmmpbsa</strong> which is included with the protocol and only needs an input text file.</p>
+<section id="additional-requirements-for-specific-sfs">
+<h3>Additional requirements for specific SFs<a class="headerlink" href="#additional-requirements-for-specific-sfs" title="Permalink to this heading"></a></h3>
+<p>Assuming a scoring functions folder set to: <code class="docutils literal notranslate"><span class="pre">['paths']['scoring_functions']=home/user/my_SFs</span></code>.</p>
+<section id="gmxmmpbsa">
+<h4>gmxmmpbsa<a class="headerlink" href="#gmxmmpbsa" title="Permalink to this heading"></a></h4>
+<div class="line-block">
+<div class="line">gmxmmpbsa directory: <code class="docutils literal notranslate"><span class="pre">home/user/my_SFs/gmxmmpbsa</span></code></div>
+</div>
+<p>This is the only scoring function that comes bundled with the protocol.
+Inside the <strong>gmxmmpbsa</strong> folder, a <strong>gmxmmpbsa</strong> input text file is needed.
+The contents are up to the user. For example, for a simple MM-GBSA:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&amp;</span><span class="n">general</span>
+<span class="n">sys_name</span><span class="o">=</span><span class="s2">&quot;Prot-Prot&quot;</span><span class="p">,</span>
+<span class="n">startframe</span><span class="o">=</span><span class="mi">51</span><span class="p">,</span>
+<span class="n">endframe</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
+<span class="o">/</span>
+<span class="o">&amp;</span><span class="n">gb</span>
+<span class="n">igb</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">saltcon</span><span class="o">=</span><span class="mf">0.150</span><span class="p">,</span>
+<span class="o">/</span>
+</pre></div>
+</div>
+<p>And if residue decomposition is needed (for a mmpbsa generator):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&amp;</span><span class="n">general</span>
+<span class="n">sys_name</span><span class="o">=</span><span class="s2">&quot;Prot-Prot&quot;</span><span class="p">,</span>
+<span class="n">startframe</span><span class="o">=</span><span class="mi">51</span><span class="p">,</span>
+<span class="n">endframe</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
+<span class="o">/</span>
+<span class="o">&amp;</span><span class="n">gb</span>
+<span class="n">igb</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">saltcon</span><span class="o">=</span><span class="mf">0.150</span><span class="p">,</span>
+<span class="o">/</span>
+<span class="o">&amp;</span><span class="n">decomp</span>
+<span class="n">idecomp</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dec_verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="n">print_res</span><span class="o">=</span><span class="s2">&quot;within 4&quot;</span>
+<span class="o">/</span>
+</pre></div>
+</div>
+</section>
+<section id="pisa">
+<h4>pisa<a class="headerlink" href="#pisa" title="Permalink to this heading"></a></h4>
+<div class="line-block">
+<div class="line">pisa directory: <code class="docutils literal notranslate"><span class="pre">home/user/my_SFs/pisa</span></code></div>
+<div class="line">pisa binary: <code class="docutils literal notranslate"><span class="pre">home/user/my_SFs/pisa/pisa</span></code></div>
+<div class="line">pisa parameters: <code class="docutils literal notranslate"><span class="pre">home/user/my_SFs/pisa/pisa.params</span></code></div>
+</div>
+</section>
+<section id="rosetta">
+<h4>rosetta<a class="headerlink" href="#rosetta" title="Permalink to this heading"></a></h4>
+<div class="line-block">
+<div class="line">rosetta directory: <code class="docutils literal notranslate"><span class="pre">home/user/my_SFs/rosetta</span></code></div>
+</div>
+<p>Symbolic links on the top rosetta folder should be added, pointing to files in the rosetta installation
+Eg: inside the main rosetta folder, with the rosetta directory called <strong>sources</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="n">sources</span><span class="o">/</span><span class="n">rosetta_source</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">InterfaceAnalyzer</span><span class="o">.</span><span class="n">linuxgccrelease</span> <span class="n">rosetta</span>
+<span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="n">sources</span><span class="o">/</span><span class="n">rosetta_database</span><span class="o">/</span> <span class="n">rosetta_database</span>
+<span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="n">sources</span><span class="o">/</span><span class="n">rosetta_source</span><span class="o">/</span><span class="n">build</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">release</span><span class="o">/</span><span class="n">linux</span><span class="o">/</span><span class="mf">4.14</span><span class="o">/</span><span class="mi">64</span><span class="o">/</span><span class="n">ppc64le</span><span class="o">/</span><span class="n">gcc</span><span class="o">/</span><span class="mf">8.4</span><span class="o">/</span> <span class="n">parameters</span>
+<span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="n">sources</span><span class="o">/</span><span class="n">rosetta_source</span><span class="o">/</span><span class="n">build</span><span class="o">/</span><span class="n">external</span><span class="o">/</span><span class="n">release</span><span class="o">/</span><span class="n">linux</span><span class="o">/</span><span class="mf">4.14</span><span class="o">/</span><span class="mi">64</span><span class="o">/</span><span class="n">ppc64le</span><span class="o">/</span><span class="n">gcc</span><span class="o">/</span><span class="mf">8.4</span><span class="o">/</span> <span class="n">external_parameters</span>
+</pre></div>
+</div>
+</section>
+<section id="haddock">
+<h4>haddock<a class="headerlink" href="#haddock" title="Permalink to this heading"></a></h4>
+<div class="line-block">
+<div class="line">haddock directory: <code class="docutils literal notranslate"><span class="pre">home/user/my_SFs/haddock</span></code></div>
+</div>
+<p>As with all the scoring functions, all the necessary files have to be at the top level.
+The <strong>template_scoring.inp</strong> file has to be at the top level of the haddock, as the <strong>rescoring-scripts</strong> folder
+(included with the protocol insed the <strong>sample_bin</strong> folder).
+Then, the following smybolic links have to be created.
+Version number and specific folder names and locations may change:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="o">./</span><span class="n">cns_solve_1</span><span class="mf">.3</span><span class="o">/</span><span class="n">ibm</span><span class="o">-</span><span class="n">ppc64le</span><span class="o">-</span><span class="n">linux</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">cns</span> <span class="n">haddock</span>
+<span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="n">haddock</span><span class="o">/</span><span class="n">protocols</span><span class="o">/</span> <span class="n">protocols</span>
+<span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="n">haddock</span><span class="o">/</span><span class="n">toppar</span><span class="o">/</span> <span class="n">toppar</span>
+<span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="n">cns_solve_1</span><span class="mf">.3</span><span class="o">/</span><span class="n">cns_solve_env</span> <span class="n">cns_solve_env</span>
+<span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="n">haddock</span><span class="o">/</span><span class="n">haddock_configure</span><span class="o">.</span><span class="n">csh</span> <span class="n">haddock_configure</span><span class="o">.</span><span class="n">csh</span>
+</pre></div>
+</div>
+</section>
+<section id="piepisa">
+<h4>piepisa<a class="headerlink" href="#piepisa" title="Permalink to this heading"></a></h4>
+<div class="line-block">
+<div class="line">piepisa directory: <code class="docutils literal notranslate"><span class="pre">home/user/my_SFs/piepisa</span></code></div>
+</div>
+<p>Download <a class="reference external" href="https://clsbweb.oden.utexas.edu/dock_details.html">pie</a>. If you can run the binary, good,
 if you can’t, then you probably won’t be able to run it, since compiling and running it in a
-modern PC is quite cumbersome. Then, normalize the directory to the scoring functions standard:
-- rename <cite>pie</cite> to <cite>piepisa</cite>
-- set the binaries and parameters to the proper names. Inside the <cite>piepisa</cite> dir:</p></li>
+modern PC is quite cumbersome. Then, normalize the directory to the scoring functions standard:</p>
+<ul>
+<li><p>rename the <strong>pie</strong> folder to <strong>piepisa</strong></p></li>
+<li><p>be sure to also have the <strong>pisa</strong> scoring function</p></li>
+<li><p>Inside the <strong>piepisa</strong> folder, make symbolic links to the binaries and parameters so they have proper names:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="nb">bin</span><span class="o">/</span><span class="n">pie_score</span> <span class="n">pie</span>
+<span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="nb">bin</span><span class="o">/</span><span class="n">pie</span><span class="o">.</span><span class="n">params</span> <span class="n">pie</span><span class="o">.</span><span class="n">params</span>
+<span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="o">../</span><span class="n">pisa</span><span class="o">/</span><span class="n">pisaEnergy_linux</span> <span class="n">pisa</span>
+<span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="o">../</span><span class="n">pisa</span><span class="o">/</span><span class="n">pisa</span><span class="o">.</span><span class="n">params</span> <span class="n">pisa</span><span class="o">.</span><span class="n">params</span>
+</pre></div>
+</div>
+</li>
 </ul>
-</div></blockquote>
-<dl class="simple">
-<dt><a href="#id9"><span class="problematic" id="id10">``</span></a><a href="#id11"><span class="problematic" id="id12">`</span></a></dt><dd><p>ln -s bin/pie_score pie
-ln -s bin/pie.params pie.params
-ln -s pisa/pisaEnergy_linux pisa
-ln -s pisa/pisa.params pisa.params</p>
-</dd>
-</dl>
-<p><a href="#id13"><span class="problematic" id="id14">``</span></a><a href="#id15"><span class="problematic" id="id16">`</span></a></p>
+</section>
+<section id="evoef2">
+<h4>evoef2<a class="headerlink" href="#evoef2" title="Permalink to this heading"></a></h4>
+<div class="line-block">
+<div class="line">evoef2 directory: <code class="docutils literal notranslate"><span class="pre">home/user/my_SFs/evoef2</span></code></div>
+</div>
+<p>Download and compile <a class="reference external" href="https://github.com/tommyhuangthu/EvoEF2">evoef2</a>.</p>
+<ul>
+<li><p>rename the <strong>EvoEF2</strong> folder to <strong>evoef2</strong></p></li>
+<li><p>Inside the <strong>evoef2</strong> folder, make a symbolic link to the binary so it has a proper name:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="nb">bin</span><span class="o">/</span><span class="n">evoef2</span> <span class="n">evoef2</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="bluues">
+<h4>bluues<a class="headerlink" href="#bluues" title="Permalink to this heading"></a></h4>
+<div class="line-block">
+<div class="line">bluues directory: <code class="docutils literal notranslate"><span class="pre">home/user/my_SFs/bluues</span></code></div>
+</div>
+<ul>
+<li><p>Inside the <strong>bluues</strong> folder, make symbolic links to the binaries so it has a proper name:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="nb">bin</span><span class="o">/</span><span class="n">bluues_new_2</span> <span class="n">bluues</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="bluuesbmf">
+<h4>bluuesbmf<a class="headerlink" href="#bluuesbmf" title="Permalink to this heading"></a></h4>
+<div class="line-block">
+<div class="line">bluuesbmf directory: <code class="docutils literal notranslate"><span class="pre">home/user/my_SFs/bluuesbmf</span></code></div>
+</div>
+<ul>
+<li><p>Inside the <strong>bluuesbmf</strong> folder, make symbolic links to the binary so it has a proper name:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="nb">bin</span><span class="o">/</span><span class="n">bluues_new_2</span> <span class="n">bluues</span>
+<span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="nb">bin</span><span class="o">/</span><span class="n">score_bmf_3</span> <span class="n">bmf</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+<section id="autodockvina">
+<h4>autodockvina<a class="headerlink" href="#autodockvina" title="Permalink to this heading"></a></h4>
+<div class="line-block">
+<div class="line">autodockvina directory: <code class="docutils literal notranslate"><span class="pre">home/user/my_SFs/autodockvina</span></code></div>
+</div>
+<p>Download <a class="reference external" href="https://github.com/ccsb-scripps/AutoDock-Vina/releases">autodockvina</a>.
+Then, normalize the directory to the scoring functions standard:
+* create a folder named <strong>autodockvina</strong> with the downloaded binary
+* Inside the <strong>autodockvina</strong> folder, make symbolic links to the binary so it has a proper name:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="n">vina_1</span><span class="mf">.2.3</span><span class="n">_linux_x86_64</span> <span class="n">autodockvina</span>
+</pre></div>
+</div>
+</section>
+</section>
 </section>
 <section id="mutators">
-<h2>Mutators:<a class="headerlink" href="#mutators" title="Permalink to this heading"></a></h2>
-<ul class="simple">
-<li><p>DLPacker is included as a submodule. To download it:</p></li>
+<h2>Mutators<a class="headerlink" href="#mutators" title="Permalink to this heading"></a></h2>
+<ul>
+<li><p>DLPacker is included as a submodule. To download it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">submodule</span> <span class="n">init</span>
+<span class="n">git</span> <span class="n">submodule</span> <span class="n">update</span>
+</pre></div>
+</div>
+</li>
 </ul>
-<dl class="simple">
-<dt><a href="#id17"><span class="problematic" id="id18">``</span></a><a href="#id19"><span class="problematic" id="id20">`</span></a></dt><dd><p>git submodule init
-git submodule update</p>
-</dd>
-</dl>
-<p><a href="#id21"><span class="problematic" id="id22">``</span></a><a href="#id23"><span class="problematic" id="id24">`</span></a></p>
-<blockquote>
-<div><p>Then, in a <cite>dlpacker</cite> directory, the following files have to be present:
-<cite>charges.rtp</cite>, <cite>library.npz</cite> and <cite>DLPacker_weights.h5</cite>. The first 2 can be copied
-from the recently downloaded directory (<cite>locuaz/DLPacker</cite>). The weights have to be
-[downloaded](<a class="reference external" href="https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQseE0LQ/view?usp=sharing">https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQseE0LQ/view?usp=sharing</a>).</p>
-</div></blockquote>
+<p>Then, in a <code class="docutils literal notranslate"><span class="pre">dlpacker</span></code> directory, the following files have to be present:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">charges.rtp</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">library.npz</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DLPacker_weights.h5</span></code></p></li>
+</ol>
+<p>The first 2 can be copied from the recently downloaded directory (<code class="docutils literal notranslate"><span class="pre">locuaz/DLPacker</span></code>).
+The weights have to be <a class="reference external" href="https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQseE0LQ/view?usp=sharing">downloaded</a>.
+Then, the path to the <code class="docutils literal notranslate"><span class="pre">dlpacker</span></code> directory has to be specified in the input config under the
+<code class="docutils literal notranslate"><span class="pre">paths</span></code> key, on the  <code class="docutils literal notranslate"><span class="pre">mutator</span></code> option.</p>
 </section>
-<section id="features">
-<h2>Features<a class="headerlink" href="#features" title="Permalink to this heading"></a></h2>
-<blockquote>
-<div><ul class="simple">
-<li><p>If you want to use amber topologies:</p></li>
+<section id="generators">
+<h2>Generators<a class="headerlink" href="#generators" title="Permalink to this heading"></a></h2>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">gmxmmpbsa</span></code> based generators like <code class="docutils literal notranslate"><span class="pre">SPM4gmxmmpbsa</span></code> need a residue decomposition file from <code class="docutils literal notranslate"><span class="pre">gmxmmpbsa</span></code>,
+so the <strong>gmxmmpbsa</strong> script needs to include something along the lines of:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span>
+<span class="o">&amp;</span><span class="n">decomp</span>
+<span class="n">idecomp</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dec_verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="n">print_res</span><span class="o">=</span><span class="s2">&quot;within 4&quot;</span>
+<span class="o">/</span>
+</pre></div>
+</div>
+</li>
 </ul>
-</div></blockquote>
-<p><code class="docutils literal notranslate"><span class="pre">`</span>
-<span class="pre">mamba</span> <span class="pre">install</span> <span class="pre">ambertools</span>
-<span class="pre">`</span></code></p>
 </section>
 <section id="credits">
 <h2>Credits<a class="headerlink" href="#credits" title="Permalink to this heading"></a></h2>
 <ul class="simple">
-<li><dl class="simple">
-<dt>Biobb:</dt><dd><p><a class="reference external" href="https://mmb.irbbarcelona.org/biobb/documentation/source">https://mmb.irbbarcelona.org/biobb/documentation/source</a>
-<a class="reference external" href="https://mmb.irbbarcelona.org/biobb/workflows/tutorials/md_setup">https://mmb.irbbarcelona.org/biobb/workflows/tutorials/md_setup</a></p>
-</dd>
-</dl>
-</li>
+<li><p><a class="reference external" href="https://mmb.irbbarcelona.org/biobb/documentation/source">Biobb</a></p></li>
+<li><p><a class="reference external" href="https://github.com/MDAnalysis/mdanalysis">MDAnalysis</a></p></li>
+<li><p><a class="reference external" href="https://github.com/freesasa/freesasa-python">FreeSASA</a></p></li>
 </ul>
 </section>
 </section>

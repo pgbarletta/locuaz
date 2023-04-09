@@ -3,30 +3,26 @@ LOCUAZ optimization protocol
 
 .. toctree::
    :maxdepth: 2
-   :caption: Installation:
+   :caption: Installation
 
    readme
    installation
-   usage
-   modules
+
    contributing
    history
 
 .. toctree::
    :maxdepth: 2
-   :caption: Learning:
+   :caption: Learning
 
-   readme
-   installation
    usage
 
 .. toctree::
    :maxdepth: 2
-   :caption: Reference:
+   :caption: Reference
 
-   readme
-   installation
-   usage
+   locuaz
+   mutationgenerators
 
 Indices and tables
 ==================

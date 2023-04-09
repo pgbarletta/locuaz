@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>locuaz.gromacsutils &mdash; locuaz 0.2.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            locuaz
+          </a>
+              <div class="version">
+                0.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">locuaz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Learning:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">locuaz</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">locuaz</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">locuaz.gromacsutils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for locuaz.gromacsutils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
+<span class="kn">import</span> <span class="nn">subprocess</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">MDAnalysis</span> <span class="k">as</span> <span class="nn">mda</span>
+<span class="kn">from</span> <span class="nn">Bio.PDB</span> <span class="kn">import</span> <span class="n">PDBParser</span>
+<span class="kn">from</span> <span class="nn">Bio.PDB.PDBIO</span> <span class="kn">import</span> <span class="n">PDBIO</span>
+<span class="kn">from</span> <span class="nn">biobb_analysis.gromacs.gmx_image</span> <span class="kn">import</span> <span class="n">GMXImage</span>
+<span class="kn">from</span> <span class="nn">biobb_analysis.gromacs.gmx_trjconv_str</span> <span class="kn">import</span> <span class="n">GMXTrjConvStr</span>
+<span class="kn">from</span> <span class="nn">biobb_gromacs.gromacs.genion</span> <span class="kn">import</span> <span class="n">Genion</span>
+<span class="kn">from</span> <span class="nn">biobb_gromacs.gromacs.gmxselect</span> <span class="kn">import</span> <span class="n">Gmxselect</span>
+<span class="kn">from</span> <span class="nn">biobb_gromacs.gromacs.solvate</span> <span class="kn">import</span> <span class="n">Solvate</span>
+
+<span class="kn">from</span> <span class="nn">locuaz.complex</span> <span class="kn">import</span> <span class="n">AbstractComplex</span><span class="p">,</span> <span class="n">GROComplex</span>
+<span class="kn">from</span> <span class="nn">locuaz.fileutils</span> <span class="kn">import</span> <span class="n">FileHandle</span><span class="p">,</span> <span class="n">update_header</span><span class="p">,</span> <span class="n">copy_to</span>
+<span class="kn">from</span> <span class="nn">locuaz.molecules</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PDBStructure</span><span class="p">,</span>
+    <span class="n">XtcTrajectory</span><span class="p">,</span>
+    <span class="n">get_tpr</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">locuaz.moleculesutils</span> <span class="kn">import</span> <span class="n">get_gro_ziptop_from_pdb</span><span class="p">,</span> <span class="n">fix_wat_naming</span>
+<span class="kn">from</span> <span class="nn">locuaz.primitives</span> <span class="kn">import</span> <span class="n">AA_MAP</span>
+<span class="kn">from</span> <span class="nn">locuaz.primitives</span> <span class="kn">import</span> <span class="n">launch_biobb</span>
+
+
+<div class="viewcode-block" id="image_traj"><a class="viewcode-back" href="../../locuaz.html#locuaz.gromacsutils.image_traj">[docs]</a><span class="k">def</span> <span class="nf">image_traj</span><span class="p">(</span><span class="n">cpx</span><span class="p">:</span> <span class="n">GROComplex</span><span class="p">,</span> <span class="n">out_trj_fn</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">use_tleap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">gmx_bin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gmx&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">XtcTrajectory</span><span class="p">:</span>
+    <span class="n">wrk_dir</span> <span class="o">=</span> <span class="n">out_trj_fn</span><span class="o">.</span><span class="n">parent</span>
+
+    <span class="c1"># I have to specify `fit_selection` and `center_selection` even though I&#39;m not</span>
+    <span class="c1"># fitting or centering anything or else biobb will throw an error.</span>
+    <span class="n">whole_trj</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">wrk_dir</span><span class="p">,</span> <span class="s2">&quot;whole.xtc&quot;</span><span class="p">)</span>
+    <span class="n">make_whole</span> <span class="o">=</span> <span class="n">GMXImage</span><span class="p">(</span>
+        <span class="n">input_traj_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">cpx</span><span class="o">.</span><span class="n">tra</span><span class="p">),</span>
+        <span class="n">input_index_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">cpx</span><span class="o">.</span><span class="n">ndx</span><span class="p">),</span>
+        <span class="n">input_top_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">cpx</span><span class="o">.</span><span class="n">tpr</span><span class="p">),</span>
+        <span class="n">output_traj_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">whole_trj</span><span class="p">),</span>
+        <span class="n">properties</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;binary_path&quot;</span><span class="p">:</span> <span class="n">gmx_bin</span><span class="p">,</span>
+            <span class="s2">&quot;fit_selection&quot;</span><span class="p">:</span> <span class="s2">&quot;Protein&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;center_selection&quot;</span><span class="p">:</span> <span class="s2">&quot;Protein&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;output_selection&quot;</span><span class="p">:</span> <span class="s2">&quot;Protein&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ur&quot;</span><span class="p">:</span> <span class="s2">&quot;compact&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;pbc&quot;</span><span class="p">:</span> <span class="s2">&quot;whole&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;center&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">launch_biobb</span><span class="p">(</span><span class="n">make_whole</span><span class="p">)</span>
+
+    <span class="n">cluster_trj</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">wrk_dir</span><span class="p">,</span> <span class="s2">&quot;clustered.xtc&quot;</span><span class="p">)</span>
+    <span class="n">cluster</span> <span class="o">=</span> <span class="n">GMXImage</span><span class="p">(</span>
+        <span class="n">input_traj_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">whole_trj</span><span class="p">),</span>
+        <span class="n">input_index_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">cpx</span><span class="o">.</span><span class="n">ndx</span><span class="p">),</span>
+        <span class="n">input_top_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">cpx</span><span class="o">.</span><span class="n">tpr</span><span class="p">),</span>
+        <span class="n">output_traj_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">cluster_trj</span><span class="p">),</span>
+        <span class="n">properties</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;binary_path&quot;</span><span class="p">:</span> <span class="n">gmx_bin</span><span class="p">,</span>
+            <span class="s2">&quot;fit_selection&quot;</span><span class="p">:</span> <span class="s2">&quot;Protein&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;center_selection&quot;</span><span class="p">:</span> <span class="s2">&quot;Protein&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;cluster_selection&quot;</span><span class="p">:</span> <span class="s2">&quot;Protein&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;output_selection&quot;</span><span class="p">:</span> <span class="s2">&quot;Protein&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ur&quot;</span><span class="p">:</span> <span class="s2">&quot;compact&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;pbc&quot;</span><span class="p">:</span> <span class="s2">&quot;cluster&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;center&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">launch_biobb</span><span class="p">(</span><span class="n">cluster</span><span class="p">)</span>
+
+    <span class="c1"># Use MDAnalysis to get a good reference frame for -pbc nojump</span>
+    <span class="n">orig_u</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">cpx</span><span class="o">.</span><span class="n">tpr</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">cpx</span><span class="o">.</span><span class="n">tra</span><span class="p">))</span>
+    <span class="n">orig_u</span><span class="o">.</span><span class="n">add_TopologyAttr</span><span class="p">(</span><span class="s1">&#39;chainID&#39;</span><span class="p">,</span> <span class="n">orig_u</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">segids</span><span class="p">)</span>
+    <span class="c1"># First, get a PDB with the same topology as `cluster_trj`.</span>
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+        <span class="n">orig_pdb</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">wrk_dir</span><span class="p">,</span> <span class="s2">&quot;orig.pdb&quot;</span><span class="p">)</span>
+        <span class="c1"># Selection</span>
+        <span class="n">orig_u</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="n">cpx</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">selection_complex</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">orig_pdb</span><span class="p">))</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">orig_pdb</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">cluster_trj</span><span class="p">))</span>
+    <span class="n">u</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+    <span class="n">cluster_gro</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">wrk_dir</span><span class="p">,</span> <span class="s2">&quot;clustered.gro&quot;</span><span class="p">)</span>
+    <span class="n">u</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">cluster_gro</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
+
+    <span class="n">nojump_trj</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">wrk_dir</span><span class="p">,</span> <span class="s2">&quot;nojump.xtc&quot;</span><span class="p">)</span>
+    <span class="n">fix_jump</span> <span class="o">=</span> <span class="n">GMXImage</span><span class="p">(</span>
+        <span class="n">input_traj_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">cluster_trj</span><span class="p">),</span>
+        <span class="n">input_index_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">cpx</span><span class="o">.</span><span class="n">ndx</span><span class="p">),</span>
+        <span class="n">input_top_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">cluster_gro</span><span class="p">),</span>
+        <span class="n">output_traj_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">nojump_trj</span><span class="p">),</span>
+        <span class="n">properties</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;binary_path&quot;</span><span class="p">:</span> <span class="n">gmx_bin</span><span class="p">,</span>
+            <span class="s2">&quot;fit_selection&quot;</span><span class="p">:</span> <span class="s2">&quot;Protein&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;center_selection&quot;</span><span class="p">:</span> <span class="s2">&quot;Protein&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;output_selection&quot;</span><span class="p">:</span> <span class="s2">&quot;Protein&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ur&quot;</span><span class="p">:</span> <span class="s2">&quot;compact&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;pbc&quot;</span><span class="p">:</span> <span class="s2">&quot;nojump&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;center&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">launch_biobb</span><span class="p">(</span><span class="n">fix_jump</span><span class="p">)</span>
+
+    <span class="n">center</span> <span class="o">=</span> <span class="n">GMXImage</span><span class="p">(</span>
+        <span class="n">input_traj_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">nojump_trj</span><span class="p">),</span>
+        <span class="n">input_index_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">cpx</span><span class="o">.</span><span class="n">ndx</span><span class="p">),</span>
+        <span class="n">input_top_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">cluster_gro</span><span class="p">),</span>
+        <span class="n">output_traj_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">out_trj_fn</span><span class="p">),</span>
+        <span class="n">properties</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;binary_path&quot;</span><span class="p">:</span> <span class="n">gmx_bin</span><span class="p">,</span>
+            <span class="s2">&quot;fit_selection&quot;</span><span class="p">:</span> <span class="s2">&quot;Protein&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;center_selection&quot;</span><span class="p">:</span> <span class="s2">&quot;Protein&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;output_selection&quot;</span><span class="p">:</span> <span class="s2">&quot;Protein&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ur&quot;</span><span class="p">:</span> <span class="s2">&quot;compact&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;center&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">launch_biobb</span><span class="p">(</span><span class="n">center</span><span class="p">)</span>
+
+    <span class="c1"># Finally, get the last frame of the trajectory and leave it in case the user wants to check it.</span>
+    <span class="n">out_pdb_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">out_trj_fn</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">out_trj_fn</span><span class="o">.</span><span class="n">stem</span> <span class="o">+</span> <span class="s2">&quot;.pdb&quot;</span><span class="p">)</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">orig_pdb</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">out_trj_fn</span><span class="p">))</span>
+    <span class="n">u</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_tleap</span><span class="p">:</span>
+        <span class="c1"># Staggered resSeq</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">u</span><span class="o">.</span><span class="n">segments</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">segid</span> <span class="ow">in</span> <span class="p">{</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;X&#39;</span><span class="p">}:</span>
+                <span class="k">break</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">residues</span><span class="o">.</span><span class="n">resids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">residues</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="c1"># Continuous resSeq</span>
+    <span class="n">u</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">out_pdb_fn</span><span class="p">))</span>
+
+    <span class="c1"># Remove temporary files</span>
+    <span class="n">whole_trj</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+    <span class="n">cluster_trj</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+    <span class="n">orig_pdb</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+    <span class="n">cluster_gro</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+    <span class="n">nojump_trj</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">XtcTrajectory</span><span class="p">(</span><span class="n">FileHandle</span><span class="p">(</span><span class="n">out_trj_fn</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="write_non_overlapping_ndx"><a class="viewcode-back" href="../../locuaz.html#locuaz.gromacsutils.write_non_overlapping_ndx">[docs]</a><span class="k">def</span> <span class="nf">write_non_overlapping_ndx</span><span class="p">(</span>
+        <span class="n">pdb_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+        <span class="n">ndx_fn_in</span><span class="p">:</span> <span class="n">FileHandle</span><span class="p">,</span>
+        <span class="n">resSeq</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">dist_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
+        <span class="n">gmx_bin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gmx&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">FileHandle</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="c1"># First, get the number of waters that overlap</span>
+    <span class="n">ndx_fn_wat_out</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">pdb_path</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;overlapping.ndx&quot;</span><span class="p">)</span>
+    <span class="n">select_overlapping_waters</span> <span class="o">=</span> <span class="n">Gmxselect</span><span class="p">(</span>
+        <span class="n">input_structure_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">pdb_path</span><span class="p">),</span>
+        <span class="n">input_ndx_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">ndx_fn_in</span><span class="p">),</span>
+        <span class="n">output_ndx_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">ndx_fn_wat_out</span><span class="p">),</span>
+        <span class="n">properties</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;binary_path&quot;</span><span class="p">:</span> <span class="n">gmx_bin</span><span class="p">,</span>
+            <span class="s2">&quot;selection&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;(same residue as resname SOL and &quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot;within </span><span class="si">{</span><span class="n">dist_threshold</span><span class="si">}</span><span class="s2"> of (group binder and resid </span><span class="si">{</span><span class="n">resSeq</span><span class="si">}</span><span class="s2">))&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">launch_biobb</span><span class="p">(</span><span class="n">select_overlapping_waters</span><span class="p">)</span>
+
+    <span class="n">wat_atoms</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ndx_fn_wat_out</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="c1"># Discard header</span>
+        <span class="nb">next</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">linea</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
+            <span class="c1"># Count how many words (atom serial numbers) are in each line and</span>
+            <span class="c1"># substract one because the new line character will be counted as well.</span>
+            <span class="n">wat_atoms</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">linea</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">wat_atoms</span> <span class="o">%</span> <span class="mi">3</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s2">&quot;Number of overlapping water atoms is not divisible by 3. &quot;</span>
+            <span class="s2">&quot;This should never happen.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Now, get the negation of the previous selection.</span>
+    <span class="c1"># And also discard ions (Na and Cl). These will be readded later.</span>
+    <span class="c1"># This is done to prevent the SOL group from being discontinuous (as water</span>
+    <span class="c1"># molecules will be readded later), which breaks gmx genion.</span>
+    <span class="n">ndx_fn_out</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pdb_path</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;non_overlapping.ndx&quot;</span><span class="p">)</span>
+    <span class="n">select_not_overlapping</span> <span class="o">=</span> <span class="n">Gmxselect</span><span class="p">(</span>
+        <span class="n">input_structure_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">pdb_path</span><span class="p">),</span>
+        <span class="n">input_ndx_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">ndx_fn_in</span><span class="p">),</span>
+        <span class="n">output_ndx_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">ndx_fn_out</span><span class="p">),</span>
+        <span class="n">properties</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;binary_path&quot;</span><span class="p">:</span> <span class="n">gmx_bin</span><span class="p">,</span>
+            <span class="s2">&quot;selection&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;not (same residue as resname SOL and &quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot;within </span><span class="si">{</span><span class="n">dist_threshold</span><span class="si">}</span><span class="s2"> of (group binder and resid </span><span class="si">{</span><span class="n">resSeq</span><span class="si">}</span><span class="s2">)) &quot;</span>
+                         <span class="s2">&quot;and (not name CL) and (not name NA)&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">launch_biobb</span><span class="p">(</span><span class="n">select_not_overlapping</span><span class="p">)</span>
+
+    <span class="n">ndx</span> <span class="o">=</span> <span class="n">FileHandle</span><span class="p">(</span><span class="n">ndx_fn_out</span><span class="p">)</span>
+    <span class="n">update_header</span><span class="p">(</span><span class="n">ndx</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;[ non_overlapping ]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">wat_count</span> <span class="o">=</span> <span class="n">wat_atoms</span> <span class="o">//</span> <span class="mi">3</span>
+
+    <span class="k">return</span> <span class="n">ndx</span><span class="p">,</span> <span class="n">wat_count</span></div>
+
+<div class="viewcode-block" id="remove_overlapping_waters"><a class="viewcode-back" href="../../locuaz.html#locuaz.gromacsutils.remove_overlapping_waters">[docs]</a><span class="k">def</span> <span class="nf">remove_overlapping_waters</span><span class="p">(</span><span class="nb">complex</span><span class="p">:</span> <span class="n">GROComplex</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">overlapped_resSeq</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GROComplex</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;DEPRECATED remove_overlapping_waters takes a complex and removes all the waters that</span>
+<span class="sd">    are within a certain cutoff from `overlapped_resSeq`. Then it replaces them.</span>
+<span class="sd">    It does a lot of gymnastics to deal with Gromacs weirdness.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Dict): work project&#39;s config file</span>
+<span class="sd">        complex (AbstractComplex): a Gromacs complex</span>
+<span class="sd">        overlapped_resSeq (int): assumes that this residue belongs to &#39;binder&#39;</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        AbstractComplex: fully loaded complex with no overlaps between water</span>
+<span class="sd">        and `overlapped_resSeq`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+    <span class="c1"># Get the index file with all the atoms except the waters that overlap</span>
+    <span class="c1"># with the newly mutated residue</span>
+    <span class="n">ndx</span><span class="p">,</span> <span class="n">wat_count</span> <span class="o">=</span> <span class="n">write_non_overlapping_ndx</span><span class="p">(</span>
+        <span class="nb">complex</span><span class="o">.</span><span class="n">pdb</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
+        <span class="nb">complex</span><span class="o">.</span><span class="n">ndx</span><span class="p">,</span>
+        <span class="n">overlapped_resSeq</span><span class="p">,</span>
+        <span class="n">gmx_bin</span><span class="o">=</span><span class="s2">&quot;gmx&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Removed </span><span class="si">{</span><span class="n">wat_count</span><span class="si">}</span><span class="s2"> water molecules within 0.3nm from the mutated residue. &quot;</span>
+        <span class="s2">&quot;Will replace them later.&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Now, write the PDB without the overlapped waters</span>
+    <span class="n">nonwat_pdb_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="nb">complex</span><span class="o">.</span><span class="n">dir</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="s2">&quot;nonwat_&quot;</span> <span class="o">+</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.pdb&quot;</span><span class="p">)</span>
+
+    <span class="n">trjconv</span> <span class="o">=</span> <span class="n">GMXTrjConvStr</span><span class="p">(</span>
+        <span class="n">input_structure_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="nb">complex</span><span class="o">.</span><span class="n">pdb</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="p">),</span>
+        <span class="n">input_top_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="nb">complex</span><span class="o">.</span><span class="n">tpr</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="p">),</span>
+        <span class="n">input_index_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">ndx</span><span class="o">.</span><span class="n">path</span><span class="p">),</span>
+        <span class="n">output_str_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">nonwat_pdb_fn</span><span class="p">),</span>
+        <span class="n">properties</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;binary_path&quot;</span><span class="p">:</span> <span class="s2">&quot;gmx&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;selection&quot;</span><span class="p">:</span> <span class="s2">&quot;non_overlapping&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">launch_biobb</span><span class="p">(</span><span class="n">trjconv</span><span class="p">)</span>
+
+    <span class="c1"># Get .gro and .top for the solvation</span>
+    <span class="n">nonwat_pdb</span><span class="p">,</span> <span class="n">nonwat_gro</span><span class="p">,</span> <span class="n">nonwat_top</span> <span class="o">=</span> <span class="n">get_gro_ziptop_from_pdb</span><span class="p">(</span>
+        <span class="n">pdb</span><span class="o">=</span><span class="n">PDBStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">nonwat_pdb_fn</span><span class="p">),</span>
+        <span class="n">target_chains</span><span class="o">=</span><span class="nb">complex</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">target_chains</span><span class="p">,</span>
+        <span class="n">binder_chains</span><span class="o">=</span><span class="nb">complex</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">binder_chains</span><span class="p">,</span>
+        <span class="n">md_config</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;md&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Re-add waters to keep the N of the system constant</span>
+    <span class="n">wet_pdb_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="nb">complex</span><span class="o">.</span><span class="n">dir</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="s2">&quot;wet_&quot;</span> <span class="o">+</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.pdb&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">wat_count</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Adding </span><span class="si">{</span><span class="n">wat_count</span><span class="si">}</span><span class="s2"> water molecules.&quot;</span><span class="p">)</span>
+
+        <span class="n">solvatador</span> <span class="o">=</span> <span class="n">Solvate</span><span class="p">(</span>
+            <span class="n">input_solute_gro_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">nonwat_pdb</span><span class="p">),</span>
+            <span class="n">input_top_zip_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">nonwat_top</span><span class="p">),</span>
+            <span class="n">output_gro_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">wet_pdb_fn</span><span class="p">),</span>
+            <span class="c1"># actually, the top file is modified inplace by gmx solvent, so this</span>
+            <span class="c1"># parameter doesn&#39;t make much sense.</span>
+            <span class="n">output_top_zip_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">nonwat_top</span><span class="p">),</span>
+            <span class="n">properties</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;binary_path&quot;</span><span class="p">:</span> <span class="s2">&quot;gmx&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;dev&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;-maxsol </span><span class="si">{</span><span class="n">wat_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">launch_biobb</span><span class="p">(</span><span class="n">solvatador</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">copy_to</span><span class="p">(</span><span class="n">nonwat_pdb</span><span class="o">.</span><span class="n">file</span><span class="p">,</span> <span class="nb">complex</span><span class="o">.</span><span class="n">dir</span><span class="p">,</span> <span class="n">wet_pdb_fn</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Not addying any water molecules.</span><span class="si">{</span><span class="n">nonwat_pdb</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">wet_pdb_fn</span><span class="si">}</span><span class="s2"> are the same files.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Get .gro and .top for ion addition</span>
+    <span class="n">wet_pdb</span><span class="p">,</span> <span class="n">wet_gro</span><span class="p">,</span> <span class="n">wet_top</span> <span class="o">=</span> <span class="n">get_gro_ziptop_from_pdb</span><span class="p">(</span>
+        <span class="n">pdb</span><span class="o">=</span><span class="n">PDBStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">wet_pdb_fn</span><span class="p">),</span>
+        <span class="n">target_chains</span><span class="o">=</span><span class="nb">complex</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">target_chains</span><span class="p">,</span>
+        <span class="n">binder_chains</span><span class="o">=</span><span class="nb">complex</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">binder_chains</span><span class="p">,</span>
+        <span class="n">md_config</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;md&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Build a temporary .tpr for genion</span>
+    <span class="n">wet_tpr</span> <span class="o">=</span> <span class="n">get_tpr</span><span class="p">(</span><span class="n">gro</span><span class="o">=</span><span class="n">wet_gro</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="n">wet_top</span><span class="p">,</span> <span class="n">gmx_bin</span><span class="o">=</span><span class="s2">&quot;gmx&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Re-add ions as necessary. SOL group will be continous, so gmx genion</span>
+    <span class="c1"># won&#39;t complain.</span>
+    <span class="n">gro_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="nb">complex</span><span class="o">.</span><span class="n">dir</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.gro&quot;</span><span class="p">)</span>
+    <span class="n">top_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="nb">complex</span><span class="o">.</span><span class="n">dir</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.zip&quot;</span><span class="p">)</span>
+    <span class="n">genio</span> <span class="o">=</span> <span class="n">Genion</span><span class="p">(</span>
+        <span class="n">input_tpr_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">wet_tpr</span><span class="p">),</span>
+        <span class="n">input_top_zip_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">wet_top</span><span class="p">),</span>
+        <span class="n">output_gro_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">gro_fn</span><span class="p">),</span>
+        <span class="n">output_top_zip_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">top_fn</span><span class="p">),</span>
+        <span class="n">properties</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;binary_path&quot;</span><span class="p">:</span> <span class="s2">&quot;gmx&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;neutral&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;concentration&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">launch_biobb</span><span class="p">(</span><span class="n">genio</span><span class="p">)</span>
+
+    <span class="c1"># Finally, build the Complex</span>
+    <span class="n">new_complex</span><span class="p">:</span> <span class="n">GROComplex</span> <span class="o">=</span> <span class="n">GROComplex</span><span class="o">.</span><span class="n">from_gro_zip</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+        <span class="n">input_dir</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="nb">complex</span><span class="o">.</span><span class="n">dir</span><span class="p">),</span>
+        <span class="n">target_chains</span><span class="o">=</span><span class="nb">complex</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">target_chains</span><span class="p">,</span>
+        <span class="n">binder_chains</span><span class="o">=</span><span class="nb">complex</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">binder_chains</span><span class="p">,</span>
+        <span class="n">gmx_bin</span><span class="o">=</span><span class="s2">&quot;gmx&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_complex</span></div>
+
+
+<div class="viewcode-block" id="fix_gromacs_pdb"><a class="viewcode-back" href="../../locuaz.html#locuaz.gromacsutils.fix_gromacs_pdb">[docs]</a><span class="k">def</span> <span class="nf">fix_gromacs_pdb</span><span class="p">(</span>
+        <span class="n">pdb_in_fn</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">pdb_out_fn</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">new_chainID</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">allowed_nonstandard_residues</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;fix_gromacs_pdb uses Bio to add TER between chains, END at the end,</span>
+<span class="sd">    and manually make the resSeq numbers continuous.</span>
+<span class="sd">    Since this changes the PBD numbering it should only be used for structures</span>
+<span class="sd">    to be used for scoring.</span>
+<span class="sd">    Specifically, Haddock, that requires chains to have unique resSeq numbers.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pdb_in_fn (Path): Path to input PDB.</span>
+<span class="sd">        pdb_out_fn (Path): Path to output PDB.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">allowed_nonstandard_residues</span><span class="p">:</span>
+        <span class="n">allowed_nonstandard_residues</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">parsero</span> <span class="o">=</span> <span class="n">PDBParser</span><span class="p">(</span><span class="n">QUIET</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">pdb</span> <span class="o">=</span> <span class="n">parsero</span><span class="o">.</span><span class="n">get_structure</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">pdb_in_fn</span><span class="p">)</span>
+
+    <span class="c1"># Modifying resSeq, chainID and mapping resnames to standard resnames.</span>
+    <span class="n">resSeq</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">resi</span> <span class="ow">in</span> <span class="n">pdb</span><span class="o">.</span><span class="n">get_residues</span><span class="p">():</span>
+        <span class="n">juan</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">roman</span> <span class="o">=</span> <span class="n">resi</span><span class="o">.</span><span class="n">_id</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Rename non-standard residue to its standard equivalent</span>
+            <span class="n">resi</span><span class="o">.</span><span class="n">resname</span> <span class="o">=</span> <span class="n">AA_MAP</span><span class="p">[</span><span class="n">resi</span><span class="o">.</span><span class="n">resname</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">resi</span><span class="o">.</span><span class="n">resname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_nonstandard_residues</span><span class="p">:</span>
+                <span class="c1"># Not even an amino acid, removing it.</span>
+                <span class="n">chain</span> <span class="o">=</span> <span class="n">resi</span><span class="o">.</span><span class="n">get_parent</span><span class="p">()</span>
+                <span class="n">chain</span><span class="o">.</span><span class="n">detach_child</span><span class="p">(</span><span class="n">resi</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="k">continue</span>
+        <span class="n">resi</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="p">(</span><span class="n">juan</span><span class="p">,</span> <span class="n">resSeq</span><span class="p">,</span> <span class="n">roman</span><span class="p">)</span>
+        <span class="n">resSeq</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">new_chainID</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">chain</span> <span class="ow">in</span> <span class="n">pdb</span><span class="o">.</span><span class="n">get_chains</span><span class="p">():</span>
+            <span class="n">chain</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="n">new_chainID</span>
+
+    <span class="n">io</span> <span class="o">=</span> <span class="n">PDBIO</span><span class="p">()</span>
+    <span class="n">io</span><span class="o">.</span><span class="n">set_structure</span><span class="p">(</span><span class="n">pdb</span><span class="p">)</span>
+    <span class="n">io</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pdb_out_fn</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">pdb_in_fn</span></div>
+
+
+<div class="viewcode-block" id="remove_overlapping_solvent"><a class="viewcode-back" href="../../locuaz.html#locuaz.gromacsutils.remove_overlapping_solvent">[docs]</a><span class="k">def</span> <span class="nf">remove_overlapping_solvent</span><span class="p">(</span>
+        <span class="n">overlapped_pdb</span><span class="p">:</span> <span class="n">PDBStructure</span><span class="p">,</span>
+        <span class="n">overlapped_resSeq</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">nonoverlapped_out_pdb</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+        <span class="n">log</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">cutoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">use_tleap</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PDBStructure</span><span class="p">:</span>
+    <span class="n">pdb_in_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">overlapped_pdb</span><span class="p">)</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pdb_in_fn</span><span class="p">))</span>
+
+    <span class="n">overlapped_wat_atoms</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;(around </span><span class="si">{</span><span class="n">cutoff</span><span class="si">}</span><span class="s2"> resnum </span><span class="si">{</span><span class="n">overlapped_resSeq</span><span class="si">}</span><span class="s2">) and (resname WAT or resname SOL)&quot;</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">residues</span><span class="o">.</span><span class="n">atoms</span>
+    <span class="n">nwats_atm</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">overlapped_wat_atoms</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="p">(</span>
+                   <span class="n">nwats_atm</span> <span class="o">%</span> <span class="mi">3</span>
+           <span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Invalid number of overlapped water atoms: </span><span class="si">{</span><span class="n">nwats_atm</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">nwats</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">overlapped_wat_atoms</span><span class="p">)</span> <span class="o">//</span> <span class="mi">3</span>
+
+    <span class="n">ions</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span>
+        <span class="s2">&quot;name CL or name Cl or name NA or name Na or type CL or type Cl or type NA or type Na&quot;</span>
+    <span class="p">)</span>
+    <span class="n">nions</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ions</span><span class="p">)</span>
+
+    <span class="n">nonoverlapped_nonwat</span> <span class="o">=</span> <span class="s2">&quot;init_nonoverlapped_nonwat.pdb&quot;</span>
+    <span class="n">nonoverlapped_nonwat_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pdb_in_fn</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">nonoverlapped_nonwat</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">atoms</span> <span class="o">-</span> <span class="n">overlapped_wat_atoms</span> <span class="o">-</span> <span class="n">ions</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">nonoverlapped_nonwat_fn</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
+
+    <span class="c1"># insert waters</span>
+    <span class="n">nonoverlapped</span> <span class="o">=</span> <span class="s2">&quot;init_nonoverlapped.pdb&quot;</span>
+    <span class="n">nonoverlapped_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pdb_in_fn</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">nonoverlapped</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">nwats</span> <span class="o">+</span> <span class="n">nions</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Not addying any water molecules.</span><span class="si">{</span><span class="n">nonoverlapped_nonwat</span><span class="si">}</span><span class="s2"> and &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nonoverlapped</span><span class="si">}</span><span class="s2"> are the same files.&quot;</span>
+        <span class="p">)</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">nonoverlapped_nonwat_fn</span><span class="p">,</span> <span class="n">nonoverlapped_fn</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Removed </span><span class="si">{</span><span class="n">nwats</span><span class="si">}</span><span class="s2"> water molecules within </span><span class="si">{</span><span class="n">cutoff</span><span class="si">}</span><span class="s2">A from the mutated residue. &quot;</span>
+            <span class="s2">&quot;Will replace them later.&quot;</span>
+        <span class="p">)</span>
+        <span class="n">comando_solv</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;gmx solvate -cp </span><span class="si">{</span><span class="n">nonoverlapped_nonwat</span><span class="si">}</span><span class="s2"> -o </span><span class="si">{</span><span class="n">nonoverlapped</span><span class="si">}</span><span class="s2"> -maxsol </span><span class="si">{</span><span class="n">nwats</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">nions</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Adding </span><span class="si">{</span><span class="n">nwats</span><span class="si">}</span><span class="s2"> water molecules, and another </span><span class="si">{</span><span class="n">nions</span><span class="si">}</span><span class="s2"> that will be replaced by ions later.&quot;</span>
+        <span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="n">comando_solv</span><span class="p">,</span>
+            <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+            <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+            <span class="n">cwd</span><span class="o">=</span><span class="n">nonoverlapped_fn</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span>
+            <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fix_wat_naming</span><span class="p">(</span><span class="n">nonoverlapped_fn</span><span class="p">,</span> <span class="n">nonoverlapped_out_pdb</span><span class="p">,</span> <span class="n">use_tleap</span><span class="o">=</span><span class="n">use_tleap</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;gmx solvate failed when inserting waters: </span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">stdout</span><span class="si">}</span><span class="s2"> </span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">stderr</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+    <span class="k">return</span> <span class="n">PDBStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">nonoverlapped_fn</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Patricio Barletta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

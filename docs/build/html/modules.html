@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LOCUAZ &mdash; locuaz 0.2.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            locuaz
+          </a>
+              <div class="version">
+                0.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="readme.html">locuaz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Learning:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="locuaz.html">locuaz package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mutationgenerators.html">Mutation Generators</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">locuaz</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">LOCUAZ</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/modules.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="locuaz">
+<h1>LOCUAZ<a class="headerlink" href="#locuaz" title="Permalink to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="locuaz.html">locuaz package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.abstractscoringfunction">locuaz.abstractscoringfunction module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.abstractscoringfunction.AbstractScoringFunction"><code class="docutils literal notranslate"><span class="pre">AbstractScoringFunction</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.abstractscoringfunction.AbstractScoringFunction.TIMEOUT"><code class="docutils literal notranslate"><span class="pre">AbstractScoringFunction.TIMEOUT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.abstractscoringfunction.AbstractScoringFunction.bin_path"><code class="docutils literal notranslate"><span class="pre">AbstractScoringFunction.bin_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.abstractscoringfunction.AbstractScoringFunction.mpiprocs"><code class="docutils literal notranslate"><span class="pre">AbstractScoringFunction.mpiprocs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.abstractscoringfunction.AbstractScoringFunction.name"><code class="docutils literal notranslate"><span class="pre">AbstractScoringFunction.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.abstractscoringfunction.AbstractScoringFunction.nthreads"><code class="docutils literal notranslate"><span class="pre">AbstractScoringFunction.nthreads</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.abstractscoringfunction.AbstractScoringFunction.results_dir"><code class="docutils literal notranslate"><span class="pre">AbstractScoringFunction.results_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.abstractscoringfunction.AbstractScoringFunction.root_dir"><code class="docutils literal notranslate"><span class="pre">AbstractScoringFunction.root_dir</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.amberutils">locuaz.amberutils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.amberutils.amb_to_gmx"><code class="docutils literal notranslate"><span class="pre">amb_to_gmx()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.amberutils.chunk"><code class="docutils literal notranslate"><span class="pre">chunk()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.amberutils.create_tleap_script"><code class="docutils literal notranslate"><span class="pre">create_tleap_script()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.amberutils.fix_pdb"><code class="docutils literal notranslate"><span class="pre">fix_pdb()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.amberutils.fixup_top"><code class="docutils literal notranslate"><span class="pre">fixup_top()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.amberutils.run_acpype"><code class="docutils literal notranslate"><span class="pre">run_acpype()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.amberutils.run_tleap"><code class="docutils literal notranslate"><span class="pre">run_tleap()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.autodockvina">locuaz.autodockvina module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.autodockvina.AutodockVina"><code class="docutils literal notranslate"><span class="pre">AutodockVina</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.autodockvina.AutodockVina.CPU_TO_MEM_RATIO"><code class="docutils literal notranslate"><span class="pre">AutodockVina.CPU_TO_MEM_RATIO</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.autodockvina.AutodockVina.TIMEOUT_PER_FRAME"><code class="docutils literal notranslate"><span class="pre">AutodockVina.TIMEOUT_PER_FRAME</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.bach">locuaz.bach module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.bach.Bach"><code class="docutils literal notranslate"><span class="pre">Bach</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.bach.Bach.TIMEOUT_PER_FRAME"><code class="docutils literal notranslate"><span class="pre">Bach.TIMEOUT_PER_FRAME</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.bach.Bach.atomic_parameters_handle"><code class="docutils literal notranslate"><span class="pre">Bach.atomic_parameters_handle</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.bach.Bach.parameters_handle"><code class="docutils literal notranslate"><span class="pre">Bach.parameters_handle</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.basemutator">locuaz.basemutator module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.basemutator.BaseMutator"><code class="docutils literal notranslate"><span class="pre">BaseMutator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.basemutator.BaseMutator.add_water"><code class="docutils literal notranslate"><span class="pre">BaseMutator.add_water()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.basemutator.BaseMutator.assert_outfile"><code class="docutils literal notranslate"><span class="pre">BaseMutator.assert_outfile()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.basemutator.BaseMutator.fix_pdb"><code class="docutils literal notranslate"><span class="pre">BaseMutator.fix_pdb()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.basemutator.BaseMutator.on_pdb"><code class="docutils literal notranslate"><span class="pre">BaseMutator.on_pdb()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.basemutator.BaseMutator.port_mutation"><code class="docutils literal notranslate"><span class="pre">BaseMutator.port_mutation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.basemutator.BaseMutator.split_solute_solvent"><code class="docutils literal notranslate"><span class="pre">BaseMutator.split_solute_solvent()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.basemutator.memorize_mutations"><code class="docutils literal notranslate"><span class="pre">memorize_mutations()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.basestatistic">locuaz.basestatistic module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.basestatistic.BaseStatistic"><code class="docutils literal notranslate"><span class="pre">BaseStatistic</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.basestatistic.BaseStatistic.available_warnings"><code class="docutils literal notranslate"><span class="pre">BaseStatistic.available_warnings</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.basestatistic.BaseStatistic.frames_path"><code class="docutils literal notranslate"><span class="pre">BaseStatistic.frames_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.basestatistic.BaseStatistic.name"><code class="docutils literal notranslate"><span class="pre">BaseStatistic.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.basestatistic.BaseStatistic.result"><code class="docutils literal notranslate"><span class="pre">BaseStatistic.result</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.basestatistic.BaseStatistic.stats_config"><code class="docutils literal notranslate"><span class="pre">BaseStatistic.stats_config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.basestatistic.BaseStatistic.trj_suffix"><code class="docutils literal notranslate"><span class="pre">BaseStatistic.trj_suffix</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.basestatistic.BaseStatistic.visitor"><code class="docutils literal notranslate"><span class="pre">BaseStatistic.visitor</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.bluues">locuaz.bluues module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.bluues.Bluues"><code class="docutils literal notranslate"><span class="pre">Bluues</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.bluues.Bluues.TIMEOUT_PER_FRAME"><code class="docutils literal notranslate"><span class="pre">Bluues.TIMEOUT_PER_FRAME</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.bluues.Bluues.bmf_bin_path"><code class="docutils literal notranslate"><span class="pre">Bluues.bmf_bin_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.bluues.Bluues.pdb2pqr_bin_path"><code class="docutils literal notranslate"><span class="pre">Bluues.pdb2pqr_bin_path</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.bluuesbmf">locuaz.bluuesbmf module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.bluuesbmf.BluuesBmf"><code class="docutils literal notranslate"><span class="pre">BluuesBmf</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.bluuesbmf.BluuesBmf.TIMEOUT_PER_FRAME"><code class="docutils literal notranslate"><span class="pre">BluuesBmf.TIMEOUT_PER_FRAME</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.bluuesbmf.BluuesBmf.bmf_bin_path"><code class="docutils literal notranslate"><span class="pre">BluuesBmf.bmf_bin_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.bluuesbmf.BluuesBmf.pdb2pqr_bin_path"><code class="docutils literal notranslate"><span class="pre">BluuesBmf.pdb2pqr_bin_path</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.cli">locuaz.cli module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.cli.append_iterations"><code class="docutils literal notranslate"><span class="pre">append_iterations()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.cli.backup_iteration"><code class="docutils literal notranslate"><span class="pre">backup_iteration()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.cli.check_gmxmmpbsa"><code class="docutils literal notranslate"><span class="pre">check_gmxmmpbsa()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.cli.get_dir_size"><code class="docutils literal notranslate"><span class="pre">get_dir_size()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.cli.get_memory"><code class="docutils literal notranslate"><span class="pre">get_memory()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.cli.get_raw_config"><code class="docutils literal notranslate"><span class="pre">get_raw_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.cli.get_tracking_files"><code class="docutils literal notranslate"><span class="pre">get_tracking_files()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.cli.get_valid_iter_dirs"><code class="docutils literal notranslate"><span class="pre">get_valid_iter_dirs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.cli.is_not_epoch_0"><code class="docutils literal notranslate"><span class="pre">is_not_epoch_0()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.cli.lacks_branches"><code class="docutils literal notranslate"><span class="pre">lacks_branches()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.cli.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.cli.set_iterations"><code class="docutils literal notranslate"><span class="pre">set_iterations()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.cli.set_statistics"><code class="docutils literal notranslate"><span class="pre">set_statistics()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.cli.validate_input"><code class="docutils literal notranslate"><span class="pre">validate_input()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.complex">locuaz.complex module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.complex.AbstractComplex"><code class="docutils literal notranslate"><span class="pre">AbstractComplex</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.complex.AbstractComplex.dir"><code class="docutils literal notranslate"><span class="pre">AbstractComplex.dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.complex.AbstractComplex.from_complex"><code class="docutils literal notranslate"><span class="pre">AbstractComplex.from_complex()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.complex.AbstractComplex.from_gro_zip"><code class="docutils literal notranslate"><span class="pre">AbstractComplex.from_gro_zip()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.complex.AbstractComplex.from_pdb"><code class="docutils literal notranslate"><span class="pre">AbstractComplex.from_pdb()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.complex.AbstractComplex.get_cryst1_record"><code class="docutils literal notranslate"><span class="pre">AbstractComplex.get_cryst1_record()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.complex.AbstractComplex.name"><code class="docutils literal notranslate"><span class="pre">AbstractComplex.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.complex.AbstractComplex.pdb"><code class="docutils literal notranslate"><span class="pre">AbstractComplex.pdb</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.complex.AbstractComplex.top"><code class="docutils literal notranslate"><span class="pre">AbstractComplex.top</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.complex.AbstractComplex.tra"><code class="docutils literal notranslate"><span class="pre">AbstractComplex.tra</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.complex.GROComplex"><code class="docutils literal notranslate"><span class="pre">GROComplex</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.complex.GROComplex.cpt"><code class="docutils literal notranslate"><span class="pre">GROComplex.cpt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.complex.GROComplex.from_complex"><code class="docutils literal notranslate"><span class="pre">GROComplex.from_complex()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.complex.GROComplex.from_gro_zip"><code class="docutils literal notranslate"><span class="pre">GROComplex.from_gro_zip()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.complex.GROComplex.from_pdb"><code class="docutils literal notranslate"><span class="pre">GROComplex.from_pdb()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.complex.GROComplex.gro"><code class="docutils literal notranslate"><span class="pre">GROComplex.gro</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.complex.GROComplex.ndx"><code class="docutils literal notranslate"><span class="pre">GROComplex.ndx</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.complex.GROComplex.tpr"><code class="docutils literal notranslate"><span class="pre">GROComplex.tpr</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.evoef2">locuaz.evoef2 module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.evoef2.Evoef2"><code class="docutils literal notranslate"><span class="pre">Evoef2</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.evoef2.Evoef2.CPU_TO_MEM_RATIO"><code class="docutils literal notranslate"><span class="pre">Evoef2.CPU_TO_MEM_RATIO</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.evoef2.Evoef2.TIMEOUT_PER_FRAME"><code class="docutils literal notranslate"><span class="pre">Evoef2.TIMEOUT_PER_FRAME</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.fileutils">locuaz.fileutils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.fileutils.DirHandle"><code class="docutils literal notranslate"><span class="pre">DirHandle</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.fileutils.DirHandle.dir_path"><code class="docutils literal notranslate"><span class="pre">DirHandle.dir_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.fileutils.DirHandle.file_exists"><code class="docutils literal notranslate"><span class="pre">DirHandle.file_exists()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.fileutils.DirHandle.force"><code class="docutils literal notranslate"><span class="pre">DirHandle.force</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.fileutils.DirHandle.make"><code class="docutils literal notranslate"><span class="pre">DirHandle.make</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.fileutils.DirHandle.name"><code class="docutils literal notranslate"><span class="pre">DirHandle.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.fileutils.DirHandle.replace"><code class="docutils literal notranslate"><span class="pre">DirHandle.replace</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.fileutils.FileHandle"><code class="docutils literal notranslate"><span class="pre">FileHandle</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.fileutils.FileHandle.extension"><code class="docutils literal notranslate"><span class="pre">FileHandle.extension</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.fileutils.FileHandle.file_exists"><code class="docutils literal notranslate"><span class="pre">FileHandle.file_exists()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.fileutils.FileHandle.from_existing"><code class="docutils literal notranslate"><span class="pre">FileHandle.from_existing()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.fileutils.FileHandle.name"><code class="docutils literal notranslate"><span class="pre">FileHandle.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.fileutils.FileHandle.name_ext"><code class="docutils literal notranslate"><span class="pre">FileHandle.name_ext()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.fileutils.FileHandle.path"><code class="docutils literal notranslate"><span class="pre">FileHandle.path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.fileutils.FileHandle.replace_text"><code class="docutils literal notranslate"><span class="pre">FileHandle.replace_text()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.fileutils.FileHandle.unlink"><code class="docutils literal notranslate"><span class="pre">FileHandle.unlink()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.fileutils.catenate"><code class="docutils literal notranslate"><span class="pre">catenate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.fileutils.catenate_pdbs"><code class="docutils literal notranslate"><span class="pre">catenate_pdbs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.fileutils.copy_to"><code class="docutils literal notranslate"><span class="pre">copy_to()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.fileutils.update_header"><code class="docutils literal notranslate"><span class="pre">update_header()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.fixbox">locuaz.fixbox module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.fixbox.fix_box"><code class="docutils literal notranslate"><span class="pre">fix_box()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.fixbox.fix_box_cpx"><code class="docutils literal notranslate"><span class="pre">fix_box_cpx()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.fixbox.get_matrix"><code class="docutils literal notranslate"><span class="pre">get_matrix()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.gmxmmpbsa">locuaz.gmxmmpbsa module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.gmxmmpbsa.GmxMmpbsa"><code class="docutils literal notranslate"><span class="pre">GmxMmpbsa</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.gmxmmpbsa.GmxMmpbsa.TIMEOUT_PER_FRAME"><code class="docutils literal notranslate"><span class="pre">GmxMmpbsa.TIMEOUT_PER_FRAME</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.gmxmmpbsa.GmxMmpbsa.bin_name"><code class="docutils literal notranslate"><span class="pre">GmxMmpbsa.bin_name</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.gromacsutils">locuaz.gromacsutils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.gromacsutils.fix_gromacs_pdb"><code class="docutils literal notranslate"><span class="pre">fix_gromacs_pdb()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.gromacsutils.image_traj"><code class="docutils literal notranslate"><span class="pre">image_traj()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.gromacsutils.remove_overlapping_solvent"><code class="docutils literal notranslate"><span class="pre">remove_overlapping_solvent()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.gromacsutils.remove_overlapping_waters"><code class="docutils literal notranslate"><span class="pre">remove_overlapping_waters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.gromacsutils.write_non_overlapping_ndx"><code class="docutils literal notranslate"><span class="pre">write_non_overlapping_ndx()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.haddock">locuaz.haddock module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.haddock.Haddock"><code class="docutils literal notranslate"><span class="pre">Haddock</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.haddock.Haddock.TIMEOUT_PER_FRAME"><code class="docutils literal notranslate"><span class="pre">Haddock.TIMEOUT_PER_FRAME</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.haddock.Haddock.haddock_protocols_dir"><code class="docutils literal notranslate"><span class="pre">Haddock.haddock_protocols_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.haddock.Haddock.haddock_toppar_dir"><code class="docutils literal notranslate"><span class="pre">Haddock.haddock_toppar_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.haddock.Haddock.rescoring_scripts_dir"><code class="docutils literal notranslate"><span class="pre">Haddock.rescoring_scripts_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.haddock.Haddock.template_scoring_inp_handle"><code class="docutils literal notranslate"><span class="pre">Haddock.template_scoring_inp_handle</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.interface">locuaz.interface module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.interface.get_freesasa_residues"><code class="docutils literal notranslate"><span class="pre">get_freesasa_residues()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.interface.get_interface_surface"><code class="docutils literal notranslate"><span class="pre">get_interface_surface()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.interface.get_interfacing_residues"><code class="docutils literal notranslate"><span class="pre">get_interfacing_residues()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.locuaz">locuaz.locuaz module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.locuaz.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.molecules">locuaz.molecules module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.molecules.AbstractFileObject"><code class="docutils literal notranslate"><span class="pre">AbstractFileObject</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.molecules.AbstractFileObject.ext"><code class="docutils literal notranslate"><span class="pre">AbstractFileObject.ext</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.molecules.AbstractFileObject.file"><code class="docutils literal notranslate"><span class="pre">AbstractFileObject.file</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.molecules.AbstractFileObject.from_path"><code class="docutils literal notranslate"><span class="pre">AbstractFileObject.from_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.molecules.AbstractFileObject.name"><code class="docutils literal notranslate"><span class="pre">AbstractFileObject.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.molecules.AbstractFileObject.unlink"><code class="docutils literal notranslate"><span class="pre">AbstractFileObject.unlink()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.molecules.AmberTopology"><code class="docutils literal notranslate"><span class="pre">AmberTopology</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.molecules.GROStructure"><code class="docutils literal notranslate"><span class="pre">GROStructure</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.molecules.PDBStructure"><code class="docutils literal notranslate"><span class="pre">PDBStructure</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.molecules.PDBStructure.get_cryst1_record"><code class="docutils literal notranslate"><span class="pre">PDBStructure.get_cryst1_record()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.molecules.PDBStructure.set_cryst1_record"><code class="docutils literal notranslate"><span class="pre">PDBStructure.set_cryst1_record()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.molecules.Structure"><code class="docutils literal notranslate"><span class="pre">Structure</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.molecules.TPRFile"><code class="docutils literal notranslate"><span class="pre">TPRFile</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.molecules.Topology"><code class="docutils literal notranslate"><span class="pre">Topology</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.molecules.Topology.binder_chains"><code class="docutils literal notranslate"><span class="pre">Topology.binder_chains</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.molecules.Topology.from_path_with_chains"><code class="docutils literal notranslate"><span class="pre">Topology.from_path_with_chains()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.molecules.Topology.selection_binder"><code class="docutils literal notranslate"><span class="pre">Topology.selection_binder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.molecules.Topology.selection_complex"><code class="docutils literal notranslate"><span class="pre">Topology.selection_complex</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.molecules.Topology.selection_not_complex"><code class="docutils literal notranslate"><span class="pre">Topology.selection_not_complex</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.molecules.Topology.selection_target"><code class="docutils literal notranslate"><span class="pre">Topology.selection_target</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.molecules.Topology.selection_water"><code class="docutils literal notranslate"><span class="pre">Topology.selection_water</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.molecules.Topology.target_chains"><code class="docutils literal notranslate"><span class="pre">Topology.target_chains</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.molecules.Trajectory"><code class="docutils literal notranslate"><span class="pre">Trajectory</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.molecules.TrrTrajectory"><code class="docutils literal notranslate"><span class="pre">TrrTrajectory</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.molecules.XtcTrajectory"><code class="docutils literal notranslate"><span class="pre">XtcTrajectory</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.molecules.ZipTopology"><code class="docutils literal notranslate"><span class="pre">ZipTopology</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.molecules.ZipTopology.from_path_with_chains"><code class="docutils literal notranslate"><span class="pre">ZipTopology.from_path_with_chains()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.molecules.catenate_pdbs"><code class="docutils literal notranslate"><span class="pre">catenate_pdbs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.molecules.copy_mol_to"><code class="docutils literal notranslate"><span class="pre">copy_mol_to()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.molecules.fix_pdb_gro"><code class="docutils literal notranslate"><span class="pre">fix_pdb_gro()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.molecules.generate_ndx"><code class="docutils literal notranslate"><span class="pre">generate_ndx()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.molecules.get_pdb_tpr"><code class="docutils literal notranslate"><span class="pre">get_pdb_tpr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.molecules.get_tpr"><code class="docutils literal notranslate"><span class="pre">get_tpr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.molecules.read_ndx"><code class="docutils literal notranslate"><span class="pre">read_ndx()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.molecules.try_copy_to"><code class="docutils literal notranslate"><span class="pre">try_copy_to()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.molecules.write_chain_ndx"><code class="docutils literal notranslate"><span class="pre">write_chain_ndx()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.moleculesutils">locuaz.moleculesutils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.moleculesutils.fix_wat_naming"><code class="docutils literal notranslate"><span class="pre">fix_wat_naming()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.moleculesutils.get_gro_ziptop_from_pdb"><code class="docutils literal notranslate"><span class="pre">get_gro_ziptop_from_pdb()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.moleculesutils.get_gro_ziptop_from_pdb_tleap"><code class="docutils literal notranslate"><span class="pre">get_gro_ziptop_from_pdb_tleap()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.molutils">locuaz.molutils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.molutils.split_solute_and_solvent_old"><code class="docutils literal notranslate"><span class="pre">split_solute_and_solvent_old()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.mutation">locuaz.mutation module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.mutation.Mutation"><code class="docutils literal notranslate"><span class="pre">Mutation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.mutation.Mutation.chainID"><code class="docutils literal notranslate"><span class="pre">Mutation.chainID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.mutation.Mutation.chainID_idx"><code class="docutils literal notranslate"><span class="pre">Mutation.chainID_idx</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.mutation.Mutation.get_mda_sel"><code class="docutils literal notranslate"><span class="pre">Mutation.get_mda_sel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.mutation.Mutation.new_aa"><code class="docutils literal notranslate"><span class="pre">Mutation.new_aa</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.mutation.Mutation.new_name_resname"><code class="docutils literal notranslate"><span class="pre">Mutation.new_name_resname()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.mutation.Mutation.old_aa"><code class="docutils literal notranslate"><span class="pre">Mutation.old_aa</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.mutation.Mutation.resSeq"><code class="docutils literal notranslate"><span class="pre">Mutation.resSeq</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.mutation.Mutation.resSeq_idx"><code class="docutils literal notranslate"><span class="pre">Mutation.resSeq_idx</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.mutatorbiobb">locuaz.mutatorbiobb module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.mutatorbiobb.MutatorBiobb"><code class="docutils literal notranslate"><span class="pre">MutatorBiobb</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#locuaz-mutatordlp-module">locuaz.mutatordlp module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#locuaz-mutatordlpr-module">locuaz.mutatordlpr module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.mutatorevoef2">locuaz.mutatorevoef2 module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.mutatorevoef2.MutatorEvoEF2"><code class="docutils literal notranslate"><span class="pre">MutatorEvoEF2</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.mutatorevoef2.MutatorEvoEF2.bin_path"><code class="docutils literal notranslate"><span class="pre">MutatorEvoEF2.bin_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.mutatorevoef2.MutatorEvoEF2.on_pdb"><code class="docutils literal notranslate"><span class="pre">MutatorEvoEF2.on_pdb()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.mutators">locuaz.mutators module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.piepisa">locuaz.piepisa module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.piepisa.PiePisa"><code class="docutils literal notranslate"><span class="pre">PiePisa</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.piepisa.PiePisa.TIMEOUT_PER_FRAME"><code class="docutils literal notranslate"><span class="pre">PiePisa.TIMEOUT_PER_FRAME</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.piepisa.PiePisa.parameters_handle"><code class="docutils literal notranslate"><span class="pre">PiePisa.parameters_handle</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.pisa">locuaz.pisa module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.pisa.Pisa"><code class="docutils literal notranslate"><span class="pre">Pisa</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.pisa.Pisa.TIMEOUT_PER_FRAME"><code class="docutils literal notranslate"><span class="pre">Pisa.TIMEOUT_PER_FRAME</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.pisa.Pisa.parameters_handle"><code class="docutils literal notranslate"><span class="pre">Pisa.parameters_handle</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.primitives">locuaz.primitives module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.primitives.GromacsError"><code class="docutils literal notranslate"><span class="pre">GromacsError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.primitives.UserInputError"><code class="docutils literal notranslate"><span class="pre">UserInputError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.primitives.ext"><code class="docutils literal notranslate"><span class="pre">ext()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.primitives.launch_biobb"><code class="docutils literal notranslate"><span class="pre">launch_biobb()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.projectutils">locuaz.projectutils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Epoch"><code class="docutils literal notranslate"><span class="pre">Epoch</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Epoch.backup"><code class="docutils literal notranslate"><span class="pre">Epoch.backup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Epoch.id"><code class="docutils literal notranslate"><span class="pre">Epoch.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Epoch.iterations"><code class="docutils literal notranslate"><span class="pre">Epoch.iterations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Epoch.mutated_positions"><code class="docutils literal notranslate"><span class="pre">Epoch.mutated_positions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Epoch.npt_done"><code class="docutils literal notranslate"><span class="pre">Epoch.npt_done</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Epoch.nvt_done"><code class="docutils literal notranslate"><span class="pre">Epoch.nvt_done</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Epoch.set_top_iter"><code class="docutils literal notranslate"><span class="pre">Epoch.set_top_iter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Epoch.top_iterations"><code class="docutils literal notranslate"><span class="pre">Epoch.top_iterations</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Iteration"><code class="docutils literal notranslate"><span class="pre">Iteration</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Iteration.chainIDs"><code class="docutils literal notranslate"><span class="pre">Iteration.chainIDs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Iteration.complex"><code class="docutils literal notranslate"><span class="pre">Iteration.complex</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Iteration.dir_handle"><code class="docutils literal notranslate"><span class="pre">Iteration.dir_handle</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Iteration.epoch_id"><code class="docutils literal notranslate"><span class="pre">Iteration.epoch_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Iteration.iter_name"><code class="docutils literal notranslate"><span class="pre">Iteration.iter_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Iteration.mean_scores"><code class="docutils literal notranslate"><span class="pre">Iteration.mean_scores</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Iteration.outside_box"><code class="docutils literal notranslate"><span class="pre">Iteration.outside_box</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Iteration.read_scores"><code class="docutils literal notranslate"><span class="pre">Iteration.read_scores()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Iteration.resSeqs"><code class="docutils literal notranslate"><span class="pre">Iteration.resSeqs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Iteration.resnames"><code class="docutils literal notranslate"><span class="pre">Iteration.resnames</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Iteration.score_dir"><code class="docutils literal notranslate"><span class="pre">Iteration.score_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Iteration.scores"><code class="docutils literal notranslate"><span class="pre">Iteration.scores</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Iteration.set_score"><code class="docutils literal notranslate"><span class="pre">Iteration.set_score()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Iteration.set_stat"><code class="docutils literal notranslate"><span class="pre">Iteration.set_stat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Iteration.stats"><code class="docutils literal notranslate"><span class="pre">Iteration.stats</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Iteration.write_down_scores"><code class="docutils literal notranslate"><span class="pre">Iteration.write_down_scores()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.Iteration.write_down_stats"><code class="docutils literal notranslate"><span class="pre">Iteration.write_down_stats()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.projectutils.WorkProject"><code class="docutils literal notranslate"><span class="pre">WorkProject</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.WorkProject.config"><code class="docutils literal notranslate"><span class="pre">WorkProject.config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.WorkProject.dir_handle"><code class="docutils literal notranslate"><span class="pre">WorkProject.dir_handle</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.WorkProject.epochs"><code class="docutils literal notranslate"><span class="pre">WorkProject.epochs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.WorkProject.failed_mutated_positions"><code class="docutils literal notranslate"><span class="pre">WorkProject.failed_mutated_positions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.WorkProject.get_first_iter"><code class="docutils literal notranslate"><span class="pre">WorkProject.get_first_iter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.WorkProject.get_mdps"><code class="docutils literal notranslate"><span class="pre">WorkProject.get_mdps()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.WorkProject.get_mem_aminoacids"><code class="docutils literal notranslate"><span class="pre">WorkProject.get_mem_aminoacids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.WorkProject.get_mem_positions"><code class="docutils literal notranslate"><span class="pre">WorkProject.get_mem_positions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.WorkProject.get_tleap_into_iter"><code class="docutils literal notranslate"><span class="pre">WorkProject.get_tleap_into_iter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.WorkProject.has_failed_memory"><code class="docutils literal notranslate"><span class="pre">WorkProject.has_failed_memory</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.WorkProject.has_memory"><code class="docutils literal notranslate"><span class="pre">WorkProject.has_memory</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.WorkProject.iteration_from_str"><code class="docutils literal notranslate"><span class="pre">WorkProject.iteration_from_str()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.WorkProject.mdps"><code class="docutils literal notranslate"><span class="pre">WorkProject.mdps</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.WorkProject.mutated_aminoacids"><code class="docutils literal notranslate"><span class="pre">WorkProject.mutated_aminoacids</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.WorkProject.mutated_positions"><code class="docutils literal notranslate"><span class="pre">WorkProject.mutated_positions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.WorkProject.name"><code class="docutils literal notranslate"><span class="pre">WorkProject.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.WorkProject.new_epoch"><code class="docutils literal notranslate"><span class="pre">WorkProject.new_epoch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.WorkProject.scorers"><code class="docutils literal notranslate"><span class="pre">WorkProject.scorers</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.projectutils.WorkProject.tleap_dir"><code class="docutils literal notranslate"><span class="pre">WorkProject.tleap_dir</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.projectutils.pairwise"><code class="docutils literal notranslate"><span class="pre">pairwise()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.projectutils.set_logger"><code class="docutils literal notranslate"><span class="pre">set_logger()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.protocol">locuaz.protocol module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.protocol.initialize_new_epoch"><code class="docutils literal notranslate"><span class="pre">initialize_new_epoch()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.pruner">locuaz.pruner module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.pruner.adaptive_pruner"><code class="docutils literal notranslate"><span class="pre">adaptive_pruner()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.pruner.beats_old_iter"><code class="docutils literal notranslate"><span class="pre">beats_old_iter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.pruner.choose_top_iters"><code class="docutils literal notranslate"><span class="pre">choose_top_iters()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.pruner.threshold_pruner"><code class="docutils literal notranslate"><span class="pre">threshold_pruner()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.pruner.top_pruner"><code class="docutils literal notranslate"><span class="pre">top_pruner()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.pruners">locuaz.pruners module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.pruners.prune"><code class="docutils literal notranslate"><span class="pre">prune()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.rosetta">locuaz.rosetta module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.rosetta.Rosetta"><code class="docutils literal notranslate"><span class="pre">Rosetta</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.rosetta.Rosetta.TIMEOUT_PER_FRAME"><code class="docutils literal notranslate"><span class="pre">Rosetta.TIMEOUT_PER_FRAME</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.run">locuaz.run module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.run.run_epoch"><code class="docutils literal notranslate"><span class="pre">run_epoch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.run.run_min_nvt_epoch"><code class="docutils literal notranslate"><span class="pre">run_min_nvt_epoch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.run.run_npt_epoch"><code class="docutils literal notranslate"><span class="pre">run_npt_epoch()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.runutils">locuaz.runutils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.runutils.MDrun"><code class="docutils literal notranslate"><span class="pre">MDrun</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.runutils.MDrun.assert_outfile"><code class="docutils literal notranslate"><span class="pre">MDrun.assert_outfile()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.runutils.MDrun.binary_path"><code class="docutils literal notranslate"><span class="pre">MDrun.binary_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.runutils.MDrun.dev"><code class="docutils literal notranslate"><span class="pre">MDrun.dev</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.runutils.MDrun.dir"><code class="docutils literal notranslate"><span class="pre">MDrun.dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.runutils.MDrun.gpu_id"><code class="docutils literal notranslate"><span class="pre">MDrun.gpu_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.runutils.MDrun.image_after"><code class="docutils literal notranslate"><span class="pre">MDrun.image_after</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.runutils.MDrun.maxwarn"><code class="docutils literal notranslate"><span class="pre">MDrun.maxwarn</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.runutils.MDrun.mdp"><code class="docutils literal notranslate"><span class="pre">MDrun.mdp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.runutils.MDrun.min"><code class="docutils literal notranslate"><span class="pre">MDrun.min()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.runutils.MDrun.npt"><code class="docutils literal notranslate"><span class="pre">MDrun.npt()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.runutils.MDrun.num_threads_mpi"><code class="docutils literal notranslate"><span class="pre">MDrun.num_threads_mpi</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.runutils.MDrun.num_threads_omp"><code class="docutils literal notranslate"><span class="pre">MDrun.num_threads_omp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.runutils.MDrun.nvt"><code class="docutils literal notranslate"><span class="pre">MDrun.nvt()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.runutils.MDrun.out_name"><code class="docutils literal notranslate"><span class="pre">MDrun.out_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.runutils.MDrun.pinoffset"><code class="docutils literal notranslate"><span class="pre">MDrun.pinoffset</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.scoring">locuaz.scoring module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.scoring.discard_iteration"><code class="docutils literal notranslate"><span class="pre">discard_iteration()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.scoring.initialize_scoring_folder"><code class="docutils literal notranslate"><span class="pre">initialize_scoring_folder()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.scoring.score"><code class="docutils literal notranslate"><span class="pre">score()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.scoring.score_frames"><code class="docutils literal notranslate"><span class="pre">score_frames()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.scoringfunctions">locuaz.scoringfunctions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.statisticcmdistance">locuaz.statisticcmdistance module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.statisticcmdistance.StatisticCMDistance"><code class="docutils literal notranslate"><span class="pre">StatisticCMDistance</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.statisticcmdistance.StatisticCMDistance.pdb_top"><code class="docutils literal notranslate"><span class="pre">StatisticCMDistance.pdb_top</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.statisticcmdistance.StatisticCMDistance.trj"><code class="docutils literal notranslate"><span class="pre">StatisticCMDistance.trj</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.statisticinterface">locuaz.statisticinterface module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.statisticinterface.StatisticInterface"><code class="docutils literal notranslate"><span class="pre">StatisticInterface</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.statisticinterface.StatisticInterface.TIMEOUT_PER_FRAME"><code class="docutils literal notranslate"><span class="pre">StatisticInterface.TIMEOUT_PER_FRAME</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.stats">locuaz.stats module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.stats.run_stats"><code class="docutils literal notranslate"><span class="pre">run_stats()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.utils_scoring">locuaz.utils_scoring module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.utils_scoring.extract_pdbs"><code class="docutils literal notranslate"><span class="pre">extract_pdbs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.utils_scoring.join_target_binder"><code class="docutils literal notranslate"><span class="pre">join_target_binder()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.utils_scoring.rm_aux_scoring_files"><code class="docutils literal notranslate"><span class="pre">rm_aux_scoring_files()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz.validatore">locuaz.validatore module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="locuaz.html#locuaz.validatore.Validatore"><code class="docutils literal notranslate"><span class="pre">Validatore</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.validatore.Validatore.checkers"><code class="docutils literal notranslate"><span class="pre">Validatore.checkers</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.validatore.Validatore.coercers"><code class="docutils literal notranslate"><span class="pre">Validatore.coercers</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.validatore.Validatore.default_setters"><code class="docutils literal notranslate"><span class="pre">Validatore.default_setters</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.validatore.Validatore.normalization_rules"><code class="docutils literal notranslate"><span class="pre">Validatore.normalization_rules</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.validatore.Validatore.rules"><code class="docutils literal notranslate"><span class="pre">Validatore.rules</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="locuaz.html#locuaz.validatore.Validatore.validation_rules"><code class="docutils literal notranslate"><span class="pre">Validatore.validation_rules</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#locuaz-version-module">locuaz.version module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="locuaz.html#module-locuaz">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Patricio Barletta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

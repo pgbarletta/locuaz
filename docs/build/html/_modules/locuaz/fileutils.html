@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>locuaz.fileutils &mdash; locuaz 0.2.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            locuaz
+          </a>
+              <div class="version">
+                0.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">locuaz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Learning:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">locuaz</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">locuaz</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">locuaz.fileutils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for locuaz.fileutils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">singledispatch</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">attrs</span> <span class="kn">import</span> <span class="n">define</span><span class="p">,</span> <span class="n">field</span>
+
+
+<div class="viewcode-block" id="FileHandle"><a class="viewcode-back" href="../../locuaz.html#locuaz.fileutils.FileHandle">[docs]</a><span class="nd">@define</span>
+<span class="k">class</span> <span class="nc">FileHandle</span><span class="p">:</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="n">Path</span><span class="p">)</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">extension</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FileHandle.file_exists"><a class="viewcode-back" href="../../locuaz.html#locuaz.fileutils.FileHandle.file_exists">[docs]</a>    <span class="nd">@path</span><span class="o">.</span><span class="n">validator</span>  <span class="c1"># type: ignore</span>
+    <span class="k">def</span> <span class="nf">file_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> doesn&#39;t exist.&quot;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__attrs_post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">extension</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">name</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">extension</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bad input for FileHandle: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">e</span>
+
+<div class="viewcode-block" id="FileHandle.from_existing"><a class="viewcode-back" href="../../locuaz.html#locuaz.fileutils.FileHandle.from_existing">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_existing</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;FileHandle&quot;</span><span class="p">:</span>
+        <span class="c1"># This method conflicts with the default constructor</span>
+        <span class="c1"># I&#39;m just leaving it here in case I want to use it later.</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__fspath__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="FileHandle.unlink"><a class="viewcode-back" href="../../locuaz.html#locuaz.fileutils.FileHandle.unlink">[docs]</a>    <span class="k">def</span> <span class="nf">unlink</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="FileHandle.replace_text"><a class="viewcode-back" href="../../locuaz.html#locuaz.fileutils.FileHandle.replace_text">[docs]</a>    <span class="k">def</span> <span class="nf">replace_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text_0</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text_1</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">lineas</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">lineas</span> <span class="o">=</span> <span class="n">lineas</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">text_0</span><span class="p">,</span> <span class="n">text_1</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">lineas</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FileHandle.name_ext"><a class="viewcode-back" href="../../locuaz.html#locuaz.fileutils.FileHandle.name_ext">[docs]</a>    <span class="k">def</span> <span class="nf">name_ext</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">name</span></div></div>
+
+
+<div class="viewcode-block" id="DirHandle"><a class="viewcode-back" href="../../locuaz.html#locuaz.fileutils.DirHandle">[docs]</a><span class="nd">@define</span>
+<span class="k">class</span> <span class="nc">DirHandle</span><span class="p">:</span>
+    <span class="n">dir_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="n">Path</span><span class="p">)</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">make</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">replace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DirHandle.file_exists"><a class="viewcode-back" href="../../locuaz.html#locuaz.fileutils.DirHandle.file_exists">[docs]</a>    <span class="nd">@dir_path</span><span class="o">.</span><span class="n">validator</span>  <span class="c1"># type: ignore</span>
+    <span class="k">def</span> <span class="nf">file_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">make</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">value</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Directory: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> doesn&#39;t exist.&quot;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__attrs_post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dir_path</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">make</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dir_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">FileExistsError</span> <span class="k">as</span> <span class="n">e_dir_exists</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">force</span><span class="p">:</span>
+                    <span class="c1"># Add a numbered prefix to the directory name to avoid conflict.</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">dir_path</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">dir_path</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+                        <span class="p">)</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dir_path</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+                        <span class="k">except</span> <span class="ne">FileExistsError</span><span class="p">:</span>
+                            <span class="k">continue</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dir_path</span><span class="o">.</span><span class="n">name</span>
+                            <span class="k">break</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[1:99]-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dir_path</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> exist. Can&#39;t mkdir.&quot;</span><span class="p">)</span>
+                        <span class="k">raise</span> <span class="ne">FileExistsError</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">replace</span><span class="p">:</span>
+                    <span class="c1"># Delete the conflicting directory.</span>
+                    <span class="n">sh</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dir_path</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dir_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Replaced dir: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dir_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">e_dir_exists</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dir_path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__fspath__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__truediv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">FileHandle</span><span class="p">,</span> <span class="s2">&quot;DirHandle&quot;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;__truediv__ analog to Path&#39;s __truediv__ function, but it also checks the</span>
+<span class="sd">        existence of the resulting path, whether if its file or dir. Use Path(*args...)</span>
+<span class="sd">        if you don&#39;t want this behaviour</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            FileNotFoundError: _description_</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            _type_: _description_</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dir_path</span> <span class="o">/</span> <span class="n">key</span>
+        <span class="k">if</span> <span class="n">new_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">FileHandle</span><span class="p">(</span><span class="n">new_path</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">new_path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">DirHandle</span><span class="p">(</span><span class="n">new_path</span><span class="p">,</span> <span class="n">make</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">new_path</span><span class="si">}</span><span class="s2"> doesn&#39;t exist.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="update_header"><a class="viewcode-back" href="../../locuaz.html#locuaz.fileutils.update_header">[docs]</a><span class="k">def</span> <span class="nf">update_header</span><span class="p">(</span><span class="n">file_obj</span><span class="p">:</span> <span class="n">FileHandle</span><span class="p">,</span> <span class="n">new_header</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;update_header() overwrites the text file handled changing the first line.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        new_header (str): new first line</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_obj</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">texto</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+    <span class="n">texto</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_header</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_obj</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="p">[</span><span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">linea</span><span class="p">)</span> <span class="k">for</span> <span class="n">linea</span> <span class="ow">in</span> <span class="n">texto</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="catenate"><a class="viewcode-back" href="../../locuaz.html#locuaz.fileutils.catenate">[docs]</a><span class="k">def</span> <span class="nf">catenate</span><span class="p">(</span>
+    <span class="n">out_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="n">file_objs</span><span class="p">:</span> <span class="n">FileHandle</span><span class="p">,</span> <span class="n">newline_between_files</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">):</span>
+    <span class="n">lineas</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">file_obj</span> <span class="ow">in</span> <span class="n">file_objs</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_obj</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">lineas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">newline_between_files</span><span class="p">:</span>
+            <span class="n">lineas</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">])</span>
+
+    <span class="n">texto</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">lineas</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="p">[</span><span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">linea</span><span class="p">)</span> <span class="k">for</span> <span class="n">linea</span> <span class="ow">in</span> <span class="n">texto</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">FileHandle</span><span class="p">(</span><span class="n">out_path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="catenate_pdbs"><a class="viewcode-back" href="../../locuaz.html#locuaz.fileutils.catenate_pdbs">[docs]</a><span class="k">def</span> <span class="nf">catenate_pdbs</span><span class="p">(</span><span class="n">out_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="n">file_objs</span><span class="p">:</span> <span class="n">FileHandle</span><span class="p">):</span>
+    <span class="n">lineas</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">file_obj</span> <span class="ow">in</span> <span class="n">file_objs</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_obj</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">lineas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
+    <span class="n">texto</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">lineas</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">out_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="p">[</span><span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">linea</span><span class="p">)</span> <span class="k">for</span> <span class="n">linea</span> <span class="ow">in</span> <span class="n">texto</span> <span class="k">if</span> <span class="n">linea</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;END&quot;</span><span class="p">]</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;END&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">FileHandle</span><span class="p">(</span><span class="n">out_path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="copy_to"><a class="viewcode-back" href="../../locuaz.html#locuaz.fileutils.copy_to">[docs]</a><span class="nd">@singledispatch</span>
+<span class="k">def</span> <span class="nf">copy_to</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">DirHandle</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+<span class="nd">@copy_to</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">_</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">FileHandle</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">DirHandle</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">new_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)</span> <span class="o">/</span> <span class="n">name</span>
+    <span class="n">sh</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">new_file</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">FileHandle</span><span class="p">(</span><span class="n">new_file</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Patricio Barletta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+Mutation Generators
+====================
+
+locuaz.abstractmutationgenerator module
+---------------------------------------
+
+.. automodule:: locuaz.abstractmutationgenerator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+locuaz.spm4 module
+------------------
+
+.. automodule:: locuaz.spm4
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+locuaz.spm4i module
+-------------------
+
+.. automodule:: locuaz.spm4i
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+locuaz.spm4mmpbsa module
+------------------------
+
+.. automodule:: locuaz.spm4mmpbsa
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: Mutation Generators
+   :members:
+   :undoc-members:
+   :show-inheritance:

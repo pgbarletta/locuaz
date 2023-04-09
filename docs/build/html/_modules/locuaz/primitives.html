@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>locuaz.primitives &mdash; locuaz 0.2.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            locuaz
+          </a>
+              <div class="version">
+                0.2.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">locuaz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Learning:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">locuaz</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">locuaz</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">locuaz.primitives</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for locuaz.primitives</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
+
+<span class="c1"># This will be used to map non-conventional AAs to conventional ones, so the</span>
+<span class="c1"># scoring functions don&#39;t fail.</span>
+<span class="n">AA_MAP</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;ALA&quot;</span><span class="p">:</span> <span class="s2">&quot;ALA&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ARG&quot;</span><span class="p">:</span> <span class="s2">&quot;ARG&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ASN&quot;</span><span class="p">:</span> <span class="s2">&quot;ASN&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ASP&quot;</span><span class="p">:</span> <span class="s2">&quot;ASP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CYS&quot;</span><span class="p">:</span> <span class="s2">&quot;CYS&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CYX&quot;</span><span class="p">:</span> <span class="s2">&quot;CYS&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CY2&quot;</span><span class="p">:</span> <span class="s2">&quot;CYS&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;GLN&quot;</span><span class="p">:</span> <span class="s2">&quot;GLN&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;GLU&quot;</span><span class="p">:</span> <span class="s2">&quot;GLU&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;GLY&quot;</span><span class="p">:</span> <span class="s2">&quot;GLY&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;HIS&quot;</span><span class="p">:</span> <span class="s2">&quot;HIS&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;HIE&quot;</span><span class="p">:</span> <span class="s2">&quot;HIS&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;HE1&quot;</span><span class="p">:</span> <span class="s2">&quot;HIS&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;HID&quot;</span><span class="p">:</span> <span class="s2">&quot;HIS&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ILE&quot;</span><span class="p">:</span> <span class="s2">&quot;ILE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LEU&quot;</span><span class="p">:</span> <span class="s2">&quot;LEU&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LYS&quot;</span><span class="p">:</span> <span class="s2">&quot;LYS&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;MET&quot;</span><span class="p">:</span> <span class="s2">&quot;MET&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PHE&quot;</span><span class="p">:</span> <span class="s2">&quot;PHE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PRO&quot;</span><span class="p">:</span> <span class="s2">&quot;PRO&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SER&quot;</span><span class="p">:</span> <span class="s2">&quot;SER&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;THR&quot;</span><span class="p">:</span> <span class="s2">&quot;THR&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TRP&quot;</span><span class="p">:</span> <span class="s2">&quot;TRP&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TYR&quot;</span><span class="p">:</span> <span class="s2">&quot;TYR&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;VAL&quot;</span><span class="p">:</span> <span class="s2">&quot;VAL&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="GromacsError"><a class="viewcode-back" href="../../locuaz.html#locuaz.primitives.GromacsError">[docs]</a><span class="k">class</span> <span class="nc">GromacsError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="UserInputError"><a class="viewcode-back" href="../../locuaz.html#locuaz.primitives.UserInputError">[docs]</a><span class="k">class</span> <span class="nc">UserInputError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="launch_biobb"><a class="viewcode-back" href="../../locuaz.html#locuaz.primitives.launch_biobb">[docs]</a><span class="k">def</span> <span class="nf">launch_biobb</span><span class="p">(</span><span class="n">biobb_obj</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">can_write_console_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">backup_dict</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">biobb_obj</span><span class="o">.</span><span class="n">can_write_console_log</span> <span class="o">=</span> <span class="n">can_write_console_log</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">biobb_obj</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">err</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">Path</span><span class="p">(</span><span class="n">biobb_obj</span><span class="o">.</span><span class="n">out_log</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+            <span class="n">Path</span><span class="p">(</span><span class="n">biobb_obj</span><span class="o">.</span><span class="n">err_log</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
+            <span class="c1"># log files may get the same name when running parallel biobb processes</span>
+            <span class="c1"># and one run may try to delete a log file that was already deleted.</span>
+            <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">log_out</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">biobb_obj</span><span class="o">.</span><span class="n">out_log</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">log_err</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">biobb_obj</span><span class="o">.</span><span class="n">err_log</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">backup_dict</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">new_log_out</span> <span class="o">=</span> <span class="n">backup_dict</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log_out</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_out.txt&quot;</span>
+                <span class="n">sh</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">log_out</span><span class="p">,</span> <span class="n">new_log_out</span><span class="p">)</span>
+                <span class="n">log_out</span> <span class="o">=</span> <span class="n">new_log_out</span>
+
+                <span class="n">new_log_err</span> <span class="o">=</span> <span class="n">backup_dict</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">log_err</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_err.txt&quot;</span>
+                <span class="n">sh</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">log_err</span><span class="p">,</span> <span class="n">new_log_err</span><span class="p">)</span>
+                <span class="n">log_err</span> <span class="o">=</span> <span class="n">new_log_err</span>
+            <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                <span class="c1"># There may be concurrent biobb processes so this file may have been copied already. In this case,</span>
+                <span class="c1"># the user will probably get a log file in the wrong `backup_dict`, but I can&#39;t do much about this</span>
+                <span class="k">pass</span>
+
+        <span class="k">raise</span> <span class="n">GromacsError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">biobb_obj</span><span class="si">}</span><span class="s2"> failed. Check </span><span class="si">{</span><span class="n">log_out</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">log_err</span><span class="si">}</span><span class="s2"> .&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ext"><a class="viewcode-back" href="../../locuaz.html#locuaz.primitives.ext">[docs]</a><span class="k">def</span> <span class="nf">ext</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">suffix</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;ext utility function, so I don&#39;t have to worry about the extension.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name (str): filename with or without the extension.</span>
+<span class="sd">        suffix (str): desired extension.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: filename with the extension.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Patricio Barletta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+package:
+  name: locuaz
+  version: "0.2.0"
+
+source:
+  # This could be a URL or a path to the source code.
+  # Here we assume that the source code is in the same directory as the meta.yaml file.
+  path: .
+
+build:
+  # The build number should be incremented each time the package is built with the same version.
+  number: 0
+  # This script will be run before the package is built.
+  script: 
+    - python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  # The dependencies required to run the package.
+  # Note that we use `pip` to install packages not available on conda.
+  run:
+    - python==3.9.15
+    - scipy
+    - ambertools
+    - mpi4py=3.1.3
+    - compilers=1.2.0
+    - parmed==4.0.0
+    - openbabel
+    - tensorflow
+    - pdb2pqr
+    - gmx-mmpbsa
+    - tqdm
+    - freesasa
+    - py
+    - pip
+    - pip:
+      - pytest
+      - sphinx
+      - sphinx-rtd-theme
+      - cerberus
+      - mdanalysis==2.3.0
+      - biobb_gromacs==3.9.0
+      - git+https://github.com/bioexcel/biobb_common.git@b5451508bd6d0622242e03723a381eca460e04b0
+      - git+https://github.com/bioexcel/biobb_analysis.git@596d71c918a515786ed1d8b89f6a6f0357fc98f8
+      - biobb_model==3.9.0
+      - biobb_common==3.9.0
+      - biobb_io==3.9.0                  
+
+test:
+  # The commands to run to test the package.
+  commands:
+    - pytest <package_name>
+
+about:
+  # Information about the package and its creators.
+  home: https://github.com/<username>/<repo>
+  license: <license>
+  summary: A brief summary of the package.
+

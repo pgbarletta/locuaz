@@ -3,9 +3,9 @@ from typing import Tuple
 
 from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
 
-from locuaz.complex import GROComplex
-from locuaz.molecules import PDBStructure
-from locuaz.primitives import launch_biobb
+from complex import GROComplex
+from molecules import PDBStructure
+from primitives import launch_biobb
 
 
 def split_solute_and_solvent_old(

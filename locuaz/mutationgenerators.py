@@ -1,9 +1,9 @@
 from typing import Dict, Type
 
-from locuaz.abstractmutationgenerator import AbstractMutationGenerator
-from locuaz.spm4i import SPM4i
-from locuaz.spm4 import SPM4
-from locuaz.spm4mmpbsa import SPM4gmxmmpbsa
+from abstractmutationgenerator import AbstractMutationGenerator
+from spm4i import SPM4i
+from spm4 import SPM4
+from spm4mmpbsa import SPM4gmxmmpbsa
 
 mutation_generators: Dict[str, Type[AbstractMutationGenerator]] = {
     "SPM4": SPM4,

@@ -5,9 +5,9 @@ from numpy.typing import NDArray
 import MDAnalysis as mda
 from MDAnalysis.analysis.distances import distance_array
 
-from locuaz.projectutils import Iteration
-from locuaz.molecules import XtcTrajectory, PDBStructure
-from locuaz.basestatistic import BaseStatistic
+from projectutils import Iteration
+from molecules import XtcTrajectory, PDBStructure
+from basestatistic import BaseStatistic
 
 
 class StatisticCMDistance(BaseStatistic):

@@ -7,11 +7,11 @@ import MDAnalysis as mda
 from Bio.PDB import PDBParser
 from Bio.PDB.PDBIO import PDBIO
 
-from locuaz.fileutils import FileHandle
-from locuaz.projectutils import WorkProject, Epoch
-from locuaz.molecules import PDBStructure
-from locuaz.mutation import Mutation
-from locuaz.primitives import AA_MAP
+from fileutils import FileHandle
+from projectutils import WorkProject, Epoch
+from molecules import PDBStructure
+from mutation import Mutation
+from primitives import AA_MAP
 
 
 class BaseMutator:

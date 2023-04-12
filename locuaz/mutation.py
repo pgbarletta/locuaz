@@ -1,7 +1,7 @@
 from attrs import define, field
 from typing import List, Tuple
 
-from locuaz.projectutils import Iteration
+from projectutils import Iteration
 
 
 @define(frozen=True)

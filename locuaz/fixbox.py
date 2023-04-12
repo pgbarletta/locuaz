@@ -7,10 +7,10 @@ import MDAnalysis as mda
 import numpy as np
 from biobb_analysis.gromacs.gmx_image import GMXImage
 
-from locuaz.complex import GROComplex
-from locuaz.fileutils import FileHandle
-from locuaz.molecules import PDBStructure, read_ndx
-from locuaz.primitives import launch_biobb
+from complex import GROComplex
+from fileutils import FileHandle
+from molecules import PDBStructure, read_ndx
+from primitives import launch_biobb
 
 
 def fix_box(uni: mda.Universe, *, target_indices: Iterable, binder_indices: Iterable,

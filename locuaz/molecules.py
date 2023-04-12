@@ -13,8 +13,8 @@ from biobb_gromacs.gromacs.gmxselect import Gmxselect
 from biobb_gromacs.gromacs.grompp import Grompp
 from biobb_gromacs.gromacs.pdb2gmx import Pdb2gmx
 
-from locuaz.fileutils import FileHandle, DirHandle, copy_to, update_header
-from locuaz.primitives import launch_biobb
+from fileutils import FileHandle, DirHandle, copy_to, update_header
+from primitives import launch_biobb
 
 
 @define

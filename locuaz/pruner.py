@@ -2,7 +2,7 @@ from typing import Tuple, Dict
 from queue import PriorityQueue
 import logging
 
-from locuaz.projectutils import Epoch, Iteration
+from projectutils import Epoch, Iteration
 
 
 def beats_old_iter(

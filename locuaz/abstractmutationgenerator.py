@@ -3,8 +3,8 @@ from typing import Set, Iterator
 from collections.abc import Mapping
 from logging import Logger
 
-from locuaz.projectutils import Iteration, Epoch
-from locuaz.mutation import Mutation
+from projectutils import Iteration, Epoch
+from mutation import Mutation
 
 
 class AbstractMutationGenerator(ABC, Mapping):

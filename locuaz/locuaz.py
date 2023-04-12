@@ -2,17 +2,17 @@ import logging
 import sys
 from pathlib import Path
 
-import locuaz.cli
-from locuaz.projectutils import set_logger, WorkProject
-from locuaz.protocol import initialize_new_epoch
-from locuaz.pruners import prune
-from locuaz.run import run_epoch, run_npt_epoch
-from locuaz.scoring import score
+import cli
+from projectutils import set_logger, WorkProject
+from protocol import initialize_new_epoch
+from pruners import prune
+from run import run_epoch, run_npt_epoch
+from scoring import score
 
 
 def main() -> int:
 
-    config, start = locuaz.cli.main()
+    config, start = cli.main()
     log = set_logger(config["main"]["name"], Path(config["paths"]["work"]))
     log.info("-----------------------------")
     log.info("Setting up work project.")

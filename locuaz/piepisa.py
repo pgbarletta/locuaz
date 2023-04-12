@@ -4,9 +4,9 @@ import subprocess as sp
 from pathlib import Path
 from typing import Tuple, List
 
-from locuaz.abstractscoringfunction import AbstractScoringFunction
-from locuaz.complex import GROComplex
-from locuaz.fileutils import FileHandle, DirHandle
+from abstractscoringfunction import AbstractScoringFunction
+from complex import GROComplex
+from fileutils import FileHandle, DirHandle
 
 
 class PiePisa(AbstractScoringFunction):

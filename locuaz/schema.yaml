@@ -166,9 +166,9 @@ mutation:
             crosscheck_radius: true
         reconstruct_radius:
             type: float
-            required: false
             min: 1.0
             max: 20.0
+            default: 5.0
 
 md:
     type: dict

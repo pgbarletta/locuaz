@@ -32,6 +32,7 @@ Clone this repo and, optionally, get the **DLPacker**  submodule as well::
     git clone https://github.com/pgbarletta/locuaz
     git submodule int
     git submodule update
+
 You'll also have to get DLPacker's `weights <https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQseE0LQ/view?usp=sharing>`_.
 
 Post-Install
@@ -39,6 +40,7 @@ Post-Install
 If on MDAnalysis 2.4.3 or older, edit the file ``MDAnalysis/topology/tpr/utils.py`` line 330::
     
   segid = f"seg_{i}_{molblock}"
+
 replace it with::
 
     segid = molblock[14:] if molblock[:14] == "Protein_chain_" else molblock
@@ -74,6 +76,7 @@ The contents are up to the user. For example, for a simple MM-GBSA::
     &gb
     igb=2, saltcon=0.150,
     /
+
 And if residue decomposition is needed (for a mmpbsa generator)::
 
     &general
@@ -186,6 +189,7 @@ Mutators
 
     git submodule init
     git submodule update
+
 Then, in a ``dlpacker`` directory, the following files have to be present:
 
 1. ``charges.rtp``

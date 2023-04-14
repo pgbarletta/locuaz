@@ -8,3 +8,4 @@ nohup.out
 DLPacker_weights.h5
 library.npz
 locuaz.egg-info/
+build/

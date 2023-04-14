@@ -1,0 +1,57 @@
+{% set name = "locuaz" %}
+{% set version = "0.2.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/locuaz-{{ version }}.tar.gz
+  sha256: 4a6f3a19e7db96569aba9c0c5c41b9c43f7fdc315af0e550ea3d8189100c9c8f
+
+build:
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+
+requirements:
+  host:
+    - python >=3.10,<3.11
+    - setuptools >=42
+    - wheel
+    - pip
+  run:
+    - python >=3.10,<3.11
+    - scipy
+    - numpy >=1.21.0,<2.0.0
+    - attrs
+    - mdanalysis==2.3.0
+    - bioconda::biobb_common==4.0.0
+    - bioconda::biobb_analysis==4.0.0
+    - bioconda::biobb_model==4.0.0
+    - bioconda::biobb_io==4.0.0
+    - bioconda::biobb_gromacs==4.0.0
+    - pdb2pqr
+    - tqdm
+    - pytest
+    - sphinx
+    - sphinx-rtd-theme
+    - cerberus
+
+test:
+  imports:
+    - locuaz
+    - locuaz.DLPacker
+  commands:
+    - pip check
+  requires:
+    - pip
+
+about:
+  summary: Antibody optimization protocol
+  license: MIT
+  license_file: LICENSE.rst
+
+extra:
+  recipe-maintainers:
+    - Patricio

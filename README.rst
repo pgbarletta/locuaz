@@ -33,7 +33,22 @@ Clone this repo and, optionally, get the **DLPacker**  submodule as well::
     git submodule int
     git submodule update
 
-You'll also have to get DLPacker's `weights <https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQseE0LQ/view?usp=sharing>`_.
+You'll also have to get DLPacker's `weights <https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQseE0LQ/view?usp=sharing>`_
+and place them on a dedicated ``dlpacker`` (actual name doesn't matter) directory, more info on the dedicated Mutators section.
+Finally, create the environment and install all the necessary dependencies at once:
+
+    mamba env create -f usr_deps.yaml
+
+That's it. You can also change the environment's name by editing the `name` field of the `usr_deps.yml` file, before creating it.
+
+Why there's no straight pip or conda install
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Being this a high-level protocol, there are many dependencies to it and, unfortunately, python packaging has its quirks so
+different developers have solved their issues in different ways.
+A straight `pip install` is out of the question given the tensorflow (for DLPacker) and ambertools (for tleap) dependencies.
+On the other hand, not all packages have a conda recipe (freesasa), and while the biobb packages do show up on the bioconda
+channel, when installed in this manner, they bring over many unwanted, heavy dependencies, like GROMACS itself.
+So, in summary, a mix of pip and conda is needed.
 
 Post-Install
 -------------

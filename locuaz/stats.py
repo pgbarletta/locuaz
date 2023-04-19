@@ -1,10 +1,10 @@
 import logging
 from typing import Dict, Optional, Type
 
-from projectutils import Iteration
-from basestatistic import BaseStatistic
-from statisticcmdistance import StatisticCMDistance
-from statisticinterface import StatisticInterface
+from .projectutils import Iteration
+from .basestatistic import BaseStatistic
+from .statisticcmdistance import StatisticCMDistance
+from .statisticinterface import StatisticInterface
 
 all_stats: Dict[str, Type[BaseStatistic]] = {
     "cmdistance": StatisticCMDistance,

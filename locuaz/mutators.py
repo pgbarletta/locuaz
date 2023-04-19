@@ -1,9 +1,9 @@
 from typing import Dict, Type
 import warnings
 
-from basemutator import BaseMutator
-from mutatorbiobb import MutatorBiobb
-from mutatorevoef2 import MutatorEvoEF2
+from .basemutator import BaseMutator
+from .mutatorbiobb import MutatorBiobb
+from .mutatorevoef2 import MutatorEvoEF2
 
 __all__ = ("mutators",)
 

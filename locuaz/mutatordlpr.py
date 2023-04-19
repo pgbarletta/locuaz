@@ -6,10 +6,10 @@ import numpy as np
 import MDAnalysis as mda
 from Bio.SeqUtils import seq3
 
-from DLPacker.dlpacker import DLPacker
-from molecules import PDBStructure
-from mutation import Mutation
-from mutatordlp import MutatorDLPacker
+from .DLPacker.dlpacker import DLPacker
+from .molecules import PDBStructure
+from .mutation import Mutation
+from .mutatordlp import MutatorDLPacker
 
 
 class MutatorDLPackerReconstruct(MutatorDLPacker):

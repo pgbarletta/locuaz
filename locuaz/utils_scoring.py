@@ -7,8 +7,8 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Optional, List, Tuple, Set
 
-from fileutils import DirHandle, FileHandle, catenate_pdbs
-from gromacsutils import fix_gromacs_pdb
+from .fileutils import DirHandle, FileHandle, catenate_pdbs
+from .gromacsutils import fix_gromacs_pdb
 
 
 def extract_pdbs(

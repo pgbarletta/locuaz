@@ -2,8 +2,8 @@ from abc import ABCMeta, abstractmethod
 from pathlib import Path
 from typing import Any, Union, List
 
-from complex import GROComplex
-from fileutils import FileHandle, DirHandle
+from .complex import GROComplex
+from .fileutils import FileHandle, DirHandle
 
 
 class AbstractScoringFunction(metaclass=ABCMeta):

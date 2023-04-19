@@ -1,16 +1,16 @@
 from typing import Dict, Type
 
-from abstractscoringfunction import AbstractScoringFunction
-from bach import Bach
-from bluues import Bluues
-from bluuesbmf import BluuesBmf
-from evoef2 import Evoef2
-from gmxmmpbsa import GmxMmpbsa
-from haddock import Haddock
-from pisa import Pisa
-from piepisa import PiePisa
-from rosetta import Rosetta
-from autodockvina import AutodockVina
+from .abstractscoringfunction import AbstractScoringFunction
+from .bach import Bach
+from .bluues import Bluues
+from .bluuesbmf import BluuesBmf
+from .evoef2 import Evoef2
+from .gmxmmpbsa import GmxMmpbsa
+from .haddock import Haddock
+from .pisa import Pisa
+from .piepisa import PiePisa
+from .rosetta import Rosetta
+from .autodockvina import AutodockVina
 
 scoringfunctions: Dict[str, Type[AbstractScoringFunction]] = {
     "bach": Bach,

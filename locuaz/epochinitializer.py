@@ -4,15 +4,15 @@ import warnings
 from logging import Logger
 from pathlib import Path
 
-from amberutils import fix_pdb
-from complex import GROComplex
-from fileutils import DirHandle
-from gromacsutils import remove_overlapping_solvent
-from molecules import PDBStructure
-from mutationgenerators import mutation_generators
-from basemutator import memorize_mutations
-from mutators import mutators
-from projectutils import WorkProject, Epoch, Iteration
+from .amberutils import fix_pdb
+from .complex import GROComplex
+from .fileutils import DirHandle
+from .gromacsutils import remove_overlapping_solvent
+from .molecules import PDBStructure
+from .mutationgenerators import mutation_generators
+from .basemutator import memorize_mutations
+from .mutators import mutators
+from .projectutils import WorkProject, Epoch, Iteration
 
 
 def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:

@@ -3,10 +3,10 @@ import subprocess as sp
 from pathlib import Path
 from typing import Optional, Union
 
-from fileutils import FileHandle
-from molecules import PDBStructure
-from mutation import Mutation
-from basemutator import BaseMutator
+from .fileutils import FileHandle
+from .molecules import PDBStructure
+from .mutation import Mutation
+from .basemutator import BaseMutator
 
 
 class MutatorEvoEF2(BaseMutator):

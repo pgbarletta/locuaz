@@ -4,9 +4,9 @@ from pathlib import Path
 from typing import List, Tuple, Union
 import re
 
-from abstractscoringfunction import AbstractScoringFunction
-from complex import GROComplex
-from fileutils import DirHandle, FileHandle
+from .abstractscoringfunction import AbstractScoringFunction
+from .complex import GROComplex
+from .fileutils import DirHandle, FileHandle
 
 
 class AutodockVina(AbstractScoringFunction):

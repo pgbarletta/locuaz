@@ -4,9 +4,9 @@ from random import choice, sample
 from collections import defaultdict
 from logging import Logger
 
-from projectutils import Iteration, Epoch
-from mutation import Mutation
-from abstractmutationgenerator import AbstractMutationGenerator
+from .projectutils import Iteration, Epoch
+from .mutation import Mutation
+from .abstractmutationgenerator import AbstractMutationGenerator
 
 
 class SPM4(AbstractMutationGenerator):

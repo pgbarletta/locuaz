@@ -10,9 +10,9 @@ from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
 from biobb_gromacs.gromacs.genion import Genion
 from biobb_gromacs.gromacs.pdb2gmx import Pdb2gmx
 
-from amberutils import create_tleap_script, fix_pdb, run_tleap, amb_to_gmx
-from molecules import PDBStructure, GROStructure, ZipTopology, get_tpr
-from primitives import launch_biobb
+from .amberutils import create_tleap_script, fix_pdb, run_tleap, amb_to_gmx
+from .molecules import PDBStructure, GROStructure, ZipTopology, get_tpr
+from .primitives import launch_biobb
 
 
 def get_gro_ziptop_from_pdb(

@@ -5,11 +5,11 @@ import MDAnalysis as mda
 from MDAnalysis.analysis import align
 from Bio.SeqUtils import seq3
 
-from DLPacker.dlpacker import DLPacker
-from fileutils import FileHandle
-from molecules import PDBStructure
-from mutation import Mutation
-from basemutator import BaseMutator
+from .DLPacker.dlpacker import DLPacker
+from .fileutils import FileHandle
+from .molecules import PDBStructure
+from .mutation import Mutation
+from .basemutator import BaseMutator
 
 
 class MutatorDLPacker(BaseMutator):

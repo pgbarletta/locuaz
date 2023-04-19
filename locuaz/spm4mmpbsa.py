@@ -5,10 +5,10 @@ from logging import Logger
 from pathlib import Path
 import csv
 
-from projectutils import Iteration, Epoch
-from mutation import Mutation
-from interface import get_interfacing_residues
-from spm4 import SPM4
+from .projectutils import Iteration, Epoch
+from .mutation import Mutation
+from .interface import get_interfacing_residues
+from .spm4 import SPM4
 
 
 class SPM4gmxmmpbsa(SPM4):

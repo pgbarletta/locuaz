@@ -4,10 +4,10 @@ from random import choice
 from collections import defaultdict
 from logging import Logger
 
-from projectutils import Iteration, Epoch
-from mutation import Mutation
-from interface import get_interfacing_residues
-from spm4 import SPM4
+from .projectutils import Iteration, Epoch
+from .mutation import Mutation
+from .interface import get_interfacing_residues
+from .spm4 import SPM4
 
 
 class SPM4i(SPM4):

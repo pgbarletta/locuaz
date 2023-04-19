@@ -5,9 +5,9 @@ import subprocess as sp
 from pathlib import Path
 from typing import Tuple, List, Union
 
-from abstractscoringfunction import AbstractScoringFunction
-from complex import GROComplex
-from fileutils import FileHandle, DirHandle, copy_to
+from .abstractscoringfunction import AbstractScoringFunction
+from .complex import GROComplex
+from .fileutils import FileHandle, DirHandle, copy_to
 
 
 class Haddock(AbstractScoringFunction):

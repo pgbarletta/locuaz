@@ -13,8 +13,8 @@ mutators: Dict[str, Type[BaseMutator]] = {
 }
 
 try:
-    from mutatordlpr import MutatorDLPackerReconstruct
-    from mutatordlp import MutatorDLPacker
+    from .mutatordlpr import MutatorDLPackerReconstruct
+    from .mutatordlp import MutatorDLPacker
 
     mutators["dlp"] = MutatorDLPacker
     mutators["dlpr"] = MutatorDLPackerReconstruct

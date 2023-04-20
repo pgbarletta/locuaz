@@ -4,14 +4,6 @@ locuaz package
 Submodules
 ----------
 
-locuaz.abstractmutationgenerator module
----------------------------------------
-
-.. automodule:: locuaz.abstractmutationgenerator
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 locuaz.abstractscoringfunction module
 -------------------------------------
 
@@ -148,14 +140,6 @@ locuaz.interface module
    :undoc-members:
    :show-inheritance:
 
-locuaz.locuaz module
---------------------
-
-.. automodule:: locuaz.locuaz
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 locuaz.molecules module
 -----------------------
 
@@ -184,14 +168,6 @@ locuaz.mutation module
 ----------------------
 
 .. automodule:: locuaz.mutation
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-locuaz.mutationgenerators module
---------------------------------
-
-.. automodule:: locuaz.mutationgenerators
    :members:
    :undoc-members:
    :show-inheritance:
@@ -332,30 +308,6 @@ locuaz.scoringfunctions module
    :undoc-members:
    :show-inheritance:
 
-locuaz.spm4 module
-------------------
-
-.. automodule:: locuaz.spm4
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-locuaz.spm4i module
--------------------
-
-.. automodule:: locuaz.spm4i
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-locuaz.spm4mmpbsa module
-------------------------
-
-.. automodule:: locuaz.spm4mmpbsa
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 locuaz.statisticcmdistance module
 ---------------------------------
 
@@ -392,22 +344,6 @@ locuaz.validatore module
 ------------------------
 
 .. automodule:: locuaz.validatore
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-locuaz.version module
----------------------
-
-.. automodule:: locuaz.version
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: locuaz
    :members:
    :undoc-members:
    :show-inheritance:

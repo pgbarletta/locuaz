@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>locuaz &mdash; locuaz 0.2.0 documentation</title>
@@ -12,6 +12,9 @@
   <![endif]-->
   
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -43,10 +46,13 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">locuaz</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#install">Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install">Install</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#why-there-s-no-straight-pip-or-conda-install">Why there’s no straight pip or conda install</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#post-install">Post-Install</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#on-scoring">On scoring</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#additional-requirements-for-specific-sfs">Additional requirements for specific SFs</a><ul>
@@ -72,13 +78,14 @@
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Learning:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Learning</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">locuaz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="misc.html">locuaz package</a></li>
 </ul>
 
         </div>
@@ -125,7 +132,22 @@
 <span class="n">git</span> <span class="n">submodule</span> <span class="n">update</span>
 </pre></div>
 </div>
-<p>You’ll also have to get DLPacker’s <a class="reference external" href="https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQseE0LQ/view?usp=sharing">weights</a>.</p>
+<p>You’ll also have to get DLPacker’s <a class="reference external" href="https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQseE0LQ/view?usp=sharing">weights</a>
+and place them on a dedicated <code class="docutils literal notranslate"><span class="pre">dlpacker</span></code> (actual name doesn’t matter) directory, more info on the dedicated Mutators section.
+Finally, create the environment and install all the necessary dependencies at once:</p>
+<blockquote>
+<div><p>mamba env create -f usr_deps.yaml</p>
+</div></blockquote>
+<p>That’s it. You can also change the environment’s name by editing the <cite>name</cite> field of the <cite>usr_deps.yml</cite> file, before creating it.</p>
+<section id="why-there-s-no-straight-pip-or-conda-install">
+<h3>Why there’s no straight pip or conda install<a class="headerlink" href="#why-there-s-no-straight-pip-or-conda-install" title="Permalink to this heading"></a></h3>
+<p>Being this a high-level protocol, there are many dependencies to it and, unfortunately, python packaging has its quirks so
+different developers have solved their issues in different ways.
+A straight <cite>pip install</cite> is out of the question given the tensorflow (for DLPacker) and ambertools (for tleap) dependencies.
+On the other hand, not all packages have a conda recipe (freesasa), and while the biobb packages do show up on the bioconda
+channel, when installed in this manner, they bring over many unwanted, heavy dependencies, like GROMACS itself.
+So, in summary, a mix of pip and conda is needed.</p>
+</section>
 </section>
 <section id="post-install">
 <h2>Post-Install<a class="headerlink" href="#post-install" title="Permalink to this heading"></a></h2>

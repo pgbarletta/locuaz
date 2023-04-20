@@ -1,7 +1,7 @@
 Mutation Generators
 ====================
 
-locuaz.abstractmutationgenerator module
+locuaz.abstractmutationgenerator
 ---------------------------------------
 
 .. automodule:: locuaz.abstractmutationgenerator
@@ -9,7 +9,7 @@ locuaz.abstractmutationgenerator module
    :undoc-members:
    :show-inheritance:
 
-locuaz.spm4 module
+locuaz.spm4
 ------------------
 
 .. automodule:: locuaz.spm4
@@ -17,7 +17,7 @@ locuaz.spm4 module
    :undoc-members:
    :show-inheritance:
 
-locuaz.spm4i module
+locuaz.spm4i
 -------------------
 
 .. automodule:: locuaz.spm4i
@@ -25,18 +25,10 @@ locuaz.spm4i module
    :undoc-members:
    :show-inheritance:
 
-locuaz.spm4mmpbsa module
+locuaz.spm4mmpbsa
 ------------------------
 
 .. automodule:: locuaz.spm4mmpbsa
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: Mutation Generators
    :members:
    :undoc-members:
    :show-inheritance:

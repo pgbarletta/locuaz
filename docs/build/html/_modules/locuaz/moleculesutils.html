@@ -11,6 +11,9 @@
   <![endif]-->
   
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -40,20 +43,21 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html">locuaz</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Learning:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Learning</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">locuaz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../misc.html">locuaz package</a></li>
 </ul>
 
         </div>
@@ -98,7 +102,7 @@
 <span class="kn">from</span> <span class="nn">locuaz.primitives</span> <span class="kn">import</span> <span class="n">launch_biobb</span>
 
 
-<div class="viewcode-block" id="get_gro_ziptop_from_pdb"><a class="viewcode-back" href="../../locuaz.html#locuaz.moleculesutils.get_gro_ziptop_from_pdb">[docs]</a><span class="k">def</span> <span class="nf">get_gro_ziptop_from_pdb</span><span class="p">(</span>
+<div class="viewcode-block" id="get_gro_ziptop_from_pdb"><a class="viewcode-back" href="../../misc.html#locuaz.moleculesutils.get_gro_ziptop_from_pdb">[docs]</a><span class="k">def</span> <span class="nf">get_gro_ziptop_from_pdb</span><span class="p">(</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">pdb</span><span class="p">:</span> <span class="n">PDBStructure</span><span class="p">,</span>
         <span class="n">target_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span>
@@ -192,7 +196,7 @@
     <span class="k">return</span> <span class="n">PDBStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">pdb_fn</span><span class="p">),</span> <span class="n">GROStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">gro_fn</span><span class="p">),</span> <span class="n">zip_top</span></div>
 
 
-<div class="viewcode-block" id="get_gro_ziptop_from_pdb_tleap"><a class="viewcode-back" href="../../locuaz.html#locuaz.moleculesutils.get_gro_ziptop_from_pdb_tleap">[docs]</a><span class="k">def</span> <span class="nf">get_gro_ziptop_from_pdb_tleap</span><span class="p">(</span>
+<div class="viewcode-block" id="get_gro_ziptop_from_pdb_tleap"><a class="viewcode-back" href="../../misc.html#locuaz.moleculesutils.get_gro_ziptop_from_pdb_tleap">[docs]</a><span class="k">def</span> <span class="nf">get_gro_ziptop_from_pdb_tleap</span><span class="p">(</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">pdb</span><span class="p">:</span> <span class="n">PDBStructure</span><span class="p">,</span>
         <span class="n">target_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span>
@@ -237,7 +241,7 @@
     <span class="k">return</span> <span class="n">pdb</span><span class="p">,</span> <span class="n">gro</span><span class="p">,</span> <span class="n">ziptop</span></div>
 
 
-<div class="viewcode-block" id="fix_wat_naming"><a class="viewcode-back" href="../../locuaz.html#locuaz.moleculesutils.fix_wat_naming">[docs]</a><span class="k">def</span> <span class="nf">fix_wat_naming</span><span class="p">(</span>
+<div class="viewcode-block" id="fix_wat_naming"><a class="viewcode-back" href="../../misc.html#locuaz.moleculesutils.fix_wat_naming">[docs]</a><span class="k">def</span> <span class="nf">fix_wat_naming</span><span class="p">(</span>
         <span class="n">pdb_in</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PDBStructure</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">pdb_out</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">use_tleap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PDBStructure</span><span class="p">:</span>
     <span class="c1"># Will get some warnings due to new waters added by gmx solvate not having the element column</span>

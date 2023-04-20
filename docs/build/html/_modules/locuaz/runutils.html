@@ -11,6 +11,9 @@
   <![endif]-->
   
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -40,20 +43,21 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html">locuaz</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Learning:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Learning</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">locuaz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../misc.html">locuaz package</a></li>
 </ul>
 
         </div>
@@ -98,7 +102,7 @@
 <span class="kn">from</span> <span class="nn">locuaz.projectutils</span> <span class="kn">import</span> <span class="n">WorkProject</span>
 
 
-<div class="viewcode-block" id="MDrun"><a class="viewcode-back" href="../../locuaz.html#locuaz.runutils.MDrun">[docs]</a><span class="nd">@define</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="MDrun"><a class="viewcode-back" href="../../misc.html#locuaz.runutils.MDrun">[docs]</a><span class="nd">@define</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">MDrun</span><span class="p">:</span>
     <span class="nb">dir</span><span class="p">:</span> <span class="n">DirHandle</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="n">DirHandle</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
     <span class="n">binary_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -112,7 +116,7 @@
     <span class="n">image_after</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">maxwarn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MDrun.min"><a class="viewcode-back" href="../../locuaz.html#locuaz.runutils.MDrun.min">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="MDrun.min"><a class="viewcode-back" href="../../misc.html#locuaz.runutils.MDrun.min">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">min</span><span class="p">(</span>
             <span class="bp">cls</span><span class="p">,</span>
             <span class="n">root_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
@@ -137,7 +141,7 @@
 
         <span class="k">return</span> <span class="n">obj</span></div>
 
-<div class="viewcode-block" id="MDrun.nvt"><a class="viewcode-back" href="../../locuaz.html#locuaz.runutils.MDrun.nvt">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="MDrun.nvt"><a class="viewcode-back" href="../../misc.html#locuaz.runutils.MDrun.nvt">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">nvt</span><span class="p">(</span>
             <span class="bp">cls</span><span class="p">,</span>
             <span class="n">root_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
@@ -163,7 +167,7 @@
 
         <span class="k">return</span> <span class="n">obj</span></div>
 
-<div class="viewcode-block" id="MDrun.npt"><a class="viewcode-back" href="../../locuaz.html#locuaz.runutils.MDrun.npt">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="MDrun.npt"><a class="viewcode-back" href="../../misc.html#locuaz.runutils.MDrun.npt">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">npt</span><span class="p">(</span>
             <span class="bp">cls</span><span class="p">,</span>
             <span class="n">root_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
@@ -303,7 +307,7 @@
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">complex</span><span class="o">.</span><span class="n">top</span><span class="p">,</span> <span class="n">ZipTopology</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Topology from input complex &quot;</span>
         <span class="sa">f</span><span class="s2">&quot;should be in zip format. Current topology: </span><span class="si">{</span><span class="nb">complex</span><span class="o">.</span><span class="n">top</span><span class="si">}</span><span class="s2">.&quot;</span>
 
-<div class="viewcode-block" id="MDrun.assert_outfile"><a class="viewcode-back" href="../../locuaz.html#locuaz.runutils.MDrun.assert_outfile">[docs]</a>    <span class="k">def</span> <span class="nf">assert_outfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">FileHandle</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">stdout</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stderr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<div class="viewcode-block" id="MDrun.assert_outfile"><a class="viewcode-back" href="../../misc.html#locuaz.runutils.MDrun.assert_outfile">[docs]</a>    <span class="k">def</span> <span class="nf">assert_outfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">FileHandle</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">stdout</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stderr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                            <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
         <span class="n">out_file_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">out_file</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">out_file_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> error. Can&#39;t parse: </span><span class="si">{</span><span class="n">out_file_path</span><span class="si">}</span>

@@ -11,6 +11,9 @@
   <![endif]-->
   
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -40,20 +43,21 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html">locuaz</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Learning:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Learning</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">locuaz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../misc.html">locuaz package</a></li>
 </ul>
 
         </div>
@@ -100,7 +104,7 @@
 <span class="kn">from</span> <span class="nn">locuaz.primitives</span> <span class="kn">import</span> <span class="n">launch_biobb</span>
 
 
-<div class="viewcode-block" id="AbstractFileObject"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.AbstractFileObject">[docs]</a><span class="nd">@define</span>
+<div class="viewcode-block" id="AbstractFileObject"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.AbstractFileObject">[docs]</a><span class="nd">@define</span>
 <span class="k">class</span> <span class="nc">AbstractFileObject</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
     <span class="n">file</span><span class="p">:</span> <span class="n">FileHandle</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="n">FileHandle</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -109,7 +113,7 @@
     <span class="k">def</span> <span class="nf">__attrs_post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="AbstractFileObject.unlink"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.AbstractFileObject.unlink">[docs]</a>    <span class="k">def</span> <span class="nf">unlink</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="AbstractFileObject.unlink"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.AbstractFileObject.unlink">[docs]</a>    <span class="k">def</span> <span class="nf">unlink</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -118,28 +122,28 @@
     <span class="k">def</span> <span class="nf">__fspath__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
 
-<div class="viewcode-block" id="AbstractFileObject.from_path"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.AbstractFileObject.from_path">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="AbstractFileObject.from_path"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.AbstractFileObject.from_path">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_path</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
         <span class="n">file</span> <span class="o">=</span> <span class="n">FileHandle</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">file</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TPRFile"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.TPRFile">[docs]</a><span class="nd">@define</span>
+<div class="viewcode-block" id="TPRFile"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.TPRFile">[docs]</a><span class="nd">@define</span>
 <span class="k">class</span> <span class="nc">TPRFile</span><span class="p">(</span><span class="n">AbstractFileObject</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="Structure"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.Structure">[docs]</a><span class="nd">@define</span>
+<div class="viewcode-block" id="Structure"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.Structure">[docs]</a><span class="nd">@define</span>
 <span class="k">class</span> <span class="nc">Structure</span><span class="p">(</span><span class="n">AbstractFileObject</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="Trajectory"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.Trajectory">[docs]</a><span class="nd">@define</span>
+<div class="viewcode-block" id="Trajectory"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.Trajectory">[docs]</a><span class="nd">@define</span>
 <span class="k">class</span> <span class="nc">Trajectory</span><span class="p">(</span><span class="n">AbstractFileObject</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="PDBStructure"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.PDBStructure">[docs]</a><span class="nd">@define</span>
+<div class="viewcode-block" id="PDBStructure"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.PDBStructure">[docs]</a><span class="nd">@define</span>
 <span class="k">class</span> <span class="nc">PDBStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;PDBStructure</span>
 
@@ -153,7 +157,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">!=</span> <span class="s2">&quot;pdb&quot;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input file&#39;s extension for PDBStructure should be .pdb&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="PDBStructure.get_cryst1_record"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.PDBStructure.get_cryst1_record">[docs]</a>    <span class="k">def</span> <span class="nf">get_cryst1_record</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="PDBStructure.get_cryst1_record"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.PDBStructure.get_cryst1_record">[docs]</a>    <span class="k">def</span> <span class="nf">get_cryst1_record</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">linea</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">linea</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;CRYST1&quot;</span><span class="p">:</span>
@@ -163,7 +167,7 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> has no CRYST1 record.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">cryst1_record</span></div>
 
-<div class="viewcode-block" id="PDBStructure.set_cryst1_record"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.PDBStructure.set_cryst1_record">[docs]</a>    <span class="k">def</span> <span class="nf">set_cryst1_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cryst1_record</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="PDBStructure.set_cryst1_record"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.PDBStructure.set_cryst1_record">[docs]</a>    <span class="k">def</span> <span class="nf">set_cryst1_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cryst1_record</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">texto</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">linea</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
@@ -178,7 +182,7 @@
             <span class="p">[</span><span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">linea</span><span class="p">)</span> <span class="k">for</span> <span class="n">linea</span> <span class="ow">in</span> <span class="n">texto</span><span class="p">]</span></div></div>
 
 
-<div class="viewcode-block" id="GROStructure"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.GROStructure">[docs]</a><span class="nd">@define</span>
+<div class="viewcode-block" id="GROStructure"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.GROStructure">[docs]</a><span class="nd">@define</span>
 <span class="k">class</span> <span class="nc">GROStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;GROStructure</span>
 
@@ -193,7 +197,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input file&#39;s extension for PDBStructure should be .gro&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Topology"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.Topology">[docs]</a><span class="nd">@define</span>
+<div class="viewcode-block" id="Topology"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.Topology">[docs]</a><span class="nd">@define</span>
 <span class="k">class</span> <span class="nc">Topology</span><span class="p">(</span><span class="n">AbstractFileObject</span><span class="p">):</span>
     <span class="n">target_chains</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">binder_chains</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -204,7 +208,7 @@
     <span class="n">selection_not_complex</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">selection_water</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Topology.from_path_with_chains"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.Topology.from_path_with_chains">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Topology.from_path_with_chains"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.Topology.from_path_with_chains">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_path_with_chains</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">target_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">binder_chains</span><span class="p">:</span> <span class="n">Iterable</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Topology&quot;</span><span class="p">:</span>
@@ -229,14 +233,14 @@
         <span class="k">return</span> <span class="bp">self</span></div></div>
 
 
-<div class="viewcode-block" id="AmberTopology"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.AmberTopology">[docs]</a><span class="nd">@define</span>
+<div class="viewcode-block" id="AmberTopology"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.AmberTopology">[docs]</a><span class="nd">@define</span>
 <span class="k">class</span> <span class="nc">AmberTopology</span><span class="p">(</span><span class="n">Topology</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="ZipTopology"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.ZipTopology">[docs]</a><span class="nd">@define</span>
+<div class="viewcode-block" id="ZipTopology"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.ZipTopology">[docs]</a><span class="nd">@define</span>
 <span class="k">class</span> <span class="nc">ZipTopology</span><span class="p">(</span><span class="n">Topology</span><span class="p">):</span>
-<div class="viewcode-block" id="ZipTopology.from_path_with_chains"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.ZipTopology.from_path_with_chains">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="ZipTopology.from_path_with_chains"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.ZipTopology.from_path_with_chains">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_path_with_chains</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">target_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">binder_chains</span><span class="p">:</span> <span class="n">Iterable</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ZipTopology&quot;</span><span class="p">:</span>
@@ -261,17 +265,17 @@
         <span class="k">return</span> <span class="bp">self</span></div></div>
 
 
-<div class="viewcode-block" id="TrrTrajectory"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.TrrTrajectory">[docs]</a><span class="nd">@define</span>
+<div class="viewcode-block" id="TrrTrajectory"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.TrrTrajectory">[docs]</a><span class="nd">@define</span>
 <span class="k">class</span> <span class="nc">TrrTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="XtcTrajectory"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.XtcTrajectory">[docs]</a><span class="nd">@define</span>
+<div class="viewcode-block" id="XtcTrajectory"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.XtcTrajectory">[docs]</a><span class="nd">@define</span>
 <span class="k">class</span> <span class="nc">XtcTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="get_tpr"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.get_tpr">[docs]</a><span class="k">def</span> <span class="nf">get_tpr</span><span class="p">(</span>
+<div class="viewcode-block" id="get_tpr"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.get_tpr">[docs]</a><span class="k">def</span> <span class="nf">get_tpr</span><span class="p">(</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">gro</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">GROStructure</span><span class="p">],</span>
     <span class="n">top</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">ZipTopology</span><span class="p">],</span>
@@ -300,7 +304,7 @@
     <span class="k">return</span> <span class="n">TPRFile</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">tpr_fn</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_pdb_tpr"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.get_pdb_tpr">[docs]</a><span class="k">def</span> <span class="nf">get_pdb_tpr</span><span class="p">(</span>
+<div class="viewcode-block" id="get_pdb_tpr"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.get_pdb_tpr">[docs]</a><span class="k">def</span> <span class="nf">get_pdb_tpr</span><span class="p">(</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">gro</span><span class="p">:</span> <span class="n">GROStructure</span><span class="p">,</span>
     <span class="n">top</span><span class="p">:</span> <span class="n">ZipTopology</span><span class="p">,</span>
@@ -321,7 +325,7 @@
     <span class="k">return</span> <span class="n">PDBStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">pdb_fn</span><span class="p">),</span> <span class="n">tpr</span></div>
 
 
-<div class="viewcode-block" id="fix_pdb_gro"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.fix_pdb_gro">[docs]</a><span class="k">def</span> <span class="nf">fix_pdb_gro</span><span class="p">(</span>
+<div class="viewcode-block" id="fix_pdb_gro"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.fix_pdb_gro">[docs]</a><span class="k">def</span> <span class="nf">fix_pdb_gro</span><span class="p">(</span>
     <span class="n">pdb_in</span><span class="p">:</span> <span class="n">PDBStructure</span><span class="p">,</span> <span class="n">pdb_out_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">gmx_bin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gmx&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PDBStructure</span><span class="p">:</span>
     <span class="c1"># This is quite cumbersome.</span>
@@ -373,7 +377,7 @@
     <span class="k">return</span> <span class="n">PDBStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">pdb_out_path</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="catenate_pdbs"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.catenate_pdbs">[docs]</a><span class="k">def</span> <span class="nf">catenate_pdbs</span><span class="p">(</span>
+<div class="viewcode-block" id="catenate_pdbs"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.catenate_pdbs">[docs]</a><span class="k">def</span> <span class="nf">catenate_pdbs</span><span class="p">(</span>
     <span class="o">*</span><span class="n">pdbs</span><span class="p">:</span> <span class="n">PDBStructure</span><span class="p">,</span> <span class="n">pdb_out_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">gmx_bin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gmx&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PDBStructure</span><span class="p">:</span>
     <span class="n">lineas</span> <span class="o">=</span> <span class="p">[]</span>
@@ -400,7 +404,7 @@
     <span class="k">return</span> <span class="n">out_pdb</span></div>
 
 
-<div class="viewcode-block" id="write_chain_ndx"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.write_chain_ndx">[docs]</a><span class="k">def</span> <span class="nf">write_chain_ndx</span><span class="p">(</span>
+<div class="viewcode-block" id="write_chain_ndx"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.write_chain_ndx">[docs]</a><span class="k">def</span> <span class="nf">write_chain_ndx</span><span class="p">(</span>
     <span class="o">*</span><span class="p">,</span> <span class="n">pdb</span><span class="p">:</span> <span class="n">PDBStructure</span><span class="p">,</span> <span class="n">chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">selname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">gmx_bin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gmx&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FileHandle</span><span class="p">:</span>
     <span class="n">selection</span> <span class="o">=</span> <span class="s2">&quot; or &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;chain </span><span class="si">{</span><span class="n">chainID</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">chainID</span> <span class="ow">in</span> <span class="n">chains</span><span class="p">])</span>
@@ -420,7 +424,7 @@
     <span class="k">return</span> <span class="n">ndx</span></div>
 
 
-<div class="viewcode-block" id="generate_ndx"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.generate_ndx">[docs]</a><span class="k">def</span> <span class="nf">generate_ndx</span><span class="p">(</span>
+<div class="viewcode-block" id="generate_ndx"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.generate_ndx">[docs]</a><span class="k">def</span> <span class="nf">generate_ndx</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">pdb</span><span class="p">:</span> <span class="n">PDBStructure</span><span class="p">,</span>
@@ -462,7 +466,7 @@
         <span class="k">raise</span> <span class="n">e</span></div>
 
 
-<div class="viewcode-block" id="read_ndx"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.read_ndx">[docs]</a><span class="k">def</span> <span class="nf">read_ndx</span><span class="p">(</span><span class="n">ndx_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<div class="viewcode-block" id="read_ndx"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.read_ndx">[docs]</a><span class="k">def</span> <span class="nf">read_ndx</span><span class="p">(</span><span class="n">ndx_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    read_ndx(): reads GROMACS .ndx file. Watch out, it also performs 0-index</span>
 <span class="sd">    correction. That is, it substracts 1 from the atom indices.</span>
@@ -487,7 +491,7 @@
     <span class="k">return</span> <span class="n">grupos</span></div>
 
 
-<div class="viewcode-block" id="copy_mol_to"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.copy_mol_to">[docs]</a><span class="nd">@singledispatch</span>
+<div class="viewcode-block" id="copy_mol_to"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.copy_mol_to">[docs]</a><span class="nd">@singledispatch</span>
 <span class="k">def</span> <span class="nf">copy_mol_to</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">DirHandle</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
@@ -512,7 +516,7 @@
     <span class="k">return</span> <span class="n">Trajectory</span><span class="p">(</span><span class="n">new_file</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="try_copy_to"><a class="viewcode-back" href="../../locuaz.html#locuaz.molecules.try_copy_to">[docs]</a><span class="k">def</span> <span class="nf">try_copy_to</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">DirHandle</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<div class="viewcode-block" id="try_copy_to"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.try_copy_to">[docs]</a><span class="k">def</span> <span class="nf">try_copy_to</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">DirHandle</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">new_obj</span> <span class="o">=</span> <span class="n">copy_to</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>

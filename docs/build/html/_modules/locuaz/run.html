@@ -11,6 +11,9 @@
   <![endif]-->
   
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -40,20 +43,21 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html">locuaz</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Learning:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Learning</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">locuaz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../misc.html">locuaz package</a></li>
 </ul>
 
         </div>
@@ -89,7 +93,7 @@
 <span class="kn">from</span> <span class="nn">locuaz.projectutils</span> <span class="kn">import</span> <span class="n">WorkProject</span>
 <span class="kn">from</span> <span class="nn">locuaz.runutils</span> <span class="kn">import</span> <span class="n">MDrun</span>
 
-<div class="viewcode-block" id="run_epoch"><a class="viewcode-back" href="../../locuaz.html#locuaz.run.run_epoch">[docs]</a><span class="k">def</span> <span class="nf">run_epoch</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">:</span> <span class="n">WorkProject</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="run_epoch"><a class="viewcode-back" href="../../misc.html#locuaz.run.run_epoch">[docs]</a><span class="k">def</span> <span class="nf">run_epoch</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">:</span> <span class="n">WorkProject</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     
     <span class="k">if</span> <span class="ow">not</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">nvt_done</span><span class="p">:</span>
@@ -102,7 +106,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping NPT run of epoch </span><span class="si">{</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="run_min_nvt_epoch"><a class="viewcode-back" href="../../locuaz.html#locuaz.run.run_min_nvt_epoch">[docs]</a><span class="k">def</span> <span class="nf">run_min_nvt_epoch</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">:</span> <span class="n">WorkProject</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="run_min_nvt_epoch"><a class="viewcode-back" href="../../misc.html#locuaz.run.run_min_nvt_epoch">[docs]</a><span class="k">def</span> <span class="nf">run_min_nvt_epoch</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">:</span> <span class="n">WorkProject</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">epoch</span> <span class="o">=</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">ngpus</span> <span class="o">=</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;md&quot;</span><span class="p">][</span><span class="s2">&quot;ngpus&quot;</span><span class="p">]</span>
@@ -151,7 +155,7 @@
     <span class="n">epoch</span><span class="o">.</span><span class="n">nvt_done</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="run_npt_epoch"><a class="viewcode-back" href="../../locuaz.html#locuaz.run.run_npt_epoch">[docs]</a><span class="k">def</span> <span class="nf">run_npt_epoch</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">:</span> <span class="n">WorkProject</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="run_npt_epoch"><a class="viewcode-back" href="../../misc.html#locuaz.run.run_npt_epoch">[docs]</a><span class="k">def</span> <span class="nf">run_npt_epoch</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">:</span> <span class="n">WorkProject</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
     <span class="n">epoch</span> <span class="o">=</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">ngpus</span> <span class="o">=</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;md&quot;</span><span class="p">][</span><span class="s2">&quot;ngpus&quot;</span><span class="p">]</span>

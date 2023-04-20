@@ -11,6 +11,9 @@
   <![endif]-->
   
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -40,20 +43,21 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html">locuaz</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Learning:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Learning</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">locuaz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../misc.html">locuaz package</a></li>
 </ul>
 
         </div>
@@ -88,7 +92,7 @@
 <span class="kn">from</span> <span class="nn">locuaz.projectutils</span> <span class="kn">import</span> <span class="n">Epoch</span><span class="p">,</span> <span class="n">Iteration</span>
 
 
-<div class="viewcode-block" id="beats_old_iter"><a class="viewcode-back" href="../../locuaz.html#locuaz.pruner.beats_old_iter">[docs]</a><span class="k">def</span> <span class="nf">beats_old_iter</span><span class="p">(</span>
+<div class="viewcode-block" id="beats_old_iter"><a class="viewcode-back" href="../../misc.html#locuaz.pruner.beats_old_iter">[docs]</a><span class="k">def</span> <span class="nf">beats_old_iter</span><span class="p">(</span>
     <span class="n">old_iter</span><span class="p">:</span> <span class="n">Iteration</span><span class="p">,</span> <span class="n">new_iter</span><span class="p">:</span> <span class="n">Iteration</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 
@@ -115,7 +119,7 @@
     <span class="k">return</span> <span class="n">count</span> <span class="o">&gt;=</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">count</span></div>
 
 
-<div class="viewcode-block" id="choose_top_iters"><a class="viewcode-back" href="../../locuaz.html#locuaz.pruner.choose_top_iters">[docs]</a><span class="k">def</span> <span class="nf">choose_top_iters</span><span class="p">(</span>
+<div class="viewcode-block" id="choose_top_iters"><a class="viewcode-back" href="../../misc.html#locuaz.pruner.choose_top_iters">[docs]</a><span class="k">def</span> <span class="nf">choose_top_iters</span><span class="p">(</span>
     <span class="n">prev_epoch</span><span class="p">:</span> <span class="n">Epoch</span><span class="p">,</span> <span class="n">this_epoch</span><span class="p">:</span> <span class="n">Epoch</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PriorityQueue</span><span class="p">:</span>
     <span class="n">better_iters</span><span class="p">:</span> <span class="n">PriorityQueue</span> <span class="o">=</span> <span class="n">PriorityQueue</span><span class="p">()</span>
@@ -133,7 +137,7 @@
     <span class="k">return</span> <span class="n">better_iters</span></div>
 
 
-<div class="viewcode-block" id="top_pruner"><a class="viewcode-back" href="../../locuaz.html#locuaz.pruner.top_pruner">[docs]</a><span class="k">def</span> <span class="nf">top_pruner</span><span class="p">(</span><span class="n">better_iters</span><span class="p">:</span> <span class="n">PriorityQueue</span><span class="p">,</span> <span class="n">prune</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iteration</span><span class="p">]:</span>
+<div class="viewcode-block" id="top_pruner"><a class="viewcode-back" href="../../misc.html#locuaz.pruner.top_pruner">[docs]</a><span class="k">def</span> <span class="nf">top_pruner</span><span class="p">(</span><span class="n">better_iters</span><span class="p">:</span> <span class="n">PriorityQueue</span><span class="p">,</span> <span class="n">prune</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iteration</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;top_pruner select, at least, the first `prun` iterations above the threshold</span>
 
 <span class="sd">    Args:</span>
@@ -152,7 +156,7 @@
     <span class="k">return</span> <span class="n">top_iterations</span></div>
 
 
-<div class="viewcode-block" id="adaptive_pruner"><a class="viewcode-back" href="../../locuaz.html#locuaz.pruner.adaptive_pruner">[docs]</a><span class="k">def</span> <span class="nf">adaptive_pruner</span><span class="p">(</span><span class="n">better_iters</span><span class="p">:</span> <span class="n">PriorityQueue</span><span class="p">,</span> <span class="n">prune</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iteration</span><span class="p">]:</span>
+<div class="viewcode-block" id="adaptive_pruner"><a class="viewcode-back" href="../../misc.html#locuaz.pruner.adaptive_pruner">[docs]</a><span class="k">def</span> <span class="nf">adaptive_pruner</span><span class="p">(</span><span class="n">better_iters</span><span class="p">:</span> <span class="n">PriorityQueue</span><span class="p">,</span> <span class="n">prune</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iteration</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;adaptive_pruner select all iterations that have the maximum number of approved SFs</span>
 
 <span class="sd">    Args:</span>
@@ -176,7 +180,7 @@
     <span class="k">return</span> <span class="n">top_iterations</span></div>
 
 
-<div class="viewcode-block" id="threshold_pruner"><a class="viewcode-back" href="../../locuaz.html#locuaz.pruner.threshold_pruner">[docs]</a><span class="k">def</span> <span class="nf">threshold_pruner</span><span class="p">(</span><span class="n">better_iters</span><span class="p">:</span> <span class="n">PriorityQueue</span><span class="p">,</span> <span class="n">prune</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iteration</span><span class="p">]:</span>
+<div class="viewcode-block" id="threshold_pruner"><a class="viewcode-back" href="../../misc.html#locuaz.pruner.threshold_pruner">[docs]</a><span class="k">def</span> <span class="nf">threshold_pruner</span><span class="p">(</span><span class="n">better_iters</span><span class="p">:</span> <span class="n">PriorityQueue</span><span class="p">,</span> <span class="n">prune</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iteration</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;threshold_pruner select all iterations that satisfy the threshold of approved SFs</span>
 
 <span class="sd">    Args:</span>

@@ -11,6 +11,9 @@
   <![endif]-->
   
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -40,20 +43,21 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html">locuaz</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Learning:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Learning</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">locuaz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../misc.html">locuaz package</a></li>
 </ul>
 
         </div>
@@ -81,126 +85,79 @@
            <div itemprop="articleBody">
              
   <h1>Source code for locuaz.protocol</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">Logger</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
-<span class="kn">from</span> <span class="nn">locuaz.amberutils</span> <span class="kn">import</span> <span class="n">fix_pdb</span>
-<span class="kn">from</span> <span class="nn">locuaz.complex</span> <span class="kn">import</span> <span class="n">GROComplex</span>
-<span class="kn">from</span> <span class="nn">locuaz.fileutils</span> <span class="kn">import</span> <span class="n">DirHandle</span>
-<span class="kn">from</span> <span class="nn">locuaz.gromacsutils</span> <span class="kn">import</span> <span class="n">remove_overlapping_solvent</span>
-<span class="kn">from</span> <span class="nn">locuaz.molecules</span> <span class="kn">import</span> <span class="n">PDBStructure</span>
-<span class="kn">from</span> <span class="nn">locuaz.mutationgenerators</span> <span class="kn">import</span> <span class="n">mutation_generators</span>
-<span class="kn">from</span> <span class="nn">locuaz.basemutator</span> <span class="kn">import</span> <span class="n">memorize_mutations</span>
-<span class="kn">from</span> <span class="nn">locuaz.mutators</span> <span class="kn">import</span> <span class="n">mutators</span>
-<span class="kn">from</span> <span class="nn">locuaz.projectutils</span> <span class="kn">import</span> <span class="n">WorkProject</span><span class="p">,</span> <span class="n">Epoch</span><span class="p">,</span> <span class="n">Iteration</span>
+<span class="kn">import</span> <span class="nn">locuaz.cli</span>
+<span class="kn">from</span> <span class="nn">locuaz.projectutils</span> <span class="kn">import</span> <span class="n">set_logger</span><span class="p">,</span> <span class="n">WorkProject</span>
+<span class="kn">from</span> <span class="nn">locuaz.epochinitializer</span> <span class="kn">import</span> <span class="n">initialize_new_epoch</span>
+<span class="kn">from</span> <span class="nn">locuaz.pruners</span> <span class="kn">import</span> <span class="n">prune</span>
+<span class="kn">from</span> <span class="nn">locuaz.run</span> <span class="kn">import</span> <span class="n">run_epoch</span><span class="p">,</span> <span class="n">run_npt_epoch</span>
+<span class="kn">from</span> <span class="nn">locuaz.scoring</span> <span class="kn">import</span> <span class="n">score</span>
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../misc.html#locuaz.protocol.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+
+    <span class="n">config</span><span class="p">,</span> <span class="n">start</span> <span class="o">=</span> <span class="n">locuaz</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+    <span class="n">log</span> <span class="o">=</span> <span class="n">set_logger</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;work&quot;</span><span class="p">]))</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;-----------------------------&quot;</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Setting up work project.&quot;</span><span class="p">)</span>
+    <span class="n">work_pjct</span> <span class="o">=</span> <span class="n">WorkProject</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span>
+    <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Launching.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;run&quot;</span><span class="p">:</span>
+        <span class="n">run_epoch</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;run_npt&quot;</span><span class="p">:</span>
+        <span class="n">run_npt_epoch</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;score&quot;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">prev_id</span> <span class="o">=</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
+            <span class="n">prev_epoch</span> <span class="o">=</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">iter_name</span><span class="p">,</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="n">prev_epoch</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scoring NPT run from iteration: </span><span class="si">{</span><span class="n">prev_id</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">iter_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">score</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">,</span> <span class="n">iteration</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">Exception</span><span class="p">,):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Cannot score previous epoch.&quot;</span><span class="p">)</span>
+            <span class="k">pass</span>
+
+        <span class="n">curr_id</span> <span class="o">=</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
+        <span class="k">for</span> <span class="n">iter_name</span><span class="p">,</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scoring NPT run from iteration: </span><span class="si">{</span><span class="n">curr_id</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">iter_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">score</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">,</span> <span class="n">iteration</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">old_id</span> <span class="o">=</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running epoch </span><span class="si">{</span><span class="n">old_id</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">cnt</span><span class="si">}</span><span class="s2"> on this run).&quot;</span><span class="p">)</span>
+        <span class="n">run_epoch</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">)</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scoring epoch </span><span class="si">{</span><span class="n">old_id</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">cnt</span><span class="si">}</span><span class="s2"> on this run).&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">iter_name</span><span class="p">,</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scoring NPT run from iteration: </span><span class="si">{</span><span class="n">iter_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">score</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">,</span> <span class="n">iteration</span><span class="p">)</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pruning epoch </span><span class="si">{</span><span class="n">old_id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="n">prune</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">)</span>
+
+        <span class="n">new_id</span> <span class="o">=</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">new_id</span> <span class="o">&gt;</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;epochs&quot;</span><span class="p">]:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Done with protocol.&quot;</span><span class="p">)</span>
+            <span class="k">break</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initializing new epoch </span><span class="si">{</span><span class="n">new_id</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">cnt</span><span class="si">}</span><span class="s2"> on this run).&quot;</span><span class="p">)</span>
+        <span class="n">initialize_new_epoch</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">,</span> <span class="n">log</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Done with protocol&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mi">0</span></div>
 
 
-<div class="viewcode-block" id="initialize_new_epoch"><a class="viewcode-back" href="../../locuaz.html#locuaz.protocol.initialize_new_epoch">[docs]</a><span class="k">def</span> <span class="nf">initialize_new_epoch</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">:</span> <span class="n">WorkProject</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">Logger</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;initialize_new_epoch(): This is a specific protocol, others will be added</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        work_pjct (WorkProject):</span>
-<span class="sd">        log (Logger):</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
-    <span class="n">old_epoch</span> <span class="o">=</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">epoch_id</span> <span class="o">=</span> <span class="n">old_epoch</span><span class="o">.</span><span class="n">id</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="n">current_epoch</span> <span class="o">=</span> <span class="n">Epoch</span><span class="p">(</span><span class="n">epoch_id</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="p">{},</span> <span class="n">nvt_done</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">npt_done</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-    <span class="c1"># Create required mutator</span>
-    <span class="n">mutator</span> <span class="o">=</span> <span class="n">mutators</span><span class="p">[</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;mutation&quot;</span><span class="p">][</span><span class="s2">&quot;mutator&quot;</span><span class="p">]](</span>
-        <span class="n">work_pjct</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;mutator&quot;</span><span class="p">],</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;mutation&quot;</span><span class="p">][</span><span class="s2">&quot;reconstruct_radius&quot;</span><span class="p">]</span>
-    <span class="p">)</span>
-    <span class="c1"># Create required mutation generator and generate mutation.</span>
-    <span class="n">generator</span> <span class="o">=</span> <span class="n">mutation_generators</span><span class="p">[</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;generation&quot;</span><span class="p">][</span><span class="s2">&quot;generator&quot;</span><span class="p">]]</span>
-    <span class="n">successful_mutations</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">while</span> <span class="n">successful_mutations</span> <span class="o">&lt;</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;branches&quot;</span><span class="p">]:</span>
-        <span class="n">mutation_generator</span> <span class="o">=</span> <span class="n">generator</span><span class="p">(</span>
-            <span class="n">old_epoch</span><span class="p">,</span>
-            <span class="n">work_pjct</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;branches&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">successful_mutations</span><span class="p">,</span>
-            <span class="n">excluded_aas</span><span class="o">=</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">get_mem_aminoacids</span><span class="p">(),</span>
-            <span class="n">excluded_pos</span><span class="o">=</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">get_mem_positions</span><span class="p">(),</span>
-            <span class="n">use_tleap</span><span class="o">=</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;md&quot;</span><span class="p">][</span><span class="s2">&quot;use_tleap&quot;</span><span class="p">],</span>
-            <span class="n">logger</span><span class="o">=</span><span class="n">log</span><span class="p">,</span>
-            <span class="n">probe_radius</span><span class="o">=</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;generation&quot;</span><span class="p">][</span><span class="s2">&quot;probe_radius&quot;</span><span class="p">]</span>
-        <span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">old_iter_name</span><span class="p">,</span> <span class="n">mutations</span> <span class="ow">in</span> <span class="n">mutation_generator</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">old_iter</span> <span class="o">=</span> <span class="n">old_epoch</span><span class="o">.</span><span class="n">top_iterations</span><span class="p">[</span><span class="n">old_iter_name</span><span class="p">]</span>
-
-            <span class="c1"># GROMACS renumbers resSeqs to strided numbering. If using Amber&#39;s continuous</span>
-            <span class="c1"># numbering, this will result in the wrong mutating_resSeq.</span>
-            <span class="k">if</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;md&quot;</span><span class="p">][</span><span class="s2">&quot;use_tleap&quot;</span><span class="p">]:</span>
-                <span class="c1"># Backup the PDB before runing pdb4amber</span>
-                <span class="n">pdb_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">old_iter</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">pdb</span><span class="p">)</span>
-                <span class="n">pre_fix_pdb</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">old_iter</span><span class="o">.</span><span class="n">dir_handle</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;preAmberPDBFixer_</span><span class="si">{</span><span class="n">pdb_path</span><span class="o">.</span><span class="n">stem</span><span class="si">}</span><span class="s2">.pdb&quot;</span><span class="p">)</span>
-                <span class="n">sh</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">pdb_path</span><span class="p">,</span> <span class="n">pre_fix_pdb</span><span class="p">)</span>
-
-                <span class="n">old_pdb</span> <span class="o">=</span> <span class="n">fix_pdb</span><span class="p">(</span><span class="n">pre_fix_pdb</span><span class="p">,</span> <span class="n">pdb_path</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">old_pdb</span> <span class="o">=</span> <span class="n">old_iter</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">pdb</span>
-
-            <span class="k">for</span> <span class="n">mutation</span> <span class="ow">in</span> <span class="n">mutations</span><span class="p">:</span>
-                <span class="n">iter_name</span><span class="p">,</span> <span class="n">iter_resnames</span> <span class="o">=</span> <span class="n">mutation</span><span class="o">.</span><span class="n">new_name_resname</span><span class="p">(</span><span class="n">old_iter</span><span class="p">)</span>
-                <span class="n">iter_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">dir_handle</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">epoch_id</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">iter_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-                <span class="n">this_iter</span> <span class="o">=</span> <span class="n">Iteration</span><span class="p">(</span>
-                    <span class="n">DirHandle</span><span class="p">(</span><span class="n">iter_path</span><span class="p">,</span> <span class="n">make</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-                    <span class="n">iter_name</span><span class="o">=</span><span class="n">iter_name</span><span class="p">,</span>
-                    <span class="n">chainIDs</span><span class="o">=</span><span class="n">old_iter</span><span class="o">.</span><span class="n">chainIDs</span><span class="p">,</span>
-                    <span class="n">resnames</span><span class="o">=</span><span class="n">iter_resnames</span><span class="p">,</span>
-                    <span class="n">resSeqs</span><span class="o">=</span><span class="n">old_iter</span><span class="o">.</span><span class="n">resSeqs</span><span class="p">)</span>
-
-                <span class="n">init_wt</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">iter_path</span><span class="p">,</span> <span class="s2">&quot;init_wt.pdb&quot;</span><span class="p">)</span>
-                <span class="n">sh</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">old_pdb</span><span class="p">,</span> <span class="n">init_wt</span><span class="p">)</span>
-                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;New mutation: </span><span class="si">{</span><span class="n">mutation</span><span class="si">}</span><span class="s2"> on Epoch-Iteration: </span><span class="si">{</span><span class="n">epoch_id</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">iter_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-                <span class="c1"># Mutate the PDB</span>
-                <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
-                    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="n">overlapped_pdb</span> <span class="o">=</span> <span class="n">mutator</span><span class="o">.</span><span class="n">on_pdb</span><span class="p">(</span>
-                            <span class="n">PDBStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">init_wt</span><span class="p">),</span>
-                            <span class="n">iter_path</span><span class="p">,</span>
-                            <span class="n">mutation</span><span class="o">=</span><span class="n">mutation</span><span class="p">,</span>
-                            <span class="n">selection_complex</span><span class="o">=</span><span class="n">old_iter</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">selection_complex</span><span class="p">,</span>
-                            <span class="n">selection_wations</span><span class="o">=</span><span class="n">old_iter</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">selection_not_complex</span><span class="p">,</span>
-                        <span class="p">)</span>
-                    <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                        <span class="c1"># Mutator failed</span>
-                        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mutation of </span><span class="si">{</span><span class="n">iter_name</span><span class="si">}</span><span class="s2"> failed. Will try with another one. Backing-up </span><span class="si">{</span><span class="n">iter_path</span><span class="si">}</span><span class="s2"> .&quot;</span><span class="p">)</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
-                        <span class="n">failed_iter_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">dir_handle</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;failed_</span><span class="si">{</span><span class="n">epoch_id</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">iter_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                        <span class="n">sh</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">iter_path</span><span class="p">,</span> <span class="n">failed_iter_path</span><span class="p">)</span>
-                        <span class="k">continue</span>
-                <span class="n">remove_overlapping_solvent</span><span class="p">(</span>
-                    <span class="n">overlapped_pdb</span><span class="p">,</span>
-                    <span class="n">mutation</span><span class="o">.</span><span class="n">resSeq</span><span class="p">,</span>
-                    <span class="n">Path</span><span class="p">(</span><span class="n">iter_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.pdb&quot;</span><span class="p">),</span>
-                    <span class="n">log</span><span class="p">,</span>
-                    <span class="n">use_tleap</span><span class="o">=</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;md&quot;</span><span class="p">][</span><span class="s2">&quot;use_tleap&quot;</span><span class="p">],</span>
-                <span class="p">)</span>
-
-                <span class="c1"># Copy tleap files, if necessary</span>
-                <span class="n">work_pjct</span><span class="o">.</span><span class="n">get_tleap_into_iter</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">this_iter</span><span class="o">.</span><span class="n">dir_handle</span><span class="p">))</span>
-
-                <span class="n">this_iter</span><span class="o">.</span><span class="n">complex</span> <span class="o">=</span> <span class="n">GROComplex</span><span class="o">.</span><span class="n">from_pdb</span><span class="p">(</span>
-                    <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-                    <span class="n">input_dir</span><span class="o">=</span><span class="n">iter_path</span><span class="p">,</span>
-                    <span class="n">target_chains</span><span class="o">=</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">][</span><span class="s2">&quot;chainID&quot;</span><span class="p">],</span>
-                    <span class="n">binder_chains</span><span class="o">=</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;binder&quot;</span><span class="p">][</span><span class="s2">&quot;chainID&quot;</span><span class="p">],</span>
-                    <span class="n">md_config</span><span class="o">=</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;md&quot;</span><span class="p">],</span>
-                    <span class="n">add_ions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="n">current_epoch</span><span class="p">[</span><span class="n">iter_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">this_iter</span>
-                <span class="n">successful_mutations</span> <span class="o">+=</span> <span class="mi">1</span>
-
-            <span class="c1"># TODO: check if this works with mutations on different positions</span>
-            <span class="n">memorize_mutations</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">,</span> <span class="n">current_epoch</span><span class="p">,</span> <span class="n">mutations</span><span class="p">)</span>
-    <span class="n">work_pjct</span><span class="o">.</span><span class="n">new_epoch</span><span class="p">(</span><span class="n">current_epoch</span><span class="p">)</span></div>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>  <span class="c1"># pragma: no cover</span>
 </pre></div>
 
            </div>

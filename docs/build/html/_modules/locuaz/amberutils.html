@@ -11,6 +11,9 @@
   <![endif]-->
   
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -40,20 +43,21 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html">locuaz</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Learning:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Learning</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">locuaz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../misc.html">locuaz package</a></li>
 </ul>
 
         </div>
@@ -101,7 +105,7 @@
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="chunk"><a class="viewcode-back" href="../../locuaz.html#locuaz.amberutils.chunk">[docs]</a><span class="k">def</span> <span class="nf">chunk</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">TextIO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span>
+<div class="viewcode-block" id="chunk"><a class="viewcode-back" href="../../misc.html#locuaz.amberutils.chunk">[docs]</a><span class="k">def</span> <span class="nf">chunk</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">TextIO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span>
     <span class="n">linea</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span>
     <span class="k">while</span> <span class="n">linea</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
         <span class="n">text</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -120,7 +124,7 @@
         <span class="k">yield</span> <span class="n">text</span></div>
 
 
-<div class="viewcode-block" id="create_tleap_script"><a class="viewcode-back" href="../../locuaz.html#locuaz.amberutils.create_tleap_script">[docs]</a><span class="k">def</span> <span class="nf">create_tleap_script</span><span class="p">(</span><span class="n">local_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DirHandle</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FileHandle</span><span class="p">:</span>
+<div class="viewcode-block" id="create_tleap_script"><a class="viewcode-back" href="../../misc.html#locuaz.amberutils.create_tleap_script">[docs]</a><span class="k">def</span> <span class="nf">create_tleap_script</span><span class="p">(</span><span class="n">local_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DirHandle</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FileHandle</span><span class="p">:</span>
     <span class="n">in_tleap</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">local_dir</span><span class="p">,</span> <span class="s2">&quot;tleap&quot;</span><span class="p">)</span>
     <span class="n">out_contents</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -150,7 +154,7 @@
     <span class="k">return</span> <span class="n">FileHandle</span><span class="p">(</span><span class="n">out_tleap</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="fix_pdb"><a class="viewcode-back" href="../../locuaz.html#locuaz.amberutils.fix_pdb">[docs]</a><span class="k">def</span> <span class="nf">fix_pdb</span><span class="p">(</span><span class="n">in_pdb</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PDBStructure</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">out_pdb_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PDBStructure</span><span class="p">:</span>
+<div class="viewcode-block" id="fix_pdb"><a class="viewcode-back" href="../../misc.html#locuaz.amberutils.fix_pdb">[docs]</a><span class="k">def</span> <span class="nf">fix_pdb</span><span class="p">(</span><span class="n">in_pdb</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PDBStructure</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">out_pdb_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PDBStructure</span><span class="p">:</span>
     <span class="n">pdb_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">in_pdb</span><span class="p">)</span>
 
     <span class="n">pdbfixer</span> <span class="o">=</span> <span class="n">AmberPDBFixer</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pdb_path</span><span class="p">))</span>
@@ -169,7 +173,7 @@
     <span class="k">return</span> <span class="n">PDBStructure</span><span class="p">(</span><span class="n">FileHandle</span><span class="p">(</span><span class="n">out_pdb_path</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="run_tleap"><a class="viewcode-back" href="../../locuaz.html#locuaz.amberutils.run_tleap">[docs]</a><span class="k">def</span> <span class="nf">run_tleap</span><span class="p">(</span>
+<div class="viewcode-block" id="run_tleap"><a class="viewcode-back" href="../../misc.html#locuaz.amberutils.run_tleap">[docs]</a><span class="k">def</span> <span class="nf">run_tleap</span><span class="p">(</span>
     <span class="n">tleap_script</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">FileHandle</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">PDBStructure</span><span class="p">,</span> <span class="n">FileHandle</span><span class="p">,</span> <span class="n">FileHandle</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;run_tleap(): runs tleap script and then uses a local PDB to add chainID info</span>
@@ -252,7 +256,7 @@
     <span class="k">return</span> <span class="n">pdb</span><span class="p">,</span> <span class="n">prmtop</span><span class="p">,</span> <span class="n">rst</span></div>
 
 
-<div class="viewcode-block" id="amb_to_gmx"><a class="viewcode-back" href="../../locuaz.html#locuaz.amberutils.amb_to_gmx">[docs]</a><span class="k">def</span> <span class="nf">amb_to_gmx</span><span class="p">(</span>
+<div class="viewcode-block" id="amb_to_gmx"><a class="viewcode-back" href="../../misc.html#locuaz.amberutils.amb_to_gmx">[docs]</a><span class="k">def</span> <span class="nf">amb_to_gmx</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">pdb</span><span class="p">:</span> <span class="n">PDBStructure</span><span class="p">,</span>
     <span class="n">prmtop</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">FileHandle</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
@@ -286,7 +290,7 @@
     <span class="k">return</span> <span class="n">gro</span><span class="p">,</span> <span class="n">zip_top</span></div>
 
 
-<div class="viewcode-block" id="fixup_top"><a class="viewcode-back" href="../../locuaz.html#locuaz.amberutils.fixup_top">[docs]</a><span class="k">def</span> <span class="nf">fixup_top</span><span class="p">(</span>
+<div class="viewcode-block" id="fixup_top"><a class="viewcode-back" href="../../misc.html#locuaz.amberutils.fixup_top">[docs]</a><span class="k">def</span> <span class="nf">fixup_top</span><span class="p">(</span>
     <span class="n">top_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
@@ -429,7 +433,7 @@
 
 
 <span class="c1"># DEPRECATED</span>
-<div class="viewcode-block" id="run_acpype"><a class="viewcode-back" href="../../locuaz.html#locuaz.amberutils.run_acpype">[docs]</a><span class="k">def</span> <span class="nf">run_acpype</span><span class="p">(</span>
+<div class="viewcode-block" id="run_acpype"><a class="viewcode-back" href="../../misc.html#locuaz.amberutils.run_acpype">[docs]</a><span class="k">def</span> <span class="nf">run_acpype</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">prmtop</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">FileHandle</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
     <span class="n">rst</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">FileHandle</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>

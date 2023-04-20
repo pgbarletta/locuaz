@@ -11,6 +11,9 @@
   <![endif]-->
   
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -40,20 +43,21 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Installation:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html">locuaz</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Learning:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Learning</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">locuaz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../misc.html">locuaz package</a></li>
 </ul>
 
         </div>
@@ -97,7 +101,7 @@
 <span class="kn">from</span> <span class="nn">locuaz.primitives</span> <span class="kn">import</span> <span class="n">AA_MAP</span>
 
 
-<div class="viewcode-block" id="BaseMutator"><a class="viewcode-back" href="../../locuaz.html#locuaz.basemutator.BaseMutator">[docs]</a><span class="k">class</span> <span class="nc">BaseMutator</span><span class="p">:</span>
+<div class="viewcode-block" id="BaseMutator"><a class="viewcode-back" href="../../misc.html#locuaz.basemutator.BaseMutator">[docs]</a><span class="k">class</span> <span class="nc">BaseMutator</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;BaseMutator offers 4 static methods to help development of new mutators: split_solute_solvent(), fix_pdb(),</span>
 <span class="sd">    port_mutation() and add_water().</span>
 <span class="sd">    Args:</span>
@@ -110,7 +114,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bin_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">pass</span>
 
-<div class="viewcode-block" id="BaseMutator.on_pdb"><a class="viewcode-back" href="../../locuaz.html#locuaz.basemutator.BaseMutator.on_pdb">[docs]</a>    <span class="k">def</span> <span class="nf">on_pdb</span><span class="p">(</span>
+<div class="viewcode-block" id="BaseMutator.on_pdb"><a class="viewcode-back" href="../../misc.html#locuaz.basemutator.BaseMutator.on_pdb">[docs]</a>    <span class="k">def</span> <span class="nf">on_pdb</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">input_pdb</span><span class="p">:</span> <span class="n">PDBStructure</span><span class="p">,</span>
             <span class="n">local_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
@@ -121,7 +125,7 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PDBStructure</span><span class="p">:</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="BaseMutator.split_solute_solvent"><a class="viewcode-back" href="../../locuaz.html#locuaz.basemutator.BaseMutator.split_solute_solvent">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="BaseMutator.split_solute_solvent"><a class="viewcode-back" href="../../misc.html#locuaz.basemutator.BaseMutator.split_solute_solvent">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">split_solute_solvent</span><span class="p">(</span>
             <span class="n">pdb_in</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PDBStructure</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
             <span class="o">*</span><span class="p">,</span>
@@ -148,7 +152,7 @@
 
         <span class="k">return</span> <span class="n">PDBStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">nonwat_pdb_fn</span><span class="p">),</span> <span class="n">PDBStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">wation_pdb_fn</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BaseMutator.fix_pdb"><a class="viewcode-back" href="../../locuaz.html#locuaz.basemutator.BaseMutator.fix_pdb">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="BaseMutator.fix_pdb"><a class="viewcode-back" href="../../misc.html#locuaz.basemutator.BaseMutator.fix_pdb">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">fix_pdb</span><span class="p">(</span><span class="n">pdb_in</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">PDBStructure</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Uses AA_MAP to map non-standard amino acids to standard ones (eg: &#39;CY2&#39; to &#39;CYS&#39;)</span>
@@ -182,7 +186,7 @@
 
         <span class="k">return</span> <span class="n">pdb_out_fn</span></div>
 
-<div class="viewcode-block" id="BaseMutator.add_water"><a class="viewcode-back" href="../../locuaz.html#locuaz.basemutator.BaseMutator.add_water">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="BaseMutator.add_water"><a class="viewcode-back" href="../../misc.html#locuaz.basemutator.BaseMutator.add_water">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">add_water</span><span class="p">(</span>
             <span class="n">solute_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">PDBStructure</span><span class="p">],</span>
             <span class="n">solvent_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">PDBStructure</span><span class="p">],</span>
@@ -204,7 +208,7 @@
 
         <span class="k">return</span> <span class="n">PDBStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">out_path</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BaseMutator.port_mutation"><a class="viewcode-back" href="../../locuaz.html#locuaz.basemutator.BaseMutator.port_mutation">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="BaseMutator.port_mutation"><a class="viewcode-back" href="../../misc.html#locuaz.basemutator.BaseMutator.port_mutation">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">port_mutation</span><span class="p">(</span><span class="n">mutated_pdb</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">PDBStructure</span><span class="p">],</span> <span class="n">original_pdb</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">PDBStructure</span><span class="p">],</span>
                       <span class="n">mut</span><span class="p">:</span> <span class="n">Mutation</span><span class="p">,</span> <span class="n">surrounding_residues</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
                       <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
@@ -239,7 +243,7 @@
 
         <span class="k">return</span> <span class="n">out_path</span></div>
 
-<div class="viewcode-block" id="BaseMutator.assert_outfile"><a class="viewcode-back" href="../../locuaz.html#locuaz.basemutator.BaseMutator.assert_outfile">[docs]</a>    <span class="k">def</span> <span class="nf">assert_outfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">FileHandle</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">stdout</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stderr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<div class="viewcode-block" id="BaseMutator.assert_outfile"><a class="viewcode-back" href="../../misc.html#locuaz.basemutator.BaseMutator.assert_outfile">[docs]</a>    <span class="k">def</span> <span class="nf">assert_outfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">FileHandle</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">stdout</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stderr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                        <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
         <span class="n">out_file_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">out_file</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">out_file_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> error. Can&#39;t parse: </span><span class="si">{</span><span class="n">out_file_path</span><span class="si">}</span>
@@ -253,7 +257,7 @@
         <span class="k">return</span> <span class="n">out_file_path</span></div></div>
 
 
-<div class="viewcode-block" id="memorize_mutations"><a class="viewcode-back" href="../../locuaz.html#locuaz.basemutator.memorize_mutations">[docs]</a><span class="k">def</span> <span class="nf">memorize_mutations</span><span class="p">(</span>
+<div class="viewcode-block" id="memorize_mutations"><a class="viewcode-back" href="../../misc.html#locuaz.basemutator.memorize_mutations">[docs]</a><span class="k">def</span> <span class="nf">memorize_mutations</span><span class="p">(</span>
         <span class="n">work_pjct</span><span class="p">:</span> <span class="n">WorkProject</span><span class="p">,</span> <span class="n">new_epoch</span><span class="p">:</span> <span class="n">Epoch</span><span class="p">,</span> <span class="n">mutations</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Mutation</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">mutated_positions</span> <span class="o">=</span> <span class="p">[</span><span class="n">mutation</span><span class="o">.</span><span class="n">resSeq</span> <span class="k">for</span> <span class="n">mutation</span> <span class="ow">in</span> <span class="n">mutations</span><span class="p">]</span>

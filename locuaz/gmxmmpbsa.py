@@ -6,10 +6,10 @@ from pathlib import Path
 from typing import List, Union
 from warnings import warn
 
-from .abstractscoringfunction import AbstractScoringFunction
-from .complex import GROComplex
-from .fileutils import DirHandle, FileHandle
-from .molecules import ZipTopology
+from locuaz.abstractscoringfunction import AbstractScoringFunction
+from locuaz.complex import GROComplex
+from locuaz.fileutils import DirHandle, FileHandle
+from locuaz.molecules import ZipTopology
 
 
 class GmxMmpbsa(AbstractScoringFunction):

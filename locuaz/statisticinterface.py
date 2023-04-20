@@ -4,9 +4,9 @@ import concurrent.futures as cf
 import numpy as np
 from numpy.typing import NDArray
 
-from .projectutils import Iteration
-from .basestatistic import BaseStatistic
-from .interface import get_interface_surface
+from locuaz.projectutils import Iteration
+from locuaz.basestatistic import BaseStatistic
+from locuaz.interface import get_interface_surface
 
 
 class StatisticInterface(BaseStatistic):

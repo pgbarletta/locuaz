@@ -13,8 +13,8 @@ from typing import Dict, List, Final, Set, Tuple, Union, Any
 
 import yaml
 
-from .validatore import Validatore
-from .primitives import UserInputError
+from locuaz.validatore import Validatore
+from locuaz.primitives import UserInputError
 
 
 def get_dir_size(folder: Path) -> float:

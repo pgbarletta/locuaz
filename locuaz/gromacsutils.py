@@ -15,16 +15,16 @@ from biobb_gromacs.gromacs.genion import Genion
 from biobb_gromacs.gromacs.gmxselect import Gmxselect
 from biobb_gromacs.gromacs.solvate import Solvate
 
-from .complex import AbstractComplex, GROComplex
-from .fileutils import FileHandle, update_header, copy_to
-from .molecules import (
+from locuaz.complex import AbstractComplex, GROComplex
+from locuaz.fileutils import FileHandle, update_header, copy_to
+from locuaz.molecules import (
     PDBStructure,
     XtcTrajectory,
     get_tpr,
 )
-from .moleculesutils import get_gro_ziptop_from_pdb, fix_wat_naming
-from .primitives import AA_MAP
-from .primitives import launch_biobb
+from locuaz.moleculesutils import get_gro_ziptop_from_pdb, fix_wat_naming
+from locuaz.primitives import AA_MAP
+from locuaz.primitives import launch_biobb
 
 
 def image_traj(cpx: GROComplex, out_trj_fn: Path, use_tleap: bool = False, gmx_bin: str = "gmx") -> XtcTrajectory:

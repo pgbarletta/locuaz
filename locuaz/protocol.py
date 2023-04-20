@@ -3,11 +3,11 @@ import sys
 from pathlib import Path
 
 import locuaz.cli
-from .projectutils import set_logger, WorkProject
-from .epochinitializer import initialize_new_epoch
-from .pruners import prune
-from .run import run_epoch, run_npt_epoch
-from .scoring import score
+from locuaz.projectutils import set_logger, WorkProject
+from locuaz.epochinitializer import initialize_new_epoch
+from locuaz.pruners import prune
+from locuaz.run import run_epoch, run_npt_epoch
+from locuaz.scoring import score
 
 def main() -> int:
 

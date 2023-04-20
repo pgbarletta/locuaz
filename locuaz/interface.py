@@ -7,8 +7,8 @@ import freesasa
 import MDAnalysis as mda
 from Bio.SeqUtils import seq1
 
-from .molecules import PDBStructure
-from .fileutils import FileHandle
+from locuaz.molecules import PDBStructure
+from locuaz.fileutils import FileHandle
 
 
 def get_interfacing_residues(pdb_input: Union[PDBStructure, FileHandle, Path], chainIDs: List[str],

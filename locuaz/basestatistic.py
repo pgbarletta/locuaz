@@ -6,7 +6,7 @@ from abc import abstractmethod
 import numpy as np
 from numpy.typing import NDArray
 
-from .projectutils import Iteration
+from locuaz.projectutils import Iteration
 
 
 class BaseStatistic:

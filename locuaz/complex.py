@@ -5,8 +5,8 @@ from typing import Dict, Optional, Union
 
 from attrs import define, field
 
-from .fileutils import DirHandle, FileHandle, copy_to
-from .molecules import (
+from locuaz.fileutils import DirHandle, FileHandle, copy_to
+from locuaz.molecules import (
     PDBStructure,
     GROStructure,
     Topology,
@@ -21,7 +21,7 @@ from .molecules import (
     copy_mol_to,
     try_copy_to,
 )
-from .moleculesutils import get_gro_ziptop_from_pdb, get_gro_ziptop_from_pdb_tleap
+from locuaz.moleculesutils import get_gro_ziptop_from_pdb, get_gro_ziptop_from_pdb_tleap
 
 
 @define(frozen=True)

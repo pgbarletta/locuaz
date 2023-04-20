@@ -3,8 +3,8 @@ from pathlib import Path
 from concurrent.futures import ProcessPoolExecutor
 import concurrent.futures as cf
 
-from .projectutils import WorkProject
-from .runutils import MDrun
+from locuaz.projectutils import WorkProject
+from locuaz.runutils import MDrun
 
 def run_epoch(work_pjct: WorkProject) -> None:
     log = logging.getLogger(f"{work_pjct.name}")

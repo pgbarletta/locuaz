@@ -30,12 +30,12 @@ import numpy as np
 from Bio.SeqUtils import seq1
 from attrs import define, field, validators
 
-from .abstractscoringfunction import AbstractScoringFunction
-from .complex import AbstractComplex, GROComplex
-from .fileutils import FileHandle, DirHandle, copy_to
-from .primitives import AA_MAP
-from .scoringfunctions import scoringfunctions
-from .interface import get_freesasa_residues
+from locuaz.abstractscoringfunction import AbstractScoringFunction
+from locuaz.complex import AbstractComplex, GROComplex
+from locuaz.fileutils import FileHandle, DirHandle, copy_to
+from locuaz.primitives import AA_MAP
+from locuaz.scoringfunctions import scoringfunctions
+from locuaz.interface import get_freesasa_residues
 
 
 # TODO: replace own pairwise with itertools' on 3.10

@@ -1,8 +1,8 @@
 from typing import Dict, Callable, Set
 import logging
 
-from .projectutils import WorkProject
-from .pruner import choose_top_iters, adaptive_pruner, top_pruner, threshold_pruner
+from locuaz.projectutils import WorkProject
+from locuaz.pruner import choose_top_iters, adaptive_pruner, top_pruner, threshold_pruner
 
 
 pruners: Dict[str, Callable] = {

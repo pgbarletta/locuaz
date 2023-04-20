@@ -2,7 +2,7 @@ name: locuaz
 channels:
   - conda-forge
 dependencies:
-  - conda-forge::python>=3.8,<=3.10
+  - conda-forge::python>=3.9.15,<=3.10.10
   - conda-forge::scipy
   - conda-forge::ipykernel
   - conda-forge::jupyterlab
@@ -25,6 +25,7 @@ dependencies:
     - pyyaml
     - types-pyyaml
     - cerberus
+    - chemfiles
     - mdanalysis
     - biobb_gromacs==4.0.0
     - biobb_common==4.0.0

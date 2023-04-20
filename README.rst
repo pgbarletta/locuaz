@@ -6,9 +6,6 @@ locuaz
 .. image:: https://img.shields.io/pypi/v/locuaz.svg
         :target: https://pypi.python.org/pypi/locuaz
 
-.. image:: https://img.shields.io/travis/pgbarletta/locuaz.svg
-        :target: https://app.travis-ci.com/github/pgbarletta/locuaz/builds
-
 .. image:: https://readthedocs.org/projects/locuaz/badge/?version=latest
         :target: https://locuaz.readthedocs.io/en/latest/?version=latest
         :alt: Documentation Status
@@ -23,23 +20,12 @@ Looping Uniquely Catered Amino Acid Sequences
 Install
 --------
 
+Check the `Installation <https://locuaz.readthedocs.io/en/latest/installation.html>`_ section on the docs..
+
 Mambaforge is recommended instead of pure conda. Download Mambaforge from:
 
 https://github.com/conda-forge/miniforge
 
-Clone this repo and, optionally, get the **DLPacker**  submodule as well::
-
-    git clone https://github.com/pgbarletta/locuaz
-    git submodule int
-    git submodule update
-
-You'll also have to get DLPacker's `weights <https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQseE0LQ/view?usp=sharing>`_
-and place them on a dedicated ``dlpacker`` (actual name doesn't matter) directory, more info on the dedicated Mutators section.
-Finally, create the environment and install all the necessary dependencies at once:
-
-    mamba env create -f usr_deps.yaml
-
-That's it. You can also change the environment's name by editing the `name` field of the `usr_deps.yml` file, before creating it.
 
 Why there's no straight pip or conda install
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -5,7 +5,7 @@
       <sourceFolder url="file://$MODULE_DIR$/locuaz" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/bin" />
     </content>
-    <orderEntry type="jdk" jdkName="luca" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="cha" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PyDocumentationSettings">

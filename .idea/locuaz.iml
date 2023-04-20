@@ -8,9 +8,8 @@
     <orderEntry type="jdk" jdkName="cha" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
-  <component name="PyDocumentationSettings">
-    <option name="format" value="GOOGLE" />
-    <option name="myDocStringFormat" value="Google" />
+  <component name="PackageRequirementsSettings">
+    <option name="requirementsPath" value="" />
   </component>
   <component name="TestRunnerService">
     <option name="PROJECT_TEST_RUNNER" value="py.test" />

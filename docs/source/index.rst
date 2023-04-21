@@ -13,7 +13,7 @@ LOCUAZ optimization protocol
         :alt: Cite LOCUAZ
 
 .. image:: https://img.shields.io/badge/license-MIT-yellow
-        :target: ../../../LICENSE.rst
+        :target: citing.html
         :alt: License
 
 Looping Uniquely Catered Amino Acid Sequences

@@ -8,6 +8,13 @@ LOCUAZ optimization protocol
         :target: https://locuaz.readthedocs.io/en/latest/?version=latest
         :alt: Documentation Status
 
+.. image:: https://img.shields.io/badge/cite-locuaz-red
+        :target: citing.html
+        :alt: Cite LOCUAZ
+
+.. image:: https://img.shields.io/badge/license-MIT-yellow
+        :target: ../../../LICENSE.rst
+        :alt: License
 
 Looping Uniquely Catered Amino Acid Sequences
 
@@ -32,6 +39,7 @@ Looping Uniquely Catered Amino Acid Sequences
     :maxdepth: 2
     :caption: Reference
 
+    citing
     mutationgenerators
     scoringfunctions
     misc

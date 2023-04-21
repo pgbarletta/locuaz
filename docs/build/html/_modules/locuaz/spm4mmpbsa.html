@@ -99,7 +99,11 @@
 
 
 <div class="viewcode-block" id="SPM4gmxmmpbsa"><a class="viewcode-back" href="../../mutationgenerators.html#locuaz.spm4mmpbsa.SPM4gmxmmpbsa">[docs]</a><span class="k">class</span> <span class="nc">SPM4gmxmmpbsa</span><span class="p">(</span><span class="n">SPM4</span><span class="p">):</span>
-
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        overrides ``__generate_position__()``. It uses freesasa to get the interface to prevent mutations on positions</span>
+<span class="sd">        that are not in contact and also sorts residues according to the binding ΔG, according to the gmxmmpbsa</span>
+<span class="sd">        scoring function</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">epoch</span><span class="p">:</span> <span class="n">Epoch</span><span class="p">,</span>

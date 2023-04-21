@@ -59,6 +59,7 @@
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scoringfunctions.html">Scoring Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="misc.html">locuaz package</a></li>
 </ul>
 
@@ -88,6 +89,9 @@
              
   <section id="locuaz-optimization-protocol">
 <h1>LOCUAZ optimization protocol<a class="headerlink" href="#locuaz-optimization-protocol" title="Permalink to this heading"></a></h1>
+<a class="reference external image-reference" href="https://pypi.python.org/pypi/locuaz"><img alt="https://img.shields.io/pypi/v/locuaz.svg" src="https://img.shields.io/pypi/v/locuaz.svg" /></a>
+<a class="reference external image-reference" href="https://locuaz.readthedocs.io/en/latest/?version=latest"><img alt="Documentation Status" src="https://readthedocs.org/projects/locuaz/badge/?version=latest" /></a>
+<p>Looping Uniquely Catered Amino Acid Sequences</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
 <ul>
@@ -101,8 +105,10 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#stable-release">Stable release</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#from-sources">From sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#post-installation">Post-installation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a><ul>
@@ -122,7 +128,11 @@
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Learning</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#slurm">SLURM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#pbs">PBS</a></li>
+</ul>
+</li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
@@ -135,42 +145,35 @@
 <li class="toctree-l2"><a class="reference internal" href="mutationgenerators.html#module-locuaz.spm4mmpbsa">locuaz.spm4mmpbsa</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="scoringfunctions.html">Scoring Functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="scoringfunctions.html#additional-requirements-for-specific-sfs">Additional requirements for specific SFs</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="misc.html">locuaz package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.abstractscoringfunction">locuaz.abstractscoringfunction module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.amberutils">locuaz.amberutils module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.autodockvina">locuaz.autodockvina module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.bach">locuaz.bach module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.basemutator">locuaz.basemutator module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.basestatistic">locuaz.basestatistic module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.bluues">locuaz.bluues module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.bluuesbmf">locuaz.bluuesbmf module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.cli">locuaz.cli module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.complex">locuaz.complex module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.evoef2">locuaz.evoef2 module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.fileutils">locuaz.fileutils module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.fixbox">locuaz.fixbox module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.gmxmmpbsa">locuaz.gmxmmpbsa module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.gromacsutils">locuaz.gromacsutils module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.haddock">locuaz.haddock module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.interface">locuaz.interface module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.molecules">locuaz.molecules module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.moleculesutils">locuaz.moleculesutils module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.molutils">locuaz.molutils module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.mutation">locuaz.mutation module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.mutatorbiobb">locuaz.mutatorbiobb module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.mutatordlp">locuaz.mutatordlp module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.mutatordlpr">locuaz.mutatordlpr module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.mutatorevoef2">locuaz.mutatorevoef2 module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.mutators">locuaz.mutators module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.piepisa">locuaz.piepisa module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.pisa">locuaz.pisa module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.primitives">locuaz.primitives module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.projectutils">locuaz.projectutils module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.protocol">locuaz.protocol module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.pruner">locuaz.pruner module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.pruners">locuaz.pruners module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.rosetta">locuaz.rosetta module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.run">locuaz.run module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.runutils">locuaz.runutils module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html#module-locuaz.scoring">locuaz.scoring module</a></li>

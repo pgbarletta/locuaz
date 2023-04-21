@@ -1,6 +1,17 @@
 LOCUAZ optimization protocol
 ======================================
 
+.. image:: https://img.shields.io/pypi/v/locuaz.svg
+        :target: https://pypi.python.org/pypi/locuaz
+
+.. image:: https://readthedocs.org/projects/locuaz/badge/?version=latest
+        :target: https://locuaz.readthedocs.io/en/latest/?version=latest
+        :alt: Documentation Status
+
+
+Looping Uniquely Catered Amino Acid Sequences
+
+
 .. toctree::
     :maxdepth: 2
     :caption: Installation
@@ -22,6 +33,7 @@ LOCUAZ optimization protocol
     :caption: Reference
 
     mutationgenerators
+    scoringfunctions
     misc
 
 

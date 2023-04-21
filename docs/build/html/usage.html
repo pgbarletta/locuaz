@@ -55,7 +55,11 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Learning</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#slurm">SLURM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pbs">PBS</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -93,6 +97,50 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">locuaz</span>
 </pre></div>
 </div>
+<section id="slurm">
+<h2>SLURM<a class="headerlink" href="#slurm" title="Permalink to this heading"></a></h2>
+<p>An example script with SLURM:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span>!/bin/bash
+<span class="gp">#</span>SBATCH<span class="w"> </span>-N1
+<span class="gp">#</span>SBATCH<span class="w"> </span>-n4
+<span class="gp">#</span>SBATCH<span class="w"> </span>--cpus-per-task<span class="o">=</span><span class="m">32</span>
+<span class="gp">#</span>SBATCH<span class="w"> </span>--gres<span class="o">=</span>gpu:4
+<span class="gp">#</span>SBATCH<span class="w"> </span>--time<span class="o">=</span><span class="m">24</span>:00:00
+<span class="gp">#</span>SBATCH<span class="w"> </span>--job-name<span class="w"> </span>locuaz
+<span class="gp">#</span>SBATCH<span class="w"> </span>-o<span class="w"> </span>salida_locuaz
+<span class="gp">#</span>SBATCH<span class="w"> </span>-e<span class="w"> </span>error_locuaz
+<span class="gp">#</span>SBATCH<span class="w"> </span>--exclusive
+
+<span class="go">cd $SLURM_SUBMIT_DIR</span>
+<span class="go">source /m100/home/userexternal/pbarlett/.bashrc</span>
+<span class="go">conda activate locuaz</span>
+<span class="go">module load profile/lifesc</span>
+<span class="go">module load autoload gromacs/2021.4</span>
+
+<span class="go">python /home/user/locuaz/locuaz/locuaz.py config.yaml</span>
+</pre></div>
+</div>
+</section>
+<section id="pbs">
+<h2>PBS<a class="headerlink" href="#pbs" title="Permalink to this heading"></a></h2>
+<p>An example script with PBS:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span>!/bin/bash
+<span class="gp">#</span>PBS<span class="w"> </span>-N<span class="w"> </span>locuaz
+<span class="gp">#</span>PBS<span class="w"> </span>-l<span class="w"> </span><span class="nv">walltime</span><span class="o">=</span><span class="m">00</span>:15:00
+<span class="gp">#</span>PBS<span class="w"> </span>-l<span class="w"> </span><span class="k">select</span><span class="o">=</span><span class="m">1</span>:ncpus<span class="o">=</span><span class="m">20</span>:ngpus<span class="o">=</span><span class="m">2</span>:mpiprocs<span class="o">=</span><span class="m">20</span>
+<span class="gp">#</span>PBS<span class="w"> </span>-q<span class="w"> </span>debug
+
+<span class="go">cd $PBS_O_WORKDIR</span>
+<span class="go">export OMP_NUM_THREADS=4</span>
+<span class="go">source /home/pbarletta/.bashrc</span>
+<span class="go">module load gromacs/2021.4</span>
+<span class="go">module load mpi</span>
+<span class="go">conda activate locuaz</span>
+
+<span class="go">python /home/user/locuaz/locuaz/locuaz.py config.yaml</span>
+</pre></div>
+</div>
+</section>
 </section>
 
 

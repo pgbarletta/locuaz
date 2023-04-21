@@ -98,7 +98,10 @@
 
 
 <div class="viewcode-block" id="SPM4i"><a class="viewcode-back" href="../../mutationgenerators.html#locuaz.spm4i.SPM4i">[docs]</a><span class="k">class</span> <span class="nc">SPM4i</span><span class="p">(</span><span class="n">SPM4</span><span class="p">):</span>
-
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    overrides ``__generate_position__()``. It uses freesasa to get the interface to prevent mutations on positions</span>
+<span class="sd">    that are not in contact.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">epoch</span><span class="p">:</span> <span class="n">Epoch</span><span class="p">,</span>

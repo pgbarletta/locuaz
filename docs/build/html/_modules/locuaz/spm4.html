@@ -97,9 +97,15 @@
 
 
 <div class="viewcode-block" id="SPM4"><a class="viewcode-back" href="../../mutationgenerators.html#locuaz.spm4.SPM4">[docs]</a><span class="k">class</span> <span class="nc">SPM4</span><span class="p">(</span><span class="n">AbstractMutationGenerator</span><span class="p">):</span>
-    <span class="c1"># Cystein is not included.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    SPM4 generates mutations by splitting all amino acids (except CYS) in the following categories:</span>
+<span class="sd">    negative, positive, hydrophobic and ring-containing.</span>
+<span class="sd">    It will pick 1 amino acid from each category until it generates one for each branch and randomly pick a</span>
+<span class="sd">    position for all of them, hence SPM (Single Point Mutation).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">NEG_AAS</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;S&quot;</span><span class="p">,</span> <span class="s2">&quot;T&quot;</span><span class="p">)</span>
     <span class="n">POS_AAS</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;R&quot;</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;Q&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;K&quot;</span><span class="p">)</span>
+    <span class="c1"># Cystein is not included.</span>
     <span class="n">PHO_AAS</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;G&quot;</span><span class="p">,</span> <span class="s2">&quot;I&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;V&quot;</span><span class="p">)</span>
     <span class="n">RIN_AAS</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;P&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="s2">&quot;W&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">)</span>
     <span class="n">CAT_AAS</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tuple</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
@@ -139,17 +145,19 @@
     <span class="k">def</span> <span class="nf">__fill_mutations__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch</span><span class="p">:</span> <span class="n">Epoch</span><span class="p">,</span> <span class="n">branches</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mut_idx_chain</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mut_chainID</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                            <span class="n">mut_idx_residue</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mut_resSeq</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        __fill_mutation__(): generates up to `branches` different mutations</span>
-<span class="sd">        Args:</span>
-<span class="sd">            epoch:</span>
-<span class="sd">            branches:</span>
-<span class="sd">            mut_idx_chain:</span>
-<span class="sd">            mut_chainID:</span>
-<span class="sd">            mut_idx_residue:</span>
-<span class="sd">            mut_resSeq:</span>
-
-<span class="sd">        Returns: None. It fills the Generator with Mutation objects.</span>
-
+<span class="sd">        generates up to `branches` different mutations</span>
+<span class="sd">        :param epoch:</span>
+<span class="sd">        :type epoch:</span>
+<span class="sd">        :param branches:</span>
+<span class="sd">        :type branches:</span>
+<span class="sd">        :param mut_idx_chain:</span>
+<span class="sd">        :type mut_idx_chain:</span>
+<span class="sd">        :param mut_chainID:</span>
+<span class="sd">        :type mut_chainID:</span>
+<span class="sd">        :param mut_idx_residue:</span>
+<span class="sd">        :type mut_idx_residue:</span>
+<span class="sd">        :param mut_resSeq:</span>
+<span class="sd">        :type mut_resSeq:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">remaining_branches</span> <span class="o">=</span> <span class="n">branches</span>
         <span class="n">remaining_iterations</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">epoch</span><span class="o">.</span><span class="n">top_iterations</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>

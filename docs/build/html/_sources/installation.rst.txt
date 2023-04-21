@@ -4,48 +4,81 @@
 Installation
 ============
 
+Prerequisites
+---------------
+
+Given that pure conda is too slow, `Mambaforge <https://github.com/conda-forge/miniforge>`_ is
+recommended instead.
 
 Stable release
 --------------
 
-To install locuaz, run this command in your terminal:
+conda (mamba)
+^^^^^^^^^^^^^^
 
 .. code-block:: console
 
-    $ pip install locuaz
+    mamba install locuaz
 
-This is the preferred method to install locuaz, as it will always install the most recent stable release.
+A drawback from the conda install is that when installing **biobb** through conda, it comes with some heavy
+dependencies, like **GROMACS** itself.
 
-If you don't have `pip`_ installed, this `Python installation guide`_ can guide
-you through the process.
+pip
+^^^
 
-.. _pip: https://pip.pypa.io
-.. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/
+Create a conda environment from the :download:`usr_deps.yaml<../../usr_deps.yaml>`, which looks like this:
+
+.. code-block:: console
+
+    name: locuaz
+    channels:
+      - conda-forge
+    dependencies:
+      - conda-forge::python>=3.9.15,<=3.10.10
+      - conda-forge::ambertools>=22.0.0
+      - conda-forge::tensorflow
+
+Then, activate the environment and install the protocol through pip:
+
+.. code-block:: console
+
+    pip install locuaz
+
+This is more involved that installing through conda, but the resulting environment won't be as heavy.
+
+Why there's no straight pip install
+""""""""""""""""""""""""""""""""""""
+Being this a high-level protocol it has many dependencies and, unfortunately, python packaging has its quirks, so
+different developers have solved their issues in different ways.
+A straight `pip install` is out of the question given the tensorflow (for DLPacker) and ambertools (for tleap)
+dependencies which are only easily available through conda, due to their involved installation process.
 
 
 From sources
 ------------
 
-The sources for locuaz can be downloaded from the `Github repo`_.
-
-You can either clone the public repository:
+Clone the `repo`_ and, optionally, get the **DLPacker**  submodule as well:
 
 .. code-block:: console
 
-    $ git clone git://github.com/pgbarletta/locuaz
+    git clone https://github.com/pgbarletta/locuaz
+    git submodule int
+    git submodule update
 
-Or download the `tarball`_:
+Finally, create the environment and install all the necessary dependencies at once:
 
-.. code-block:: console
+    mamba env create -f dev_deps.yaml
 
-    $ curl -OJL https://github.com/pgbarletta/locuaz/tarball/master
+That's it. You can also change the environment's name by editing the `name` field of the `dev_deps.yml` file, before creating it.
 
-Once you have a copy of the source, you can install it with:
+Post-installation
+------------------
 
-.. code-block:: console
+The protocol
+You'll also have to get DLPacker's `weights <https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQseE0LQ/view?usp=sharing>`_
+and place them on a dedicated ``dlpacker`` (actual name doesn't matter) directory, more info on the dedicated Mutators section.
 
-    $ python setup.py install
 
+.. _repo: https://github.com/pgbarletta/locuaz
 
-.. _Github repo: https://github.com/pgbarletta/locuaz
-.. _tarball: https://github.com/pgbarletta/locuaz/tarball/master
+For more info, check the :ref:`Scoring Functions`

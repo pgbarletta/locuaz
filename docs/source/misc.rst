@@ -1,4 +1,4 @@
-locuaz package
+Miscelaneous
 ==============
 
 Submodules
@@ -20,22 +20,6 @@ locuaz.amberutils module
    :undoc-members:
    :show-inheritance:
 
-locuaz.autodockvina module
---------------------------
-
-.. automodule:: locuaz.autodockvina
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-locuaz.bach module
-------------------
-
-.. automodule:: locuaz.bach
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 locuaz.basemutator module
 -------------------------
 
@@ -48,22 +32,6 @@ locuaz.basestatistic module
 ---------------------------
 
 .. automodule:: locuaz.basestatistic
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-locuaz.bluues module
---------------------
-
-.. automodule:: locuaz.bluues
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-locuaz.bluuesbmf module
------------------------
-
-.. automodule:: locuaz.bluuesbmf
    :members:
    :undoc-members:
    :show-inheritance:
@@ -84,14 +52,6 @@ locuaz.complex module
    :undoc-members:
    :show-inheritance:
 
-locuaz.evoef2 module
---------------------
-
-.. automodule:: locuaz.evoef2
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 locuaz.fileutils module
 -----------------------
 
@@ -108,26 +68,10 @@ locuaz.fixbox module
    :undoc-members:
    :show-inheritance:
 
-locuaz.gmxmmpbsa module
------------------------
-
-.. automodule:: locuaz.gmxmmpbsa
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 locuaz.gromacsutils module
 --------------------------
 
 .. automodule:: locuaz.gromacsutils
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-locuaz.haddock module
----------------------
-
-.. automodule:: locuaz.haddock
    :members:
    :undoc-members:
    :show-inheritance:
@@ -172,14 +116,6 @@ locuaz.mutation module
    :undoc-members:
    :show-inheritance:
 
-locuaz.mutatorbiobb module
---------------------------
-
-.. automodule:: locuaz.mutatorbiobb
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 locuaz.mutatordlp module
 ------------------------
 
@@ -208,22 +144,6 @@ locuaz.mutators module
 ----------------------
 
 .. automodule:: locuaz.mutators
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-locuaz.piepisa module
----------------------
-
-.. automodule:: locuaz.piepisa
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-locuaz.pisa module
-------------------
-
-.. automodule:: locuaz.pisa
    :members:
    :undoc-members:
    :show-inheritance:
@@ -264,14 +184,6 @@ locuaz.pruners module
 ---------------------
 
 .. automodule:: locuaz.pruners
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-locuaz.rosetta module
----------------------
-
-.. automodule:: locuaz.rosetta
    :members:
    :undoc-members:
    :show-inheritance:

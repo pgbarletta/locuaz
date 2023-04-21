@@ -46,7 +46,7 @@ main:
             type: string
             required: true
             default: "evolve"
-            allowed: ["evolve", "run", "run_npt", "score"]
+            allowed: ["evolve", "run", "score"]
         prefix:
             type: string
             required: false

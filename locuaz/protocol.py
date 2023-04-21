@@ -22,9 +22,6 @@ def main() -> int:
     if config["main"]["mode"] == "run":
         run_epoch(work_pjct)
         return 0
-    elif config["main"]["mode"] == "run_npt":
-        run_npt_epoch(work_pjct)
-        return 0
     elif config["main"]["mode"] == "score":
         try:
             prev_id = work_pjct.epochs[-2].id

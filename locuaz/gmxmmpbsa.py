@@ -13,7 +13,7 @@ from locuaz.molecules import ZipTopology
 
 
 class GmxMmpbsa(AbstractScoringFunction):
-    bin_name = "gmx_MMPBSA"
+    bin_name = "gmxmmpbsa"
     TIMEOUT_PER_FRAME: int = 20
 
     def __init__(self, sf_dir, *, nthreads=2, mpiprocs=2) -> None:

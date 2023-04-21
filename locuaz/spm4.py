@@ -10,9 +10,15 @@ from locuaz.abstractmutationgenerator import AbstractMutationGenerator
 
 
 class SPM4(AbstractMutationGenerator):
-    # Cystein is not included.
+    """
+    SPM4 generates mutations by splitting all amino acids (except CYS) in the following categories:
+    negative, positive, hydrophobic and ring-containing.
+    It will pick 1 amino acid from each category until it generates one for each branch and randomly pick a
+    position for all of them, hence SPM (Single Point Mutation).
+    """
     NEG_AAS: Tuple = ("D", "E", "S", "T")
     POS_AAS: Tuple = ("R", "N", "Q", "H", "K")
+    # Cystein is not included.
     PHO_AAS: Tuple = ("A", "G", "I", "M", "L", "V")
     RIN_AAS: Tuple = ("P", "F", "W", "Y")
     CAT_AAS: Tuple[Tuple, Tuple, Tuple, Tuple] = (
@@ -52,17 +58,19 @@ class SPM4(AbstractMutationGenerator):
     def __fill_mutations__(self, epoch: Epoch, branches: int, mut_idx_chain: int, mut_chainID: str,
                            mut_idx_residue: int, mut_resSeq: int):
         """
-        __fill_mutation__(): generates up to `branches` different mutations
-        Args:
-            epoch:
-            branches:
-            mut_idx_chain:
-            mut_chainID:
-            mut_idx_residue:
-            mut_resSeq:
-
-        Returns: None. It fills the Generator with Mutation objects.
-
+        generates up to `branches` different mutations
+        :param epoch:
+        :type epoch:
+        :param branches:
+        :type branches:
+        :param mut_idx_chain:
+        :type mut_idx_chain:
+        :param mut_chainID:
+        :type mut_chainID:
+        :param mut_idx_residue:
+        :type mut_idx_residue:
+        :param mut_resSeq:
+        :type mut_resSeq:
         """
         remaining_branches = branches
         remaining_iterations = set(epoch.top_iterations.keys())

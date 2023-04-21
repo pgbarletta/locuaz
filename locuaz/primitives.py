@@ -40,6 +40,15 @@ class UserInputError(Exception):
     pass
 
 def launch_biobb(biobb_obj, *, can_write_console_log: bool = False, backup_dict: Optional[Path] = None) -> None:
+    """
+
+    :param biobb_obj:
+    :type biobb_obj:
+    :param can_write_console_log:
+    :type can_write_console_log:
+    :param backup_dict:
+    :type backup_dict:
+    """
     biobb_obj.can_write_console_log = can_write_console_log
     err = biobb_obj.launch()
     if err == 0 or err is None:

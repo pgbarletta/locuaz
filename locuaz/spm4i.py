@@ -11,7 +11,10 @@ from locuaz.spm4 import SPM4
 
 
 class SPM4i(SPM4):
-
+    """
+    overrides ``__generate_position__()``. It uses freesasa to get the interface to prevent mutations on positions
+    that are not in contact.
+    """
     def __init__(
             self,
             epoch: Epoch,

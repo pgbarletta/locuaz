@@ -12,7 +12,7 @@ from locuaz.gromacsutils import image_traj
 from locuaz.primitives import launch_biobb
 from locuaz.projectutils import WorkProject, Iteration
 from locuaz.utils_scoring import extract_pdbs, join_target_binder, rm_aux_scoring_files
-from locuaz.stats import run_stats
+from locuaz.statistics import run_stats
 
 
 def initialize_scoring_folder(

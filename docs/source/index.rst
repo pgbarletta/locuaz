@@ -23,27 +23,30 @@ Looping Uniquely Catered Amino Acid Sequences
     :maxdepth: 2
     :caption: Installation
 
-    readme
     installation
-
-    contributing
-    history
 
 .. toctree::
     :maxdepth: 2
     :caption: Learning
 
-    usage
+    tutorial_simple
+    tutorial_tleap
+    tutorial_ligand
+    jobsubmission
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
     :caption: Reference
 
-    citing
     mutationgenerators
     scoringfunctions
+    mutators
+    statistics
+    pruners
     misc
-
+    configurationfile
+    citing
+    history
 
 Indices and tables
 ==================

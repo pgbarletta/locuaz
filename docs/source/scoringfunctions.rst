@@ -139,6 +139,22 @@ Then, normalize the directory to the scoring functions standard:
 Classes reference
 ==================
 
+locuaz.scoringfunctions module
+------------------------------
+
+.. automodule:: locuaz.scoringfunctions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+locuaz.abstractscoringfunction module
+-------------------------------------
+
+.. automodule:: locuaz.abstractscoringfunction
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 locuaz.bach
 ---------------------------------------
 
@@ -215,6 +231,22 @@ locuaz.autodockvina
 ---------------------------------------
 
 .. automodule:: locuaz.autodockvina
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+locuaz.scoring module
+---------------------
+
+.. automodule:: locuaz.scoring
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+locuaz.utils\_scoring module
+----------------------------
+
+.. automodule:: locuaz.utils_scoring
    :members:
    :undoc-members:
    :show-inheritance:

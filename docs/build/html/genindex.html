@@ -45,20 +45,25 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="readme.html">locuaz</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Learning</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_simple.html">Tutorial: running a simple optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_tleap.html">Tutorial: using tleap topologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_ligand.html">Tutorial: optimizing an antibody against a ligand</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jobsubmission.html">Job submission</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="citing.html">Citing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mutationgenerators.html">Mutation Generators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="scoringfunctions.html">Scoring Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mutators.html">Mutators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="statistics.html">Stats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pruners.html">Pruners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configurationfile.html">YAML configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="citing.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
 <li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellaneous</a></li>
 </ul>
 
@@ -123,11 +128,11 @@
 </li>
       <li><a href="mutationgenerators.html#locuaz.abstractmutationgenerator.AbstractMutationGenerator">AbstractMutationGenerator (class in locuaz.abstractmutationgenerator)</a>
 </li>
-      <li><a href="misc.html#locuaz.abstractscoringfunction.AbstractScoringFunction">AbstractScoringFunction (class in locuaz.abstractscoringfunction)</a>
+      <li><a href="scoringfunctions.html#locuaz.abstractscoringfunction.AbstractScoringFunction">AbstractScoringFunction (class in locuaz.abstractscoringfunction)</a>
 </li>
-      <li><a href="misc.html#locuaz.pruner.adaptive_pruner">adaptive_pruner() (in module locuaz.pruner)</a>
+      <li><a href="pruners.html#locuaz.pruner.adaptive_pruner">adaptive_pruner() (in module locuaz.pruner)</a>
 </li>
-      <li><a href="misc.html#locuaz.basemutator.BaseMutator.add_water">add_water() (locuaz.basemutator.BaseMutator static method)</a>
+      <li><a href="mutators.html#locuaz.basemutator.BaseMutator.add_water">add_water() (locuaz.basemutator.BaseMutator static method)</a>
 </li>
       <li><a href="misc.html#locuaz.amberutils.amb_to_gmx">amb_to_gmx() (in module locuaz.amberutils)</a>
 </li>
@@ -137,7 +142,7 @@
 </li>
       <li><a href="misc.html#locuaz.cli.append_iterations">append_iterations() (in module locuaz.cli)</a>
 </li>
-      <li><a href="misc.html#locuaz.basemutator.BaseMutator.assert_outfile">assert_outfile() (locuaz.basemutator.BaseMutator method)</a>
+      <li><a href="mutators.html#locuaz.basemutator.BaseMutator.assert_outfile">assert_outfile() (locuaz.basemutator.BaseMutator method)</a>
 
       <ul>
         <li><a href="misc.html#locuaz.runutils.MDrun.assert_outfile">(locuaz.runutils.MDrun method)</a>
@@ -147,7 +152,7 @@
 </li>
       <li><a href="scoringfunctions.html#locuaz.autodockvina.AutodockVina">AutodockVina (class in locuaz.autodockvina)</a>
 </li>
-      <li><a href="misc.html#locuaz.basestatistic.BaseStatistic.available_warnings">available_warnings (locuaz.basestatistic.BaseStatistic attribute)</a>
+      <li><a href="statistics.html#locuaz.basestatistic.BaseStatistic.available_warnings">available_warnings (locuaz.basestatistic.BaseStatistic attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -161,20 +166,20 @@
 </li>
       <li><a href="misc.html#locuaz.cli.backup_iteration">backup_iteration() (in module locuaz.cli)</a>
 </li>
-      <li><a href="misc.html#locuaz.basemutator.BaseMutator">BaseMutator (class in locuaz.basemutator)</a>
+      <li><a href="mutators.html#locuaz.basemutator.BaseMutator">BaseMutator (class in locuaz.basemutator)</a>
 </li>
-      <li><a href="misc.html#locuaz.basestatistic.BaseStatistic">BaseStatistic (class in locuaz.basestatistic)</a>
+      <li><a href="statistics.html#locuaz.basestatistic.BaseStatistic">BaseStatistic (class in locuaz.basestatistic)</a>
 </li>
-      <li><a href="misc.html#locuaz.pruner.beats_old_iter">beats_old_iter() (in module locuaz.pruner)</a>
+      <li><a href="pruners.html#locuaz.pruner.beats_old_iter">beats_old_iter() (in module locuaz.pruner)</a>
 </li>
       <li><a href="scoringfunctions.html#locuaz.gmxmmpbsa.GmxMmpbsa.bin_name">bin_name (locuaz.gmxmmpbsa.GmxMmpbsa attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="misc.html#locuaz.abstractscoringfunction.AbstractScoringFunction.bin_path">bin_path (locuaz.abstractscoringfunction.AbstractScoringFunction attribute)</a>
+      <li><a href="scoringfunctions.html#locuaz.abstractscoringfunction.AbstractScoringFunction.bin_path">bin_path (locuaz.abstractscoringfunction.AbstractScoringFunction attribute)</a>
 
       <ul>
-        <li><a href="misc.html#locuaz.mutatorevoef2.MutatorEvoEF2.bin_path">(locuaz.mutatorevoef2.MutatorEvoEF2 attribute)</a>
+        <li><a href="mutators.html#locuaz.mutatorevoef2.MutatorEvoEF2.bin_path">(locuaz.mutatorevoef2.MutatorEvoEF2 attribute)</a>
 </li>
       </ul></li>
       <li><a href="misc.html#locuaz.runutils.MDrun.binary_path">binary_path (locuaz.runutils.MDrun attribute)</a>
@@ -207,13 +212,13 @@
         <li><a href="misc.html#locuaz.molecules.catenate_pdbs">(in module locuaz.molecules)</a>
 </li>
       </ul></li>
-      <li><a href="misc.html#locuaz.mutation.Mutation.chainID">chainID (locuaz.mutation.Mutation attribute)</a>
+      <li><a href="mutators.html#locuaz.mutation.Mutation.chainID">chainID (locuaz.mutation.Mutation attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.mutation.Mutation.chainID_idx">chainID_idx (locuaz.mutation.Mutation attribute)</a>
+      <li><a href="mutators.html#locuaz.mutation.Mutation.chainID_idx">chainID_idx (locuaz.mutation.Mutation attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.projectutils.Iteration.chainIDs">chainIDs (locuaz.projectutils.Iteration attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.mutatordlp.MutatorDLPacker.charges_path">charges_path (locuaz.mutatordlp.MutatorDLPacker attribute)</a>
+      <li><a href="mutators.html#locuaz.mutatordlp.MutatorDLPacker.charges_path">charges_path (locuaz.mutatordlp.MutatorDLPacker attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.cli.check_gmxmmpbsa">check_gmxmmpbsa() (in module locuaz.cli)</a>
 </li>
@@ -221,7 +226,7 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="misc.html#locuaz.pruner.choose_top_iters">choose_top_iters() (in module locuaz.pruner)</a>
+      <li><a href="pruners.html#locuaz.pruner.choose_top_iters">choose_top_iters() (in module locuaz.pruner)</a>
 </li>
       <li><a href="misc.html#locuaz.amberutils.chunk">chunk() (in module locuaz.amberutils)</a>
 </li>
@@ -273,7 +278,7 @@
 </li>
       <li><a href="misc.html#locuaz.fileutils.DirHandle">DirHandle (class in locuaz.fileutils)</a>
 </li>
-      <li><a href="misc.html#locuaz.scoring.discard_iteration">discard_iteration() (in module locuaz.scoring)</a>
+      <li><a href="scoringfunctions.html#locuaz.scoring.discard_iteration">discard_iteration() (in module locuaz.scoring)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -301,7 +306,7 @@
 </li>
       <li><a href="misc.html#locuaz.fileutils.FileHandle.extension">extension (locuaz.fileutils.FileHandle attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.utils_scoring.extract_pdbs">extract_pdbs() (in module locuaz.utils_scoring)</a>
+      <li><a href="scoringfunctions.html#locuaz.utils_scoring.extract_pdbs">extract_pdbs() (in module locuaz.utils_scoring)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -330,7 +335,7 @@
       <li><a href="misc.html#locuaz.amberutils.fix_pdb">fix_pdb() (in module locuaz.amberutils)</a>
 
       <ul>
-        <li><a href="misc.html#locuaz.basemutator.BaseMutator.fix_pdb">(locuaz.basemutator.BaseMutator static method)</a>
+        <li><a href="mutators.html#locuaz.basemutator.BaseMutator.fix_pdb">(locuaz.basemutator.BaseMutator static method)</a>
 </li>
       </ul></li>
       <li><a href="misc.html#locuaz.molecules.fix_pdb_gro">fix_pdb_gro() (in module locuaz.molecules)</a>
@@ -343,7 +348,7 @@
 </li>
       <li><a href="misc.html#locuaz.fileutils.DirHandle.force">force (locuaz.fileutils.DirHandle attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.basestatistic.BaseStatistic.frames_path">frames_path (locuaz.basestatistic.BaseStatistic attribute)</a>
+      <li><a href="statistics.html#locuaz.basestatistic.BaseStatistic.frames_path">frames_path (locuaz.basestatistic.BaseStatistic attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.complex.AbstractComplex.from_complex">from_complex() (locuaz.complex.AbstractComplex class method)</a>
 
@@ -403,7 +408,7 @@
 </li>
       <li><a href="misc.html#locuaz.fixbox.get_matrix">get_matrix() (in module locuaz.fixbox)</a>
 </li>
-      <li><a href="misc.html#locuaz.mutation.Mutation.get_mda_sel">get_mda_sel() (locuaz.mutation.Mutation method)</a>
+      <li><a href="mutators.html#locuaz.mutation.Mutation.get_mda_sel">get_mda_sel() (locuaz.mutation.Mutation method)</a>
 </li>
       <li><a href="misc.html#locuaz.projectutils.WorkProject.get_mdps">get_mdps() (locuaz.projectutils.WorkProject method)</a>
 </li>
@@ -475,7 +480,7 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="misc.html#locuaz.scoring.initialize_scoring_folder">initialize_scoring_folder() (in module locuaz.scoring)</a>
+      <li><a href="scoringfunctions.html#locuaz.scoring.initialize_scoring_folder">initialize_scoring_folder() (in module locuaz.scoring)</a>
 </li>
       <li><a href="misc.html#locuaz.cli.is_not_epoch_0">is_not_epoch_0() (in module locuaz.cli)</a>
 </li>
@@ -493,7 +498,7 @@
 <h2 id="J">J</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="misc.html#locuaz.utils_scoring.join_target_binder">join_target_binder() (in module locuaz.utils_scoring)</a>
+      <li><a href="scoringfunctions.html#locuaz.utils_scoring.join_target_binder">join_target_binder() (in module locuaz.utils_scoring)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -505,7 +510,7 @@
 </li>
       <li><a href="misc.html#locuaz.primitives.launch_biobb">launch_biobb() (in module locuaz.primitives)</a>
 </li>
-      <li><a href="misc.html#locuaz.mutatordlp.MutatorDLPacker.lib_path">lib_path (locuaz.mutatordlp.MutatorDLPacker attribute)</a>
+      <li><a href="mutators.html#locuaz.mutatordlp.MutatorDLPacker.lib_path">lib_path (locuaz.mutatordlp.MutatorDLPacker attribute)</a>
 </li>
       <li>
     locuaz.abstractmutationgenerator
@@ -518,7 +523,7 @@
     locuaz.abstractscoringfunction
 
       <ul>
-        <li><a href="misc.html#module-locuaz.abstractscoringfunction">module</a>
+        <li><a href="scoringfunctions.html#module-locuaz.abstractscoringfunction">module</a>
 </li>
       </ul></li>
       <li>
@@ -546,14 +551,14 @@
     locuaz.basemutator
 
       <ul>
-        <li><a href="misc.html#module-locuaz.basemutator">module</a>
+        <li><a href="mutators.html#module-locuaz.basemutator">module</a>
 </li>
       </ul></li>
       <li>
     locuaz.basestatistic
 
       <ul>
-        <li><a href="misc.html#module-locuaz.basestatistic">module</a>
+        <li><a href="statistics.html#module-locuaz.basestatistic">module</a>
 </li>
       </ul></li>
       <li>
@@ -658,7 +663,7 @@
     locuaz.mutation
 
       <ul>
-        <li><a href="misc.html#module-locuaz.mutation">module</a>
+        <li><a href="mutators.html#module-locuaz.mutation">module</a>
 </li>
       </ul></li>
   </ul></td>
@@ -667,28 +672,28 @@
     locuaz.mutatordlp
 
       <ul>
-        <li><a href="misc.html#module-locuaz.mutatordlp">module</a>
+        <li><a href="mutators.html#module-locuaz.mutatordlp">module</a>
 </li>
       </ul></li>
       <li>
     locuaz.mutatordlpr
 
       <ul>
-        <li><a href="misc.html#module-locuaz.mutatordlpr">module</a>
+        <li><a href="mutators.html#module-locuaz.mutatordlpr">module</a>
 </li>
       </ul></li>
       <li>
     locuaz.mutatorevoef2
 
       <ul>
-        <li><a href="misc.html#module-locuaz.mutatorevoef2">module</a>
+        <li><a href="mutators.html#module-locuaz.mutatorevoef2">module</a>
 </li>
       </ul></li>
       <li>
     locuaz.mutators
 
       <ul>
-        <li><a href="misc.html#module-locuaz.mutators">module</a>
+        <li><a href="mutators.html#module-locuaz.mutators">module</a>
 </li>
       </ul></li>
       <li>
@@ -730,14 +735,14 @@
     locuaz.pruner
 
       <ul>
-        <li><a href="misc.html#module-locuaz.pruner">module</a>
+        <li><a href="pruners.html#module-locuaz.pruner">module</a>
 </li>
       </ul></li>
       <li>
     locuaz.pruners
 
       <ul>
-        <li><a href="misc.html#module-locuaz.pruners">module</a>
+        <li><a href="pruners.html#module-locuaz.pruners">module</a>
 </li>
       </ul></li>
       <li>
@@ -765,14 +770,14 @@
     locuaz.scoring
 
       <ul>
-        <li><a href="misc.html#module-locuaz.scoring">module</a>
+        <li><a href="scoringfunctions.html#module-locuaz.scoring">module</a>
 </li>
       </ul></li>
       <li>
     locuaz.scoringfunctions
 
       <ul>
-        <li><a href="misc.html#module-locuaz.scoringfunctions">module</a>
+        <li><a href="scoringfunctions.html#module-locuaz.scoringfunctions">module</a>
 </li>
       </ul></li>
       <li>
@@ -800,28 +805,21 @@
     locuaz.statisticcmdistance
 
       <ul>
-        <li><a href="misc.html#module-locuaz.statisticcmdistance">module</a>
+        <li><a href="statistics.html#module-locuaz.statisticcmdistance">module</a>
 </li>
       </ul></li>
       <li>
     locuaz.statisticinterface
 
       <ul>
-        <li><a href="misc.html#module-locuaz.statisticinterface">module</a>
-</li>
-      </ul></li>
-      <li>
-    locuaz.stats
-
-      <ul>
-        <li><a href="misc.html#module-locuaz.stats">module</a>
+        <li><a href="statistics.html#module-locuaz.statisticinterface">module</a>
 </li>
       </ul></li>
       <li>
     locuaz.utils_scoring
 
       <ul>
-        <li><a href="misc.html#module-locuaz.utils_scoring">module</a>
+        <li><a href="scoringfunctions.html#module-locuaz.utils_scoring">module</a>
 </li>
       </ul></li>
       <li>
@@ -855,7 +853,7 @@
 </li>
       <li><a href="misc.html#locuaz.projectutils.Iteration.mean_scores">mean_scores (locuaz.projectutils.Iteration attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.basemutator.memorize_mutations">memorize_mutations() (in module locuaz.basemutator)</a>
+      <li><a href="mutators.html#locuaz.basemutator.memorize_mutations">memorize_mutations() (in module locuaz.basemutator)</a>
 </li>
       <li><a href="misc.html#locuaz.runutils.MDrun.min">min() (locuaz.runutils.MDrun class method)</a>
 </li>
@@ -865,7 +863,7 @@
       <ul>
         <li><a href="mutationgenerators.html#module-locuaz.abstractmutationgenerator">locuaz.abstractmutationgenerator</a>
 </li>
-        <li><a href="misc.html#module-locuaz.abstractscoringfunction">locuaz.abstractscoringfunction</a>
+        <li><a href="scoringfunctions.html#module-locuaz.abstractscoringfunction">locuaz.abstractscoringfunction</a>
 </li>
         <li><a href="misc.html#module-locuaz.amberutils">locuaz.amberutils</a>
 </li>
@@ -873,9 +871,9 @@
 </li>
         <li><a href="scoringfunctions.html#module-locuaz.bach">locuaz.bach</a>
 </li>
-        <li><a href="misc.html#module-locuaz.basemutator">locuaz.basemutator</a>
+        <li><a href="mutators.html#module-locuaz.basemutator">locuaz.basemutator</a>
 </li>
-        <li><a href="misc.html#module-locuaz.basestatistic">locuaz.basestatistic</a>
+        <li><a href="statistics.html#module-locuaz.basestatistic">locuaz.basestatistic</a>
 </li>
         <li><a href="scoringfunctions.html#module-locuaz.bluues">locuaz.bluues</a>
 </li>
@@ -905,15 +903,15 @@
 </li>
         <li><a href="misc.html#module-locuaz.molutils">locuaz.molutils</a>
 </li>
-        <li><a href="misc.html#module-locuaz.mutation">locuaz.mutation</a>
+        <li><a href="mutators.html#module-locuaz.mutation">locuaz.mutation</a>
 </li>
-        <li><a href="misc.html#module-locuaz.mutatordlp">locuaz.mutatordlp</a>
+        <li><a href="mutators.html#module-locuaz.mutatordlp">locuaz.mutatordlp</a>
 </li>
-        <li><a href="misc.html#module-locuaz.mutatordlpr">locuaz.mutatordlpr</a>
+        <li><a href="mutators.html#module-locuaz.mutatordlpr">locuaz.mutatordlpr</a>
 </li>
-        <li><a href="misc.html#module-locuaz.mutatorevoef2">locuaz.mutatorevoef2</a>
+        <li><a href="mutators.html#module-locuaz.mutatorevoef2">locuaz.mutatorevoef2</a>
 </li>
-        <li><a href="misc.html#module-locuaz.mutators">locuaz.mutators</a>
+        <li><a href="mutators.html#module-locuaz.mutators">locuaz.mutators</a>
 </li>
         <li><a href="scoringfunctions.html#module-locuaz.piepisa">locuaz.piepisa</a>
 </li>
@@ -925,9 +923,9 @@
 </li>
         <li><a href="misc.html#module-locuaz.protocol">locuaz.protocol</a>
 </li>
-        <li><a href="misc.html#module-locuaz.pruner">locuaz.pruner</a>
+        <li><a href="pruners.html#module-locuaz.pruner">locuaz.pruner</a>
 </li>
-        <li><a href="misc.html#module-locuaz.pruners">locuaz.pruners</a>
+        <li><a href="pruners.html#module-locuaz.pruners">locuaz.pruners</a>
 </li>
         <li><a href="scoringfunctions.html#module-locuaz.rosetta">locuaz.rosetta</a>
 </li>
@@ -935,9 +933,9 @@
 </li>
         <li><a href="misc.html#module-locuaz.runutils">locuaz.runutils</a>
 </li>
-        <li><a href="misc.html#module-locuaz.scoring">locuaz.scoring</a>
+        <li><a href="scoringfunctions.html#module-locuaz.scoring">locuaz.scoring</a>
 </li>
-        <li><a href="misc.html#module-locuaz.scoringfunctions">locuaz.scoringfunctions</a>
+        <li><a href="scoringfunctions.html#module-locuaz.scoringfunctions">locuaz.scoringfunctions</a>
 </li>
         <li><a href="mutationgenerators.html#module-locuaz.spm4">locuaz.spm4</a>
 </li>
@@ -945,20 +943,18 @@
 </li>
         <li><a href="mutationgenerators.html#module-locuaz.spm4mmpbsa">locuaz.spm4mmpbsa</a>
 </li>
-        <li><a href="misc.html#module-locuaz.statisticcmdistance">locuaz.statisticcmdistance</a>
+        <li><a href="statistics.html#module-locuaz.statisticcmdistance">locuaz.statisticcmdistance</a>
 </li>
-        <li><a href="misc.html#module-locuaz.statisticinterface">locuaz.statisticinterface</a>
+        <li><a href="statistics.html#module-locuaz.statisticinterface">locuaz.statisticinterface</a>
 </li>
-        <li><a href="misc.html#module-locuaz.stats">locuaz.stats</a>
-</li>
-        <li><a href="misc.html#module-locuaz.utils_scoring">locuaz.utils_scoring</a>
+        <li><a href="scoringfunctions.html#module-locuaz.utils_scoring">locuaz.utils_scoring</a>
 </li>
         <li><a href="misc.html#module-locuaz.validatore">locuaz.validatore</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="misc.html#locuaz.abstractscoringfunction.AbstractScoringFunction.mpiprocs">mpiprocs (locuaz.abstractscoringfunction.AbstractScoringFunction attribute)</a>
+      <li><a href="scoringfunctions.html#locuaz.abstractscoringfunction.AbstractScoringFunction.mpiprocs">mpiprocs (locuaz.abstractscoringfunction.AbstractScoringFunction attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.projectutils.WorkProject.mutated_aminoacids">mutated_aminoacids (locuaz.projectutils.WorkProject attribute)</a>
 </li>
@@ -968,15 +964,15 @@
         <li><a href="misc.html#locuaz.projectutils.WorkProject.mutated_positions">(locuaz.projectutils.WorkProject attribute)</a>
 </li>
       </ul></li>
-      <li><a href="misc.html#locuaz.mutation.Mutation">Mutation (class in locuaz.mutation)</a>
+      <li><a href="mutators.html#locuaz.mutation.Mutation">Mutation (class in locuaz.mutation)</a>
 </li>
       <li><a href="mutationgenerators.html#locuaz.spm4.SPM4.mutations">mutations (locuaz.spm4.SPM4 attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.mutatordlp.MutatorDLPacker">MutatorDLPacker (class in locuaz.mutatordlp)</a>
+      <li><a href="mutators.html#locuaz.mutatordlp.MutatorDLPacker">MutatorDLPacker (class in locuaz.mutatordlp)</a>
 </li>
-      <li><a href="misc.html#locuaz.mutatordlpr.MutatorDLPackerReconstruct">MutatorDLPackerReconstruct (class in locuaz.mutatordlpr)</a>
+      <li><a href="mutators.html#locuaz.mutatordlpr.MutatorDLPackerReconstruct">MutatorDLPackerReconstruct (class in locuaz.mutatordlpr)</a>
 </li>
-      <li><a href="misc.html#locuaz.mutatorevoef2.MutatorEvoEF2">MutatorEvoEF2 (class in locuaz.mutatorevoef2)</a>
+      <li><a href="mutators.html#locuaz.mutatorevoef2.MutatorEvoEF2">MutatorEvoEF2 (class in locuaz.mutatorevoef2)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -986,10 +982,10 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="mutationgenerators.html#locuaz.spm4.SPM4.N_CAT">N_CAT (locuaz.spm4.SPM4 attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.abstractscoringfunction.AbstractScoringFunction.name">name (locuaz.abstractscoringfunction.AbstractScoringFunction attribute)</a>
+      <li><a href="scoringfunctions.html#locuaz.abstractscoringfunction.AbstractScoringFunction.name">name (locuaz.abstractscoringfunction.AbstractScoringFunction attribute)</a>
 
       <ul>
-        <li><a href="misc.html#locuaz.basestatistic.BaseStatistic.name">(locuaz.basestatistic.BaseStatistic attribute)</a>
+        <li><a href="statistics.html#locuaz.basestatistic.BaseStatistic.name">(locuaz.basestatistic.BaseStatistic attribute)</a>
 </li>
         <li><a href="misc.html#locuaz.complex.AbstractComplex.name">(locuaz.complex.AbstractComplex attribute)</a>
 </li>
@@ -1010,11 +1006,11 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="misc.html#locuaz.mutation.Mutation.new_aa">new_aa (locuaz.mutation.Mutation attribute)</a>
+      <li><a href="mutators.html#locuaz.mutation.Mutation.new_aa">new_aa (locuaz.mutation.Mutation attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.projectutils.WorkProject.new_epoch">new_epoch() (locuaz.projectutils.WorkProject method)</a>
 </li>
-      <li><a href="misc.html#locuaz.mutation.Mutation.new_name_resname">new_name_resname() (locuaz.mutation.Mutation method)</a>
+      <li><a href="mutators.html#locuaz.mutation.Mutation.new_name_resname">new_name_resname() (locuaz.mutation.Mutation method)</a>
 </li>
       <li><a href="misc.html#locuaz.validatore.Validatore.normalization_rules">normalization_rules (locuaz.validatore.Validatore attribute)</a>
 </li>
@@ -1022,7 +1018,7 @@
 </li>
       <li><a href="misc.html#locuaz.projectutils.Epoch.npt_done">npt_done (locuaz.projectutils.Epoch attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.abstractscoringfunction.AbstractScoringFunction.nthreads">nthreads (locuaz.abstractscoringfunction.AbstractScoringFunction attribute)</a>
+      <li><a href="scoringfunctions.html#locuaz.abstractscoringfunction.AbstractScoringFunction.nthreads">nthreads (locuaz.abstractscoringfunction.AbstractScoringFunction attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.runutils.MDrun.num_threads_mpi">num_threads_mpi (locuaz.runutils.MDrun attribute)</a>
 </li>
@@ -1038,16 +1034,16 @@
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="misc.html#locuaz.mutation.Mutation.old_aa">old_aa (locuaz.mutation.Mutation attribute)</a>
+      <li><a href="mutators.html#locuaz.mutation.Mutation.old_aa">old_aa (locuaz.mutation.Mutation attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.basemutator.BaseMutator.on_pdb">on_pdb() (locuaz.basemutator.BaseMutator method)</a>
+      <li><a href="mutators.html#locuaz.basemutator.BaseMutator.on_pdb">on_pdb() (locuaz.basemutator.BaseMutator method)</a>
 
       <ul>
-        <li><a href="misc.html#locuaz.mutatordlp.MutatorDLPacker.on_pdb">(locuaz.mutatordlp.MutatorDLPacker method)</a>
+        <li><a href="mutators.html#locuaz.mutatordlp.MutatorDLPacker.on_pdb">(locuaz.mutatordlp.MutatorDLPacker method)</a>
 </li>
-        <li><a href="misc.html#locuaz.mutatordlpr.MutatorDLPackerReconstruct.on_pdb">(locuaz.mutatordlpr.MutatorDLPackerReconstruct method)</a>
+        <li><a href="mutators.html#locuaz.mutatordlpr.MutatorDLPackerReconstruct.on_pdb">(locuaz.mutatordlpr.MutatorDLPackerReconstruct method)</a>
 </li>
-        <li><a href="misc.html#locuaz.mutatorevoef2.MutatorEvoEF2.on_pdb">(locuaz.mutatorevoef2.MutatorEvoEF2 method)</a>
+        <li><a href="mutators.html#locuaz.mutatorevoef2.MutatorEvoEF2.on_pdb">(locuaz.mutatorevoef2.MutatorEvoEF2 method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -1084,7 +1080,7 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="misc.html#locuaz.statisticcmdistance.StatisticCMDistance.pdb_top">pdb_top (locuaz.statisticcmdistance.StatisticCMDistance attribute)</a>
+      <li><a href="statistics.html#locuaz.statisticcmdistance.StatisticCMDistance.pdb_top">pdb_top (locuaz.statisticcmdistance.StatisticCMDistance attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.molecules.PDBStructure">PDBStructure (class in locuaz.molecules)</a>
 </li>
@@ -1096,11 +1092,11 @@
 </li>
       <li><a href="scoringfunctions.html#locuaz.pisa.Pisa">Pisa (class in locuaz.pisa)</a>
 </li>
-      <li><a href="misc.html#locuaz.basemutator.BaseMutator.port_mutation">port_mutation() (locuaz.basemutator.BaseMutator static method)</a>
+      <li><a href="mutators.html#locuaz.basemutator.BaseMutator.port_mutation">port_mutation() (locuaz.basemutator.BaseMutator static method)</a>
 </li>
       <li><a href="mutationgenerators.html#locuaz.spm4.SPM4.POS_AAS">POS_AAS (locuaz.spm4.SPM4 attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.pruners.prune">prune() (in module locuaz.pruners)</a>
+      <li><a href="pruners.html#locuaz.pruners.prune">prune() (in module locuaz.pruners)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1108,7 +1104,7 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="misc.html#locuaz.mutatordlpr.MutatorDLPackerReconstruct.radius">radius (locuaz.mutatordlpr.MutatorDLPackerReconstruct attribute)</a>
+      <li><a href="mutators.html#locuaz.mutatordlpr.MutatorDLPackerReconstruct.radius">radius (locuaz.mutatordlpr.MutatorDLPackerReconstruct attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.molecules.read_ndx">read_ndx() (in module locuaz.molecules)</a>
 </li>
@@ -1128,23 +1124,23 @@
 </li>
       <li><a href="misc.html#locuaz.projectutils.Iteration.resnames">resnames (locuaz.projectutils.Iteration attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.mutation.Mutation.resSeq">resSeq (locuaz.mutation.Mutation attribute)</a>
+      <li><a href="mutators.html#locuaz.mutation.Mutation.resSeq">resSeq (locuaz.mutation.Mutation attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.mutation.Mutation.resSeq_idx">resSeq_idx (locuaz.mutation.Mutation attribute)</a>
-</li>
-      <li><a href="misc.html#locuaz.projectutils.Iteration.resSeqs">resSeqs (locuaz.projectutils.Iteration attribute)</a>
+      <li><a href="mutators.html#locuaz.mutation.Mutation.resSeq_idx">resSeq_idx (locuaz.mutation.Mutation attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="misc.html#locuaz.basestatistic.BaseStatistic.result">result (locuaz.basestatistic.BaseStatistic attribute)</a>
+      <li><a href="misc.html#locuaz.projectutils.Iteration.resSeqs">resSeqs (locuaz.projectutils.Iteration attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.abstractscoringfunction.AbstractScoringFunction.results_dir">results_dir (locuaz.abstractscoringfunction.AbstractScoringFunction attribute)</a>
+      <li><a href="statistics.html#locuaz.basestatistic.BaseStatistic.result">result (locuaz.basestatistic.BaseStatistic attribute)</a>
+</li>
+      <li><a href="scoringfunctions.html#locuaz.abstractscoringfunction.AbstractScoringFunction.results_dir">results_dir (locuaz.abstractscoringfunction.AbstractScoringFunction attribute)</a>
 </li>
       <li><a href="mutationgenerators.html#locuaz.spm4.SPM4.RIN_AAS">RIN_AAS (locuaz.spm4.SPM4 attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.utils_scoring.rm_aux_scoring_files">rm_aux_scoring_files() (in module locuaz.utils_scoring)</a>
+      <li><a href="scoringfunctions.html#locuaz.utils_scoring.rm_aux_scoring_files">rm_aux_scoring_files() (in module locuaz.utils_scoring)</a>
 </li>
-      <li><a href="misc.html#locuaz.abstractscoringfunction.AbstractScoringFunction.root_dir">root_dir (locuaz.abstractscoringfunction.AbstractScoringFunction attribute)</a>
+      <li><a href="scoringfunctions.html#locuaz.abstractscoringfunction.AbstractScoringFunction.root_dir">root_dir (locuaz.abstractscoringfunction.AbstractScoringFunction attribute)</a>
 </li>
       <li><a href="scoringfunctions.html#locuaz.rosetta.Rosetta">Rosetta (class in locuaz.rosetta)</a>
 </li>
@@ -1158,8 +1154,6 @@
 </li>
       <li><a href="misc.html#locuaz.run.run_npt_epoch">run_npt_epoch() (in module locuaz.run)</a>
 </li>
-      <li><a href="misc.html#locuaz.stats.run_stats">run_stats() (in module locuaz.stats)</a>
-</li>
       <li><a href="misc.html#locuaz.amberutils.run_tleap">run_tleap() (in module locuaz.amberutils)</a>
 </li>
   </ul></td>
@@ -1168,11 +1162,11 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="misc.html#locuaz.scoring.score">score() (in module locuaz.scoring)</a>
+      <li><a href="scoringfunctions.html#locuaz.scoring.score">score() (in module locuaz.scoring)</a>
 </li>
       <li><a href="misc.html#locuaz.projectutils.Iteration.score_dir">score_dir (locuaz.projectutils.Iteration attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.scoring.score_frames">score_frames() (in module locuaz.scoring)</a>
+      <li><a href="scoringfunctions.html#locuaz.scoring.score_frames">score_frames() (in module locuaz.scoring)</a>
 </li>
       <li><a href="misc.html#locuaz.projectutils.WorkProject.scorers">scorers (locuaz.projectutils.WorkProject attribute)</a>
 </li>
@@ -1206,7 +1200,7 @@
 </li>
       <li><a href="misc.html#locuaz.molutils.split_solute_and_solvent_old">split_solute_and_solvent_old() (in module locuaz.molutils)</a>
 </li>
-      <li><a href="misc.html#locuaz.basemutator.BaseMutator.split_solute_solvent">split_solute_solvent() (locuaz.basemutator.BaseMutator static method)</a>
+      <li><a href="mutators.html#locuaz.basemutator.BaseMutator.split_solute_solvent">split_solute_solvent() (locuaz.basemutator.BaseMutator static method)</a>
 </li>
       <li><a href="mutationgenerators.html#locuaz.spm4.SPM4">SPM4 (class in locuaz.spm4)</a>
 </li>
@@ -1214,13 +1208,13 @@
 </li>
       <li><a href="mutationgenerators.html#locuaz.spm4i.SPM4i">SPM4i (class in locuaz.spm4i)</a>
 </li>
-      <li><a href="misc.html#locuaz.statisticcmdistance.StatisticCMDistance">StatisticCMDistance (class in locuaz.statisticcmdistance)</a>
+      <li><a href="statistics.html#locuaz.statisticcmdistance.StatisticCMDistance">StatisticCMDistance (class in locuaz.statisticcmdistance)</a>
 </li>
-      <li><a href="misc.html#locuaz.statisticinterface.StatisticInterface">StatisticInterface (class in locuaz.statisticinterface)</a>
+      <li><a href="statistics.html#locuaz.statisticinterface.StatisticInterface">StatisticInterface (class in locuaz.statisticinterface)</a>
 </li>
       <li><a href="misc.html#locuaz.projectutils.Iteration.stats">stats (locuaz.projectutils.Iteration attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.basestatistic.BaseStatistic.stats_config">stats_config (locuaz.basestatistic.BaseStatistic attribute)</a>
+      <li><a href="statistics.html#locuaz.basestatistic.BaseStatistic.stats_config">stats_config (locuaz.basestatistic.BaseStatistic attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.molecules.Structure">Structure (class in locuaz.molecules)</a>
 </li>
@@ -1234,9 +1228,9 @@
 </li>
       <li><a href="scoringfunctions.html#locuaz.haddock.Haddock.template_scoring_inp_handle">template_scoring_inp_handle (locuaz.haddock.Haddock attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.pruner.threshold_pruner">threshold_pruner() (in module locuaz.pruner)</a>
+      <li><a href="pruners.html#locuaz.pruner.threshold_pruner">threshold_pruner() (in module locuaz.pruner)</a>
 </li>
-      <li><a href="misc.html#locuaz.abstractscoringfunction.AbstractScoringFunction.TIMEOUT">TIMEOUT (locuaz.abstractscoringfunction.AbstractScoringFunction attribute)</a>
+      <li><a href="scoringfunctions.html#locuaz.abstractscoringfunction.AbstractScoringFunction.TIMEOUT">TIMEOUT (locuaz.abstractscoringfunction.AbstractScoringFunction attribute)</a>
 </li>
       <li><a href="scoringfunctions.html#locuaz.autodockvina.AutodockVina.TIMEOUT_PER_FRAME">TIMEOUT_PER_FRAME (locuaz.autodockvina.AutodockVina attribute)</a>
 
@@ -1259,7 +1253,7 @@
 </li>
         <li><a href="scoringfunctions.html#locuaz.rosetta.Rosetta.TIMEOUT_PER_FRAME">(locuaz.rosetta.Rosetta attribute)</a>
 </li>
-        <li><a href="misc.html#locuaz.statisticinterface.StatisticInterface.TIMEOUT_PER_FRAME">(locuaz.statisticinterface.StatisticInterface attribute)</a>
+        <li><a href="statistics.html#locuaz.statisticinterface.StatisticInterface.TIMEOUT_PER_FRAME">(locuaz.statisticinterface.StatisticInterface attribute)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -1270,7 +1264,7 @@
 </li>
       <li><a href="misc.html#locuaz.projectutils.Epoch.top_iterations">top_iterations (locuaz.projectutils.Epoch attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.pruner.top_pruner">top_pruner() (in module locuaz.pruner)</a>
+      <li><a href="pruners.html#locuaz.pruner.top_pruner">top_pruner() (in module locuaz.pruner)</a>
 </li>
       <li><a href="misc.html#locuaz.molecules.Topology">Topology (class in locuaz.molecules)</a>
 </li>
@@ -1282,9 +1276,9 @@
 </li>
       <li><a href="misc.html#locuaz.molecules.Trajectory">Trajectory (class in locuaz.molecules)</a>
 </li>
-      <li><a href="misc.html#locuaz.statisticcmdistance.StatisticCMDistance.trj">trj (locuaz.statisticcmdistance.StatisticCMDistance attribute)</a>
+      <li><a href="statistics.html#locuaz.statisticcmdistance.StatisticCMDistance.trj">trj (locuaz.statisticcmdistance.StatisticCMDistance attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.basestatistic.BaseStatistic.trj_suffix">trj_suffix (locuaz.basestatistic.BaseStatistic attribute)</a>
+      <li><a href="statistics.html#locuaz.basestatistic.BaseStatistic.trj_suffix">trj_suffix (locuaz.basestatistic.BaseStatistic attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.molecules.TrrTrajectory">TrrTrajectory (class in locuaz.molecules)</a>
 </li>
@@ -1322,7 +1316,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="misc.html#locuaz.validatore.Validatore">Validatore (class in locuaz.validatore)</a>
 </li>
-      <li><a href="misc.html#locuaz.basestatistic.BaseStatistic.visitor">visitor (locuaz.basestatistic.BaseStatistic attribute)</a>
+      <li><a href="statistics.html#locuaz.basestatistic.BaseStatistic.visitor">visitor (locuaz.basestatistic.BaseStatistic attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1330,7 +1324,7 @@
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="misc.html#locuaz.mutatordlp.MutatorDLPacker.weights_path">weights_path (locuaz.mutatordlp.MutatorDLPacker attribute)</a>
+      <li><a href="mutators.html#locuaz.mutatordlp.MutatorDLPacker.weights_path">weights_path (locuaz.mutatordlp.MutatorDLPacker attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.projectutils.WorkProject">WorkProject (class in locuaz.projectutils)</a>
 </li>

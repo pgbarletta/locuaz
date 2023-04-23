@@ -20,8 +20,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="locuaz package" href="misc.html" />
-    <link rel="prev" title="Usage" href="usage.html" /> 
+    <link rel="next" title="Scoring Functions" href="scoringfunctions.html" />
+    <link rel="prev" title="Job submission" href="jobsubmission.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,14 +48,14 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="readme.html">locuaz</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Learning</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_simple.html">Tutorial: running a simple optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_tleap.html">Tutorial: using tleap topologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_ligand.html">Tutorial: optimizing an antibody against a ligand</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jobsubmission.html">Job submission</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul class="current">
@@ -92,7 +92,14 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="misc.html">locuaz package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scoringfunctions.html">Scoring Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mutators.html">Mutators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="statistics.html">Stats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pruners.html">Pruners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configurationfile.html">YAML configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="citing.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellaneous</a></li>
 </ul>
 
         </div>
@@ -192,7 +199,7 @@ position for all of them, hence SPM (Single Point Mutation).</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="locuaz.spm4.SPM4.mutations">
-<span class="sig-name descname"><span class="pre">mutations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="misc.html#locuaz.mutation.Mutation" title="locuaz.mutation.Mutation"><span class="pre">Mutation</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#locuaz.spm4.SPM4.mutations" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">mutations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="mutators.html#locuaz.mutation.Mutation" title="locuaz.mutation.Mutation"><span class="pre">Mutation</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#locuaz.spm4.SPM4.mutations" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -232,8 +239,8 @@ scoring function</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="usage.html" class="btn btn-neutral float-left" title="Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="misc.html" class="btn btn-neutral float-right" title="locuaz package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="jobsubmission.html" class="btn btn-neutral float-left" title="Job submission" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="scoringfunctions.html" class="btn btn-neutral float-right" title="Scoring Functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

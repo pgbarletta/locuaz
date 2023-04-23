@@ -45,19 +45,26 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../readme.html">locuaz</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Learning</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_simple.html">Tutorial: running a simple optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_tleap.html">Tutorial: using tleap topologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_ligand.html">Tutorial: optimizing an antibody against a ligand</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../jobsubmission.html">Job submission</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../misc.html">locuaz package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../scoringfunctions.html">Scoring Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mutators.html">Mutators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../statistics.html">Stats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pruners.html">Pruners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../configurationfile.html">YAML configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../citing.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../misc.html">Miscellaneous</a></li>
 </ul>
 
         </div>
@@ -99,10 +106,10 @@
 <span class="kn">from</span> <span class="nn">locuaz.primitives</span> <span class="kn">import</span> <span class="n">launch_biobb</span>
 <span class="kn">from</span> <span class="nn">locuaz.projectutils</span> <span class="kn">import</span> <span class="n">WorkProject</span><span class="p">,</span> <span class="n">Iteration</span>
 <span class="kn">from</span> <span class="nn">locuaz.utils_scoring</span> <span class="kn">import</span> <span class="n">extract_pdbs</span><span class="p">,</span> <span class="n">join_target_binder</span><span class="p">,</span> <span class="n">rm_aux_scoring_files</span>
-<span class="kn">from</span> <span class="nn">locuaz.stats</span> <span class="kn">import</span> <span class="n">run_stats</span>
+<span class="kn">from</span> <span class="nn">locuaz.statistics</span> <span class="kn">import</span> <span class="n">run_stats</span>
 
 
-<div class="viewcode-block" id="initialize_scoring_folder"><a class="viewcode-back" href="../../misc.html#locuaz.scoring.initialize_scoring_folder">[docs]</a><span class="k">def</span> <span class="nf">initialize_scoring_folder</span><span class="p">(</span>
+<div class="viewcode-block" id="initialize_scoring_folder"><a class="viewcode-back" href="../../scoringfunctions.html#locuaz.scoring.initialize_scoring_folder">[docs]</a><span class="k">def</span> <span class="nf">initialize_scoring_folder</span><span class="p">(</span>
         <span class="n">iteration</span><span class="p">:</span> <span class="n">Iteration</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -180,7 +187,7 @@
     <span class="k">return</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span></div>
 
 
-<div class="viewcode-block" id="score_frames"><a class="viewcode-back" href="../../misc.html#locuaz.scoring.score_frames">[docs]</a><span class="k">def</span> <span class="nf">score_frames</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">:</span> <span class="n">WorkProject</span><span class="p">,</span> <span class="n">iteration</span><span class="p">:</span> <span class="n">Iteration</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="score_frames"><a class="viewcode-back" href="../../scoringfunctions.html#locuaz.scoring.score_frames">[docs]</a><span class="k">def</span> <span class="nf">score_frames</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">:</span> <span class="n">WorkProject</span><span class="p">,</span> <span class="n">iteration</span><span class="p">:</span> <span class="n">Iteration</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">sf_name</span><span class="p">,</span> <span class="n">scorer</span> <span class="ow">in</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">scorers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -201,7 +208,7 @@
     <span class="n">iteration</span><span class="o">.</span><span class="n">write_down_scores</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="discard_iteration"><a class="viewcode-back" href="../../misc.html#locuaz.scoring.discard_iteration">[docs]</a><span class="k">def</span> <span class="nf">discard_iteration</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">:</span> <span class="n">WorkProject</span><span class="p">,</span> <span class="n">iteration</span><span class="p">:</span> <span class="n">Iteration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="discard_iteration"><a class="viewcode-back" href="../../scoringfunctions.html#locuaz.scoring.discard_iteration">[docs]</a><span class="k">def</span> <span class="nf">discard_iteration</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">:</span> <span class="n">WorkProject</span><span class="p">,</span> <span class="n">iteration</span><span class="p">:</span> <span class="n">Iteration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">sf_name</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">scorers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -212,7 +219,7 @@
     <span class="n">iteration</span><span class="o">.</span><span class="n">write_down_scores</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="score"><a class="viewcode-back" href="../../misc.html#locuaz.scoring.score">[docs]</a><span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">:</span> <span class="n">WorkProject</span><span class="p">,</span> <span class="n">iteration</span><span class="p">:</span> <span class="n">Iteration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="score"><a class="viewcode-back" href="../../scoringfunctions.html#locuaz.scoring.score">[docs]</a><span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">:</span> <span class="n">WorkProject</span><span class="p">,</span> <span class="n">iteration</span><span class="p">:</span> <span class="n">Iteration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">iteration</span><span class="o">.</span><span class="n">read_scores</span><span class="p">(</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">scorers</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">log</span><span class="p">):</span>

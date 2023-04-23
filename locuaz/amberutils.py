@@ -89,21 +89,24 @@ def fix_pdb(in_pdb: Union[PDBStructure, Path], out_pdb_path: Path) -> PDBStructu
 def run_tleap(
     tleap_script: Union[FileHandle, Path], name: str
 ) -> Tuple[PDBStructure, FileHandle, FileHandle]:
-    """run_tleap(): runs tleap script and then uses a local PDB to add chainID info
+    """runs tleap script and then uses a local PDB to add chainID info
     to the .prmtop and box info to the .rst7. Then it uses both to overwrite the
     PDB to keep everything in sync (in case, for example, that the tleap script
     added ions)
 
+    Parameters
+    ----------
+    tleap_script : Union[FileHandle, Path]
+        script that loads a local PDB and outputs a .prmtop and a .rst7 file
+    name : str
+        name of the system
 
-    Args:
-        tleap_script (Union[FileHandle, Path]): script that loads a local PDB and
-        outputs a .prmtop and a .rst7 file
-        name (str): name of the system
-
-    Returns:
-        Tuple[PDBStructure, FileHandle, FileHandle]: PDB, .prmtop and .rst7
+    Returns
+    -------
+    .pdb, .prmtop and .rst7: Tuple[PDBStructure, FileHandle, FileHandle]
+        The ``.prmtop`` and the ``.rst7`` are the output of the tleap script,
+        and both are read by parmed to generate the ``.pdb``.
     """
-
     local_dir = Path(tleap_script).parent
 
     p = sp.run(

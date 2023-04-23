@@ -45,19 +45,26 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../readme.html">locuaz</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Learning</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_simple.html">Tutorial: running a simple optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_tleap.html">Tutorial: using tleap topologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_ligand.html">Tutorial: optimizing an antibody against a ligand</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../jobsubmission.html">Job submission</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../misc.html">locuaz package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../scoringfunctions.html">Scoring Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mutators.html">Mutators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../statistics.html">Stats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pruners.html">Pruners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../configurationfile.html">YAML configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../citing.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../misc.html">Miscellaneous</a></li>
 </ul>
 
         </div>
@@ -176,21 +183,24 @@
 <div class="viewcode-block" id="run_tleap"><a class="viewcode-back" href="../../misc.html#locuaz.amberutils.run_tleap">[docs]</a><span class="k">def</span> <span class="nf">run_tleap</span><span class="p">(</span>
     <span class="n">tleap_script</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">FileHandle</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">PDBStructure</span><span class="p">,</span> <span class="n">FileHandle</span><span class="p">,</span> <span class="n">FileHandle</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;run_tleap(): runs tleap script and then uses a local PDB to add chainID info</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;runs tleap script and then uses a local PDB to add chainID info</span>
 <span class="sd">    to the .prmtop and box info to the .rst7. Then it uses both to overwrite the</span>
 <span class="sd">    PDB to keep everything in sync (in case, for example, that the tleap script</span>
 <span class="sd">    added ions)</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tleap_script : Union[FileHandle, Path]</span>
+<span class="sd">        script that loads a local PDB and outputs a .prmtop and a .rst7 file</span>
+<span class="sd">    name : str</span>
+<span class="sd">        name of the system</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        tleap_script (Union[FileHandle, Path]): script that loads a local PDB and</span>
-<span class="sd">        outputs a .prmtop and a .rst7 file</span>
-<span class="sd">        name (str): name of the system</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Tuple[PDBStructure, FileHandle, FileHandle]: PDB, .prmtop and .rst7</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    .pdb, .prmtop and .rst7: Tuple[PDBStructure, FileHandle, FileHandle]</span>
+<span class="sd">        The ``.prmtop`` and the ``.rst7`` are the output of the tleap script,</span>
+<span class="sd">        and both are read by parmed to generate the ``.pdb``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="n">local_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">tleap_script</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
 
     <span class="n">p</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>

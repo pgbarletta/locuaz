@@ -5,28 +5,22 @@ Tutorial: using tleap topologies
 Introduction
 ------------
 
-To recap, locuaz iteratively performs mutations on the selected residues of the binder, followed by minimization and
-MD simulation. The trajectory is then scored with various scoring functions, to assess whether the mutation
-results in higher or lower affinity. If the mutation results in better affinity, the mutation is accepted,
-and the process is repeated until the estimated affinity no longer increases significantly
-and high affinity binders are obtained.
-
-.. image:: ./resources/flow_diagram.png
-        :alt: Flow diagram
+While the protocol uses GROMACS to perform MD simulation. It can also use **ambertools** to build an amber topology,
+which can then be converted into GROMACS topology. This allows the use of force fields that are not available in GROMACS,
+the inclusion of ligands, non-standard amino acids, etc.
 
 
-The workflow is shown in the diagram in Figure 1 (Obtained from Patricio’s presentation slides). (Expand the technical aspects a little bit more)
+In this example, we are going to optimize a nanobody towards a protein that contains Zinc and coordinates it with
+amino acids that can't be represented on a regular force-field. Hence, we're going to need **tleap** to build the
+topology and **parmed** to turn it into something GROMACS can work with. Both these tools come with **ambertools**,
+which comes with the protocol. For mor info, check the :ref:`Installation` section.
 
-The protocol uses GROMACS to perform MD simulation. It can also use ambertools to build amber topology,
-which can be converted into GROMACS topology, to allow the use of forcefields that are not available in GROMACS.
-In this example, the name of the environment is locuaz.
+As always, the name of our environment is **locuaz**, so we start by activating it.
 
 .. code-block:: console
 
     mamba activate locuaz
 
-
-In this example, we are using DLPacker as the mutator,
 
 Necessary files
 ----------------
@@ -44,6 +38,8 @@ The materials for this tutorial are downloaded along with the codes, within the 
 
 Setting up the systems
 ----------------------
+
+In this example, we are using DLPacker as the mutator,
 
 It is advisable to use a pre-equilibrated system as the starting complex for the optimization protocol.
 In general, the following guidelines can be followed for the systems preparation:

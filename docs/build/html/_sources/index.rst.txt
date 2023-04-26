@@ -29,9 +29,10 @@ Looping Uniquely Catered Amino Acid Sequences
     :maxdepth: 2
     :caption: Learning
 
-    tutorial_simple
-    tutorial_tleap
-    tutorial_ligand
+    basicconcepts
+    tutorialsimple
+    tutorialtleap
+    tutorialligand
     jobsubmission
 
 .. toctree::
@@ -43,11 +44,10 @@ Looping Uniquely Catered Amino Acid Sequences
     mutators
     statistics
     pruners
+    misc
     configurationfile
     citing
     history
-    misc
-
 
 Indices and tables
 ==================

@@ -1,10 +1,10 @@
 Stats
 ====================
 
-locuaz.stats module
--------------------
+locuaz.statistics module
+-------------------------
 
-.. automodule:: locuaz.stats
+.. automodule:: locuaz.statistics
    :members:
    :undoc-members:
    :show-inheritance:

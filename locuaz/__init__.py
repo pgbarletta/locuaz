@@ -1,1 +1,2 @@
-__version__ = "0.2.0"
+# Keep in sync with `setup.cfg`'s version.
+__version__ = "0.2.1"

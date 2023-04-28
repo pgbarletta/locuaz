@@ -72,17 +72,6 @@ protocol:
         prevent_fewer_branches:
             type: boolean
             default: true
-        prune:
-            type: integer
-            required: false
-            min: 1
-            max: 4
-        pruner:
-            type: string
-            default: "adaptive"
-            required: false
-            allowed: ["top", "adaptive", "threshold"]
-            warn_overrides: prune
         memory_size:
             type: integer
             required: false
@@ -169,6 +158,22 @@ mutation:
             min: 1.0
             max: 20.0
             default: 5.0
+
+pruning:
+    type: dict
+    required: true
+    schema:
+        prune:
+            type: integer
+            required: false
+            min: 1
+            max: 4
+        pruner:
+            type: string
+            default: "threshold"
+            required: false
+            allowed: ["top", "adaptive", "threshold"]
+            warn_overrides: prune
 
 md:
     type: dict

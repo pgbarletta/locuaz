@@ -46,11 +46,7 @@ Mutators
     git submodule init
     git submodule update
 
-Then, in a ``dlpacker`` directory, the following files have to be present:
-
-1. ``charges.rtp``
-2. ``library.npz``
-3. ``DLPacker_weights.h5``
+Then, in
 
 The first 2 can be copied from the recently downloaded directory (``locuaz/DLPacker``).
 The weights have to be `downloaded <https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQseE0LQ/view?usp=sharing>`_.

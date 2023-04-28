@@ -67,6 +67,8 @@ Clone the `repo`_ and, optionally, get the **DLPacker**  submodule as well:
 
 Finally, create the environment and install all the necessary dependencies at once:
 
+.. code-block:: console
+
     mamba env create -f dev_deps.yaml
 
 That's it. You can also change the environment's name by editing the `name` field of the `dev_deps.yml` file, before creating it.

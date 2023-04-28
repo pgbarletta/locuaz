@@ -74,7 +74,7 @@ Some other things to highlight:
 ``config['pruning']``
 ^^^^^^^^^^^^^^^^^^^^^^^^
 1. ``config['pruning']['pruner']``: check the currently available pruners below.
-2. ``config['pruning']['remaining_branches']``: you can set this value when the chisen pruner leaves a fixed number
+2. ``config['pruning']['remaining_branches']``: you can set this value when the chosen pruner leaves a fixed number
    of branches after pruning.
 
 

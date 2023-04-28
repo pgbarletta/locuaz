@@ -5,17 +5,24 @@ Tutorial: using tleap topologies
 Introduction
 ------------
 
-While the protocol uses GROMACS to perform MD simulation. It can also use **ambertools** to build an amber topology,
-which can then be converted into GROMACS topology. This allows the use of force fields that are not available in GROMACS,
+While the protocol uses *GROMACS* to perform MD simulation. It can also use **ambertools** to build an amber topology,
+which can then be converted into *GROMACS* topology. This allows the use of force fields that are not available in *GROMACS*,
 the inclusion of ligands, non-standard amino acids, etc.
-
 
 In this example, we are going to optimize a nanobody towards a protein that contains Zinc and coordinates it with
 amino acids that can't be represented on a regular force-field. Hence, we're going to need **tleap** to build the
-topology and **parmed** to turn it into something GROMACS can work with. Both these tools come with **ambertools**,
+topology and **parmed** to turn it into something *GROMACS* can work with. Both these tools come with **ambertools**,
 which comes with the protocol. For mor info, check the :ref:`Installation` section.
 
-As always, the name of our environment is **locuaz**, so we start by activating it.
+.. figure:: ./resources/tleap_complex.png
+        :alt: p53-nanobody complex
+
+        Figure 1: snapshot of one optimized complex. **p53** is the yellow one on the left, with its loops colored red and
+        blue, these loops have to be stabilized so it doesn't loose its function; the zinc atom and its coordinating
+        residues are on the bottom-left corner. The nanobody is the green one on the right, with its CDRs 1, 2 and 3
+        colored magenta, orange and gray, respectively.
+
+As always, the name of our environment is *locuaz*, so we start by activating it.
 
 .. code-block:: console
 
@@ -25,8 +32,7 @@ As always, the name of our environment is **locuaz**, so we start by activating 
 Necessary files
 ----------------
 
-This tutorial will provide a step-by-step guidance to the use of the locuaz protocol to optimize a nanobody (VHH)
-as a p53 binder (figure shown below). The bulk of it will concentrate on the writing of the configuration yaml file.
+As in :ref:`Tutorial: running a simple optimization`, we're going to focus on the writing of the YAML config file.
 A more detailed explanation of the available options, can be found in the :ref:`YAML configuration file`.
 The materials for this tutorial are downloaded along with the codes, within the ‘example’ folder, which are:
 
@@ -34,9 +40,9 @@ The materials for this tutorial are downloaded along with the codes, within the 
 2.  tleap (Tleap script to build the topology of the system, more details in the following section)
 3.  ZAFF.frcmod and ZAFF.prep (auxiliary Zn parameters)
 4.  :download:`config_tleap.yaml<../resources/config_tleap.yaml>` (The input file to run the protocol)
-5.  mdp files (GROMACS parameter files)
+5.  mdp files (*GROMACS* parameter files)
 
-Setting up the systems
+Setting up the system
 ----------------------
 
 In this example, we are using DLPacker as the mutator,
@@ -83,7 +89,7 @@ The script can be run as:
 
     tleap -f tleap
 
-Now, the topology has to be converted into the GROMACS topology format. Internally, locuaz uses
+Now, the topology has to be converted into the *GROMACS* topology format. Internally, locuaz uses
 `ParmEd <https://github.com/ParmEd/ParmEd>`_ to do this, and we recommend to do the same.
 Others may prefer to use `acpype <https://github.com/alanwilter/acpype>`_:
 
@@ -92,7 +98,7 @@ Others may prefer to use `acpype <https://github.com/alanwilter/acpype>`_:
     acpype -p amb_nb.prmtop -x amb_nb.inpcrd
 
 
-Now, the minimization and 5ns of MD simulations can be performed with GROMACS to equilibrate the system, before continuing the optimization protocol.
+Now, the minimization and 5ns of MD simulations can be performed with *GROMACS* to equilibrate the system, before continuing the optimization protocol.
 
 Note that the protocol will maintain the size of the box given at the start. Therefore, in the tleap script provided to the protocol, the line "solvatebox mol TIP3PBOX 10.0" has to be removed. In addition, the addition of ions (either Na or Cl) at each iteration is taken care of by the tleap scripts.
 
@@ -106,11 +112,11 @@ The following files are needed to run the protocol, and their location should be
 
 In the input file, config_tleap.yaml, different options have to be specified:
 1.	In the path sections, the paths to different folders have to be specified:
-    *	gmxrc: the path to the GROMACS executable
+    *	gmxrc: the path to the *GROMACS* executable
     *	scoring_functions: folders containing the executable of different scoring functions (more details refer to the github page)
     *	mutator: folders containing the executable to generate mutated structures. In this example, DLPacker is used.
     *	tleap: the path to the Tleap scripts. It is mandatory if tleap is used.
-    *	mdp: folder containing the GROMACS parameters
+    *	mdp: folder containing the *GROMACS* parameters
     *	input: folder containing the pdb files. Note that multiple files can be introduced as the starting structures, but in this example, we are using only 1 starting structure.
     *	work: The path where the working directory folder will be created, and where the results will be located. If it’s a new run, this directory should not exist.
 
@@ -118,7 +124,7 @@ In the input file, config_tleap.yaml, different options have to be specified:
 .. code-block:: console
 
     paths:
-        gmxrc: /apps/gromacs/2021.4/gcc7-ompi4.1.1-cuda11.1-plm2.8.0/bin
+        gmxrc: /apps/*GROMACS*/2021.4/gcc7-ompi4.1.1-cuda11.1-plm2.8.0/bin
         scoring_functions: /work/rtandiana/mdp/SF
         mutator: /work/rtandiana/mdp/SF/dlpacker
         tleap: /work/rtandiana/Optimization/New-ZAFF/NB112/C9/input
@@ -154,8 +160,8 @@ The memory_size and failed_memory_size options assist to prevent the protocol to
         memory_size: 4
         failed_memory_size: 4
 
-4.	In the md section, the technical options for GROMACS have to be specified:
-    *	gmx_bin: The gromacs command to perform mdrun
+4.	In the md section, the technical options for *GROMACS* have to be specified:
+    *	gmx_bin: The *GROMACS* command to perform mdrun
     *	mdp_names: The name of the mdp files present in the mdp folders specified above
     *	ngpus: The number of GPUs available
     *	mpi_procs: typically 1

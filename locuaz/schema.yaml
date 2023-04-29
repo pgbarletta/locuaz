@@ -182,7 +182,7 @@ md:
         gmx_bin:
             type: string
             required: false
-            default: "gmx"
+            default: "gmx mdrun"
         mdp_names:
             type: dict
             required: true

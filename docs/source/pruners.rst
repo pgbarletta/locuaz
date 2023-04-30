@@ -1,6 +1,9 @@
 Pruners
 ====================
 
+Consensus score
+--------------------
+
 locuaz.pruner module
 --------------------
 

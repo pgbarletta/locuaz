@@ -45,6 +45,12 @@ And if residue decomposition is needed (for a mmpbsa generator)::
     print_res="within 4"
     /
 
+Though *locuaz*, as a rule, avoids stepping over other external tools, you'll notice that the input script
+has 1-indexed ``startframe`` and ``endframe`` options that conflict with the 0-indexed ``start`` and ``end``
+options from the input config file. This means that they have to be manually checked. If, for example, you are
+writing 250 frames during your NPT run and you set your ``start`` option to ``50``, then your *gmxmmpbsa*
+input file would look like the one above. Check :ref:`configurationfile:YAML configuration file` for more info.
+
 pisa
 """""
 | pisa directory: ``home/user/my_SFs/pisa``

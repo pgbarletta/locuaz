@@ -25,18 +25,26 @@ Assuming we have a conda environment named *locuaz*, let's start by activating i
         it's the nanobody, with a green backbone and with its CDRs 1, 2 and 3 colored magenta, orange and gray,
         respectively.
 
+Setting up the system
+----------------------
+It is advisable to use a pre-equilibrated system as the starting complex for the optimization protocol.
+In general, the following guidelines can be followed for the systems preparation:
 
-Starting files
+1. The binder and target are docked with any docking program of choice.
+2. The selected initial complex structures is then equilibrated in a box of water.
+3. The PDB file of the equilibrated structure can then be used for the protocol.
+
+Necessary files
 ----------------
-This tutorial will provide a step-by-step guidance to the use of the locuaz protocol to optimize a nanobody (VHH)
-as a p53 binder (figure shown above). The bulk of it will concentrate on the writing of the configuration yaml file.
-A more detailed explanation of the available options, can be found in the :ref:`YAML configuration file`.
+This tutorial will provide a step-by-step guidance to the use of the locuaz protocol to optimize a nanobody
+(VHH) as a p53 binder (figure shown above). The bulk of it will concentrate on the writing of the
+configuration yaml file. A more detailed explanation of the available options, can be found in the
+:ref:`configurationfile:YAML configuration file`. The materials for this tutorial are located in
+the ``examples/simple_tutorial`` folder:
 
-The materials for this tutorial are located in `examples/simple_tutorial`_ folder:
-
-1.  ``d11.pdb``: the PDB file of the pre-equilibrated complex.
-2.  ``config_simple.yaml``: the configuration file; all options go in here.
-3.  ``mdp`` directory: minimization, NVT and NPT *GROMACS* input files.
+1. ``d11.pdb``: the PDB file of the pre-equilibrated complex. Target chains go first and then the binders'.
+2. ``config_simple.yaml``: the configuration file; all options go in here.
+3. ``mdp`` directory: minimization, NVT and NPT *GROMACS* input files.
 
 .. _reference: http://dx.doi.org/10.1016/j.ccr.2012.08.003
 .. _examples/simple_tutorial: https://istitutoitalianotecnologia-my.sharepoint.com/personal/walter_rocchia_iit_it/_layouts/15/onedrive.aspx?ga=1&id=%2Fpersonal%2Fwalter%5Frocchia%5Fiit%5Fit%2FDocuments%2FExamples&view=0
@@ -75,7 +83,7 @@ Global options of the run go here.
  * ``epochs``: the number of *epochs* we want to run. Remember that a failed *epoch*, that is, an *epoch* that fails
    to generate at least 1 *iteration* that improves the binding score is backed up (its folder is prefixed with ``bu_``)
    and is not included in the total number. So this will be the total number of successful epochs.
- * ``branches``: the number of parallel runs. If we look at the workflow from :ref:`Main idea`, it would be the 'width'
+ * ``branches``: the number of parallel runs. If we look at the workflow from :ref:`basicconcepts:Main idea`, it would be the 'width'
    of the workflow. See below for more info.
  * ``memory_size``: we want to prevent *locuaz* from mutating a position that was recently mutated, so we set this
    number to ``4``, this means that if position, say, ``128`` is mutated on epoch ``12``, then it won't be mutated again
@@ -95,21 +103,21 @@ iterations, since 4 new complexes were obtained from each surviving complex.
 
 generation
 ^^^^^^^^^^^
-Now we begin to deal with a *locuaz* concept, :ref:`Units`. These are the moving parts of *locuaz*. The first one is the
+Now we begin to deal with a *locuaz* concept, :ref:`basicconcepts:Units`. These are the moving parts of *locuaz*. The first one is the
 mutation generator, the *unit* that is in charge of taking the sequence of the current complex and generating a new
 sequence from it.
 
- * ``generator``: we are using the :ref:`SPM4gmxmmpbsa` generator, so later we will have to include *gmxmmpbsa* as a
+ * ``generator``: we are using the :ref:`basicconcepts:SPM4gmxmmpbsa` generator, so later we will have to include *gmxmmpbsa* as a
    scoring function, so this generator can read the energy decomposition file from *gmxmmpbsa* and choose the position
    with the lowest contribution to the affinity as the position to mutate.
  * ``probe_radius``: this parameter is only used when the generator includes interface information, which is the case
-   for SPM4gmxmmpbsa and others (eg: :ref:`SPM4i`). The *generator* uses *freesasa* to determine the CDR residues
+   for SPM4gmxmmpbsa and others (eg: :ref:`basicconcepts:SPM4i`). The *generator* uses *freesasa* to determine the CDR residues
    that form part of the interface and only considers those as potentials candidates for mutation. Since *freesasa* is
    a rolling-probe method, ``probe_radius`` allows the user to set the size of this probe. In this example we are using
    a radius of ``3``, a rather large probe, so more residues end up being classified as part of the interface.
 
-Check :ref:`Mutation Generators` for a reference of the implementation, and :ref:`config['generation']` in the
-:ref:`YAML configuration file` page for more details.
+Check :ref:`mutationgenerators:Mutation Generators` for a reference of the implementation, and
+:ref:`configurationfile:YAML configuration file` page for more details.
 
 mutation
 ^^^^^^^^
@@ -121,25 +129,81 @@ This is another *unit*, the one that is in charge of performing the actual mutat
  * ``reconstruct_radius``: residues below this distance from the mutated position will also get their side-chains
    reoriented.
 
-Check :ref:`Mutators` for a reference of the implementation, and :ref:`config['mutation']` in the
-:ref:`YAML configuration file` page for more details.
+Check :ref:`mutators:Mutators` for a reference of the implementation, and :ref:`configurationfile:YAML configuration file`
+for more details.
 
 pruning
 ^^^^^^^^
 In this *unit*, you can set how the top *iterations* from an *epoch* will be selected to pass onto the next one.
 
- * ``pruner``: the external program to mutate the complex and find a suitable side-chain orientation. We are using
-   ``dlpr``
+ * ``pruner``: the *threshold* pruner is the default and the preferred one.
 
 md
 ^^^^
-Yet anothe
+Options related to the molecular dynamics run go in here.
+
+ * ``gmx_bin``: some systems compile the **gmx mdrun** binary with a different name. The usual default of
+   ``gmx mdrun`` works for most cases.
+ * ``mdp_names``: these files should be in ``config['paths']['mdp']``. We set the name of
+   ``min_mdp``, ``nvt_mdp`` and ``npt_mdp``.
+ * ``ngpus``: number of available gpus.
+ * ``mpi_procs``: number of available MPI processors.
+ * ``omp_procs``: number of available OMP threads.
+ * ``pinoffsets``: a list with the offsets for each system being run in parallel.
+ * ``water_type``: water model.
+ * ``force_field``: force field used to build the topology of the system.
+ * ``box_type``: *locuaz* actually doesn't change the box (no calls to ``editconf``), but it if this option
+   is set to ``triclinic``, it will check that the system doesn't go out of the box after the MD run. If it
+   does, the *iteration* will be discarded by assigning ``+inf`` values to each score value.
 
 target
 ^^^^^^^^
+Target options go here.
+
+ * ``chainID``: list with the chainIDs of the target.
+
 binder
 ^^^^^^^^
-^^^^^^^^
+Binder options go here.
+
+ * ``chainID``: list with the chainIDs of the binder.
+ * ``mutating_chainID``: list with the chainIDs of the target that will be mutated. In this example we are
+   repeating the chainID ``B`` 3 times. You are allowed to do this to clearly separate CDRs.
+ * ``mutating_resSeq``: list of lists with the positions you want to mutate. We are typing 3 lists, one for
+   each CDR.
+ * ``mutating_resname``: these are the one-letter code of the amino acids that correspond to the ``mutating_resSeq``
+   from above. This is a mandatory field, and is used to check that the user typed the right positions on
+   the field above. It's only checked when the protocol runs for the first time.
+
+
 scoring
 ^^^^^^^^
+Finally, we have the options related to scoring.
+
+ * ``functions``: list of scoring functions to use. Check :ref:`configurationfile:schema.yaml` for a
+   reference of all the currently available ones.
+ * ``consensus_threshold``: the minimum number of scoring functions that have to improve for an *iteration*
+   to be considered better than its parents. Check :ref:`pruners:Consensus score` for more info.
+ * ``nthreads``: number of processes used for all the scoring functions but *gmxmmpbsa*.
+ * ``mpiprocs``: number of MPI processors used for *gmxmmpbsa*. If set to ``1``, *gmxmmpbsa* will not use
+   its MPI capabilites. Useful if you are having issues with MPI, though it will be slow.
+ * ``start``: Useful if you want to skip a few frames before starting to score. 0-indexed.
+ * ``end``: Also 0-indexed. Defaults to ``-1``, which means all remaining frames.
+
+Check :ref:`scoringfunctions:Scoring Functions` for more info on each scoring function.
+
+Running the protocol
+---------------------
+Once the input file has been specified, and all the files are gathered, the protocol can now be run
+by firstly activating the environment, if you haven't already.
+
+.. code-block:: console
+
+    mamba activate locuaz
+    python /home/user/locuaz/locuaz/protocol.py config_tleap.yaml
+
+
+Now the protocol will create the working directory folder. In this folder, the progress of the protocol
+will be written on the nb.log file and folders corresponding to each epochs and iterations will be
+created in this directory.
 

@@ -6,12 +6,13 @@ Main idea
 -------------
 
 *locuaz* is a protocol for the *in silico* optimization of antibodies and nanobodies.
-The procedure begins with a random mutation in the binder sequence. Subsequently,
-the bound conformations are sampled through molecular dynamics simulations, and the target and binder interactions
-are assessed using various scoring functions. Finally, a consensus criterion is applied to the binding scores
-in order to accept or reject the mutation. This process is repeated iteratively to explore new sequences
-with potentially improved affinities towards their targets. If the mutation does not significantly improve the affinity,
-then the mutants are discarded and a new set of mutants are generated, based on the original complex(es).
+The procedure begins with a random mutation in the binder sequence. Subsequently, the bound conformations
+are minimized, equilibrated with a NVT run and then sampled through a NPT molecular dynamics simulation,
+so the target and binder interactions can be assessed using various scoring functions. Finally,
+a consensus criterion is applied to the binding scores in order to accept or reject the mutation.
+This process is repeated iteratively to explore new sequences with potentially improved affinities
+towards their targets. If the mutation does not significantly improve the affinity, then the mutants are
+discarded and a new set of mutants are generated, based on the original complex(es).
 This workflow is outlined in Figure 1.
 
 .. figure:: ./resources/protocol_workflow_simple.png
@@ -19,13 +20,13 @@ This workflow is outlined in Figure 1.
 
         Figure 1: The protocol's workflow.
 
-Each new set of mutants (or complexes) generated will be referred to as an **epoch**, while each complex is referred to
+We will refer to each new set of mutants (or complexes) as an **epoch**, while each complex is referred to
 as an **iteration**. 
 
 .. note::
 
-    Throughout this document, we will refer to the user configuration options as ``config``, and its various options as
-    ``config["main"]["name"]``, ``config["scoring"]["functions"]``, etc...
+    Throughout this documentation, we will refer to the user configuration options as ``config``, and its
+    various options as ``config["main"]["name"]``, ``config["scoring"]["functions"]``, etc...
 
 
 Units
@@ -40,11 +41,11 @@ protocols to be run, hence, some abstractions are needed. We will call these abs
     This is why *locuaz* puts a layer of abstraction over them and standardizes their names. All external programs
     and any files they depend on (like their binaries), are named in lowercase letters without any other symbols.
     So, for example, while *gmx-mmpbsa* may be named at times *gmx_mmpbsa*,  *gmx-MMPBSA*, etc., we will always refer
-    to it as :ref:`gmxmmpbsa` and its input script has to be named **gmxmmpbsa** and be located inside a folder called
-    **gmxmmpbsa**.
+    to it as :ref:`scoringfunctions:gmxmmpbsa` and its input script has to be named **gmxmmpbsa** and be
+    located inside a folder called **gmxmmpbsa**.
 
-    Other programs like the :ref:`rosetta` scoring function may need additional files. These are listed on its
-    dedicated section.
+    Other programs like the :ref:`scoringfunctions:rosetta` scoring function may need additional files.
+    These are listed on its dedicated section.
 
 Mutation Generator
 ------------------------
@@ -72,7 +73,7 @@ the interface; the default is ``1.4``.
 Set ``config["generation"]["generator"]`` to ``SPM4i`` use this generator.
 
 SPM4gmxmmpbsa
-------------------------
+""""""""""""""
 Same as ``SPM4i``, but besides **freesasa**, it's based on the use as **gmxmmpbsa** scoring function. The generator
 will read the **decomp_gmxmmpbsa.csv** output file from **gmxmmpbsa** and pick the residue that is collaborating the
 list with the interaction with the target. Obviously, this position has to also comply with the previous prerequisites,
@@ -101,7 +102,7 @@ The mutators are the external tools that actually take the complex and perform t
 generator, repack its side-chain and may repack the side-chains of neighboring residues as well.
 There's no definitive best tool, so it's up to the user to choose one. These are the currently available
 tools. The ones dependent on *DLPacker* are the only ones that are built into the protocol and can be readily used.
-Check :ref:`Mutator` for a reference to the class that abstract over these programs.
+Check :ref:`mutators:Mutators` for a reference to the class that abstract over these programs.
 
 Whichever one you choose, set the ``config["paths"]["mutator"]`` to the directory where it'll find the necessary files.
 
@@ -154,7 +155,7 @@ Scoring Function
 -----------------
 These are abstractions over external programs that allow the protocol to determine if the mutation was successful or
 not. *gmxmmpbsa* is the only one that comes built-in with *locuaz* and does not an external binary, but it does need
-an input script. More info on this and the rest on :ref:`Scoring Functions`.
+an input script. More info on this and the rest on :ref:`scoringfunctions:Scoring Functions`.
 
 Pruner
 ----------

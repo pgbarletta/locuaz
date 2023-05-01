@@ -1,0 +1,59 @@
+paths:
+    gmxrc: /usr/local/gromacs/bin
+    scoring_functions: /home/pbarletta/labo/22/locuaz/bin
+    mutator: /home/pbarletta/labo/22/locuaz/sample_bin/dlpacker
+    mdp: /home/pbarletta/labo/22/locuaz/daux/mdp
+    input: [ /home/pbarletta/labo/22/locuaz/daux/d11_oct ]
+    work: /home/pbarletta/labo/22/locuaz/daux/rosa
+
+main:
+    name: d11
+    starting_epoch: 0
+
+protocol:
+    epochs: 10
+    branches: 2
+    memory_size: 4
+    failed_memory_size: 8
+
+generation:
+    generator: SPM4gmxmmpbsa
+    probe_radius: 3
+
+mutation:
+    mutator: dlpr
+    reconstruct_radius: 5
+
+pruning:
+    pruner: adaptive
+
+md:
+    gmx_bin: gmx mdrun
+    mdp_names:
+        min_mdp: min.mdp
+        nvt_mdp: short_nvt.mdp
+        npt_mdp: short_npt.mdp
+    ngpus: 1
+    mpi_procs: 1
+    omp_procs: 4
+    pinoffsets: [0]
+    water_type: tip3p
+    force_field: amber99sb-ildn
+    box_type: octahedron
+
+target:
+    chainID: [A]
+
+binder:
+    chainID: [B]
+    mutating_chainID: [B, B, B]
+    mutating_resSeq: [[27, 28, 29, 30, 31, 32, 33], [53, 54, 55, 56, 57, 58, 59], [99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116]]
+    mutating_resname: [ [A, P, W, E, N, T, L], ['Y', 'V', 'F', 'I', 'Y', 'H', 'A'], ['T', 'K', 'W', 'R', 'N', 'Q', 'R', 'E', 'G', 'R', 'G', 'G', 'K', 'S', 'D', 'S', 'P', 'T'] ]
+
+
+scoring:
+    functions: [evoef2, bluues, piepisa, gmxmmpbsa]
+    consensus_threshold: 2
+    nthreads: 6
+    mpiprocs: 4
+

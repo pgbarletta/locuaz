@@ -179,7 +179,7 @@ md:
     type: dict
     required: true
     schema:
-        gmx_bin:
+        gmx_mdrun:
             type: string
             required: false
             default: "gmx mdrun"

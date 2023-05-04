@@ -42,7 +42,7 @@ class MDrun:
 
         obj = cls(
             DirHandle(root_dir),
-            binary_path=work_pjct.config["md"]["gmx_bin"],
+            binary_path=work_pjct.config["md"]["gmx_mdrun"],
             mdp=FileHandle(Path(work_pjct.mdps["min_mdp"])),
             gpu_id=gpu_id,
             pinoffset=pinoffset,
@@ -67,7 +67,7 @@ class MDrun:
 
         obj = cls(
             DirHandle(root_dir),
-            binary_path=work_pjct.config["md"]["gmx_bin"],
+            binary_path=work_pjct.config["md"]["gmx_mdrun"],
             mdp=FileHandle(Path(work_pjct.mdps["nvt_mdp"])),
             gpu_id=gpu_id,
             pinoffset=pinoffset,
@@ -94,7 +94,7 @@ class MDrun:
 
         obj = cls(
             DirHandle(root_dir),
-            binary_path=work_pjct.config["md"]["gmx_bin"],
+            binary_path=work_pjct.config["md"]["gmx_mdrun"],
             mdp=FileHandle(Path(work_pjct.mdps["npt_mdp"])),
             gpu_id=gpu_id,
             pinoffset=pinoffset,

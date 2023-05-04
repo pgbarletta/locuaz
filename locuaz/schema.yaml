@@ -170,10 +170,14 @@ pruning:
             max: 4
         pruner:
             type: string
-            default: "threshold"
-            required: false
-            allowed: ["top", "adaptive", "threshold"]
-            warn_overrides: prune
+            default: "consensus"
+            required: true
+            allowed: ["consensus", "metropolis"]
+        consensus_threshold:
+            type: integer
+            min: 1
+            max: 20
+            dependencies: {pruner: consensus}
 
 md:
     type: dict
@@ -328,12 +332,6 @@ scoring:
             schema:
                 type: string
                 allowed: ["bach", "bluues", "bluuesbmf", "evoef2", "haddock", "piepisa", "pisa", "rosetta", "gmxmmpbsa", "autodockvina"]
-        consensus_threshold:
-            type: integer
-            min: 1
-            max: 20
-            required: true
-            lower_than_length_of: functions
         nthreads:
             type: integer
             min: 1

@@ -94,6 +94,15 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
 
     check_gmxmmpbsa(config)
 
+    # Check consensus threshold and scoring functions
+    if config["pruning"]["pruner"] == "consensus":
+        assert "consensus_threshold" in config["pruning"], "Set 'consensus_threshold' when using 'consensus' pruner."
+        t = config["pruning"]["consensus_threshold"]
+        n = len(config["scoring"]["functions"])
+        assert t <= n, f"Threshold ({t}) should be equal or lower than the number of scoring functions ({n})"
+    elif config["pruning"]["pruner"] == "metropolis":
+        assert len(config["scoring"]["functions"]) == 1, f"Can only use 1 scoring function when pruner is 'metropolis'."
+
     return config, start
 
 

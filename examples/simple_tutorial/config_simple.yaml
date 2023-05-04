@@ -25,10 +25,10 @@ mutation:
     reconstruct_radius: 5
 
 pruning:
-    pruner: adaptive
-
+    pruner: consensus
+    consensus_threshold: 2
 md:
-    gmx_bin: gmx mdrun
+    gmx_mdrun: gmx mdrun
     mdp_names:
         min_mdp: min.mdp
         nvt_mdp: short_nvt.mdp
@@ -53,7 +53,6 @@ binder:
 
 scoring:
     functions: [evoef2, bluues, piepisa, gmxmmpbsa]
-    consensus_threshold: 2
     nthreads: 6
     mpiprocs: 4
 

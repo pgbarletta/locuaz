@@ -51,6 +51,6 @@ binder:
 scoring:
     #functions: [evoef2, bluues, gmxmmpbsa]
     functions: [evoef2]
-    consensus_threshold: 1
+    threshold: 1
     nthreads: 6
     mpiprocs: 4

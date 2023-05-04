@@ -160,7 +160,7 @@ md
 .. code-block:: console
 
     md:
-        gmx_bin: gmx mdrun
+        gmx_mdrun: gmx mdrun
         mdp_names:
             min_mdp: min.mdp
             nvt_mdp: nvt.mdp
@@ -171,7 +171,7 @@ md
         pinoffsets: [ 0, 32, 64, 96 ]
         use_tleap: true
 
- * gmx_bin: The *GROMACS* command to perform mdrun
+ * gmx_mdrun: The *GROMACS* command to perform mdrun
  * mdp_names: The name of the mdp files present in the mdp folders specified above
  * ngpus: The number of GPUs available
  * mpi_procs: typically 1

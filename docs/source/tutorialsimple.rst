@@ -55,6 +55,16 @@ Options don't go all bunched up together, there are classified in sections. We w
 
 paths
 ^^^^^^
+.. code-block:: console
+
+    paths:
+        gmxrc: /usr/local/gromacs/bin
+        scoring_functions: /home/pbarletta/labo/22/locuaz/bin
+        mutator: /home/pbarletta/labo/22/locuaz/sample_bin/dlpacker
+        mdp: /home/pbarletta/labo/22/locuaz/daux/mdp
+        input: [ /home/pbarletta/labo/22/locuaz/daux/d11_oct ]
+        work: /home/pbarletta/labo/22/locuaz/daux/rosa
+
 If you are running this example, you will have to change every field on this section, since these are system dependent.
  * ``gmxrc``: is the location of *GROMACS* ``GMXRC`` script and binaries.
  * ``scoring_functions``: all scoring functions have to be in this folder, with a folder for each one and all its
@@ -69,16 +79,30 @@ If you are running this example, you will have to change every field on this sec
 
 main
 ^^^^^
+.. code-block:: console
+
+    main:
+        name: d11
+        starting_epoch: 0
+
 We are going to leave most values to their defaults and only set the name of our run.
 
  * ``name``: the name of the run. The input PDB located in ``[paths][input]`` has to be named after this name
-   (``{name}.pdb``).
+   (``{name}.pdb``), we are naming this **d11**.
  * ``starting_epoch``: we are going to start on the default value of ``0``, but if your protocol run is a continuation
    of a previous one, you can set this value to other number in order to facilitate your posterior analysis.
 
 protocol
 ^^^^^^^^
-Global options of the run go here.
+.. code-block:: console
+
+    protocol:
+        epochs: 10
+        branches: 2
+        memory_size: 4
+        failed_memory_size: 8
+
+Global options of the protocol run go here.
 
  * ``epochs``: the number of *epochs* we want to run. Remember that a failed *epoch*, that is, an *epoch* that fails
    to generate at least 1 *iteration* that improves the binding score is backed up (its folder is prefixed with ``bu_``)
@@ -103,6 +127,12 @@ iterations, since 4 new complexes were obtained from each surviving complex.
 
 generation
 ^^^^^^^^^^^
+.. code-block:: console
+
+    generation:
+        generator: SPM4gmxmmpbsa
+        probe_radius: 3
+
 Now we begin to deal with a *locuaz* concept, :ref:`basicconcepts:Units`. These are the moving parts of *locuaz*. The first one is the
 mutation generator, the *unit* that is in charge of taking the sequence of the current complex and generating a new
 sequence from it.
@@ -121,10 +151,16 @@ Check :ref:`mutationgenerators:Mutation Generators` for a reference of the imple
 
 mutation
 ^^^^^^^^
+.. code-block:: console
+
+    mutation:
+        mutator: dlpr
+        reconstruct_radius: 5
+
 This is another *unit*, the one that is in charge of performing the actual mutation.
 
  * ``mutator``: the external program to mutate the complex and find a suitable side-chain orientation. We are using
-   ``dlpr`` since depends on the *DLPacker* program, which comes built-in with *locuaz* and also performs a nice
+   ``dlpr`` since it depends on the *DLPacker* program which comes built-in with *locuaz* and also performs a nice
    reconstruction of the surrounding side-chains.
  * ``reconstruct_radius``: residues below this distance from the mutated position will also get their side-chains
    reoriented.
@@ -134,36 +170,76 @@ for more details.
 
 pruning
 ^^^^^^^^
+.. code-block:: console
+
+    pruning:
+        pruner: consensus
+        threshold: 2
+
 In this *unit*, you can set how the top *iterations* from an *epoch* will be selected to pass onto the next one.
 
- * ``pruner``: the *threshold* pruner is the default and the preferred one.
+ * ``pruner``: the *threshold* pruner is the default one.
+ * ``consensus_threshold``: the minimum number of scoring functions that have to improve for an *iteration*
+   to be considered better than its parents. Check :ref:`pruners:Consensus score` for more info.
+
 
 md
 ^^^^
+.. code-block:: console
+
+    md:
+        gmx_mdrun: gmx mdrun
+        mdp_names:
+            min_mdp: min.mdp
+            nvt_mdp: short_nvt.mdp
+            npt_mdp: short_npt.mdp
+        ngpus: 1
+        mpi_procs: 1
+        omp_procs: 4
+        pinoffsets: [0]
+        water_type: tip3p
+        force_field: amber99sb-ildn
+        box_type: octahedron
+
 Options related to the molecular dynamics run go in here.
 
- * ``gmx_bin``: some systems compile the **gmx mdrun** binary with a different name. The usual default of
+ * ``gmx_mdrun``: some systems compile the **gmx mdrun** binary with a different name. The usual default of
    ``gmx mdrun`` works for most cases.
- * ``mdp_names``: these files should be in ``config['paths']['mdp']``. We set the name of
-   ``min_mdp``, ``nvt_mdp`` and ``npt_mdp``.
+ * ``mdp_names``: these files should be in ``config['paths']['mdp']``. We set the names of
+   *min_mdp*, *nvt_mdp* and *npt_mdp*.
  * ``ngpus``: number of available gpus.
  * ``mpi_procs``: number of available MPI processors.
  * ``omp_procs``: number of available OMP threads.
  * ``pinoffsets``: a list with the offsets for each system being run in parallel.
  * ``water_type``: water model.
  * ``force_field``: force field used to build the topology of the system.
- * ``box_type``: *locuaz* actually doesn't change the box (no calls to ``editconf``), but it if this option
-   is set to ``triclinic``, it will check that the system doesn't go out of the box after the MD run. If it
-   does, the *iteration* will be discarded by assigning ``+inf`` values to each score value.
+ * ``box_type``: *locuaz* actually doesn't change the box (no calls to *editconf*), but it if this option
+   is set to *triclinic*, it will check that the system doesn't go out of the box after the MD run. If it
+   does, the *iteration* will be discarded by assigning **+inf** values to each score value.
 
 target
 ^^^^^^^^
+.. code-block:: console
+
+    target:
+        chainID: [A]
+
 Target options go here.
 
  * ``chainID``: list with the chainIDs of the target.
 
 binder
 ^^^^^^^^
+.. code-block:: console
+
+    binder:
+        chainID: [B]
+        mutating_chainID: [B, B, B]
+        mutating_resSeq: [[27, 28, 29, 30, 31, 32, 33], [53, 54, 55, 56, 57, 58, 59],
+        [99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116]]
+        mutating_resname: [ [A, P, W, E, N, T, L], ['Y', 'V', 'F', 'I', 'Y', 'H', 'A'],
+        ['T', 'K', 'W', 'R', 'N', 'Q', 'R', 'E', 'G', 'R', 'G', 'G', 'K', 'S', 'D', 'S', 'P', 'T'] ]
+
 Binder options go here.
 
  * ``chainID``: list with the chainIDs of the binder.
@@ -171,19 +247,24 @@ Binder options go here.
    repeating the chainID ``B`` 3 times. You are allowed to do this to clearly separate CDRs.
  * ``mutating_resSeq``: list of lists with the positions you want to mutate. We are typing 3 lists, one for
    each CDR.
- * ``mutating_resname``: these are the one-letter code of the amino acids that correspond to the ``mutating_resSeq``
+ * ``mutating_resname``: these are the one-letter code of the amino acids that correspond to the *mutating_resSeq*
    from above. This is a mandatory field, and is used to check that the user typed the right positions on
    the field above. It's only checked when the protocol runs for the first time.
 
 
 scoring
 ^^^^^^^^
+.. code-block:: console
+
+    scoring:
+        functions: [evoef2, bluues, piepisa, gmxmmpbsa]
+        nthreads: 6
+        mpiprocs: 4
+
 Finally, we have the options related to scoring.
 
  * ``functions``: list of scoring functions to use. Check :ref:`configurationfile:schema.yaml` for a
    reference of all the currently available ones.
- * ``consensus_threshold``: the minimum number of scoring functions that have to improve for an *iteration*
-   to be considered better than its parents. Check :ref:`pruners:Consensus score` for more info.
  * ``nthreads``: number of processes used for all the scoring functions but *gmxmmpbsa*.
  * ``mpiprocs``: number of MPI processors used for *gmxmmpbsa*. If set to ``1``, *gmxmmpbsa* will not use
    its MPI capabilites. Useful if you are having issues with MPI, though it will be slow.

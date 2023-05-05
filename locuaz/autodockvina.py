@@ -27,14 +27,8 @@ class AutodockVina(AbstractScoringFunction):
         comando_ob_target = \
             f"{self.openbabel_bin} -ipdb {target_pdb} -O {target_pdbqt} --partialcharge gasteiger  ---errorlevel 0"
 
-        p = sp.run(
-            comando_ob_target,
-            stdout=sp.PIPE,
-            stderr=sp.PIPE,
-            cwd=self.results_dir,
-            shell=True,
-            text=True,
-        )
+        p = sp.run(comando_ob_target, stdout=sp.PIPE, stderr=sp.PIPE, cwd=self.results_dir, shell=True,text=True)
+
         self.__assert_scoring_function_outfile__(Path(self.results_dir, target_pdbqt), stdout=p.stdout, stderr=p.stderr,
                                                  command=comando_ob_target)
         # Get PDBQT file for binder
@@ -44,27 +38,14 @@ class AutodockVina(AbstractScoringFunction):
         comando_ob_binder = \
             f"{self.openbabel_bin} -ipdb {binder_pdb} -O {binder_pdbqt} --partialcharge gasteiger -xr ---errorlevel 0"
 
-        p = sp.run(
-            comando_ob_binder,
-            stdout=sp.PIPE,
-            stderr=sp.PIPE,
-            cwd=self.results_dir,
-            shell=True,
-            text=True,
-        )
+        p = sp.run(comando_ob_binder, stdout=sp.PIPE, stderr=sp.PIPE, cwd=self.results_dir, shell=True, text=True)
+
         self.__assert_scoring_function_outfile__(Path(self.results_dir, binder_pdbqt), stdout=p.stdout, stderr=p.stderr,
                                                  command=comando_ob_binder)
 
         comando_vina = f"{self.bin_path} --score_only --ligand {target_pdbqt} --receptor {binder_pdbqt} --autobox"
 
-        p = sp.run(
-            comando_vina,
-            stdout=sp.PIPE,
-            stderr=sp.PIPE,
-            cwd=self.results_dir,
-            shell=True,
-            text=True,
-        )
+        p = sp.run(comando_vina, stdout=sp.PIPE, stderr=sp.PIPE, cwd=self.results_dir, shell=True, text=True)
 
         autodockvina_score = self.__parse_stdout__(
             score_stdout=p.stdout, original_command=comando_vina

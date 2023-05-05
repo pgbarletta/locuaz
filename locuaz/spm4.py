@@ -59,18 +59,18 @@ class SPM4(AbstractMutationGenerator):
                            mut_idx_residue: int, mut_resSeq: int):
         """
         generates up to `branches` different mutations
-        :param epoch:
-        :type epoch:
-        :param branches:
-        :type branches:
-        :param mut_idx_chain:
-        :type mut_idx_chain:
-        :param mut_chainID:
-        :type mut_chainID:
-        :param mut_idx_residue:
-        :type mut_idx_residue:
-        :param mut_resSeq:
-        :type mut_resSeq:
+        Parameters
+        ----------
+        epoch :
+        branches :
+        mut_idx_chain :
+        mut_chainID :
+        mut_idx_residue :
+        mut_resSeq :
+
+        Returns
+        -------
+
         """
         remaining_branches = branches
         remaining_iterations = set(epoch.top_iterations.keys())
@@ -100,16 +100,14 @@ class SPM4(AbstractMutationGenerator):
         try:
             any_iteration = next(iter(epoch.top_iterations.values()))
         except Exception:
-            raise RuntimeError(
-                f"No available iterations on Epoch {epoch.id}. "
-                "It's likely that all of them failed during MD."
-            )
+            raise RuntimeError(f"No available iterations on Epoch {epoch.id}. "
+                               "It's likely that all of them failed during MD.")
 
         # Now, filter the mutating resSeqs.
         candidates_resSeq = [resSeq for cdr in any_iteration.resSeqs for resSeq in cdr if
-                                     resSeq not in self.excluded_pos]
+                             resSeq not in self.excluded_pos]
         if len(candidates_resSeq) == 0:
-            raise RuntimeError(f"Cannot mutate. No CDR residue on the interface that isn't excluded.")
+            raise RuntimeError(f"Cannot mutate. No CDR residue that isn't excluded.")
 
         logger.info(f"Generating mutations with: {self}.\n"
                     f"'mutating_resSeq': {any_iteration.resSeqs}.\n"

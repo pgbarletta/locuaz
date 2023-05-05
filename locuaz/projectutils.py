@@ -77,7 +77,7 @@ class Iteration:
         if not log:
             log = logging.getLogger("root")
         self.scores[sf_name] = tuple(scores)
-        avg_score = np.mean(scores)
+        avg_score: float = np.mean(scores)
         self.mean_scores[sf_name] = avg_score
 
         std_score = np.std(scores)
@@ -282,10 +282,13 @@ class WorkProject:
 
             # Check input PDB to create name and attributes for the starting iteration.
             input_path = Path(data_str)
-            self.__check_input_pdb__(input_path)
-            iter_name, chainIDs, resSeqs, resnames = self.__generate_iteration_ID__(
-                input_path
-            )
+            try:
+                self.__check_input_pdb__(input_path)
+            except (Exception, ) as e:
+                # Remove the working dir, so it can restart easily again.
+                sh.rmtree(Path(self.config["paths"]["work"]))
+                raise e
+            iter_name, chainIDs, resSeqs, resnames = self.__generate_iteration_ID__(input_path)
 
             iter_path = Path(self.dir_handle, f"{starting_epoch}-{iter_name}")
             assert not (iter_path.is_dir() or iter_path.is_file()), f"{iter_path} exists. Wrong input path."

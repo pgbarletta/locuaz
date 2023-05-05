@@ -178,6 +178,11 @@ pruning:
             min: 1
             max: 20
             dependencies: {pruner: consensus}
+        kT:
+            type: float
+            min: 0.1
+            max: 5.0
+            default: 0.593
 
 md:
     type: dict

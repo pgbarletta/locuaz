@@ -73,7 +73,7 @@ class MDrun:
             pinoffset=pinoffset,
             num_threads_omp=work_pjct.config["md"]["omp_procs"],
             num_threads_mpi=work_pjct.config["md"]["mpi_procs"],
-            dev=f"-nb gpu -pme gpu -bonded gpu -pmefft gpu -pin on -pinoffset {pinoffset}",
+            dev=f"-nb gpu -pme gpu -pin on -pinoffset {pinoffset}",
             out_name=out_name,
             maxwarn=work_pjct.config["md"]["maxwarn"],
         )

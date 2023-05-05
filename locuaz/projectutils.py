@@ -10,7 +10,6 @@ from collections.abc import MutableMapping
 from itertools import tee, zip_longest
 from pathlib import Path
 from queue import PriorityQueue
-from statistics import mean, stdev
 from typing import (
     Iterable,
     Iterator,
@@ -78,10 +77,10 @@ class Iteration:
         if not log:
             log = logging.getLogger("root")
         self.scores[sf_name] = tuple(scores)
-        avg_score = mean(scores)
+        avg_score = np.mean(scores)
         self.mean_scores[sf_name] = avg_score
 
-        std_score = stdev(scores)
+        std_score = np.std(scores)
         if abs(avg_score) < std_score:
             log.warning(
                 f"{sf_name} score has a mean of {avg_score:.5f} and a std dev of {std_score:.5f}. "

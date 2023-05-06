@@ -23,7 +23,7 @@
           <value>
             <JupyterConnectionParameters>
               <option name="managed" value="true" />
-              <option name="sdkHomePath" value="$USER_HOME$/mambaforge/envs/locuaz/bin/python" />
+              <option name="sdkHomePath" value="$USER_HOME$/mambaforge/envs/cha/bin/python" />
             </JupyterConnectionParameters>
           </value>
         </entry>

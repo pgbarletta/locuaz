@@ -1,6 +1,9 @@
 from typing import Dict, Optional
 from pathlib import Path
 import shutil as sh
+from warnings import warn
+
+from Bio.SeqUtils import seq1
 
 # This will be used to map non-conventional AAs to conventional ones, so the
 # scoring functions don't fail.
@@ -90,3 +93,13 @@ def ext(name: str, suffix: str) -> str:
         str: filename with the extension.
     """
     return f"{name.split('.')[0]}.{suffix}"
+
+def my_seq1(resn_3: str) -> str:
+    resn_1 = seq1(resn_3)
+    if resn_1 == 'X':
+        try:
+            resn_1 = seq1(AA_MAP[resn_3])
+            warn(f"Converted non-standard residue {resn_3} from 3-letter code to 1-letter: {resn_1}.")
+        except KeyError:
+            warn(f"Could not convert non-standard residue {resn_3} from 3-letter code to 1-letter. Setting it to 'X'.")
+    return resn_1

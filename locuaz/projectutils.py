@@ -28,11 +28,12 @@ import MDAnalysis as mda
 import numpy as np
 from Bio.SeqUtils import seq1
 from attrs import define, field, validators
+import networkx as nx
 
 from locuaz.abstractscoringfunction import AbstractScoringFunction
 from locuaz.complex import AbstractComplex, GROComplex
 from locuaz.fileutils import FileHandle, DirHandle, copy_to
-from locuaz.primitives import AA_MAP
+from locuaz.primitives import AA_MAP, my_seq1
 from locuaz.scoringfunctions import scoringfunctions
 from locuaz.interface import get_freesasa_residues
 
@@ -471,21 +472,14 @@ class WorkProject:
             ch_resnames = []
             ch_resids = []
             cadena = u.select_atoms(f"segid {chainID}")
-            for resn, resi in {
-                (atm.resname, atm.resnum)
-                for atm in cadena.select_atoms(
-                    " or ".join([f"resid {res}" for res in list_resSeq])
-                )
-            }:
-                ch_resnames.append(resn)
+            for resn, resi in {(atm.resname, atm.resnum)
+                               for atm in cadena.select_atoms(" or ".join([f"resid {res}" for res in list_resSeq]))}:
+
+                ch_resnames.append(my_seq1(resn))
                 ch_resids.append(resi)
+
             resnames.append(
-                "".join(
-                    [
-                        seq1(resn_3)
-                        for resn_3 in np.array(ch_resnames)[np.argsort(ch_resids)]
-                    ]
-                )
+                "".join([ resn_1 for resn_1 in np.array(ch_resnames)[np.argsort(ch_resids)] ])
             )
         return resnames
 

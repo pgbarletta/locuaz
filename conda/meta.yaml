@@ -25,6 +25,8 @@ requirements:
     - scipy
     - numpy >=1.21.0,<2.0.0
     - attrs
+    - networkx
+    - pygraphviz
     - mdanalysis>=2.3.0
     - bioconda::biobb_common==4.0.0
     - bioconda::biobb_analysis==4.0.0

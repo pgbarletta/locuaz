@@ -7,6 +7,8 @@ dependencies:
   - conda-forge::ipykernel
   - conda-forge::jupyterlab
   - conda-forge::attrs
+  - conda-forge::networkx
+  - conda-forge::pygraphviz
   - conda-forge::ambertools
   - conda-forge::mpi4py=3.1.3
   - conda-forge::compilers=1.2.0

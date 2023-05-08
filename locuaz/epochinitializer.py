@@ -61,7 +61,7 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
                 old_pdb = old_iter.complex.pdb
 
             for mutation in mutations:
-                iter_name, iter_resnames = mutation.new_name_resname(old_iter)
+                iter_name, iter_resnames = old_iter.generate_name_resname(mutation)
                 iter_path = Path(work_pjct.dir_handle, f"{epoch_id}-{iter_name}")
 
                 this_iter = Iteration(

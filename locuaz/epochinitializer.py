@@ -34,7 +34,13 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
     # Create required mutation generator and generate mutation.
     generator = mutation_generators[work_pjct.config["generation"]["generator"]]
     successful_mutations = 0
-    while successful_mutations < work_pjct.config["protocol"]["branches"]:
+
+    if work_pjct.config["protocol"]["constant_width"]:
+        branches = work_pjct.config["protocol"]["branches"]
+    else:
+        branches = work_pjct.config["protocol"]["branches"] * len(old_epoch.top_iterations)
+
+    while successful_mutations < branches:
         mutation_generator = generator(
             old_epoch,
             work_pjct.config["protocol"]["branches"] - successful_mutations,
@@ -42,15 +48,14 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
             excluded_pos=work_pjct.get_mem_positions(),
             use_tleap=work_pjct.config["md"]["use_tleap"],
             logger=log,
-            probe_radius=work_pjct.config["generation"]["probe_radius"]
-        )
+            probe_radius=work_pjct.config["generation"]["probe_radius"])
 
         for old_iter_name, mutations in mutation_generator.items():
             old_iter = old_epoch.top_iterations[old_iter_name]
 
-            # GROMACS renumbers resSeqs to strided numbering. If using Amber's continuous
-            # numbering, this will result in the wrong mutating_resSeq.
             if work_pjct.config["md"]["use_tleap"]:
+                # GROMACS renumbers resSeqs to strided numbering. If using Amber's continuous
+                # numbering, this will result in the wrong mutating_resSeq.
                 # Backup the PDB before runing pdb4amber
                 pdb_path = Path(old_iter.complex.pdb)
                 pre_fix_pdb = Path(old_iter.dir_handle, f"preAmberPDBFixer_{pdb_path.stem}.pdb")
@@ -84,10 +89,9 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
                             iter_path,
                             mutation=mutation,
                             selection_complex=old_iter.complex.top.selection_complex,
-                            selection_wations=old_iter.complex.top.selection_not_complex,
-                        )
+                            selection_wations=old_iter.complex.top.selection_not_complex)
                     except AssertionError as e:
-                        # Mutator failed
+                        # Mutator failed. This position will still be memorized.
                         log.info(f"Mutation of {iter_name} failed. Will try with another one. Backing-up {iter_path} .")
                         print(e, file=sys.stderr)
                         failed_iter_path = Path(work_pjct.dir_handle, f"failed_{epoch_id}-{iter_name}")

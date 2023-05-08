@@ -79,6 +79,7 @@ def image_traj(cpx: GROComplex, out_trj_fn: Path, use_tleap: bool = False, gmx_b
         # Selection
         orig_u.select_atoms(cpx.top.selection_complex).write(str(orig_pdb))
     u = mda.Universe(str(orig_pdb), str(cluster_trj))
+    # noinspection all
     u.trajectory[2]  # type: ignore
     cluster_gro = Path(wrk_dir, "clustered.gro")
     u.atoms.write(str(cluster_gro))  # type: ignore
@@ -120,6 +121,7 @@ def image_traj(cpx: GROComplex, out_trj_fn: Path, use_tleap: bool = False, gmx_b
     # Finally, get the last frame of the trajectory and leave it in case the user wants to check it.
     out_pdb_fn = Path(out_trj_fn.parent, out_trj_fn.stem + ".pdb")
     u = mda.Universe(str(orig_pdb), str(out_trj_fn))
+    # noinspection all
     u.trajectory[-1]
     if not use_tleap:
         # Staggered resSeq
@@ -201,6 +203,7 @@ def write_non_overlapping_ndx(
     wat_count = wat_atoms // 3
 
     return ndx, wat_count
+
 
 def remove_overlapping_waters(complex: GROComplex, config: Dict, overlapped_resSeq: int) -> GROComplex:
     """DEPRECATED remove_overlapping_waters takes a complex and removes all the waters that
@@ -322,15 +325,26 @@ def fix_gromacs_pdb(
         pdb_in_fn: Path, pdb_out_fn: Path, *, new_chainID: Optional[str] = None,
         allowed_nonstandard_residues: Optional[Set] = None,
 ) -> Path:
-    """fix_gromacs_pdb uses Bio to add TER between chains, END at the end,
-    and manually make the resSeq numbers continuous.
-    Since this changes the PBD numbering it should only be used for structures
-    to be used for scoring.
-    Specifically, Haddock, that requires chains to have unique resSeq numbers.
+    """
+    uses Bio to add TER between chains, END at the end, and manually make the resSeq numbers continuous.
+    Since this changes the PBD numbering it should only be used for structures to be used for scoring.
+    For ex., Haddock requires chains to have unique resSeq numbers.
 
-    Args:
-        pdb_in_fn (Path): Path to input PDB.
-        pdb_out_fn (Path): Path to output PDB.
+    Parameters
+    ----------
+    pdb_in_fn : Path
+        input PDB
+    pdb_out_fn : Path
+        output PDB
+    new_chainID : Optional[str]
+        For assigning a new chain ID to all atoms in the output PDB
+    allowed_nonstandard_residues : Optional[set]
+        Any residue not present in AA_MAP or in this set will be discarded from the output PDB.
+        Useful when scoring complexes with ligands.
+    Returns
+    -------
+    the output PDB : Path
+        the PDB will be written with Biopython's PDB tools.
     """
     if not allowed_nonstandard_residues:
         allowed_nonstandard_residues = set()

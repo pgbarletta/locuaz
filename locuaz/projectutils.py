@@ -20,6 +20,7 @@ from typing import (
     Union,
     Deque,
     Optional,
+    Any
 )
 from warnings import warn
 from numpy.typing import NDArray
@@ -28,6 +29,7 @@ import MDAnalysis as mda
 import numpy as np
 from Bio.SeqUtils import seq1
 from attrs import define, field, validators
+import matplotlib.pyplot as plt
 import networkx as nx
 
 from locuaz.abstractscoringfunction import AbstractScoringFunction
@@ -56,6 +58,8 @@ class Iteration:
     resSeqs: List[List[int]] = field(
         kw_only=True, validator=validators.instance_of(list)
     )  # Had to use validators.instance_of() instead of converter because mypy complains
+    parent: Optional["Iteration"] = field(kw_only=True, default=None)
+    mutation: Optional[Mutation] = field(kw_only=True, default=None)
     epoch_id: int = field(converter=int, init=False)
     complex: Union[AbstractComplex, GROComplex] = field(init=False)
     score_dir: DirHandle = field(converter=DirHandle, init=False)  # type: ignore
@@ -157,7 +161,6 @@ class Iteration:
         """
         return self.iter_name < other.iter_name
 
-        # This is a horrible way to do this, I'll do it properly later.
 
     def generate_name_resname(self, mutation: Mutation) -> Tuple[str, List[str]]:
         """
@@ -276,6 +279,8 @@ class WorkProject:
     epochs: List[Epoch]
     mdps: Dict[str, FileHandle]
     scorers: Dict[str, AbstractScoringFunction] = {}
+    project_tree: nx.DiGraph = nx.DiGraph()
+    project_mut_tree: nx.DiGraph = nx.DiGraph()
     mutated_positions: Deque[Set[int]] = deque(set())
     mutated_aminoacids: Deque[Set[str]] = deque(set())
     failed_mutated_positions: Deque[Set[int]] = deque(set())
@@ -462,10 +467,11 @@ class WorkProject:
 
             current_epoch[iter_name] = this_iter
 
-        current_epoch.mutated_positions = set(
-            self.config["misc"]["epoch_mutated_positions"]
-        )
+        current_epoch.mutated_positions = set(self.config["misc"]["epoch_mutated_positions"])
+
         self.new_epoch(current_epoch)
+        self.project_tree = self.config["project_tree"]
+        self.project_mut_tree = self.config["project_mut_tree"]
 
     def iteration_from_str(self, iter_str: str) -> Tuple[str, Path, Iteration]:
         iter_path = Path(iter_str)
@@ -545,8 +551,8 @@ class WorkProject:
         chainIDs = self.config["target"]["chainID"] + self.config["binder"]["chainID"]
         for segid, chainID in zip_longest(segids, chainIDs):
             if chainID:
-                assert (segid == chainID), f"PDBs chainIDs ({segids}) and input target-binder chainIDs "\
-                f"({chainIDs}) from the config should have the same ordering and the target chains should go first."
+                assert (segid == chainID), f"PDBs chainIDs ({segids}) and input target-binder chainIDs " \
+                                           f"({chainIDs}) from the config should have the same ordering and the target chains should go first."
             else:
                 assert (segid == '' or segid == 'X'), f"There're unaccounted segments. {segid} has to either be, " \
                                                       f"target or binder. If it's solvent or ions, then its segid " \
@@ -558,9 +564,15 @@ class WorkProject:
         prot = u.atoms.select_atoms(all_residues)  # type: ignore
         aas = {res.resname for res in prot.residues}
         all_aas = set(AA_MAP.keys())
-        if not aas.issubset(all_aas):
-            warn(f"Unrecognized residues: {aas - all_aas}. Make sure you can build "
+        nonstandard_residues = aas - all_aas
+        if len(nonstandard_residues) != 0:
+            warn(f"Unrecognized residues: {nonstandard_residues}. Make sure you can build "
                  "a topology for them and that they are not necessary for scoring.")
+
+            allowed_nonstandard_residues = set(self.config["scoring"]["allowed_nonstandard_residues"])
+            if not nonstandard_residues.issubset(allowed_nonstandard_residues):
+                warn(f"Watch out, {nonstandard_residues - allowed_nonstandard_residues} were not included as "
+                     "'allowed_nonstandard_residues', make sure you don't need them for scoring.")
 
         # Check solvent
         solvent_sel = "resname WAT" if self.config["md"]["use_tleap"] else "resname SOL"
@@ -707,20 +719,39 @@ class WorkProject:
 
     def new_epoch(self, epoch: Epoch, log: Optional[logging.Logger] = None) -> None:
         self.epochs.append(epoch)
+        self.update_dags()
         self.__track_project__(log)
+
+    def update_dags(self) -> None:
+
+        for iteration in self.epochs[-1].values():
+            # Iteration DAG:
+            new_iter = f"{iteration.epoch_id}-{iteration.iter_name}"
+            try:
+                # If we're restarting, then one epoch won't have a parent, since we only look at the last 2
+                old_iter = f"{iteration.parent.epoch_id}-{iteration.parent.iter_name}"
+                self.project_tree.add_edge(old_iter, new_iter)
+            except AttributeError:
+                self.project_tree.add_node(new_iter)
+
+            # Mutational DAG:
+            try:
+                new_mut = f"{iteration.mutation.chainID}:{iteration.mutation.old_aa}" \
+                          f"{iteration.mutation.resSeq}{iteration.mutation.new_aa}"
+                try:
+                    old_mut = f"{iteration.parent.mutation.chainID}:{iteration.parent.mutation.old_aa}" \
+                              f"{iteration.parent.mutation.resSeq}{iteration.parent.mutation.new_aa}"
+                    self.project_mut_tree.add_edge(old_mut, new_mut)
+                except (AttributeError,):
+                    self.project_mut_tree.add_edge("None", new_mut)
+            except (AttributeError,):
+                self.project_mut_tree.add_node("None")
 
     def __track_project__(self, log: Optional[logging.Logger] = None) -> None:
         try:
-            previous_iterations = [
-                str(pre_it.dir_handle) for pre_it in self.epochs[-2].values()
-            ]
-            current_iterations = [
-                str(cur_it.dir_handle) for cur_it in self.epochs[-1].values()
-            ]
-            top_iterations = [
-                str(cur_it.dir_handle)
-                for cur_it in self.epochs[-2].top_iterations.values()
-            ]
+            previous_iterations = [str(pre_it.dir_handle) for pre_it in self.epochs[-2].values()]
+            current_iterations = [str(cur_it.dir_handle) for cur_it in self.epochs[-1].values()]
+            top_iterations = [str(cur_it.dir_handle) for cur_it in self.epochs[-2].top_iterations.values()]
 
             tracking = {
                 "previous_iterations": previous_iterations,
@@ -729,12 +760,10 @@ class WorkProject:
                 "epoch_mutated_positions": self.epochs[-1].mutated_positions,
                 "memory_positions": self.mutated_positions,
                 "failed_memory_positions": self.failed_mutated_positions,
+                "project_tree": self.project_tree,
+                "project_mut_tree": self.project_mut_tree,
             }
-            assert (
-                    len(previous_iterations) > 0
-                    and len(current_iterations) > 0
-                    and len(top_iterations) > 0
-            )
+            assert (len(previous_iterations) > 0 and len(current_iterations) > 0 and len(top_iterations) > 0)
 
             # Back up tracking.pkl before writing.
             track = Path(self.dir_handle, "tracking.pkl")
@@ -747,12 +776,36 @@ class WorkProject:
             with open(track, "wb") as cur_file:
                 pickle.dump(tracking, cur_file)
 
+            self.draw_dag(self.project_tree, Path(self.dir_handle, "iterations_dag.png"), reformat=True)
+            self.draw_dag(self.project_mut_tree, Path(self.dir_handle, "mutations_dag.png"))
+
         except Exception as e:
             if log:
                 log.warning(f"Not a full WorkProject yet, could not track it.")
 
     def get_first_iter(self) -> Tuple[str, Iteration]:
         return next(iter(self.epochs[0].items()))
+
+    @staticmethod
+    def draw_dag(dag: nx.Graph, out_path: Path, *, reformat: bool = False) -> None:
+        node_size = 5000
+        w = max(dict(dag.degree()).values()) * 2.5 + 2
+        h = (nx.dag_longest_path_length(dag) + 1) * 1.5 + 2
+        plt.figure(figsize=(w, h))
+
+        if reformat:
+            # For a better display of the iterations names.
+            label_remap = {node: node.replace('-', '\n') for node in dag.nodes}
+            dag = nx.relabel_nodes(dag, label_remap)
+
+            # Adjuste node and plot sizes, so it fits nicely, hopefully.
+            one_label = next(iter(label_remap.keys()))
+            node_size = max([len(piece) for piece in one_label.split('\n')]) * 500
+
+        # Plot and save
+        pos = nx.drawing.nx_agraph.graphviz_layout(dag, prog="dot")
+        nx.draw(dag, pos, with_labels=True, node_size=node_size, node_color="lightblue", font_size=10)
+        plt.savefig(out_path)
 
 
 def set_logger(name: str, dir_path: Path) -> logging.Logger:

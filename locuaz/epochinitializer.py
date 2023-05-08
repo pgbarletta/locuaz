@@ -74,7 +74,9 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
                     iter_name=iter_name,
                     chainIDs=old_iter.chainIDs,
                     resnames=iter_resnames,
-                    resSeqs=old_iter.resSeqs)
+                    resSeqs=old_iter.resSeqs,
+                    parent=old_iter,
+                    mutation=mutation)
 
                 init_wt = Path(iter_path, "init_wt.pdb")
                 sh.copy(old_pdb, init_wt)

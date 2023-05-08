@@ -12,6 +12,7 @@ from queue import PriorityQueue
 from typing import Dict, List, Final, Set, Tuple, Union, Any
 
 import yaml
+import networkx as nx
 
 from locuaz.validatore import Validatore
 from locuaz.primitives import UserInputError
@@ -255,13 +256,21 @@ def get_tracking_files(config: Dict) -> bool:
             config["protocol"]["failed_memory_positions"] = tracking[
                 "failed_memory_positions"
             ]
+        try:
+            config["project_tree"] = tracking["project_tree"]
+        except (Exception,):
+            warnings.warn("Could not read project iteration tree from tracking file.")
+        try:
+            config["project_mut_tree"] = tracking["project_mut_tree"]
+        except (Exception,):
+            warnings.warn("Could not read project mutation tree from tracking file.")
         return True
     except (Exception,):
         warnings.warn("Will ignore the tracking file. It is in an invalid state with respect to the working dir.")
         return False
 
 
-def set_iterations(config: Dict) -> None:
+def set_iterations(config: Dict) -> Dict:
     """set_iterations Set config["paths"]["current_iterations"],
     config["paths"]["previous_iterations"] and possibly config["paths"]["top_iterations"].
 
@@ -295,7 +304,7 @@ def set_iterations(config: Dict) -> None:
         if iter_str != "":
             config["paths"]["previous_iterations"] = []
             append_iterations(iters, config["paths"]["previous_iterations"], 1)
-        return
+        return config
     raise ValueError("No valid iterations in work_dir. Aborting.")
 
 
@@ -425,6 +434,12 @@ def get_memory(config: Dict) -> Tuple[Set, List[List]]:
     return set(all_memory_positions[0]), all_memory_positions
 
 
+def set_empty_dags(config: Dict) -> Dict:
+    config["project_tree"] = nx.DiGraph()
+    config["project_mut_tree"] = nx.DiGraph()
+    return config
+
+
 def main() -> Tuple[Dict, bool]:
     """Console script for locuaz."""
     warnings.simplefilter("default")
@@ -468,7 +483,8 @@ def main() -> Tuple[Dict, bool]:
                 "Will try to get the previous iterations, the current iterations and the memory of the "
                 "last mutated positions from the work dir. Memory of failed mutations won't be loaded.",
                 flush=True)
-            set_iterations(config)
+            config = set_iterations(config)
+            config = set_empty_dags(config)
             # Set up the memory
             requested_memory = "memory_size" in config["protocol"]
             if requested_memory:

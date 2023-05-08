@@ -57,7 +57,7 @@ class AutodockVina(AbstractScoringFunction):
 
         try:
             autodockvina_score = float(self.rgx.search(score_stdout).group(1))
-        except (ValueError, IndexError) as e:
+        except (ValueError, IndexError, Exception) as e:
             raise ValueError(
                 f"{self} couldn't parse {score_stdout}\nfrom: \n{original_command}"
             ) from e

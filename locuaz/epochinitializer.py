@@ -57,7 +57,7 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
             if work_pjct.config["md"]["use_tleap"]:
                 # GROMACS renumbers resSeqs to strided numbering. If using Amber's continuous
                 # numbering, this will result in the wrong mutating_resSeq.
-                # Backup the PDB before runing pdb4amber
+                # Backup the PDB before running pdb4amber
                 pdb_path = Path(old_iter.complex.pdb)
                 pre_fix_pdb = Path(old_iter.dir_handle, f"preAmberPDBFixer_{pdb_path.stem}.pdb")
                 sh.move(pdb_path, pre_fix_pdb)

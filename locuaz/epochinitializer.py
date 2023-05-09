@@ -40,10 +40,11 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
     else:
         branches = work_pjct.config["protocol"]["branches"] * len(old_epoch.top_iterations)
 
+    # Usually, this `while` would only be executed once, unless the Mutator program fails to perform a mutation.
     while successful_mutations < branches:
         mutation_generator = generator(
             old_epoch,
-            work_pjct.config["protocol"]["branches"] - successful_mutations,
+            branches - successful_mutations,
             excluded_aas=work_pjct.get_mem_aminoacids(),
             excluded_pos=work_pjct.get_mem_positions(),
             use_tleap=work_pjct.config["md"]["use_tleap"],

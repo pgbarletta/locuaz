@@ -279,8 +279,8 @@ class WorkProject:
     epochs: List[Epoch]
     mdps: Dict[str, FileHandle]
     scorers: Dict[str, AbstractScoringFunction] = {}
-    project_tree: nx.DiGraph = nx.DiGraph()
-    project_mut_tree: nx.DiGraph = nx.DiGraph()
+    project_dag: nx.DiGraph = nx.DiGraph()
+    project_mut_dag: nx.DiGraph = nx.DiGraph()
     mutated_positions: Deque[Set[int]] = deque(set())
     mutated_aminoacids: Deque[Set[str]] = deque(set())
     failed_mutated_positions: Deque[Set[int]] = deque(set())
@@ -470,8 +470,8 @@ class WorkProject:
         current_epoch.mutated_positions = set(self.config["misc"]["epoch_mutated_positions"])
 
         self.new_epoch(current_epoch)
-        self.project_tree = self.config["project_tree"]
-        self.project_mut_tree = self.config["project_mut_tree"]
+        self.project_dag = self.config["project_dag"]
+        self.project_mut_dag = self.config["project_mut_dag"]
 
     def iteration_from_str(self, iter_str: str) -> Tuple[str, Path, Iteration]:
         iter_path = Path(iter_str)
@@ -730,9 +730,9 @@ class WorkProject:
             try:
                 # If we're restarting, then one epoch won't have a parent, since we only look at the last 2
                 old_iter = f"{iteration.parent.epoch_id}-{iteration.parent.iter_name}"
-                self.project_tree.add_edge(old_iter, new_iter)
+                self.project_dag.add_edge(old_iter, new_iter)
             except AttributeError:
-                self.project_tree.add_node(new_iter)
+                self.project_dag.add_node(new_iter)
 
             # Mutational DAG:
             try:
@@ -741,11 +741,11 @@ class WorkProject:
                 try:
                     old_mut = f"{iteration.parent.mutation.chainID}:{iteration.parent.mutation.old_aa}" \
                               f"{iteration.parent.mutation.resSeq}{iteration.parent.mutation.new_aa}"
-                    self.project_mut_tree.add_edge(old_mut, new_mut)
+                    self.project_mut_dag.add_edge(old_mut, new_mut)
                 except (AttributeError,):
-                    self.project_mut_tree.add_edge("None", new_mut)
+                    self.project_mut_dag.add_edge("None", new_mut)
             except (AttributeError,):
-                self.project_mut_tree.add_node("None")
+                self.project_mut_dag.add_node("None")
 
     def __track_project__(self, log: Optional[logging.Logger] = None) -> None:
         try:
@@ -760,8 +760,8 @@ class WorkProject:
                 "epoch_mutated_positions": self.epochs[-1].mutated_positions,
                 "memory_positions": self.mutated_positions,
                 "failed_memory_positions": self.failed_mutated_positions,
-                "project_tree": self.project_tree,
-                "project_mut_tree": self.project_mut_tree,
+                "project_dag": self.project_dag,
+                "project_mut_dag": self.project_mut_dag,
             }
             assert (len(previous_iterations) > 0 and len(current_iterations) > 0 and len(top_iterations) > 0)
 
@@ -776,8 +776,8 @@ class WorkProject:
             with open(track, "wb") as cur_file:
                 pickle.dump(tracking, cur_file)
 
-            self.draw_dag(self.project_tree, Path(self.dir_handle, "iterations_dag.png"), reformat=True)
-            self.draw_dag(self.project_mut_tree, Path(self.dir_handle, "mutations_dag.png"))
+            self.draw_dag(self.project_dag, Path(self.dir_handle, "iterations_dag.png"), reformat=True)
+            self.draw_dag(self.project_mut_dag, Path(self.dir_handle, "mutations_dag.png"))
 
         except Exception as e:
             if log:

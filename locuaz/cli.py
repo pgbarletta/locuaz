@@ -257,11 +257,11 @@ def get_tracking_files(config: Dict) -> bool:
                 "failed_memory_positions"
             ]
         try:
-            config["project_tree"] = tracking["project_tree"]
+            config["project_dag"] = tracking["project_dag"]
         except (Exception,):
             warnings.warn("Could not read project iteration tree from tracking file.")
         try:
-            config["project_mut_tree"] = tracking["project_mut_tree"]
+            config["project_mut_dag"] = tracking["project_mut_dag"]
         except (Exception,):
             warnings.warn("Could not read project mutation tree from tracking file.")
         return True
@@ -435,8 +435,8 @@ def get_memory(config: Dict) -> Tuple[Set, List[List]]:
 
 
 def set_empty_dags(config: Dict) -> Dict:
-    config["project_tree"] = nx.DiGraph()
-    config["project_mut_tree"] = nx.DiGraph()
+    config["project_dag"] = nx.DiGraph()
+    config["project_mut_dag"] = nx.DiGraph()
     return config
 
 

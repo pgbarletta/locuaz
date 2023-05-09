@@ -1,0 +1,5 @@
+include sample_bin/aux_scripts/*
+include sample_bin/dlpacker/*
+include sample_bin/gmxmmpbsa/*
+include sample_bin/haddock/*
+include schema.yaml

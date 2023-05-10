@@ -71,7 +71,12 @@ def image_traj(cpx: GROComplex, out_trj_fn: Path, use_tleap: bool = False, gmx_b
 
     # Use MDAnalysis to get a good reference frame for -pbc nojump
     orig_u = mda.Universe(str(cpx.tpr), str(cpx.tra))
+    #### TODO: remove when mdanalysis is updated
+    if orig_u.atoms.segids[0][:3] == "seg":
+        orig_u.segments.segids = np.array([segid[6:] for segid in orig_u.segments.segids])
+    #### TODO: remove when mdanalysis is updated
     orig_u.add_TopologyAttr('chainID', orig_u.atoms.segids)
+
     # First, get a PDB with the same topology as `cluster_trj`.
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")

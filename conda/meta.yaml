@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/locuaz-{{ version }}.tar.gz
-  sha256: 4a6f3a19e7db96569aba9c0c5c41b9c43f7fdc315af0e550ea3d8189100c9c8f
+  sha256: 423e7cdfe58dde46751f605eb88da38dc449ec070fb202a647ea2ab33cce6ed4
 
 build:
   noarch: python
@@ -24,9 +24,9 @@ requirements:
     - python >=3.10,<3.11
     - scipy
     - numpy >=1.21.0,<2.0.0
-    - attrs
-    - networkx
-    - pygraphviz
+    - openbabel
+    - ambertools>=22.0.0
+    - tensorflow
     - mdanalysis>=2.3.0
     - bioconda::biobb_common==4.0.0
     - bioconda::biobb_analysis==4.0.0
@@ -39,7 +39,10 @@ requirements:
     - sphinx
     - sphinx-rtd-theme
     - cerberus
-    - tensorflow
+    - attrs
+    - networkx
+    - pygraphviz
+
 test:
   imports:
     - locuaz

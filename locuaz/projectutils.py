@@ -20,7 +20,6 @@ from typing import (
     Union,
     Deque,
     Optional,
-    Any
 )
 from warnings import warn
 from numpy.typing import NDArray
@@ -138,6 +137,15 @@ class Iteration:
                 log.warning(f"{self.epoch_id}-{self.iter_name} was not scored with {SF}.")
                 return False
         return True
+
+    def mutation_str(self) -> Optional[str]:
+        if self.mutation:
+            return self.mutation.to_str()
+        else:
+            return None
+
+    def full_name(self) -> str:
+        return f"{self.epoch_id}-{self.iter_name}"
 
     def __str__(self) -> str:
         return str(self.dir_handle)
@@ -365,14 +373,10 @@ class WorkProject:
 
     def __restart_work__(self, log: logging.Logger):
         # Restart from input iterations, they should all have the same epoch number
-        epoch_nbr = int(
-            Path(self.config["paths"]["current_iterations"][0]).name.split("-")[0]
-        )
+        epoch_nbr = int(Path(self.config["paths"]["current_iterations"][0]).name.split("-")[0])
 
         if "previous_iterations" in self.config["paths"]:
-            prev_epoch = Epoch(
-                epoch_nbr - 1, iterations={}, nvt_done=True, npt_done=True
-            )
+            prev_epoch = Epoch(epoch_nbr - 1, iterations={}, nvt_done=True, npt_done=True)
             prev_epoch.top_iterations = {}
             for iter_str in self.config["paths"]["previous_iterations"]:
                 # Get `iter_name` from the input iteration dir
@@ -398,6 +402,13 @@ class WorkProject:
                 except Exception as e_score:
                     log.error(f"Previous epoch not fully scored. Run in --score mode.")
                     raise e_score
+
+                # Finally, add its mutation, if present.
+                try:
+                    this_iter.mutation = self.config["mutations"][iter_name]
+                except KeyError:
+                    this_iter.mutation = None
+                # Store it in the epoch.
                 prev_epoch[iter_name] = this_iter
 
             try:
@@ -463,7 +474,12 @@ class WorkProject:
                             f"{iter_path} is in an invalid state. Cannot build complex from it."
                         )
                         raise e_restart_cpx
-
+            # Finally, add its mutation, if present.
+            try:
+                this_iter.mutation = self.config["mutations"][iter_name]
+            except KeyError:
+                this_iter.mutation = None
+            # Store it in the epoch.
             current_epoch[iter_name] = this_iter
 
         current_epoch.mutated_positions = set(self.config["misc"]["epoch_mutated_positions"])
@@ -725,39 +741,45 @@ class WorkProject:
 
         for iteration in self.epochs[-1].values():
             # Iteration DAG:
-            new_iter = f"{iteration.epoch_id}-{iteration.iter_name}"
             try:
-                # If we're restarting, then one epoch won't have a parent, since we only look at the last 2
-                old_iter = f"{iteration.parent.epoch_id}-{iteration.parent.iter_name}"
-                self.project_dag.add_edge(old_iter, new_iter)
+                self.project_dag.add_edge(iteration.parent.full_name(), iteration.full_name())
             except AttributeError:
-                self.project_dag.add_node(new_iter)
+                # This iteration is on the 0 epoch, it has no parent.
+                self.project_dag.add_node(iteration.full_name())
 
             # Mutational DAG:
             try:
-                new_mut = f"{iteration.mutation.chainID}:{iteration.mutation.old_aa}" \
-                          f"{iteration.mutation.resSeq}{iteration.mutation.new_aa}"
-                try:
-                    old_mut = f"{iteration.parent.mutation.chainID}:{iteration.parent.mutation.old_aa}" \
-                              f"{iteration.parent.mutation.resSeq}{iteration.parent.mutation.new_aa}"
-                    self.project_mut_dag.add_edge(old_mut, new_mut)
-                except (AttributeError,):
-                    # The protocol may have been restarted and that's why `iteration.parent.mutation` isn't filled.
-                    if new_mut not in self.project_mut_dag:
-                        self.project_mut_dag.add_edge("None", new_mut)
-            except (AttributeError,):
+                self.project_mut_dag.add_edge(iteration.parent.mutation_str(), iteration.mutation_str())
+            except ValueError:
+                # The parent iteration is on the 0 epoch and has no mutation.
+                self.project_mut_dag.add_edge("None", iteration.mutation_str())
+            except AttributeError:
+                # This iteration is on the 0 epoch, it has no parent and no mutation.
                 self.project_mut_dag.add_node("None")
 
     def __track_project__(self, log: Optional[logging.Logger] = None) -> None:
         try:
-            previous_iterations = [str(pre_it.dir_handle) for pre_it in self.epochs[-2].values()]
-            current_iterations = [str(cur_it.dir_handle) for cur_it in self.epochs[-1].values()]
-            top_iterations = [str(cur_it.dir_handle) for cur_it in self.epochs[-2].top_iterations.values()]
+            previous_iterations: List[str] = []
+            mutations: Dict[str, str] = {}
+            for iter_name, iteration in self.epochs[-2].items():
+                previous_iterations.append(str(iteration.dir_handle))
+                mutations[iter_name] = iteration.mutation
+
+            current_iterations: List[str] = []
+            for iter_name, iteration in self.epochs[-1].items():
+                current_iterations.append(str(iteration.dir_handle))
+                mutations[iter_name] = iteration.mutation
+
+            top_iterations: List[str] = []
+            for iter_name, iteration in self.epochs[-2].top_iterations.items():
+                top_iterations.append(str(iteration.dir_handle))
+                mutations[iter_name] = iteration.mutation
 
             tracking = {
                 "previous_iterations": previous_iterations,
                 "current_iterations": current_iterations,
                 "top_iterations": top_iterations,
+                "mutations": mutations,
                 "epoch_mutated_positions": self.epochs[-1].mutated_positions,
                 "memory_positions": self.mutated_positions,
                 "failed_memory_positions": self.failed_mutated_positions,
@@ -777,9 +799,7 @@ class WorkProject:
             with open(track, "wb") as cur_file:
                 pickle.dump(tracking, cur_file)
 
-            self.draw_dag(self.project_dag, Path(self.dir_handle, "iterations_dag.png"), reformat=True)
-            self.draw_dag(self.project_mut_dag, Path(self.dir_handle, "mutations_dag.png"))
-
+            self.__draw_dags__(Path(self.dir_handle, "dags.png"))
         except Exception as e:
             if log:
                 log.warning(f"Not a full WorkProject yet, could not track it.")
@@ -787,11 +807,41 @@ class WorkProject:
     def get_first_iter(self) -> Tuple[str, Iteration]:
         return next(iter(self.epochs[0].items()))
 
+    def __draw_dags__(self, out_path: Path) -> None:
+        # Try to set a nice plot size
+        w = max(dict(self.project_dag.degree()).values()) * 2 + 4
+        h = (nx.dag_longest_path_length(self.project_dag) + 1) * 4 + 2
+        _, axes = plt.subplots(1, 2, figsize=(w, h))
+        # _, axes = plt.subplots(1, 2)
+
+        ##### Iterations graph
+        plt.sca(axes[0])
+        # For a better display of the iterations names.
+        label_remap = {node: node.replace('-', '\n') for node in self.project_dag.nodes}
+        dag = nx.relabel_nodes(self.project_dag, label_remap)
+        # Adjuste node and plot sizes, so it fits nicely, hopefully.
+        one_label = next(iter(label_remap.keys()))
+        node_size = max([len(piece) for piece in one_label.split('\n')]) * 400
+        # Plot
+        pos = nx.drawing.nx_agraph.graphviz_layout(dag, prog="dot")
+        nx.draw(dag, pos, with_labels=True, node_size=node_size, node_color="lightblue", font_size=10)
+
+        ##### Mutations graph
+        plt.sca(axes[1])
+        # Plot
+        pos = nx.drawing.nx_agraph.graphviz_layout(self.project_mut_dag, prog="dot")
+        nx.draw(self.project_mut_dag, pos, with_labels=True, node_size=4000, node_color="pink", font_size=10)
+
+        # Remove axes and save.
+        axes[0].set_axis_off()
+        axes[1].set_axis_off()
+        plt.savefig(out_path)
+
     @staticmethod
     def draw_dag(dag: nx.Graph, out_path: Path, *, reformat: bool = False) -> None:
         node_size = 4000
         w = max(dict(dag.degree()).values()) * 2 + 2
-        h = (nx.dag_longest_path_length(dag) + 1) * 2 + 2
+        h = (nx.dag_longest_path_length(dag) + 1) * 4 + 2
         plt.figure(figsize=(w, h))
 
         if reformat:

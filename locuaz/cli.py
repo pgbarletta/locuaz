@@ -4,7 +4,7 @@ import os
 import pickle
 import shutil as sh
 import sys
-import warnings
+from warnings import warn, simplefilter
 from collections import defaultdict
 from itertools import product
 from pathlib import Path
@@ -55,10 +55,7 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
 
     # Check mode
     if mode != config["main"]["mode"]:
-        warnings.warn(
-            f"Warning, CLI input {mode} doesn't match {config['main']['mode']}."
-            f"Overwriting option."
-        )
+        warn(f"Warning, CLI input {mode} doesn't match {config['main']['mode']}. Overwriting option.")
         config["main"]["mode"] = mode
 
     config["main"]["debug"] = debug
@@ -81,7 +78,7 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
         assert (
                 get_dir_size(config["paths"]["tleap"]) < 10
         ), f"tleap dir is heavier than 10Mb. Choose a dir with only the necessary tleap files."
-        warnings.warn(
+        warn(
             "tleap script will be used. Options: 'water_type' and 'force_field' will be ignored.")
 
     # Check matching lengths of mutating_resSeq and mutating_resname.
@@ -110,7 +107,7 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
 def backup_iteration(it_fn: Union[str, Path]) -> None:
     it_path = Path(it_fn)
     new_path = Path(it_path.parent, "bu_" + it_path.name)
-    warnings.warn(f"Found incomplete epoch. Will backup {it_path} to {new_path}")
+    warn(f"Found incomplete epoch. Will backup {it_path} to {new_path}")
     sh.move(it_path, new_path)
 
 
@@ -186,22 +183,32 @@ def is_not_epoch_0(iterations: Union[List[str], List[Path]], starting_epoch: int
     return True
 
 
-def lacks_branches(
-        current_iterations: Union[List[str], List[Path]],
-        *,
-        branches: int,
-        starting_epoch: int,
-        prevent_fewer_branches: bool,
-) -> bool:
-    if prevent_fewer_branches:
-        # Check that the epoch wasn't cut short during its initialization. This may
-        # happen if last run was cut during initialize_new_epoch().
+def lacks_branches(current_iterations: Union[List[str], List[Path]],
+                   top_iterations: Union[List[str], List[Path]], config: Dict[str, Any]) -> bool:
+    if config["protocol"]["prevent_fewer_branches"]:
+        if config["protocol"]["constant_width"]:
+            branches = config["protocol"]["branches"]
+        else:
+            n_top_iters = 1 if len(top_iterations) == 0 else len(top_iterations)
+            branches = config["protocol"]["branches"] * n_top_iters
         nbr_branches = len(current_iterations)
+        starting_epoch = config["main"]["starting_epoch"]
+
+        # Check that the epoch wasn't cut short during its initialization.
+        # This may happen if last run was cut during initialize_new_epoch().
         if nbr_branches < branches and is_not_epoch_0(current_iterations, starting_epoch):
             for it_fn in current_iterations:
                 backup_iteration(it_fn)
             return True
     return False
+
+
+def read_key_from_tracking_file(config: Dict[str, Any], tracking: Dict[str, Any], attr: str) -> Dict[str, Any]:
+    try:
+        config[attr] = tracking[attr]
+    except (Exception,):
+        warn(f"Could not read {attr} tree from tracking file.")
+    return config
 
 
 def get_tracking_files(config: Dict) -> bool:
@@ -211,64 +218,44 @@ def get_tracking_files(config: Dict) -> bool:
         with open(tracking_pkl, "rb") as file:
             tracking: Dict[str, Any] = pickle.load(file)
     except (Exception,):
-        warnings.warn("Could not read tracking file.")
+        warn("Could not read tracking file.")
         return False
     try:
-        previous_iterations = get_valid_iter_dirs(
-            tracking["previous_iterations"], config
-        )
+        previous_iterations = get_valid_iter_dirs(tracking["previous_iterations"], config)
         current_iterations = get_valid_iter_dirs(tracking["current_iterations"], config)
         top_iterations = get_valid_iter_dirs(tracking["top_iterations"], config)
 
-        if lacks_branches(
-                current_iterations,
-                branches=config["protocol"]["branches"],
-                starting_epoch=config["main"]["starting_epoch"],
-                prevent_fewer_branches=config["protocol"]["prevent_fewer_branches"],
-        ):
-            warnings.warn("Will ignore the tracking file. The current iterations field is invalid.")
+        if lacks_branches(current_iterations, top_iterations, config):
+            warn("Will ignore the tracking file. The current iterations field is invalid.")
             return False
 
         config["paths"]["previous_iterations"] = previous_iterations
         config["paths"]["current_iterations"] = current_iterations
         config["paths"]["top_iterations"] = top_iterations
-        config["misc"]["epoch_mutated_positions"] = set(
-            tracking["epoch_mutated_positions"]
-        )
+        config["misc"]["epoch_mutated_positions"] = set(tracking["epoch_mutated_positions"])
+
         if "memory_positions" in config["protocol"]:
-            warnings.warn(
-                f"Tracking file memory_positions ignored: "
-                f'{tracking["memory_positions"]}.\n'
-                f"Using input config memory_positions instead: "
-                f'{config["protocol"]["memory_positions"]}'
-            )
+            warn(f"Tracking file's 'memory_positions' ignored: {tracking['memory_positions']}.\n"
+                 f"Using input config 'memory_positions' instead: {config['protocol']['memory_positions']}")
         else:
             config["protocol"]["memory_positions"] = tracking["memory_positions"]
 
         if "failed_memory_positions" in config["protocol"]:
-            warnings.warn(
-                f"Tracking file failed_memory_positions ignored: "
-                f'{tracking["failed_memory_positions"]}.\n'
-                f"Using input config failed_memory_positions instead: "
-                f'{config["protocol"]["failed_memory_positions"]}'
-            )
+            warn(f"Tracking file's 'failed_memory_positions' ignored: {tracking['failed_memory_positions']}.\n"
+                 "Using input config 'failed_memory_positions' instead: "
+                 f"{config['protocol']['failed_memory_positions']}")
         else:
-            config["protocol"]["failed_memory_positions"] = tracking[
-                "failed_memory_positions"
-            ]
-        try:
-            config["project_dag"] = tracking["project_dag"]
-        except (Exception,):
-            warnings.warn("Could not read project iteration tree from tracking file.")
-        try:
-            config["project_mut_dag"] = tracking["project_mut_dag"]
-        except (Exception,):
-            warnings.warn("Could not read project mutation tree from tracking file.")
-        return True
+            config["protocol"]["failed_memory_positions"] = tracking["failed_memory_positions"]
+
+        # Read options related to the DAGs
+        for key in ("project_dag", "project_mut_dag", "mutations"):
+            config = read_key_from_tracking_file(config, tracking, key)
+
     except (Exception,):
-        warnings.warn("Will ignore the tracking file. It is in an invalid state with respect to the working dir.")
+        warn("Will ignore the tracking file. It is in an invalid state with respect to the working dir.")
         return False
 
+    return True
 
 def set_iterations(config: Dict) -> Dict:
     """set_iterations Set config["paths"]["current_iterations"],
@@ -292,12 +279,7 @@ def set_iterations(config: Dict) -> Dict:
         config["paths"]["current_iterations"] = []
         iter_str = append_iterations(iters, config["paths"]["current_iterations"], 1)
 
-        if lacks_branches(
-                config["paths"]["current_iterations"],
-                branches=config["protocol"]["branches"],
-                starting_epoch=config["main"]["starting_epoch"],
-                prevent_fewer_branches=config["protocol"]["prevent_fewer_branches"],
-        ):
+        if lacks_branches(config["paths"]["current_iterations"], [], config):
             # Start over, this time, the incomplete epoch will not be in `iters`.
             continue
 
@@ -397,14 +379,14 @@ def get_memory(config: Dict) -> Tuple[Set, List[List]]:
         # Check in case the mutating chains/residues have changed:
         for iterchains in epoch_iternames:
             if len(iterchains) != input_n_chains:
-                warnings.warn(
+                warn(
                     f"Can't fill requested memory since input 'mutating_chainID' does not "
                     f" match the 'mutating_chainID' previously used on this workspace."
                 )
                 return set(), [[]]
             old_n_resSeqs = [len(itername[2:]) for itername in iterchains]
             if old_n_resSeqs != input_n_resSeqs:
-                warnings.warn(
+                warn(
                     f"Can't fill requested memory since input 'mutating_resSeq' does not "
                     f" match the 'mutating_resSeq' previously used on this workspace."
                 )
@@ -442,7 +424,7 @@ def set_empty_dags(config: Dict) -> Dict:
 
 def main() -> Tuple[Dict, bool]:
     """Console script for locuaz."""
-    warnings.simplefilter("default")
+    simplefilter("default")
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "config_file",
@@ -500,7 +482,7 @@ def main() -> Tuple[Dict, bool]:
     os.environ["OMP_PLACES"] = "threads"
     omp_procs_str = str(config["md"]["omp_procs"])
     if os.environ.get("OMP_NUM_THREADS", "") != omp_procs_str:
-        warnings.warn(f"Setting 'OMP_NUM_THREADS' environment variable to input 'omp_procs' {omp_procs_str}")
+        warn(f"Setting 'OMP_NUM_THREADS' environment variable to input 'omp_procs' {omp_procs_str}")
         os.environ["OMP_NUM_THREADS"] = omp_procs_str
 
     return config, starts

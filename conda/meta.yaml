@@ -1,5 +1,5 @@
 {% set name = "locuaz" %}
-{% set version = "0.3.5" %}
+{% set version = "0.3.7" %}
 
 package:
   name: {{ name|lower }}
@@ -7,41 +7,47 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/locuaz-{{ version }}.tar.gz
-  sha256: 423e7cdfe58dde46751f605eb88da38dc449ec070fb202a647ea2ab33cce6ed4
+  sha256: 2c7c18a9925eae67fb756cdcb78910f862a9dc028bb25549acc54bd9d8dcbb4a
 
 build:
-  noarch: python
+  noarch: True
   script: {{ PYTHON }} -m pip install . -vv
   number: 0
 
 requirements:
   host:
-    - python >=3.10,<3.11
+    - python >=3.9,<3.11
     - setuptools >=42
     - wheel
     - pip
   run:
-    - python >=3.10,<3.11
-    - scipy
-    - numpy >=1.21.0,<2.0.0
-    - openbabel
-    - ambertools>=22.0.0
-    - tensorflow
-    - mdanalysis>=2.3.0
+    - condaforge::python >=3.9,<3.11
+    - condaforge::scipy
+    - condaforge::numpy >=1.21.0,<2.0.0
+    - condaforge::mmcif_pdbx>=1.1.2,<=2.0.0
+    - condaforge::ambertools>=22.0.0
+    - condaforge::tensorflow
+    - condaforge::mdanalysis>=2.3.0
+    - condaforge::chemfiles
+    - condaforge::freesasa
+    - condaforge::gmx_mmpbsa
+    - condaforge::py
+    - condaforge::docutils<0.18
+    - condaforge::pdb2pqr
+    - condaforge::openbabel
+    - condaforge::tqdm
+    - condaforge::pytest
+    - condaforge::sphinx
+    - condaforge::sphinx-rtd-theme
+    - condaforge::cerberus
+    - condaforge::attrs
+    - condaforge::networkx
+    - condaforge::pygraphviz
     - bioconda::biobb_common==4.0.0
     - bioconda::biobb_analysis==4.0.0
     - bioconda::biobb_model==4.0.0
     - bioconda::biobb_io==4.0.0
     - bioconda::biobb_gromacs==4.0.0
-    - pdb2pqr
-    - tqdm
-    - pytest
-    - sphinx
-    - sphinx-rtd-theme
-    - cerberus
-    - attrs
-    - networkx
-    - pygraphviz
 
 test:
   imports:

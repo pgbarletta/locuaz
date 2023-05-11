@@ -13,8 +13,8 @@ recommended instead.
 Stable release
 --------------
 
-conda (mamba)
-^^^^^^^^^^^^^^
+conda (recommended)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: console
 
@@ -34,7 +34,7 @@ Create a conda environment from the :download:`usr_deps.yaml<../../usr_deps.yaml
     channels:
       - conda-forge
     dependencies:
-      - conda-forge::python>=3.9.15,<=3.10.10
+      - conda-forge::python>=3.9,<3.10
       - conda-forge::ambertools>=22.0.0
       - conda-forge::tensorflow
 
@@ -45,14 +45,6 @@ Then, activate the environment and install the protocol through pip:
     pip install locuaz
 
 This is more involved that installing through conda, but the resulting environment won't be as heavy.
-
-Why there's no straight pip install
-""""""""""""""""""""""""""""""""""""
-Being this a high-level protocol it has many dependencies and, unfortunately, python packaging has its quirks, so
-different developers have solved their issues in different ways.
-A straight `pip install` is out of the question given the tensorflow (for DLPacker) and ambertools (for tleap)
-dependencies which are only easily available through conda, due to their involved installation process.
-
 
 From sources
 ------------
@@ -77,9 +69,9 @@ Post-installation
 ------------------
 
 If you want to use the ``dlp`` mutator You'll also have to get DLPacker's `weights <https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQseE0LQ/view?usp=sharing>`_
-and place them on a dedicated ``dlpacker`` (actual name doesn't matter) directory, more info on the dedicated Mutators section.
+and place them on a dedicated ``dlpacker`` (actual name doesn't matter) directory, more info on :ref:`mutators:Mutators`.
 
 
 .. _repo: https://github.com/pgbarletta/locuaz
 
-For more info, check the :ref:`Scoring Functions`
+For more info, check the :ref:`scoringfunctions:Scoring Functions`

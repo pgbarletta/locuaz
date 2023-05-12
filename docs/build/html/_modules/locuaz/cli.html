@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.cli &mdash; locuaz 0.2.1 documentation</title>
+  <title>locuaz.cli &mdash; locuaz 0.3.7 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.2.1
+                0.3.7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -51,7 +51,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../basicconcepts.html">Basic concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorialsimple.html">Tutorial: running a simple optimization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorialtleap.html">Tutorial: using tleap topologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorialtleap.html">Tutorial: using Tleap topologies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorialligand.html">Tutorial: optimizing an antibody against a ligand</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../jobsubmission.html">Job submission</a></li>
 </ul>
@@ -99,7 +99,7 @@
 <span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span><span class="p">,</span> <span class="n">simplefilter</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">product</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
@@ -107,6 +107,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Final</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span>
 
 <span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
 
 <span class="kn">from</span> <span class="nn">locuaz.validatore</span> <span class="kn">import</span> <span class="n">Validatore</span>
 <span class="kn">from</span> <span class="nn">locuaz.primitives</span> <span class="kn">import</span> <span class="n">UserInputError</span>
@@ -149,10 +150,7 @@
 
     <span class="c1"># Check mode</span>
     <span class="k">if</span> <span class="n">mode</span> <span class="o">!=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;mode&quot;</span><span class="p">]:</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Warning, CLI input </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2"> doesn&#39;t match </span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;main&#39;</span><span class="p">][</span><span class="s1">&#39;mode&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">.&quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;Overwriting option.&quot;</span>
-        <span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning, CLI input </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2"> doesn&#39;t match </span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;main&#39;</span><span class="p">][</span><span class="s1">&#39;mode&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">. Overwriting option.&quot;</span><span class="p">)</span>
         <span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mode</span>
 
     <span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;debug&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">debug</span>
@@ -175,7 +173,7 @@
         <span class="k">assert</span> <span class="p">(</span>
                 <span class="n">get_dir_size</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;tleap&quot;</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">10</span>
         <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;tleap dir is heavier than 10Mb. Choose a dir with only the necessary tleap files.&quot;</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+        <span class="n">warn</span><span class="p">(</span>
             <span class="s2">&quot;tleap script will be used. Options: &#39;water_type&#39; and &#39;force_field&#39; will be ignored.&quot;</span><span class="p">)</span>
 
     <span class="c1"># Check matching lengths of mutating_resSeq and mutating_resname.</span>
@@ -189,13 +187,22 @@
 
     <span class="n">check_gmxmmpbsa</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 
+    <span class="c1"># Check consensus threshold and scoring functions</span>
+    <span class="k">if</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;pruning&quot;</span><span class="p">][</span><span class="s2">&quot;pruner&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;consensus&quot;</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="s2">&quot;consensus_threshold&quot;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;pruning&quot;</span><span class="p">],</span> <span class="s2">&quot;Set &#39;consensus_threshold&#39; when using &#39;consensus&#39; pruner.&quot;</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;pruning&quot;</span><span class="p">][</span><span class="s2">&quot;consensus_threshold&quot;</span><span class="p">]</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;scoring&quot;</span><span class="p">][</span><span class="s2">&quot;functions&quot;</span><span class="p">])</span>
+        <span class="k">assert</span> <span class="n">t</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Threshold (</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">) should be equal or lower than the number of scoring functions (</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">)&quot;</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;pruning&quot;</span><span class="p">][</span><span class="s2">&quot;pruner&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;metropolis&quot;</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;scoring&quot;</span><span class="p">][</span><span class="s2">&quot;functions&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Can only use 1 scoring function when pruner is &#39;metropolis&#39;.&quot;</span>
+
     <span class="k">return</span> <span class="n">config</span><span class="p">,</span> <span class="n">start</span></div>
 
 
 <div class="viewcode-block" id="backup_iteration"><a class="viewcode-back" href="../../misc.html#locuaz.cli.backup_iteration">[docs]</a><span class="k">def</span> <span class="nf">backup_iteration</span><span class="p">(</span><span class="n">it_fn</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">it_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">it_fn</span><span class="p">)</span>
     <span class="n">new_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">it_path</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;bu_&quot;</span> <span class="o">+</span> <span class="n">it_path</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found incomplete epoch. Will backup </span><span class="si">{</span><span class="n">it_path</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">new_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found incomplete epoch. Will backup </span><span class="si">{</span><span class="n">it_path</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">new_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">sh</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">it_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span></div>
 
 
@@ -271,22 +278,32 @@
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="lacks_branches"><a class="viewcode-back" href="../../misc.html#locuaz.cli.lacks_branches">[docs]</a><span class="k">def</span> <span class="nf">lacks_branches</span><span class="p">(</span>
-        <span class="n">current_iterations</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]],</span>
-        <span class="o">*</span><span class="p">,</span>
-        <span class="n">branches</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">starting_epoch</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">prevent_fewer_branches</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">prevent_fewer_branches</span><span class="p">:</span>
-        <span class="c1"># Check that the epoch wasn&#39;t cut short during its initialization. This may</span>
-        <span class="c1"># happen if last run was cut during initialize_new_epoch().</span>
+<div class="viewcode-block" id="lacks_branches"><a class="viewcode-back" href="../../misc.html#locuaz.cli.lacks_branches">[docs]</a><span class="k">def</span> <span class="nf">lacks_branches</span><span class="p">(</span><span class="n">current_iterations</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]],</span>
+                   <span class="n">top_iterations</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]],</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;prevent_fewer_branches&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;constant_width&quot;</span><span class="p">]:</span>
+            <span class="n">branches</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;branches&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">n_top_iters</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">top_iterations</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="nb">len</span><span class="p">(</span><span class="n">top_iterations</span><span class="p">)</span>
+            <span class="n">branches</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;branches&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_top_iters</span>
         <span class="n">nbr_branches</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">current_iterations</span><span class="p">)</span>
+        <span class="n">starting_epoch</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;starting_epoch&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Check that the epoch wasn&#39;t cut short during its initialization.</span>
+        <span class="c1"># This may happen if last run was cut during initialize_new_epoch().</span>
         <span class="k">if</span> <span class="n">nbr_branches</span> <span class="o">&lt;</span> <span class="n">branches</span> <span class="ow">and</span> <span class="n">is_not_epoch_0</span><span class="p">(</span><span class="n">current_iterations</span><span class="p">,</span> <span class="n">starting_epoch</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">it_fn</span> <span class="ow">in</span> <span class="n">current_iterations</span><span class="p">:</span>
                 <span class="n">backup_iteration</span><span class="p">(</span><span class="n">it_fn</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">True</span>
     <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="read_key_from_tracking_file"><a class="viewcode-back" href="../../misc.html#locuaz.cli.read_key_from_tracking_file">[docs]</a><span class="k">def</span> <span class="nf">read_key_from_tracking_file</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">tracking</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">config</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">tracking</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">Exception</span><span class="p">,):</span>
+        <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not read </span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2"> tree from tracking file.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">config</span></div>
 
 
 <div class="viewcode-block" id="get_tracking_files"><a class="viewcode-back" href="../../misc.html#locuaz.cli.get_tracking_files">[docs]</a><span class="k">def</span> <span class="nf">get_tracking_files</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -296,58 +313,46 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">tracking_pkl</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="n">tracking</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
     <span class="k">except</span> <span class="p">(</span><span class="ne">Exception</span><span class="p">,):</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Could not read tracking file.&quot;</span><span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Could not read tracking file.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">previous_iterations</span> <span class="o">=</span> <span class="n">get_valid_iter_dirs</span><span class="p">(</span>
-            <span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;previous_iterations&quot;</span><span class="p">],</span> <span class="n">config</span>
-        <span class="p">)</span>
+        <span class="n">previous_iterations</span> <span class="o">=</span> <span class="n">get_valid_iter_dirs</span><span class="p">(</span><span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;previous_iterations&quot;</span><span class="p">],</span> <span class="n">config</span><span class="p">)</span>
         <span class="n">current_iterations</span> <span class="o">=</span> <span class="n">get_valid_iter_dirs</span><span class="p">(</span><span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;current_iterations&quot;</span><span class="p">],</span> <span class="n">config</span><span class="p">)</span>
         <span class="n">top_iterations</span> <span class="o">=</span> <span class="n">get_valid_iter_dirs</span><span class="p">(</span><span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;top_iterations&quot;</span><span class="p">],</span> <span class="n">config</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">lacks_branches</span><span class="p">(</span>
-                <span class="n">current_iterations</span><span class="p">,</span>
-                <span class="n">branches</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;branches&quot;</span><span class="p">],</span>
-                <span class="n">starting_epoch</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;starting_epoch&quot;</span><span class="p">],</span>
-                <span class="n">prevent_fewer_branches</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;prevent_fewer_branches&quot;</span><span class="p">],</span>
-        <span class="p">):</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Will ignore the tracking file. The current iterations field is invalid.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">lacks_branches</span><span class="p">(</span><span class="n">current_iterations</span><span class="p">,</span> <span class="n">top_iterations</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Will ignore the tracking file. The current iterations field is invalid.&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;previous_iterations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">previous_iterations</span>
         <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;current_iterations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">current_iterations</span>
         <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;top_iterations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">top_iterations</span>
-        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;misc&quot;</span><span class="p">][</span><span class="s2">&quot;epoch_mutated_positions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
-            <span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;epoch_mutated_positions&quot;</span><span class="p">]</span>
-        <span class="p">)</span>
+        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;misc&quot;</span><span class="p">][</span><span class="s2">&quot;epoch_mutated_positions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;epoch_mutated_positions&quot;</span><span class="p">])</span>
+
         <span class="k">if</span> <span class="s2">&quot;memory_positions&quot;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">]:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Tracking file memory_positions ignored: &quot;</span>
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;memory_positions&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">.</span><span class="se">\n</span><span class="s1">&#39;</span>
-                <span class="sa">f</span><span class="s2">&quot;Using input config memory_positions instead: &quot;</span>
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;memory_positions&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
-            <span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tracking file&#39;s &#39;memory_positions&#39; ignored: </span><span class="si">{</span><span class="n">tracking</span><span class="p">[</span><span class="s1">&#39;memory_positions&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                 <span class="sa">f</span><span class="s2">&quot;Using input config &#39;memory_positions&#39; instead: </span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">][</span><span class="s1">&#39;memory_positions&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;memory_positions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;memory_positions&quot;</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="s2">&quot;failed_memory_positions&quot;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">]:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Tracking file failed_memory_positions ignored: &quot;</span>
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;failed_memory_positions&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">.</span><span class="se">\n</span><span class="s1">&#39;</span>
-                <span class="sa">f</span><span class="s2">&quot;Using input config failed_memory_positions instead: &quot;</span>
-                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;failed_memory_positions&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
-            <span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tracking file&#39;s &#39;failed_memory_positions&#39; ignored: </span><span class="si">{</span><span class="n">tracking</span><span class="p">[</span><span class="s1">&#39;failed_memory_positions&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                 <span class="s2">&quot;Using input config &#39;failed_memory_positions&#39; instead: &quot;</span>
+                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">][</span><span class="s1">&#39;failed_memory_positions&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;failed_memory_positions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tracking</span><span class="p">[</span>
-                <span class="s2">&quot;failed_memory_positions&quot;</span>
-            <span class="p">]</span>
-        <span class="k">return</span> <span class="kc">True</span>
+            <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;failed_memory_positions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;failed_memory_positions&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Read options related to the DAGs</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;project_dag&quot;</span><span class="p">,</span> <span class="s2">&quot;project_mut_dag&quot;</span><span class="p">,</span> <span class="s2">&quot;mutations&quot;</span><span class="p">):</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="n">read_key_from_tracking_file</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">tracking</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+
     <span class="k">except</span> <span class="p">(</span><span class="ne">Exception</span><span class="p">,):</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Will ignore the tracking file. It is in an invalid state with respect to the working dir.&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">False</span></div>
+        <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Will ignore the tracking file. It is in an invalid state with respect to the working dir.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
 
+    <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="set_iterations"><a class="viewcode-back" href="../../misc.html#locuaz.cli.set_iterations">[docs]</a><span class="k">def</span> <span class="nf">set_iterations</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="set_iterations"><a class="viewcode-back" href="../../misc.html#locuaz.cli.set_iterations">[docs]</a><span class="k">def</span> <span class="nf">set_iterations</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;set_iterations Set config[&quot;paths&quot;][&quot;current_iterations&quot;],</span>
 <span class="sd">    config[&quot;paths&quot;][&quot;previous_iterations&quot;] and possibly config[&quot;paths&quot;][&quot;top_iterations&quot;].</span>
 
@@ -369,19 +374,14 @@
         <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;current_iterations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">iter_str</span> <span class="o">=</span> <span class="n">append_iterations</span><span class="p">(</span><span class="n">iters</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;current_iterations&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">lacks_branches</span><span class="p">(</span>
-                <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;current_iterations&quot;</span><span class="p">],</span>
-                <span class="n">branches</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;branches&quot;</span><span class="p">],</span>
-                <span class="n">starting_epoch</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;starting_epoch&quot;</span><span class="p">],</span>
-                <span class="n">prevent_fewer_branches</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;prevent_fewer_branches&quot;</span><span class="p">],</span>
-        <span class="p">):</span>
+        <span class="k">if</span> <span class="n">lacks_branches</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;current_iterations&quot;</span><span class="p">],</span> <span class="p">[],</span> <span class="n">config</span><span class="p">):</span>
             <span class="c1"># Start over, this time, the incomplete epoch will not be in `iters`.</span>
             <span class="k">continue</span>
 
         <span class="k">if</span> <span class="n">iter_str</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
             <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;previous_iterations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">append_iterations</span><span class="p">(</span><span class="n">iters</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;previous_iterations&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">return</span>
+        <span class="k">return</span> <span class="n">config</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No valid iterations in work_dir. Aborting.&quot;</span><span class="p">)</span></div>
 
 
@@ -474,14 +474,14 @@
         <span class="c1"># Check in case the mutating chains/residues have changed:</span>
         <span class="k">for</span> <span class="n">iterchains</span> <span class="ow">in</span> <span class="n">epoch_iternames</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">iterchains</span><span class="p">)</span> <span class="o">!=</span> <span class="n">input_n_chains</span><span class="p">:</span>
-                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="n">warn</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;Can&#39;t fill requested memory since input &#39;mutating_chainID&#39; does not &quot;</span>
                     <span class="sa">f</span><span class="s2">&quot; match the &#39;mutating_chainID&#39; previously used on this workspace.&quot;</span>
                 <span class="p">)</span>
                 <span class="k">return</span> <span class="nb">set</span><span class="p">(),</span> <span class="p">[[]]</span>
             <span class="n">old_n_resSeqs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">itername</span><span class="p">[</span><span class="mi">2</span><span class="p">:])</span> <span class="k">for</span> <span class="n">itername</span> <span class="ow">in</span> <span class="n">iterchains</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">old_n_resSeqs</span> <span class="o">!=</span> <span class="n">input_n_resSeqs</span><span class="p">:</span>
-                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="n">warn</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;Can&#39;t fill requested memory since input &#39;mutating_resSeq&#39; does not &quot;</span>
                     <span class="sa">f</span><span class="s2">&quot; match the &#39;mutating_resSeq&#39; previously used on this workspace.&quot;</span>
                 <span class="p">)</span>
@@ -511,9 +511,15 @@
     <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">all_memory_positions</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">all_memory_positions</span></div>
 
 
+<div class="viewcode-block" id="set_empty_dags"><a class="viewcode-back" href="../../misc.html#locuaz.cli.set_empty_dags">[docs]</a><span class="k">def</span> <span class="nf">set_empty_dags</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+    <span class="n">config</span><span class="p">[</span><span class="s2">&quot;project_dag&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+    <span class="n">config</span><span class="p">[</span><span class="s2">&quot;project_mut_dag&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">config</span></div>
+
+
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../misc.html#locuaz.cli.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Console script for locuaz.&quot;&quot;&quot;</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
+    <span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;config_file&quot;</span><span class="p">,</span>
@@ -554,7 +560,8 @@
                 <span class="s2">&quot;Will try to get the previous iterations, the current iterations and the memory of the &quot;</span>
                 <span class="s2">&quot;last mutated positions from the work dir. Memory of failed mutations won&#39;t be loaded.&quot;</span><span class="p">,</span>
                 <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">set_iterations</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="n">set_iterations</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="n">set_empty_dags</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
             <span class="c1"># Set up the memory</span>
             <span class="n">requested_memory</span> <span class="o">=</span> <span class="s2">&quot;memory_size&quot;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">requested_memory</span><span class="p">:</span>
@@ -570,7 +577,7 @@
     <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;OMP_PLACES&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;threads&quot;</span>
     <span class="n">omp_procs_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;md&quot;</span><span class="p">][</span><span class="s2">&quot;omp_procs&quot;</span><span class="p">])</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;OMP_NUM_THREADS&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="n">omp_procs_str</span><span class="p">:</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Setting &#39;OMP_NUM_THREADS&#39; environment variable to input &#39;omp_procs&#39; </span><span class="si">{</span><span class="n">omp_procs_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Setting &#39;OMP_NUM_THREADS&#39; environment variable to input &#39;omp_procs&#39; </span><span class="si">{</span><span class="n">omp_procs_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;OMP_NUM_THREADS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">omp_procs_str</span>
 
     <span class="k">return</span> <span class="n">config</span><span class="p">,</span> <span class="n">starts</span></div>

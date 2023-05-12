@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.primitives &mdash; locuaz 0.2.1 documentation</title>
+  <title>locuaz.primitives &mdash; locuaz 0.3.7 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.2.1
+                0.3.7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -51,7 +51,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../basicconcepts.html">Basic concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorialsimple.html">Tutorial: running a simple optimization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorialtleap.html">Tutorial: using tleap topologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorialtleap.html">Tutorial: using Tleap topologies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorialligand.html">Tutorial: optimizing an antibody against a ligand</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../jobsubmission.html">Job submission</a></li>
 </ul>
@@ -96,6 +96,9 @@
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
+
+<span class="kn">from</span> <span class="nn">Bio.SeqUtils</span> <span class="kn">import</span> <span class="n">seq1</span>
 
 <span class="c1"># This will be used to map non-conventional AAs to conventional ones, so the</span>
 <span class="c1"># scoring functions don&#39;t fail.</span>
@@ -185,6 +188,16 @@
 <span class="sd">        str: filename with the extension.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+<div class="viewcode-block" id="my_seq1"><a class="viewcode-back" href="../../misc.html#locuaz.primitives.my_seq1">[docs]</a><span class="k">def</span> <span class="nf">my_seq1</span><span class="p">(</span><span class="n">resn_3</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">resn_1</span> <span class="o">=</span> <span class="n">seq1</span><span class="p">(</span><span class="n">resn_3</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">resn_1</span> <span class="o">==</span> <span class="s1">&#39;X&#39;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">resn_1</span> <span class="o">=</span> <span class="n">seq1</span><span class="p">(</span><span class="n">AA_MAP</span><span class="p">[</span><span class="n">resn_3</span><span class="p">])</span>
+            <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Converted non-standard residue </span><span class="si">{</span><span class="n">resn_3</span><span class="si">}</span><span class="s2"> from 3-letter code to 1-letter: </span><span class="si">{</span><span class="n">resn_1</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not convert non-standard residue </span><span class="si">{</span><span class="n">resn_3</span><span class="si">}</span><span class="s2"> from 3-letter code to 1-letter. Setting it to &#39;X&#39;.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">resn_1</span></div>
 </pre></div>
 
            </div>

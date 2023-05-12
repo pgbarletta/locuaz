@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.gromacsutils &mdash; locuaz 0.2.1 documentation</title>
+  <title>locuaz.gromacsutils &mdash; locuaz 0.3.7 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.2.1
+                0.3.7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -51,7 +51,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../basicconcepts.html">Basic concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorialsimple.html">Tutorial: running a simple optimization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorialtleap.html">Tutorial: using tleap topologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorialtleap.html">Tutorial: using Tleap topologies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorialligand.html">Tutorial: optimizing an antibody against a ligand</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../jobsubmission.html">Job submission</a></li>
 </ul>
@@ -166,7 +166,12 @@
 
     <span class="c1"># Use MDAnalysis to get a good reference frame for -pbc nojump</span>
     <span class="n">orig_u</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">cpx</span><span class="o">.</span><span class="n">tpr</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">cpx</span><span class="o">.</span><span class="n">tra</span><span class="p">))</span>
+    <span class="c1">#### TODO: remove when mdanalysis is updated</span>
+    <span class="k">if</span> <span class="n">orig_u</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">segids</span><span class="p">[</span><span class="mi">0</span><span class="p">][:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;seg&quot;</span><span class="p">:</span>
+        <span class="n">orig_u</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">segids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">segid</span><span class="p">[</span><span class="mi">6</span><span class="p">:]</span> <span class="k">for</span> <span class="n">segid</span> <span class="ow">in</span> <span class="n">orig_u</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">segids</span><span class="p">])</span>
+    <span class="c1">#### TODO: remove when mdanalysis is updated</span>
     <span class="n">orig_u</span><span class="o">.</span><span class="n">add_TopologyAttr</span><span class="p">(</span><span class="s1">&#39;chainID&#39;</span><span class="p">,</span> <span class="n">orig_u</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">segids</span><span class="p">)</span>
+
     <span class="c1"># First, get a PDB with the same topology as `cluster_trj`.</span>
     <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
@@ -174,6 +179,7 @@
         <span class="c1"># Selection</span>
         <span class="n">orig_u</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="n">cpx</span><span class="o">.</span><span class="n">top</span><span class="o">.</span><span class="n">selection_complex</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">orig_pdb</span><span class="p">))</span>
     <span class="n">u</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">orig_pdb</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">cluster_trj</span><span class="p">))</span>
+    <span class="c1"># noinspection all</span>
     <span class="n">u</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
     <span class="n">cluster_gro</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">wrk_dir</span><span class="p">,</span> <span class="s2">&quot;clustered.gro&quot;</span><span class="p">)</span>
     <span class="n">u</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">cluster_gro</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
@@ -215,6 +221,7 @@
     <span class="c1"># Finally, get the last frame of the trajectory and leave it in case the user wants to check it.</span>
     <span class="n">out_pdb_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">out_trj_fn</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">out_trj_fn</span><span class="o">.</span><span class="n">stem</span> <span class="o">+</span> <span class="s2">&quot;.pdb&quot;</span><span class="p">)</span>
     <span class="n">u</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">orig_pdb</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">out_trj_fn</span><span class="p">))</span>
+    <span class="c1"># noinspection all</span>
     <span class="n">u</span><span class="o">.</span><span class="n">trajectory</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">use_tleap</span><span class="p">:</span>
         <span class="c1"># Staggered resSeq</span>
@@ -296,6 +303,7 @@
     <span class="n">wat_count</span> <span class="o">=</span> <span class="n">wat_atoms</span> <span class="o">//</span> <span class="mi">3</span>
 
     <span class="k">return</span> <span class="n">ndx</span><span class="p">,</span> <span class="n">wat_count</span></div>
+
 
 <div class="viewcode-block" id="remove_overlapping_waters"><a class="viewcode-back" href="../../misc.html#locuaz.gromacsutils.remove_overlapping_waters">[docs]</a><span class="k">def</span> <span class="nf">remove_overlapping_waters</span><span class="p">(</span><span class="nb">complex</span><span class="p">:</span> <span class="n">GROComplex</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">overlapped_resSeq</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GROComplex</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;DEPRECATED remove_overlapping_waters takes a complex and removes all the waters that</span>
@@ -417,15 +425,26 @@
         <span class="n">pdb_in_fn</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">pdb_out_fn</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">new_chainID</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">allowed_nonstandard_residues</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;fix_gromacs_pdb uses Bio to add TER between chains, END at the end,</span>
-<span class="sd">    and manually make the resSeq numbers continuous.</span>
-<span class="sd">    Since this changes the PBD numbering it should only be used for structures</span>
-<span class="sd">    to be used for scoring.</span>
-<span class="sd">    Specifically, Haddock, that requires chains to have unique resSeq numbers.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    uses Bio to add TER between chains, END at the end, and manually make the resSeq numbers continuous.</span>
+<span class="sd">    Since this changes the PBD numbering it should only be used for structures to be used for scoring.</span>
+<span class="sd">    For ex., Haddock requires chains to have unique resSeq numbers.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        pdb_in_fn (Path): Path to input PDB.</span>
-<span class="sd">        pdb_out_fn (Path): Path to output PDB.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pdb_in_fn : Path</span>
+<span class="sd">        input PDB</span>
+<span class="sd">    pdb_out_fn : Path</span>
+<span class="sd">        output PDB</span>
+<span class="sd">    new_chainID : Optional[str]</span>
+<span class="sd">        For assigning a new chain ID to all atoms in the output PDB</span>
+<span class="sd">    allowed_nonstandard_residues : Optional[set]</span>
+<span class="sd">        Any residue not present in AA_MAP or in this set will be discarded from the output PDB.</span>
+<span class="sd">        Useful when scoring complexes with ligands.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    the output PDB : Path</span>
+<span class="sd">        the PDB will be written with Biopython&#39;s PDB tools.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">allowed_nonstandard_residues</span><span class="p">:</span>
         <span class="n">allowed_nonstandard_residues</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>

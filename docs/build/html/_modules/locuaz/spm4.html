@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.spm4 &mdash; locuaz 0.2.1 documentation</title>
+  <title>locuaz.spm4 &mdash; locuaz 0.3.7 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.2.1
+                0.3.7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -51,7 +51,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../basicconcepts.html">Basic concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorialsimple.html">Tutorial: running a simple optimization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorialtleap.html">Tutorial: using tleap topologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorialtleap.html">Tutorial: using Tleap topologies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorialligand.html">Tutorial: optimizing an antibody against a ligand</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../jobsubmission.html">Job submission</a></li>
 </ul>
@@ -154,18 +154,18 @@
                            <span class="n">mut_idx_residue</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mut_resSeq</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        generates up to `branches` different mutations</span>
-<span class="sd">        :param epoch:</span>
-<span class="sd">        :type epoch:</span>
-<span class="sd">        :param branches:</span>
-<span class="sd">        :type branches:</span>
-<span class="sd">        :param mut_idx_chain:</span>
-<span class="sd">        :type mut_idx_chain:</span>
-<span class="sd">        :param mut_chainID:</span>
-<span class="sd">        :type mut_chainID:</span>
-<span class="sd">        :param mut_idx_residue:</span>
-<span class="sd">        :type mut_idx_residue:</span>
-<span class="sd">        :param mut_resSeq:</span>
-<span class="sd">        :type mut_resSeq:</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        epoch :</span>
+<span class="sd">        branches :</span>
+<span class="sd">        mut_idx_chain :</span>
+<span class="sd">        mut_chainID :</span>
+<span class="sd">        mut_idx_residue :</span>
+<span class="sd">        mut_resSeq :</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">remaining_branches</span> <span class="o">=</span> <span class="n">branches</span>
         <span class="n">remaining_iterations</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">epoch</span><span class="o">.</span><span class="n">top_iterations</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
@@ -195,16 +195,14 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">any_iteration</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">epoch</span><span class="o">.</span><span class="n">top_iterations</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;No available iterations on Epoch </span><span class="si">{</span><span class="n">epoch</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">. &quot;</span>
-                <span class="s2">&quot;It&#39;s likely that all of them failed during MD.&quot;</span>
-            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No available iterations on Epoch </span><span class="si">{</span><span class="n">epoch</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">. &quot;</span>
+                               <span class="s2">&quot;It&#39;s likely that all of them failed during MD.&quot;</span><span class="p">)</span>
 
         <span class="c1"># Now, filter the mutating resSeqs.</span>
         <span class="n">candidates_resSeq</span> <span class="o">=</span> <span class="p">[</span><span class="n">resSeq</span> <span class="k">for</span> <span class="n">cdr</span> <span class="ow">in</span> <span class="n">any_iteration</span><span class="o">.</span><span class="n">resSeqs</span> <span class="k">for</span> <span class="n">resSeq</span> <span class="ow">in</span> <span class="n">cdr</span> <span class="k">if</span>
-                                     <span class="n">resSeq</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">excluded_pos</span><span class="p">]</span>
+                             <span class="n">resSeq</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">excluded_pos</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates_resSeq</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot mutate. No CDR residue on the interface that isn&#39;t excluded.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot mutate. No CDR residue that isn&#39;t excluded.&quot;</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generating mutations with: </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
                     <span class="sa">f</span><span class="s2">&quot;&#39;mutating_resSeq&#39;: </span><span class="si">{</span><span class="n">any_iteration</span><span class="o">.</span><span class="n">resSeqs</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>

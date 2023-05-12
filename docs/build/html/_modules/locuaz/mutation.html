@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.mutation &mdash; locuaz 0.2.1 documentation</title>
+  <title>locuaz.mutation &mdash; locuaz 0.3.7 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.2.1
+                0.3.7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -51,7 +51,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../basicconcepts.html">Basic concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorialsimple.html">Tutorial: running a simple optimization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorialtleap.html">Tutorial: using tleap topologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorialtleap.html">Tutorial: using Tleap topologies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorialligand.html">Tutorial: optimizing an antibody against a ligand</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../jobsubmission.html">Job submission</a></li>
 </ul>
@@ -94,9 +94,6 @@
              
   <h1>Source code for locuaz.mutation</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">attrs</span> <span class="kn">import</span> <span class="n">define</span><span class="p">,</span> <span class="n">field</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
-
-<span class="kn">from</span> <span class="nn">locuaz.projectutils</span> <span class="kn">import</span> <span class="n">Iteration</span>
 
 
 <div class="viewcode-block" id="Mutation"><a class="viewcode-back" href="../../mutators.html#locuaz.mutation.Mutation">[docs]</a><span class="nd">@define</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -108,30 +105,17 @@
     <span class="n">chainID_idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">resSeq_idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="c1"># This is a horrible way to do this, I&#39;ll do it properly later.</span>
-<div class="viewcode-block" id="Mutation.new_name_resname"><a class="viewcode-back" href="../../mutators.html#locuaz.mutation.Mutation.new_name_resname">[docs]</a>    <span class="k">def</span> <span class="nf">new_name_resname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iteration</span><span class="p">:</span> <span class="n">Iteration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-        <span class="n">iter_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-        <span class="n">new_iteration_resnames</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="p">(</span><span class="n">chainID</span><span class="p">,</span> <span class="n">resname</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">iteration</span><span class="o">.</span><span class="n">chainIDs</span><span class="p">,</span> <span class="n">iteration</span><span class="o">.</span><span class="n">resnames</span><span class="p">)):</span>
-            <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">chainID_idx</span><span class="p">:</span>
-                <span class="c1"># This is the mutated chainID</span>
-                <span class="n">new_resname</span> <span class="o">=</span> <span class="p">(</span>
-                        <span class="n">resname</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">resSeq_idx</span><span class="p">]</span>
-                        <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_aa</span>
-                        <span class="o">+</span> <span class="n">resname</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">resSeq_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span>
-                <span class="p">)</span>
-
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># This one remains the same</span>
-                <span class="n">new_resname</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">residue</span> <span class="k">for</span> <span class="n">residue</span> <span class="ow">in</span> <span class="n">resname</span><span class="p">])</span>
-            <span class="n">iter_name</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;-</span><span class="si">{</span><span class="n">chainID</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">new_resname</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="n">new_iteration_resnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_resname</span><span class="p">)</span>
-
-        <span class="c1"># Drop the leading &#39;-&#39;</span>
-        <span class="k">return</span> <span class="n">iter_name</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">new_iteration_resnames</span></div>
-
 <div class="viewcode-block" id="Mutation.get_mda_sel"><a class="viewcode-back" href="../../mutators.html#locuaz.mutation.Mutation.get_mda_sel">[docs]</a>    <span class="k">def</span> <span class="nf">get_mda_sel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backbone_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;segid </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chainID</span><span class="si">}</span><span class="s2"> and resnum </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resSeq</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot; and backbone&quot;</span> <span class="k">if</span> <span class="n">backbone_only</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;segid </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chainID</span><span class="si">}</span><span class="s2"> and resnum </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resSeq</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot; and backbone&quot;</span> <span class="k">if</span> <span class="n">backbone_only</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Mutation.to_str"><a class="viewcode-back" href="../../mutators.html#locuaz.mutation.Mutation.to_str">[docs]</a>    <span class="k">def</span> <span class="nf">to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gives alternate string representation of the mutation</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        mutation string: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chainID</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">old_aa</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">resSeq</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">new_aa</span><span class="si">}</span><span class="s2">&quot;</span></div></div>
 </pre></div>
 
            </div>

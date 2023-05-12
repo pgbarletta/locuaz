@@ -13,57 +13,48 @@ locuaz
 
 Looping Uniquely Catered Amino Acid Sequences
 
-
 * Free software: MIT license
 * Documentation: https://locuaz.readthedocs.io.
 
 Install
 --------
 
-Check the `Installation <https://locuaz.readthedocs.io/en/latest/installation.html>`_ section on the docs.
+Create a conda environment from the :download:`usr_deps.yaml<../../usr_deps.yaml>`, which looks like this:
+
+.. code-block:: console
+
+    name: locuaz
+    channels:
+      - conda-forge
+    dependencies:
+      - conda-forge::python>=3.9,<3.10
+      - conda-forge::ambertools>=22.0.0
+      - conda-forge::tensorflow
+
+Then, activate the environment and install the protocol through pip:
+
+.. code-block:: console
+
+    pip install locuaz
+
+Check the `Installation`_ section on the docs for more info.
 
 
 Post-Install
 -------------
-If on MDAnalysis 2.4.3 or older, edit the file ``MDAnalysis/topology/tpr/utils.py`` line 330::
-    
-  segid = f"seg_{i}_{molblock}"
 
-replace it with::
+Using DLPacker based mutators
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-    segid = molblock[14:] if molblock[:14] == "Protein_chain_" else molblock
+If you wish to used *DLPacker* based *Mutators* (``dlp`` and ``dlpr``), DLPacker weights have to be downloaded.
+Get them `here <https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQseE0LQ/view?usp=sharing>`_
+or `here`_. These weights have to be extracted to a dedicated folder and its path has to be specified in the
+input config under the ``paths`` key, on the  ``mutator`` option. Check the `docs`_ for more info.
+
+Citing
+-------
 
 
-On scoring
-----------------
-
-
-Mutators
----------
-
--  DLPacker is included as a submodule. To download it::
-
-    git submodule init
-    git submodule update
-
-Then, in
-
-The first 2 can be copied from the recently downloaded directory (``locuaz/DLPacker``).
-The weights have to be `downloaded <https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQseE0LQ/view?usp=sharing>`_.
-Then, the path to the ``dlpacker`` directory has to be specified in the input config under the
-``paths`` key, on the  ``mutator`` option.
-
-Generators
------------
-
-- ``gmxmmpbsa`` based generators like ``SPM4gmxmmpbsa`` need a residue decomposition file from ``gmxmmpbsa``,
-  so the **gmxmmpbsa** script needs to include something along the lines of::
-
-    /
-    &decomp
-    idecomp=2, dec_verbose=0,
-    print_res="within 4"
-    /
 
 Credits
 -------
@@ -71,3 +62,6 @@ Credits
 - `Biobb <https://mmb.irbbarcelona.org/biobb/documentation/source>`_
 - `MDAnalysis <https://github.com/MDAnalysis/mdanalysis>`_
 - `FreeSASA <https://github.com/freesasa/freesasa-python>`_
+
+.. _docs: https://locuaz.readthedocs.io/en/latest/mutators.html
+.. _Installation: https://locuaz.readthedocs.io/en/latest/installation.html

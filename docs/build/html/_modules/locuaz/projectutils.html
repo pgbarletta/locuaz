@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.projectutils &mdash; locuaz 0.2.1 documentation</title>
+  <title>locuaz.projectutils &mdash; locuaz 0.3.7 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.2.1
+                0.3.7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -51,7 +51,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../basicconcepts.html">Basic concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorialsimple.html">Tutorial: running a simple optimization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorialtleap.html">Tutorial: using tleap topologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorialtleap.html">Tutorial: using Tleap topologies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorialligand.html">Tutorial: optimizing an antibody against a ligand</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../jobsubmission.html">Job submission</a></li>
 </ul>
@@ -105,7 +105,6 @@
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">tee</span><span class="p">,</span> <span class="n">zip_longest</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">PriorityQueue</span>
-<span class="kn">from</span> <span class="nn">statistics</span> <span class="kn">import</span> <span class="n">mean</span><span class="p">,</span> <span class="n">stdev</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Iterable</span><span class="p">,</span>
     <span class="n">Iterator</span><span class="p">,</span>
@@ -124,13 +123,16 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">Bio.SeqUtils</span> <span class="kn">import</span> <span class="n">seq1</span>
 <span class="kn">from</span> <span class="nn">attrs</span> <span class="kn">import</span> <span class="n">define</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">validators</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
 
 <span class="kn">from</span> <span class="nn">locuaz.abstractscoringfunction</span> <span class="kn">import</span> <span class="n">AbstractScoringFunction</span>
 <span class="kn">from</span> <span class="nn">locuaz.complex</span> <span class="kn">import</span> <span class="n">AbstractComplex</span><span class="p">,</span> <span class="n">GROComplex</span>
 <span class="kn">from</span> <span class="nn">locuaz.fileutils</span> <span class="kn">import</span> <span class="n">FileHandle</span><span class="p">,</span> <span class="n">DirHandle</span><span class="p">,</span> <span class="n">copy_to</span>
-<span class="kn">from</span> <span class="nn">locuaz.primitives</span> <span class="kn">import</span> <span class="n">AA_MAP</span>
+<span class="kn">from</span> <span class="nn">locuaz.primitives</span> <span class="kn">import</span> <span class="n">AA_MAP</span><span class="p">,</span> <span class="n">my_seq1</span>
 <span class="kn">from</span> <span class="nn">locuaz.scoringfunctions</span> <span class="kn">import</span> <span class="n">scoringfunctions</span>
 <span class="kn">from</span> <span class="nn">locuaz.interface</span> <span class="kn">import</span> <span class="n">get_freesasa_residues</span>
+<span class="kn">from</span> <span class="nn">locuaz.mutation</span> <span class="kn">import</span> <span class="n">Mutation</span>
 
 
 <span class="c1"># TODO: replace own pairwise with itertools&#39; on 3.10</span>
@@ -150,6 +152,8 @@
     <span class="n">resSeqs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">validator</span><span class="o">=</span><span class="n">validators</span><span class="o">.</span><span class="n">instance_of</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
     <span class="p">)</span>  <span class="c1"># Had to use validators.instance_of() instead of converter because mypy complains</span>
+    <span class="n">parent</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Iteration&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">mutation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mutation</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="n">epoch_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="nb">complex</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">AbstractComplex</span><span class="p">,</span> <span class="n">GROComplex</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">score_dir</span><span class="p">:</span> <span class="n">DirHandle</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="n">DirHandle</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
@@ -173,10 +177,10 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">log</span><span class="p">:</span>
             <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;root&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="p">[</span><span class="n">sf_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
-        <span class="n">avg_score</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
+        <span class="n">avg_score</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mean_scores</span><span class="p">[</span><span class="n">sf_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">avg_score</span>
 
-        <span class="n">std_score</span> <span class="o">=</span> <span class="n">stdev</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
+        <span class="n">std_score</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">avg_score</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">std_score</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sf_name</span><span class="si">}</span><span class="s2"> score has a mean of </span><span class="si">{</span><span class="n">avg_score</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2"> and a std dev of </span><span class="si">{</span><span class="n">std_score</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">. &quot;</span>
@@ -229,6 +233,15 @@
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
+<div class="viewcode-block" id="Iteration.mutation_str"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Iteration.mutation_str">[docs]</a>    <span class="k">def</span> <span class="nf">mutation_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutation</span><span class="o">.</span><span class="n">to_str</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Iteration.full_name"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Iteration.full_name">[docs]</a>    <span class="k">def</span> <span class="nf">full_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch_id</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">iter_name</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dir_handle</span><span class="p">)</span>
 
@@ -249,7 +262,35 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            bool: first iteration in alphabetical order according to its name.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_name</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">iter_name</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter_name</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">iter_name</span>
+
+<div class="viewcode-block" id="Iteration.generate_name_resname"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Iteration.generate_name_resname">[docs]</a>    <span class="k">def</span> <span class="nf">generate_name_resname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mutation</span><span class="p">:</span> <span class="n">Mutation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        returns the name of the iteration that would be generated by the input mutation.</span>
+<span class="sd">        It also returns a list with the resnames (1-letter names) of each mutated sequence (CDR),</span>
+<span class="sd">        also including the one that would be mutated.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mutation : Mutation</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        iteration_name and resnames: Tuple[str, List[str]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">iter_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">new_iteration_resnames</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="p">(</span><span class="n">chainID</span><span class="p">,</span> <span class="n">resname</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chainIDs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">resnames</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="n">mutation</span><span class="o">.</span><span class="n">chainID_idx</span><span class="p">:</span>
+                <span class="c1"># This is the mutated chainID</span>
+                <span class="n">new_resname</span> <span class="o">=</span> <span class="n">resname</span><span class="p">[:</span> <span class="n">mutation</span><span class="o">.</span><span class="n">resSeq_idx</span><span class="p">]</span> <span class="o">+</span> <span class="n">mutation</span><span class="o">.</span><span class="n">new_aa</span> <span class="o">+</span> <span class="n">resname</span><span class="p">[</span><span class="n">mutation</span><span class="o">.</span><span class="n">resSeq_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># This one remains the same</span>
+                <span class="n">new_resname</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">residue</span> <span class="k">for</span> <span class="n">residue</span> <span class="ow">in</span> <span class="n">resname</span><span class="p">])</span>
+            <span class="n">iter_name</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;-</span><span class="si">{</span><span class="n">chainID</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">new_resname</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">new_iteration_resnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_resname</span><span class="p">)</span>
+
+        <span class="c1"># Drop the leading &#39;-&#39;</span>
+        <span class="k">return</span> <span class="n">iter_name</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">new_iteration_resnames</span></div></div>
 
 
 <div class="viewcode-block" id="Epoch"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Epoch">[docs]</a><span class="nd">@define</span>
@@ -340,6 +381,8 @@
     <span class="n">epochs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Epoch</span><span class="p">]</span>
     <span class="n">mdps</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FileHandle</span><span class="p">]</span>
     <span class="n">scorers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AbstractScoringFunction</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">project_dag</span><span class="p">:</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+    <span class="n">project_mut_dag</span><span class="p">:</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
     <span class="n">mutated_positions</span><span class="p">:</span> <span class="n">Deque</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">deque</span><span class="p">(</span><span class="nb">set</span><span class="p">())</span>
     <span class="n">mutated_aminoacids</span><span class="p">:</span> <span class="n">Deque</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">deque</span><span class="p">(</span><span class="nb">set</span><span class="p">())</span>
     <span class="n">failed_mutated_positions</span><span class="p">:</span> <span class="n">Deque</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">deque</span><span class="p">(</span><span class="nb">set</span><span class="p">())</span>
@@ -378,10 +421,13 @@
 
             <span class="c1"># Check input PDB to create name and attributes for the starting iteration.</span>
             <span class="n">input_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">data_str</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__check_input_pdb__</span><span class="p">(</span><span class="n">input_path</span><span class="p">)</span>
-            <span class="n">iter_name</span><span class="p">,</span> <span class="n">chainIDs</span><span class="p">,</span> <span class="n">resSeqs</span><span class="p">,</span> <span class="n">resnames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__generate_iteration_ID__</span><span class="p">(</span>
-                <span class="n">input_path</span>
-            <span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__check_input_pdb__</span><span class="p">(</span><span class="n">input_path</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">Exception</span><span class="p">,)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="c1"># Remove the working dir, so it can restart easily again.</span>
+                <span class="n">sh</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;work&quot;</span><span class="p">]))</span>
+                <span class="k">raise</span> <span class="n">e</span>
+            <span class="n">iter_name</span><span class="p">,</span> <span class="n">chainIDs</span><span class="p">,</span> <span class="n">resSeqs</span><span class="p">,</span> <span class="n">resnames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__generate_iteration_ID__</span><span class="p">(</span><span class="n">input_path</span><span class="p">)</span>
 
             <span class="n">iter_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dir_handle</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">starting_epoch</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">iter_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">assert</span> <span class="ow">not</span> <span class="p">(</span><span class="n">iter_path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span> <span class="ow">or</span> <span class="n">iter_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">()),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">iter_path</span><span class="si">}</span><span class="s2"> exists. Wrong input path.&quot;</span>
@@ -422,14 +468,10 @@
 
     <span class="k">def</span> <span class="nf">__restart_work__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
         <span class="c1"># Restart from input iterations, they should all have the same epoch number</span>
-        <span class="n">epoch_nbr</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
-            <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;current_iterations&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="p">)</span>
+        <span class="n">epoch_nbr</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;current_iterations&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
 
         <span class="k">if</span> <span class="s2">&quot;previous_iterations&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">]:</span>
-            <span class="n">prev_epoch</span> <span class="o">=</span> <span class="n">Epoch</span><span class="p">(</span>
-                <span class="n">epoch_nbr</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="p">{},</span> <span class="n">nvt_done</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">npt_done</span><span class="o">=</span><span class="kc">True</span>
-            <span class="p">)</span>
+            <span class="n">prev_epoch</span> <span class="o">=</span> <span class="n">Epoch</span><span class="p">(</span><span class="n">epoch_nbr</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="p">{},</span> <span class="n">nvt_done</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">npt_done</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">prev_epoch</span><span class="o">.</span><span class="n">top_iterations</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="k">for</span> <span class="n">iter_str</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;previous_iterations&quot;</span><span class="p">]:</span>
                 <span class="c1"># Get `iter_name` from the input iteration dir</span>
@@ -455,6 +497,13 @@
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e_score</span><span class="p">:</span>
                     <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Previous epoch not fully scored. Run in --score mode.&quot;</span><span class="p">)</span>
                     <span class="k">raise</span> <span class="n">e_score</span>
+
+                <span class="c1"># Finally, add its mutation, if present.</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">this_iter</span><span class="o">.</span><span class="n">mutation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;mutations&quot;</span><span class="p">][</span><span class="n">iter_name</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">this_iter</span><span class="o">.</span><span class="n">mutation</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="c1"># Store it in the epoch.</span>
                 <span class="n">prev_epoch</span><span class="p">[</span><span class="n">iter_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">this_iter</span>
 
             <span class="k">try</span><span class="p">:</span>
@@ -520,13 +569,19 @@
                             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">iter_path</span><span class="si">}</span><span class="s2"> is in an invalid state. Cannot build complex from it.&quot;</span>
                         <span class="p">)</span>
                         <span class="k">raise</span> <span class="n">e_restart_cpx</span>
-
+            <span class="c1"># Finally, add its mutation, if present.</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">this_iter</span><span class="o">.</span><span class="n">mutation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;mutations&quot;</span><span class="p">][</span><span class="n">iter_name</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">this_iter</span><span class="o">.</span><span class="n">mutation</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="c1"># Store it in the epoch.</span>
             <span class="n">current_epoch</span><span class="p">[</span><span class="n">iter_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">this_iter</span>
 
-        <span class="n">current_epoch</span><span class="o">.</span><span class="n">mutated_positions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;misc&quot;</span><span class="p">][</span><span class="s2">&quot;epoch_mutated_positions&quot;</span><span class="p">]</span>
-        <span class="p">)</span>
+        <span class="n">current_epoch</span><span class="o">.</span><span class="n">mutated_positions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;misc&quot;</span><span class="p">][</span><span class="s2">&quot;epoch_mutated_positions&quot;</span><span class="p">])</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">new_epoch</span><span class="p">(</span><span class="n">current_epoch</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_dag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;project_dag&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_mut_dag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;project_mut_dag&quot;</span><span class="p">]</span>
 
 <div class="viewcode-block" id="WorkProject.iteration_from_str"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.WorkProject.iteration_from_str">[docs]</a>    <span class="k">def</span> <span class="nf">iteration_from_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iter_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">Iteration</span><span class="p">]:</span>
         <span class="n">iter_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">iter_str</span><span class="p">)</span>
@@ -564,21 +619,13 @@
             <span class="n">ch_resnames</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">ch_resids</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">cadena</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;segid </span><span class="si">{</span><span class="n">chainID</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">resn</span><span class="p">,</span> <span class="n">resi</span> <span class="ow">in</span> <span class="p">{</span>
-                <span class="p">(</span><span class="n">atm</span><span class="o">.</span><span class="n">resname</span><span class="p">,</span> <span class="n">atm</span><span class="o">.</span><span class="n">resnum</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">atm</span> <span class="ow">in</span> <span class="n">cadena</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span>
-                    <span class="s2">&quot; or &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;resid </span><span class="si">{</span><span class="n">res</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">list_resSeq</span><span class="p">])</span>
-                <span class="p">)</span>
-            <span class="p">}:</span>
-                <span class="n">ch_resnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">resn</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">resn</span><span class="p">,</span> <span class="n">resi</span> <span class="ow">in</span> <span class="p">{(</span><span class="n">atm</span><span class="o">.</span><span class="n">resname</span><span class="p">,</span> <span class="n">atm</span><span class="o">.</span><span class="n">resnum</span><span class="p">)</span>
+                               <span class="k">for</span> <span class="n">atm</span> <span class="ow">in</span> <span class="n">cadena</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="s2">&quot; or &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;resid </span><span class="si">{</span><span class="n">res</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">list_resSeq</span><span class="p">]))}:</span>
+                <span class="n">ch_resnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">my_seq1</span><span class="p">(</span><span class="n">resn</span><span class="p">))</span>
                 <span class="n">ch_resids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">resi</span><span class="p">)</span>
+
             <span class="n">resnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                    <span class="p">[</span>
-                        <span class="n">seq1</span><span class="p">(</span><span class="n">resn_3</span><span class="p">)</span>
-                        <span class="k">for</span> <span class="n">resn_3</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ch_resnames</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">ch_resids</span><span class="p">)]</span>
-                    <span class="p">]</span>
-                <span class="p">)</span>
+                <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">resn_1</span> <span class="k">for</span> <span class="n">resn_1</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ch_resnames</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">ch_resids</span><span class="p">)]])</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">resnames</span>
 
@@ -614,8 +661,8 @@
         <span class="n">chainIDs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">][</span><span class="s2">&quot;chainID&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;binder&quot;</span><span class="p">][</span><span class="s2">&quot;chainID&quot;</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">segid</span><span class="p">,</span> <span class="n">chainID</span> <span class="ow">in</span> <span class="n">zip_longest</span><span class="p">(</span><span class="n">segids</span><span class="p">,</span> <span class="n">chainIDs</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">chainID</span><span class="p">:</span>
-                <span class="k">assert</span> <span class="p">(</span><span class="n">segid</span> <span class="o">==</span> <span class="n">chainID</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;PDBs chainIDs (</span><span class="si">{</span><span class="n">segids</span><span class="si">}</span><span class="s2">) and input target-binder chainIDs &quot;</span>\
-                <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">chainIDs</span><span class="si">}</span><span class="s2">) from the config should have the same ordering and the target chains should go first.&quot;</span>
+                <span class="k">assert</span> <span class="p">(</span><span class="n">segid</span> <span class="o">==</span> <span class="n">chainID</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;PDBs chainIDs (</span><span class="si">{</span><span class="n">segids</span><span class="si">}</span><span class="s2">) and input target-binder chainIDs &quot;</span> \
+                                           <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">chainIDs</span><span class="si">}</span><span class="s2">) from the config should have the same ordering and the target chains should go first.&quot;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">assert</span> <span class="p">(</span><span class="n">segid</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="ow">or</span> <span class="n">segid</span> <span class="o">==</span> <span class="s1">&#39;X&#39;</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;There&#39;re unaccounted segments. </span><span class="si">{</span><span class="n">segid</span><span class="si">}</span><span class="s2"> has to either be, &quot;</span> \
                                                       <span class="sa">f</span><span class="s2">&quot;target or binder. If it&#39;s solvent or ions, then its segid &quot;</span> \
@@ -627,9 +674,15 @@
         <span class="n">prot</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="n">all_residues</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="n">aas</span> <span class="o">=</span> <span class="p">{</span><span class="n">res</span><span class="o">.</span><span class="n">resname</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">prot</span><span class="o">.</span><span class="n">residues</span><span class="p">}</span>
         <span class="n">all_aas</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">AA_MAP</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">aas</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">all_aas</span><span class="p">):</span>
-            <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized residues: </span><span class="si">{</span><span class="n">aas</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">all_aas</span><span class="si">}</span><span class="s2">. Make sure you can build &quot;</span>
+        <span class="n">nonstandard_residues</span> <span class="o">=</span> <span class="n">aas</span> <span class="o">-</span> <span class="n">all_aas</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nonstandard_residues</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized residues: </span><span class="si">{</span><span class="n">nonstandard_residues</span><span class="si">}</span><span class="s2">. Make sure you can build &quot;</span>
                  <span class="s2">&quot;a topology for them and that they are not necessary for scoring.&quot;</span><span class="p">)</span>
+
+            <span class="n">allowed_nonstandard_residues</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;scoring&quot;</span><span class="p">][</span><span class="s2">&quot;allowed_nonstandard_residues&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">nonstandard_residues</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">allowed_nonstandard_residues</span><span class="p">):</span>
+                <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Watch out, </span><span class="si">{</span><span class="n">nonstandard_residues</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">allowed_nonstandard_residues</span><span class="si">}</span><span class="s2"> were not included as &quot;</span>
+                     <span class="s2">&quot;&#39;allowed_nonstandard_residues&#39;, make sure you don&#39;t need them for scoring.&quot;</span><span class="p">)</span>
 
         <span class="c1"># Check solvent</span>
         <span class="n">solvent_sel</span> <span class="o">=</span> <span class="s2">&quot;resname WAT&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;md&quot;</span><span class="p">][</span><span class="s2">&quot;use_tleap&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;resname SOL&quot;</span>
@@ -776,34 +829,59 @@
 
 <div class="viewcode-block" id="WorkProject.new_epoch"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.WorkProject.new_epoch">[docs]</a>    <span class="k">def</span> <span class="nf">new_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch</span><span class="p">:</span> <span class="n">Epoch</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_dags</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__track_project__</span><span class="p">(</span><span class="n">log</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="WorkProject.update_dags"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.WorkProject.update_dags">[docs]</a>    <span class="k">def</span> <span class="nf">update_dags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">for</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="c1"># Iteration DAG:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">project_dag</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">iteration</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">full_name</span><span class="p">(),</span> <span class="n">iteration</span><span class="o">.</span><span class="n">full_name</span><span class="p">())</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="c1"># This iteration is on the 0 epoch, it has no parent.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">project_dag</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">iteration</span><span class="o">.</span><span class="n">full_name</span><span class="p">())</span>
+
+            <span class="c1"># Mutational DAG:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">project_mut_dag</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">iteration</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mutation_str</span><span class="p">(),</span> <span class="n">iteration</span><span class="o">.</span><span class="n">mutation_str</span><span class="p">())</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="c1"># The parent iteration is on the 0 epoch and has no mutation.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">project_mut_dag</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;None&quot;</span><span class="p">,</span> <span class="n">iteration</span><span class="o">.</span><span class="n">mutation_str</span><span class="p">())</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="c1"># This iteration is on the 0 epoch, it has no parent and no mutation.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">project_mut_dag</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;None&quot;</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">__track_project__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">previous_iterations</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="nb">str</span><span class="p">(</span><span class="n">pre_it</span><span class="o">.</span><span class="n">dir_handle</span><span class="p">)</span> <span class="k">for</span> <span class="n">pre_it</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
-            <span class="p">]</span>
-            <span class="n">current_iterations</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="nb">str</span><span class="p">(</span><span class="n">cur_it</span><span class="o">.</span><span class="n">dir_handle</span><span class="p">)</span> <span class="k">for</span> <span class="n">cur_it</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
-            <span class="p">]</span>
-            <span class="n">top_iterations</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="nb">str</span><span class="p">(</span><span class="n">cur_it</span><span class="o">.</span><span class="n">dir_handle</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">cur_it</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">top_iterations</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
-            <span class="p">]</span>
+            <span class="n">previous_iterations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">mutations</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">iter_name</span><span class="p">,</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">previous_iterations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">iteration</span><span class="o">.</span><span class="n">dir_handle</span><span class="p">))</span>
+                <span class="n">mutations</span><span class="p">[</span><span class="n">iter_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">iteration</span><span class="o">.</span><span class="n">mutation</span>
+
+            <span class="n">current_iterations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">iter_name</span><span class="p">,</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">current_iterations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">iteration</span><span class="o">.</span><span class="n">dir_handle</span><span class="p">))</span>
+                <span class="n">mutations</span><span class="p">[</span><span class="n">iter_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">iteration</span><span class="o">.</span><span class="n">mutation</span>
+
+            <span class="n">top_iterations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">iter_name</span><span class="p">,</span> <span class="n">iteration</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">top_iterations</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">top_iterations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">iteration</span><span class="o">.</span><span class="n">dir_handle</span><span class="p">))</span>
+                <span class="n">mutations</span><span class="p">[</span><span class="n">iter_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">iteration</span><span class="o">.</span><span class="n">mutation</span>
 
             <span class="n">tracking</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="s2">&quot;previous_iterations&quot;</span><span class="p">:</span> <span class="n">previous_iterations</span><span class="p">,</span>
                 <span class="s2">&quot;current_iterations&quot;</span><span class="p">:</span> <span class="n">current_iterations</span><span class="p">,</span>
                 <span class="s2">&quot;top_iterations&quot;</span><span class="p">:</span> <span class="n">top_iterations</span><span class="p">,</span>
+                <span class="s2">&quot;mutations&quot;</span><span class="p">:</span> <span class="n">mutations</span><span class="p">,</span>
                 <span class="s2">&quot;epoch_mutated_positions&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">mutated_positions</span><span class="p">,</span>
                 <span class="s2">&quot;memory_positions&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutated_positions</span><span class="p">,</span>
                 <span class="s2">&quot;failed_memory_positions&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">failed_mutated_positions</span><span class="p">,</span>
+                <span class="s2">&quot;project_dag&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_dag</span><span class="p">,</span>
+                <span class="s2">&quot;project_mut_dag&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_mut_dag</span><span class="p">,</span>
             <span class="p">}</span>
-            <span class="k">assert</span> <span class="p">(</span>
-                    <span class="nb">len</span><span class="p">(</span><span class="n">previous_iterations</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
-                    <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">current_iterations</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
-                    <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">top_iterations</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
-            <span class="p">)</span>
+            <span class="k">assert</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">previous_iterations</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">current_iterations</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">top_iterations</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
 
             <span class="c1"># Back up tracking.pkl before writing.</span>
             <span class="n">track</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dir_handle</span><span class="p">,</span> <span class="s2">&quot;tracking.pkl&quot;</span><span class="p">)</span>
@@ -816,12 +894,64 @@
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">track</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">cur_file</span><span class="p">:</span>
                 <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">tracking</span><span class="p">,</span> <span class="n">cur_file</span><span class="p">)</span>
 
+            <span class="bp">self</span><span class="o">.</span><span class="n">__draw_dags__</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dir_handle</span><span class="p">,</span> <span class="s2">&quot;dags.png&quot;</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Not a full WorkProject yet, could not track it.&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="WorkProject.get_first_iter"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.WorkProject.get_first_iter">[docs]</a>    <span class="k">def</span> <span class="nf">get_first_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iteration</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span></div></div>
+        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span></div>
+
+    <span class="k">def</span> <span class="nf">__draw_dags__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Try to set a nice plot size</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dag</span><span class="o">.</span><span class="n">degree</span><span class="p">())</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">4</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">dag_longest_path_length</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dag</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">+</span> <span class="mi">2</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">))</span>
+        <span class="c1"># _, axes = plt.subplots(1, 2)</span>
+
+        <span class="c1">##### Iterations graph</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">sca</span><span class="p">(</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="c1"># For a better display of the iterations names.</span>
+        <span class="n">label_remap</span> <span class="o">=</span> <span class="p">{</span><span class="n">node</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_dag</span><span class="o">.</span><span class="n">nodes</span><span class="p">}</span>
+        <span class="n">dag</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">relabel_nodes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dag</span><span class="p">,</span> <span class="n">label_remap</span><span class="p">)</span>
+        <span class="c1"># Adjuste node and plot sizes, so it fits nicely, hopefully.</span>
+        <span class="n">one_label</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">label_remap</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+        <span class="n">node_size</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">piece</span><span class="p">)</span> <span class="k">for</span> <span class="n">piece</span> <span class="ow">in</span> <span class="n">one_label</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)])</span> <span class="o">*</span> <span class="mi">400</span>
+        <span class="c1"># Plot</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">drawing</span><span class="o">.</span><span class="n">nx_agraph</span><span class="o">.</span><span class="n">graphviz_layout</span><span class="p">(</span><span class="n">dag</span><span class="p">,</span> <span class="n">prog</span><span class="o">=</span><span class="s2">&quot;dot&quot;</span><span class="p">)</span>
+        <span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">dag</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="n">node_size</span><span class="p">,</span> <span class="n">node_color</span><span class="o">=</span><span class="s2">&quot;lightblue&quot;</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="c1">##### Mutations graph</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">sca</span><span class="p">(</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="c1"># Plot</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">drawing</span><span class="o">.</span><span class="n">nx_agraph</span><span class="o">.</span><span class="n">graphviz_layout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_mut_dag</span><span class="p">,</span> <span class="n">prog</span><span class="o">=</span><span class="s2">&quot;dot&quot;</span><span class="p">)</span>
+        <span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_mut_dag</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">4000</span><span class="p">,</span> <span class="n">node_color</span><span class="o">=</span><span class="s2">&quot;pink&quot;</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+        <span class="c1"># Remove axes and save.</span>
+        <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_axis_off</span><span class="p">()</span>
+        <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_axis_off</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">out_path</span><span class="p">)</span>
+
+<div class="viewcode-block" id="WorkProject.draw_dag"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.WorkProject.draw_dag">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">draw_dag</span><span class="p">(</span><span class="n">dag</span><span class="p">:</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">,</span> <span class="n">out_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">reformat</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">node_size</span> <span class="o">=</span> <span class="mi">4000</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">dag</span><span class="o">.</span><span class="n">degree</span><span class="p">())</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">dag_longest_path_length</span><span class="p">(</span><span class="n">dag</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">+</span> <span class="mi">2</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">reformat</span><span class="p">:</span>
+            <span class="c1"># For a better display of the iterations names.</span>
+            <span class="n">label_remap</span> <span class="o">=</span> <span class="p">{</span><span class="n">node</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">dag</span><span class="o">.</span><span class="n">nodes</span><span class="p">}</span>
+            <span class="n">dag</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">relabel_nodes</span><span class="p">(</span><span class="n">dag</span><span class="p">,</span> <span class="n">label_remap</span><span class="p">)</span>
+
+            <span class="c1"># Adjuste node and plot sizes, so it fits nicely, hopefully.</span>
+            <span class="n">one_label</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">label_remap</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+            <span class="n">node_size</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">piece</span><span class="p">)</span> <span class="k">for</span> <span class="n">piece</span> <span class="ow">in</span> <span class="n">one_label</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)])</span> <span class="o">*</span> <span class="mi">500</span>
+
+        <span class="c1"># Plot and save</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">drawing</span><span class="o">.</span><span class="n">nx_agraph</span><span class="o">.</span><span class="n">graphviz_layout</span><span class="p">(</span><span class="n">dag</span><span class="p">,</span> <span class="n">prog</span><span class="o">=</span><span class="s2">&quot;dot&quot;</span><span class="p">)</span>
+        <span class="n">nx</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">dag</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">with_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="n">node_size</span><span class="p">,</span> <span class="n">node_color</span><span class="o">=</span><span class="s2">&quot;lightblue&quot;</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">out_path</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="set_logger"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.set_logger">[docs]</a><span class="k">def</span> <span class="nf">set_logger</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">:</span>

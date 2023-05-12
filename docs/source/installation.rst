@@ -49,15 +49,13 @@ This is more involved that installing through conda, but the resulting environme
 From sources
 ------------
 
-Clone the `repo`_ and, optionally, get the **DLPacker**  submodule as well:
+Clone the `repo`_:
 
 .. code-block:: console
 
     git clone https://github.com/pgbarletta/locuaz
-    git submodule int
-    git submodule update
 
-Finally, create the environment and install all the necessary dependencies at once:
+And create the environment and install all the necessary dependencies at once:
 
 .. code-block:: console
 

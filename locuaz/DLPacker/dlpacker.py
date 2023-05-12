@@ -69,7 +69,8 @@ class DLPacker():
         self.ref_pdb = './reference.pdb' # reference atoms to align residues to
         self._read_structures()
         self.reconstructed = None
-        self.lib_name = str(lib_path) # library of rotamers
+        lib_path = Path(Path(__file__).resolve().parent, "library.npz")
+        self.lib_name =  str(lib_path)# library of rotamers
         self._load_library()
         
         self.model = model
@@ -78,6 +79,7 @@ class DLPacker():
             self.model.load_model(weights = str(weights_path))
 
         self.input_reader = input_reader
+        charges_path = Path(Path(__file__).resolve().parent, "charges.rtp")
         if not self.input_reader: self.input_reader = InputBoxReader(charges_path)
     
     def _load_library(self):

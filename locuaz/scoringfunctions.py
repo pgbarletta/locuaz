@@ -23,4 +23,4 @@ scoringfunctions: Dict[str, Type[AbstractScoringFunction]] = {
     "rosetta": Rosetta,
     "gmxmmpbsa": GmxMmpbsa,
     "autodockvina": AutodockVina,
-}
+} #: Dictionary of all currently available scoring functions.

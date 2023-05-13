@@ -7,7 +7,9 @@ from locuaz.projectutils import Epoch, Iteration
 
 
 class PrunerConsensus(AbstractPruner):
-    """PrunerConsensus select all iterations that satisfy the threshold of approved SFs
+    """PrunerConsensus select all iterations that satisfy the threshold of approved scoring functions
+    (SFs), that is, if according to a SF the new Iteration is better than all the previous ones, that
+    SF counts as 1 approved SF for the new Iteration.
     """
 
     def __init__(self, prev_epoch: Epoch, this_epoch: Epoch, log: logging.Logger):
@@ -18,10 +20,12 @@ class PrunerConsensus(AbstractPruner):
     def prune(self, config: Dict) -> PriorityQueue:
         """
         The only public method from the Pruner.
+
         Parameters
         ----------
         config : Dict
             User input config file
+
         Returns
         -------
         passing_iters: PriorityQueue

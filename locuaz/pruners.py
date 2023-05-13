@@ -9,4 +9,4 @@ __all__ = ("pruners",)
 pruners: Dict[str, Type[AbstractPruner]] = {
     "consensus": PrunerConsensus,
     "metropolis": PrunerMetropolis
-}
+} #: Dictionary of all currently available pruners.

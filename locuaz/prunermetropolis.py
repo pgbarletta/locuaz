@@ -8,7 +8,9 @@ from locuaz.projectutils import Epoch, Iteration
 
 
 class PrunerMetropolis(AbstractPruner):
-    """PrunerMetropolis select all iterations that satisfy the threshold of approved SFs
+    """PrunerMetropolis uses only 1 scoring function (SF) and approves an Iteration when its score is better
+    than the scores of all the previous ones, or in case it's not, if the metropolis acceptance criteria
+    approves it.
     """
 
     def __init__(self, prev_epoch: Epoch, this_epoch: Epoch, log: logging.Logger):
@@ -19,10 +21,12 @@ class PrunerMetropolis(AbstractPruner):
     def prune(self, config: Dict) -> PriorityQueue:
         """
         The only public method from the Pruner.
+
         Parameters
         ----------
         config : Dict
             User input config file
+
         Returns
         -------
         passing_iters: PriorityQueue

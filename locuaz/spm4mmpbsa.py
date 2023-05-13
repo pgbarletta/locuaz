@@ -14,7 +14,7 @@ from locuaz.spm4 import SPM4
 class SPM4gmxmmpbsa(SPM4):
     """
         overrides ``__generate_position__()``. It uses freesasa to get the interface to prevent mutations on positions
-        that are not in contact and also sorts residues according to the binding ΔG, according to the gmxmmpbsa
+        that are not in contact and also sorts residues according to the binding ΔG, reported by the gmxmmpbsa
         scoring function
     """
     def __init__(

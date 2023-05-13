@@ -14,4 +14,18 @@ class AbstractPruner(ABC):
 
     @abstractmethod
     def prune(self, config: Dict) -> PriorityQueue:
+        """
+        When inheriting from ``AbstractPruner``, override this method to implement your pruner's logic.
+
+        Parameters
+        ----------
+        config : Dict
+            User input config file
+
+        Returns
+        -------
+        passing_iters: PriorityQueue
+            ordered queue with the iterations from the new epoch that are better than all the
+            iterations from the old epoch. It may be empty.
+        """
         pass

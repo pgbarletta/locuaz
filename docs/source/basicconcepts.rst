@@ -17,6 +17,7 @@ This workflow is outlined in Figure 1.
 
 .. figure:: ./resources/protocol_workflow_simple.png
         :alt: workflow
+        :scale: 75%
 
         Figure 1: The protocol's workflow.
 
@@ -115,38 +116,26 @@ rename it to ``evoef2`` compile it using the ``build.sh`` script and rename the 
 Set ``config["mutation"]["mutator"]`` to ``evoef2`` use this mutator.
 
 dlp mutator
-"""""""""""
+""""""""""""
 This mutator is based on *DLPacker* which is, according to our experiments, one of the best side-chain packers to use
-after a mutation. It's the default mutator and while it comes built-in with *locuaz*, some of its data files are too
-heavy to distribute along the source code.
-
-In a ``dlpacker`` directory, the following files have to be present:
-
-1. ``charges.rtp``
-2. ``library.npz``
-3. ``DLPacker_weights.h5``
-
-The first 2 come with *locuaz*, but the `dlpacker weigthts`_ file has to be downloaded from a google drive.
-Remember to make sure to tell *locuaz* where this directory is located, by setting the ``config["paths"]["mutator"]``
-option.
-
-
-Check the `dlpacker repo`_ for more info.
+after a mutation. It's the default mutator and while it comes built-in with *locuaz*, it needs its weights, which
+are too heavy to be bundled alongside the installation. Check :ref:`mutators:Mutators` for more info about this.
 Set ``config["mutation"]["mutator"]`` to ``dlp`` use this mutator.
 
 dlpr mutator
-"""""""""""""""
+""""""""""""""
 
-
-Set ``config["mutation"]["mutator"]`` to ``dlpr`` use this mutator.
+Set ``config["mutation"]["mutator"]`` to ``dlpr`` use this mutator and adjust the reconstruct radius with the
+``config['mutation']['reconstruct_radius']`` option. Check :ref:`mutators:Mutators` for more info about this.
 
 Molecular Dynamics
 ------------------------
-as
+MD is carried out using the GROMACS simulation package, but the topology doesn't have to be
 
 GROMACS topology
 """""""""""""""""
 s
+
 Amber topology
 """"""""""""""""
 s
@@ -161,17 +150,12 @@ Pruner
 ----------
 as
 
-top
-"""""""
-s
-adaptive
-"""""""""
-s
-
 threshold
 """""""""""
 s
 
+metropolis
+"""""""""""
 
 Summary
 --------
@@ -184,8 +168,7 @@ The
         Figure 2: the protocol's main concepts and the stages at which they act. An **iteration** is highlighted in green
         and the **epoch** in pink.
 
-dfd-
 
 .. _evoef2 repo: https://github.com/xiaoqiah/EvoEF2
 .. _dlpacker repo: https://github.com/nekitmm/DLPacker
-.. _dlpacker weigthts: https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQseE0LQ
+.. _here: https://istitutoitalianotecnologia-my.sharepoint.com/:u:/g/personal/walter_rocchia_iit_it/Efzdf2sgKwJNmJskcHDE7yUBQMVgFsbpACeQLDGRYKvQOA?e=2E0daX

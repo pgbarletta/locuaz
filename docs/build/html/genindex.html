@@ -129,9 +129,9 @@
 </li>
       <li><a href="mutationgenerators.html#locuaz.abstractmutationgenerator.AbstractMutationGenerator">AbstractMutationGenerator (class in locuaz.abstractmutationgenerator)</a>
 </li>
-      <li><a href="scoringfunctions.html#locuaz.abstractscoringfunction.AbstractScoringFunction">AbstractScoringFunction (class in locuaz.abstractscoringfunction)</a>
+      <li><a href="pruners.html#locuaz.abstractpruner.AbstractPruner">AbstractPruner (class in locuaz.abstractpruner)</a>
 </li>
-      <li><a href="pruners.html#locuaz.pruner.adaptive_pruner">adaptive_pruner() (in module locuaz.pruner)</a>
+      <li><a href="scoringfunctions.html#locuaz.abstractscoringfunction.AbstractScoringFunction">AbstractScoringFunction (class in locuaz.abstractscoringfunction)</a>
 </li>
       <li><a href="mutators.html#locuaz.basemutator.BaseMutator.add_water">add_water() (locuaz.basemutator.BaseMutator static method)</a>
 </li>
@@ -523,6 +523,13 @@
 </li>
       </ul></li>
       <li>
+    locuaz.abstractpruner
+
+      <ul>
+        <li><a href="pruners.html#module-locuaz.abstractpruner">module</a>
+</li>
+      </ul></li>
+      <li>
     locuaz.abstractscoringfunction
 
       <ul>
@@ -735,10 +742,17 @@
 </li>
       </ul></li>
       <li>
-    locuaz.pruner
+    locuaz.prunerconsensus
 
       <ul>
-        <li><a href="pruners.html#module-locuaz.pruner">module</a>
+        <li><a href="pruners.html#module-locuaz.prunerconsensus">module</a>
+</li>
+      </ul></li>
+      <li>
+    locuaz.prunermetropolis
+
+      <ul>
+        <li><a href="pruners.html#module-locuaz.prunermetropolis">module</a>
 </li>
       </ul></li>
       <li>
@@ -873,6 +887,8 @@
       <ul>
         <li><a href="mutationgenerators.html#module-locuaz.abstractmutationgenerator">locuaz.abstractmutationgenerator</a>
 </li>
+        <li><a href="pruners.html#module-locuaz.abstractpruner">locuaz.abstractpruner</a>
+</li>
         <li><a href="scoringfunctions.html#module-locuaz.abstractscoringfunction">locuaz.abstractscoringfunction</a>
 </li>
         <li><a href="misc.html#module-locuaz.amberutils">locuaz.amberutils</a>
@@ -933,7 +949,9 @@
 </li>
         <li><a href="misc.html#module-locuaz.protocol">locuaz.protocol</a>
 </li>
-        <li><a href="pruners.html#module-locuaz.pruner">locuaz.pruner</a>
+        <li><a href="pruners.html#module-locuaz.prunerconsensus">locuaz.prunerconsensus</a>
+</li>
+        <li><a href="pruners.html#module-locuaz.prunermetropolis">locuaz.prunermetropolis</a>
 </li>
         <li><a href="pruners.html#module-locuaz.pruners">locuaz.pruners</a>
 </li>
@@ -1096,14 +1114,14 @@
         <li><a href="scoringfunctions.html#locuaz.bluuesbmf.BluuesBmf.pdb2pqr_bin_path">(locuaz.bluuesbmf.BluuesBmf attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="statistics.html#locuaz.statisticcmdistance.StatisticCMDistance.pdb_top">pdb_top (locuaz.statisticcmdistance.StatisticCMDistance attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.molecules.PDBStructure">PDBStructure (class in locuaz.molecules)</a>
 </li>
       <li><a href="mutationgenerators.html#locuaz.spm4.SPM4.PHO_AAS">PHO_AAS (locuaz.spm4.SPM4 attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="scoringfunctions.html#locuaz.piepisa.PiePisa">PiePisa (class in locuaz.piepisa)</a>
 </li>
       <li><a href="misc.html#locuaz.runutils.MDrun.pinoffset">pinoffset (locuaz.runutils.MDrun attribute)</a>
@@ -1117,6 +1135,20 @@
       <li><a href="misc.html#locuaz.projectutils.WorkProject.project_dag">project_dag (locuaz.projectutils.WorkProject attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.projectutils.WorkProject.project_mut_dag">project_mut_dag (locuaz.projectutils.WorkProject attribute)</a>
+</li>
+      <li><a href="pruners.html#locuaz.abstractpruner.AbstractPruner.prune">prune() (locuaz.abstractpruner.AbstractPruner method)</a>
+
+      <ul>
+        <li><a href="pruners.html#locuaz.prunerconsensus.PrunerConsensus.prune">(locuaz.prunerconsensus.PrunerConsensus method)</a>
+</li>
+        <li><a href="pruners.html#locuaz.prunermetropolis.PrunerMetropolis.prune">(locuaz.prunermetropolis.PrunerMetropolis method)</a>
+</li>
+      </ul></li>
+      <li><a href="pruners.html#locuaz.prunerconsensus.PrunerConsensus">PrunerConsensus (class in locuaz.prunerconsensus)</a>
+</li>
+      <li><a href="pruners.html#locuaz.prunermetropolis.PrunerMetropolis">PrunerMetropolis (class in locuaz.prunermetropolis)</a>
+</li>
+      <li><a href="pruners.html#locuaz.pruners.pruners">pruners (in module locuaz.pruners)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1196,6 +1228,8 @@
 </li>
       <li><a href="misc.html#locuaz.projectutils.Iteration.scores">scores (locuaz.projectutils.Iteration attribute)</a>
 </li>
+      <li><a href="scoringfunctions.html#locuaz.scoringfunctions.scoringfunctions">scoringfunctions (in module locuaz.scoringfunctions)</a>
+</li>
       <li><a href="misc.html#locuaz.molecules.Topology.selection_binder">selection_binder (locuaz.molecules.Topology attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.molecules.Topology.selection_complex">selection_complex (locuaz.molecules.Topology attribute)</a>
@@ -1212,10 +1246,10 @@
 </li>
       <li><a href="misc.html#locuaz.cli.set_iterations">set_iterations() (in module locuaz.cli)</a>
 </li>
-      <li><a href="misc.html#locuaz.projectutils.set_logger">set_logger() (in module locuaz.projectutils)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="misc.html#locuaz.projectutils.set_logger">set_logger() (in module locuaz.projectutils)</a>
+</li>
       <li><a href="misc.html#locuaz.projectutils.Iteration.set_score">set_score() (locuaz.projectutils.Iteration method)</a>
 </li>
       <li><a href="misc.html#locuaz.projectutils.Iteration.set_stat">set_stat() (locuaz.projectutils.Iteration method)</a>
@@ -1289,8 +1323,6 @@
       <li><a href="misc.html#locuaz.complex.AbstractComplex.top">top (locuaz.complex.AbstractComplex attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.projectutils.Epoch.top_iterations">top_iterations (locuaz.projectutils.Epoch attribute)</a>
-</li>
-      <li><a href="pruners.html#locuaz.pruner.top_pruner">top_pruner() (in module locuaz.pruner)</a>
 </li>
       <li><a href="misc.html#locuaz.molecules.Topology">Topology (class in locuaz.molecules)</a>
 </li>

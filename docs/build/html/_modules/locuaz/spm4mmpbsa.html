@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.spm4mmpbsa &mdash; locuaz 0.2.1 documentation</title>
+  <title>locuaz.spm4mmpbsa &mdash; locuaz 0.3.7 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.2.1
+                0.3.7
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -51,7 +51,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../basicconcepts.html">Basic concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorialsimple.html">Tutorial: running a simple optimization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorialtleap.html">Tutorial: using tleap topologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorialtleap.html">Tutorial: using Tleap topologies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorialligand.html">Tutorial: optimizing an antibody against a ligand</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../jobsubmission.html">Job submission</a></li>
 </ul>
@@ -109,7 +109,7 @@
 <div class="viewcode-block" id="SPM4gmxmmpbsa"><a class="viewcode-back" href="../../mutationgenerators.html#locuaz.spm4mmpbsa.SPM4gmxmmpbsa">[docs]</a><span class="k">class</span> <span class="nc">SPM4gmxmmpbsa</span><span class="p">(</span><span class="n">SPM4</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        overrides ``__generate_position__()``. It uses freesasa to get the interface to prevent mutations on positions</span>
-<span class="sd">        that are not in contact and also sorts residues according to the binding ΔG, according to the gmxmmpbsa</span>
+<span class="sd">        that are not in contact and also sorts residues according to the binding ΔG, reported by the gmxmmpbsa</span>
 <span class="sd">        scoring function</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>

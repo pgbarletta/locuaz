@@ -9,12 +9,13 @@ Some scoring functions have additional requirements, like parameter files,
 or the case of **gmxmmpbsa** which is included with the protocol and only needs an input text file.
 
 Additional requirements for specific SFs
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------------------
+
 
 Assuming a scoring functions folder set to: ``['paths']['scoring_functions']=home/user/my_SFs``.
 
 gmxmmpbsa
-""""""""""
+^^^^^^^^^^^
 | gmxmmpbsa directory: ``home/user/my_SFs/gmxmmpbsa``
 
 This is the only scoring function that comes bundled with the protocol.
@@ -52,13 +53,13 @@ writing 250 frames during your NPT run and you set your ``start`` option to ``50
 input file would look like the one above. Check :ref:`configurationfile:YAML configuration file` for more info.
 
 pisa
-"""""
+^^^^^^
 | pisa directory: ``home/user/my_SFs/pisa``
 | pisa binary: ``home/user/my_SFs/pisa/pisa``
 | pisa parameters: ``home/user/my_SFs/pisa/pisa.params``
 
 rosetta
-"""""""""
+^^^^^^^^^
 | rosetta directory: ``home/user/my_SFs/rosetta``
 
 Symbolic links on the top rosetta folder should be added, pointing to files in the rosetta installation
@@ -70,7 +71,7 @@ Eg: inside the main rosetta folder, with the rosetta directory called **sources*
     ln -s sources/rosetta_source/build/external/release/linux/4.14/64/ppc64le/gcc/8.4/ external_parameters
 
 haddock
-""""""""
+^^^^^^^^^
 | haddock directory: ``home/user/my_SFs/haddock``
 
 As with all the scoring functions, all the necessary files have to be at the top level.
@@ -86,7 +87,7 @@ Version number and specific folder names and locations may change::
     ln -s haddock/haddock_configure.csh haddock_configure.csh
 
 piepisa
-""""""""
+^^^^^^^^^
 | piepisa directory: ``home/user/my_SFs/piepisa``
 
 Download `pie <https://clsbweb.oden.utexas.edu/dock_details.html>`_. If you can run the binary, good,
@@ -103,7 +104,7 @@ modern PC is quite cumbersome. Then, normalize the directory to the scoring func
     ln -s ../pisa/pisa.params pisa.params
 
 evoef2
-""""""
+^^^^^^^^^
 | evoef2 directory: ``home/user/my_SFs/evoef2``
 
 Download and compile `evoef2 <https://github.com/tommyhuangthu/EvoEF2>`_.
@@ -114,7 +115,7 @@ Download and compile `evoef2 <https://github.com/tommyhuangthu/EvoEF2>`_.
     ln -s bin/evoef2 evoef2
 
 bluues
-""""""""
+^^^^^^^
 | bluues directory: ``home/user/my_SFs/bluues``
 
 * Inside the **bluues** folder, make symbolic links to the binaries so it has a proper name::
@@ -122,7 +123,7 @@ bluues
     ln -s bin/bluues_new_2 bluues
 
 bluuesbmf
-"""""""""
+^^^^^^^^^
 | bluuesbmf directory: ``home/user/my_SFs/bluuesbmf``
 
 * Inside the **bluuesbmf** folder, make symbolic links to the binary so it has a proper name::
@@ -131,7 +132,7 @@ bluuesbmf
     ln -s bin/score_bmf_3 bmf
 
 autodockvina
-""""""""""""
+^^^^^^^^^^^^^
 | autodockvina directory: ``home/user/my_SFs/autodockvina``
 
 Download `autodockvina <https://github.com/ccsb-scripps/AutoDock-Vina/releases>`_.
@@ -142,8 +143,6 @@ Then, normalize the directory to the scoring functions standard:
     ln -s vina_1.2.3_linux_x86_64 autodockvina
 
 
-Classes reference
-==================
 
 locuaz.scoringfunctions module
 ------------------------------

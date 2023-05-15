@@ -9,7 +9,7 @@ the inclusion of ligands, non-standard amino acids, etc.
 In this example, we are going to optimize a nanobody towards a protein that contains Zinc and coordinates it with
 amino acids that can't be represented on a regular force-field. Hence, we're going to need ***Tleap*** to build the
 topology and **parmed** to turn it into something *GROMACS* can work with. Both these tools come with **ambertools**,
-which comes with the protocol. For mor info, check the :ref:`installation:Installation` section.
+which comes with the protocol. For more info, check the :ref:`installation:Installation` section.
 
 .. figure:: ./resources/tleap_complex.png
         :alt: p53-nanobody complex
@@ -79,14 +79,14 @@ of the YAML config file. A more detailed explanation of the available options, c
 the ``examples/tleap_tutorial`` folder:
 
 1. ``nb.pdb``: the PDB file of the pre-equilibrated complex.
-2. ``tleap``: *Tleap* script to build the topology of the system each time a mutation is performed. This
-   script will be identical to the one above, with the exception of the ``solvatebox`` line, since the
+2. ``tleap``: *Tleap* dir with the script to build the topology of the system each time a mutation is performed.
+   This script will be identical to the one above, with the exception of the ``solvatebox`` line, since the
    solvent is already there. Another thing to notice is the usage of ``addions``. We keep this commands
    since *Tleap* will be responsible of keeping neutrality of the system and avoid using ``addions2`` since
    we need it to replace water molecules each time it ads ions, to keep the *N* of the system constant.
-3. ``ZAFF.frcmod`` and ``ZAFF.prep`` (auxiliary Zn parameters)
-4. ``config_tleap.yaml``: the input file to run the protocol.
-5. ``mdp`` directory: minimization, NVT and NPT *GROMACS* input files.
+   ``ZAFF.frcmod`` and ``ZAFF.prep`` (auxiliary Zn parameters)
+3. ``config_tleap.yaml``: the input file to run the protocol.
+4. ``mdp`` directory: minimization, NVT and NPT *GROMACS* input files.
 
 
 The configuration file
@@ -98,20 +98,20 @@ paths
 .. code-block:: console
 
     paths:
-        gmxrc: /apps/*GROMACS*/2021.4/gcc7-ompi4.1.1-cuda11.1-plm2.8.0/bin
-        scoring_functions: /work/rtandiana/mdp/SF
-        mutator: /work/rtandiana/mdp/SF/dlpacker
-        *Tleap*: /work/rtandiana/Optimization/New-ZAFF/NB112/C9/input
-        mdp: /work/rtandiana/mdp
-        input: [ /work/rtandiana/Optimization/New-ZAFF/NB112/C9 ]
-        work:  /work/rtandiana/Optimization/New-ZAFF/NB112/C9/work_dir
+        gmxrc: /usr/local/gromacs/bin
+        scoring_functions: /home/pbarletta/labo/22/locuaz/rebin
+        mutator: /home/pbarletta/labo/22/locuaz/rebin/dlpacker
+        mdp: /home/pbarletta/labo/22/locuaz/daux/mdp
+        input: [ /home/pbarletta/labo/22/locuaz/daux/oct_nb ]
+        tleap: /home/pbarletta/labo/22/locuaz/daux/oct_nb/tleap
+        work: /home/pbarletta/labo/22/locuaz/daux/work_dir
 
- * *Tleap*: the path to the ***Tleap*** scripts. It is mandatory if *Tleap* is used.
+* *Tleap*: the path to the ***Tleap*** scripts. It is mandatory if *Tleap* is used.
 
 main
 ^^^^^
 
-In the main sections, the name of the PDB files are defined, and it has to match the pdb file provided in the input directory. The running mode of the protocol is set to evolve.
+The running mode of the protocol is set to evolve, which is the default value, so it's not actually necessary.
 
 .. code-block:: console
 
@@ -123,37 +123,48 @@ protocol
 ^^^^^^^^
 In the protocol section, several important options concerning the protocol have to be specified.
 
- * epochs: The number of epochs desired
- * branches: The number of iterations at each epochs, which usually correlate to the number of GPUs available. Each iteration corresponds to different target mutation
- * prunner: The method adopted to pick the best iteration(s) in each epoch
- * generator: The algorithm to generate the mutation
- * mutator: The algorithm to generate the mutated structure
- * memory_size: The number of selected position of mutation of previous epochs that the protocol will retain
- * failed_memory_size: The number of selected position of mutation of previous failed epochs that the protocol will retain
-
-The memory_size and failed_memory_size options assist to prevent the protocol to perform mutation at previously mutated residues.
-
 .. code-block:: console
 
     protocol:
-        epochs: 20
-        branches: 4
-        prunner: threshold
-        generator: SPM4i
-        mutator: dlpr
+        epochs: 5
+        branches: 2
         memory_size: 4
-        failed_memory_size: 4
+        failed_memory_size: 6
+        memory_positions: [[2, 3, 4, 6, 7, 8], [], [], [] ]
+
+
+* ``memory_positions``: this time we're setting the memory ourselves, at least for the first run. This is used
+  to fill a queue of size ``memory_size``. At each epoch, the mutated position will be pushed into the queue
+  and thus push out the oldest value. In this config whe are preventing the positions :math:`2, 3, 4, 6, 7`
+  and :math:`8` from being mutated, only on the first epoch, since the other 3 slots are occupied by empty
+  memories (``[]``). If these empty slots weren't present, then ``[2, 3, 4, 6, 7, 8]`` would last another
+  3 epochs.
 
 generation
 ^^^^^^^^^^^
+.. code-block:: console
+
+    generation:
+        generator: SPM4i
+        probe_radius: 3
+
+This time we are selecting any of the CDR residues in the interface with equal probability.
 
 mutation
 ^^^^^^^^
+.. code-block:: console
 
+    mutation:
+        mutator: dlpr
+        reconstruct_radius: 5
 
 pruning
 ^^^^^^^^
+.. code-block:: console
 
+    pruning:
+        pruner: consensus
+        consensus_threshold: 3
 
 md
 ^^^^
@@ -165,19 +176,20 @@ md
             min_mdp: min.mdp
             nvt_mdp: nvt.mdp
             npt_mdp: npt.mdp
-        ngpus: 4
+        ngpus: 2
         mpi_procs: 1
-        omp_procs: 8
-        pinoffsets: [ 0, 32, 64, 96 ]
+        omp_procs: 4
+        pinoffsets: [0, 4]
         use_tleap: true
+        box_type: octahedron
 
- * gmx_mdrun: The *GROMACS* command to perform mdrun
- * mdp_names: The name of the mdp files present in the mdp folders specified above
- * ngpus: The number of GPUs available
- * mpi_procs: typically 1
- * omp_procs: The number of threads used for each MD runs
- * pinoffsets: Pinning the threads to specific positions to maximize the performance. This values depend on the GPU architecture
- * use_tleap: True, this option is specified only if *Tleap* is used to build the topology.
+Notice we're not setting the water model nor the force field, since we're relaying on our *Tleap* script
+to take care of that.
+
+* pinoffsets: notice that we are using 4 OMP processors and 2 GPUs, hence, ``pinoffsets`` has a length of 2,
+  one for each GPU run, and with a spacing of 4 threads.
+* use_tleap: True, this option is specified only if *Tleap* is used to build the topology.
+
 
 target
 ^^^^^^^^
@@ -196,20 +208,12 @@ binder
         mutating_resSeq: [[220,221,222,223,224,225,226,227],[248,249,250,251,252,253,254],[294, 295, 296, 297, 298, 299, 300]]
         mutating_resname: [[S,G,F,D,F,S,D,A],[R,S,G,L,A,T,S],[K,S,R,R,G,Q,G]]
 
-In the binder section, where the single point mutation will be performed, the following options have to be specified:
-    *	chainID: The chain IDs of the binder
-    *	mutating_chainID: The chain IDs where the mutation is desired. Since the mutating sequence is listed separately for each CDRs, the chain ID has to be a list also.
-    *	mutating_resSeq: The residue sequence of the desired mutation sites. In this example, the sequences are listed separately for each CDRs.
-    *	mutating_resname: The amino acid residues in one letter format, that correspond to the mutating_resSeq
-
-
 scoring
 ^^^^^^^^
 .. code-block:: console
 
     scoring:
         functions: [ bluuesbmf, piepisa, evoef2, gmx_mmpbsa ]
-        consensus_threshold: 3
         nthreads: 80
         mpiprocs: 2
         start: 50

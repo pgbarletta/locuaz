@@ -130,37 +130,59 @@ Set ``config["mutation"]["mutator"]`` to ``dlpr`` use this mutator and adjust th
 
 Molecular Dynamics
 ------------------------
-MD is carried out using the GROMACS simulation package, but the topology doesn't have to be
+MD of the complexes is carried out using the GROMACS simulation package, so some of the options associated
+to this unit are transparent wrappers to GROMACS command line options, like ``config['md']['mpi_procs']``,
+``config['md']['omp_procs']`` and ``config['md']['pinoffsets']``, which map to ``-ntmpi``, ``-ntomp`` and
+``-pinoffset``. Other GROMACS options are hard-coded, like ``-pin on`` and the use of the GPU for all interactions
+but the bonded ones. Naturally, the *mdp* inputs also need to be specified in ``config['md']['mdp_names']['min_mdp']``,
+``config['md']['mdp_names']['nvt_mdp']`` and ``config['md']['mdp_names']['npt_mdp']``.
+Another important one is ``config['md']['ngpus']``, which will determine the number of parallel runs that can be ran.
+
+Lastly ``config['md']['gmx_mdrun']`` allows setting the name of the binary that carries out the MD. Its default
+value is usually the right one (``gmx mdrun``), but users of some systems may realize that the sysadmins have
+compiled the *mdrun* command with a different name; this is why we added this option.
 
 GROMACS topology
 """""""""""""""""
-s
+When using GROMCACS to build the topology, ``config['md']['water_type']`` and ``config['md']['force_field']``
+can be configured. Noticed there are no options to set the box. locuaz does not run any ``editconf`` commands, it
+will always keep the box from the system.
 
 Amber topology
 """"""""""""""""
-s
+While the engine is always GROMACS, the topology can be built through Amber as well by setting
+``config['md']['use_tleap']`` to ``True``. ``config['paths']['tleap']`` also needs to be set alongside,
+so *locuaz* can copy the path with all the necessary files to rebuild the topology after each mutation.
+
 
 Scoring Function
 -----------------
-These are abstractions over external programs that allow the protocol to determine if the mutation was successful or
-not. *gmxmmpbsa* is the only one that comes built-in with *locuaz* and does not an external binary, but it does need
-an input script. More info on this and the rest on :ref:`scoringfunctions:Scoring Functions`.
+These are abstractions over external programs that score the affinity between the target and the binder over
+each frame of the MD. *gmxmmpbsa* is the only one that comes built-in with *locuaz* and does not
+an external binary, but it does need an input script.
+More info on all scoring functions can be found at :ref:`scoringfunctions:Scoring Functions`.
 
 Pruner
 ----------
-as
+After scoring the affinity, the chosen *Pruner* will decide if the mutation was successful or not.
+More info on this at :ref:`pruners:Pruners`.
 
 threshold
 """""""""""
-s
+When using just one scoring function, the *metropolis* pruner can be used which, as its name suggests,
+uses the metropolis acceptance ratio to decide if the mutation is accepted or not.
 
 metropolis
 """""""""""
+If many scoring functions are used, the *consensus* pruner checks how many of them improved their scores
+on the mutated complex with respect to the previous one, if enough of them indicate an in increase in affinity,
+then the new complex is accepted.
 
 Summary
 --------
 
-The
+All these units acting can be configured, giving rise to many different protocols.
+Refer to the Figure 2 for a graphical abstract of them and check the tutorials for some concrete examples.
 
 .. figure:: ./resources/protocol_workflow.png
         :alt: enhanced workflow

@@ -40,14 +40,15 @@ This tutorial will provide a step-by-step guidance to the use of the locuaz prot
 (VHH) as a p53 binder (figure shown above). The bulk of it will concentrate on the writing of the
 configuration yaml file. A more detailed explanation of the available options, can be found in the
 :ref:`configurationfile:YAML configuration file`. The materials for this tutorial are located in
-the ``examples/simple_tutorial`` folder:
+the ``examples/simple_tutorial`` folder. You can dowload them from `this link`_
 
-1. ``d11.pdb``: the PDB file of the pre-equilibrated complex. Target chains go first and then the binders'.
+1. ``d11.pdb``: the PDB file of the pre-equilibrated complex. Target chains go first and then the binders.
 2. ``config_simple.yaml``: the configuration file; all options go in here.
 3. ``mdp`` directory: minimization, NVT and NPT *GROMACS* input files.
+4. ``gmxmmpbsa``: the input file for the *gmxmmpbsa* scoring function
 
 .. _reference: http://dx.doi.org/10.1016/j.ccr.2012.08.003
-.. _examples/simple_tutorial: https://istitutoitalianotecnologia-my.sharepoint.com/personal/walter_rocchia_iit_it/_layouts/15/onedrive.aspx?ga=1&id=%2Fpersonal%2Fwalter%5Frocchia%5Fiit%5Fit%2FDocuments%2FExamples&view=0
+.. _this link: https://istitutoitalianotecnologia-my.sharepoint.com/personal/walter_rocchia_iit_it/_layouts/15/onedrive.aspx?ga=1&id=%2Fpersonal%2Fwalter%5Frocchia%5Fiit%5Fit%2FDocuments%2FExamples%2Fsimple%5Ftutorial&view=0
 
 The configuration file
 -----------------------
@@ -107,8 +108,9 @@ Global options of the protocol run go here.
  * ``epochs``: the number of *epochs* we want to run. Remember that a failed *epoch*, that is, an *epoch* that fails
    to generate at least 1 *iteration* that improves the binding score is backed up (its folder is prefixed with ``bu_``)
    and is not included in the total number. So this will be the total number of successful epochs.
- * ``branches``: the number of parallel runs. If we look at the workflow from :ref:`basicconcepts:Main idea`, it would be the 'width'
-   of the workflow. See below for more info.
+ * ``branches``: in principle, the number of iterations that will be created at each epoch. If we look at
+   the workflow from :ref:`basicconcepts:Main idea`, it would be the 'width'. This option depends on other
+   option called ``constant_width``, see below for more info.
  * ``memory_size``: we want to prevent *locuaz* from mutating a position that was recently mutated, so we set this
    number to ``4``, this means that if position, say, ``128`` is mutated on epoch ``12``, then it won't be mutated again
    at least until epoch ``17``.
@@ -117,12 +119,12 @@ Global options of the protocol run go here.
    same time we don't want to increase the ``memory_size`` too much, which would eliminate a lot of randomness from out
    run. We will set it to ``8``.
 
-``constant_width`` is defaulted to ``True``, this means that each *epoch* will have 4 *iterations* so if, for example,
-1 *complex* moves on to the next *epoch*, then 4 mutations will be performed on this complex, but if it were 3 complexes
-then 2 of them would be mutated just once, and only one of them (chosen randomly), will be mutated twice; thus giving 4
-new *iterations*.
+``constant_width`` is defaulted to ``True``, this means that each *epoch* will have 4 *iterations* so if,
+for example, 1 *complex* moves on to the next *epoch*, then 4 mutations will be performed on this complex
+but if it were 3 complexes then 2 of them would be mutated just once, and only one of them (chosen randomly),
+will be mutated twice; thus giving 4 new *iterations*.
 If ``constant_width`` was ``False``, then ``branches`` is the number of mutations performed on each complex from the
-previous step. Eg: if 2 complexes move on to the next epoch and ``branches=4``, then the next *epoch* will run 8
+previous step. So if 2 complexes move on to the next epoch and ``branches=4``, then the next *epoch* will run 8
 iterations, since 4 new complexes were obtained from each surviving complex.
 
 generation
@@ -133,9 +135,9 @@ generation
         generator: SPM4gmxmmpbsa
         probe_radius: 3
 
-Now we begin to deal with a *locuaz* concept, :ref:`basicconcepts:Units`. These are the moving parts of *locuaz*. The first one is the
-mutation generator, the *unit* that is in charge of taking the sequence of the current complex and generating a new
-sequence from it.
+Now we begin to deal with a *locuaz* concept, :ref:`basicconcepts:Units`. These are the moving parts of *locuaz*.
+The first one is the mutation generator, the *unit* that is in charge of taking the sequence of the current
+complex and generating a new sequence from it.
 
  * ``generator``: we are using the :ref:`basicconcepts:SPM4gmxmmpbsa` generator, so later we will have to include *gmxmmpbsa* as a
    scoring function, so this generator can read the energy decomposition file from *gmxmmpbsa* and choose the position
@@ -146,7 +148,19 @@ sequence from it.
    a rolling-probe method, ``probe_radius`` allows the user to set the size of this probe. In this example we are using
    a radius of ``3``, a rather large probe, so more residues end up being classified as part of the interface.
 
-Check :ref:`mutationgenerators:Mutation Generators` for a reference of the implementation, and
+In the included *gmxmmpbsa* file you will find a dedicated section to perform this decomposition:
+
+.. code-block:: console
+
+    /
+    &decomp
+    idecomp=2, dec_verbose=0,
+    print_res="within 4"
+    /
+
+
+The ``&idecomp`` section needs to be present when using the ``SPM4gmxmmpbsa`` generator. Check
+:ref:`mutationgenerators:Mutation Generators` for a reference of the implementation, and
 :ref:`configurationfile:YAML configuration file` page for more details.
 
 mutation
@@ -165,8 +179,8 @@ This is another *unit*, the one that is in charge of performing the actual mutat
  * ``reconstruct_radius``: residues below this distance from the mutated position will also get their side-chains
    reoriented.
 
-Check :ref:`mutators:Mutators` for a reference of the implementation, and :ref:`configurationfile:YAML configuration file`
-for more details.
+Check :ref:`mutators:Mutators` for a reference of the implementation and
+:ref:`configurationfile:YAML configuration file` for more details.
 
 pruning
 ^^^^^^^^
@@ -178,9 +192,9 @@ pruning
 
 In this *unit*, you can set how the top *iterations* from an *epoch* will be selected to pass onto the next one.
 
- * ``pruner``: the *threshold* pruner is the default one.
- * ``consensus_threshold``: the minimum number of scoring functions that have to improve for an *iteration*
-   to be considered better than its parents. Check :ref:`pruners:Consensus score` for more info.
+ * ``pruner``: the *consensus* pruner is the default one.
+ * ``threshold``: the minimum number of scoring functions that have to improve for an *iteration*
+   to be considered better than its parents. Check :ref:`pruners:Pruners` for more info.
 
 
 md
@@ -207,7 +221,7 @@ Options related to the molecular dynamics run go in here.
    ``gmx mdrun`` works for most cases.
  * ``mdp_names``: these files should be in ``config['paths']['mdp']``. We set the names of
    *min_mdp*, *nvt_mdp* and *npt_mdp*.
- * ``ngpus``: number of available gpus.
+ * ``ngpus``: number of available gpus. These would determine the number of parallel complexes that will be run.
  * ``mpi_procs``: number of available MPI processors.
  * ``omp_procs``: number of available OMP threads.
  * ``pinoffsets``: a list with the offsets for each system being run in parallel.
@@ -248,8 +262,9 @@ Binder options go here.
  * ``mutating_resSeq``: list of lists with the positions you want to mutate. We are typing 3 lists, one for
    each CDR.
  * ``mutating_resname``: these are the one-letter code of the amino acids that correspond to the *mutating_resSeq*
-   from above. This is a mandatory field, and is used to check that the user typed the right positions on
-   the field above. It's only checked when the protocol runs for the first time.
+   from above. You can type them straight away or wrap them in ``''``. This is a mandatory field,
+   and is used to check that the user typed the right positions on the field above.
+   It's only checked when the protocol runs for the first time.
 
 
 scoring

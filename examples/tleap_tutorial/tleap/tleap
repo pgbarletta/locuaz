@@ -1,0 +1,21 @@
+#source leaprc.protein.ff19SB
+source oldff/leaprc.ff99SBildn
+source leaprc.water.tip3p
+addAtomTypes { { "ZN" "Zn" "sp3" } { "S2" "S" "sp3" } { "N1" "N" "sp3" } }
+loadamberparams frcmod.ions1lm_126_tip3p
+loadamberprep ZAFF.prep
+loadamberparams ZAFF.frcmod
+mol = loadpdb nb.pdb
+
+bond mol.195.ZN mol.81.SG
+bond mol.195.ZN mol.84.ND1
+bond mol.195.ZN mol.143.SG
+bond mol.195.ZN mol.147.SG
+#bond mol.22.SG mol.97.SG
+bond mol.217.SG mol.292.SG
+
+addions mol CL 0
+addions mol NA 0
+
+saveamberparm mol amb_nb.prmtop amb_nb.rst7
+quit

@@ -76,7 +76,7 @@ Necessary files
 As in :ref:`tutorialsimple:Tutorial: running a simple optimization`, we're going to focus on the writing
 of the YAML config file. A more detailed explanation of the available options, can be found in the
 :ref:`configurationfile:YAML configuration file`. The materials for this tutorial are located in
-the ``examples/tleap_tutorial`` folder:
+the ``examples/tleap_tutorial`` `folder`_:
 
 1. ``nb.pdb``: the PDB file of the pre-equilibrated complex.
 2. ``tleap``: *Tleap* dir with the script to build the topology of the system each time a mutation is performed.
@@ -88,6 +88,7 @@ the ``examples/tleap_tutorial`` folder:
 3. ``config_tleap.yaml``: the input file to run the protocol.
 4. ``mdp`` directory: minimization, NVT and NPT *GROMACS* input files.
 
+.. _folder: https://istitutoitalianotecnologia-my.sharepoint.com/personal/walter_rocchia_iit_it/_layouts/15/onedrive.aspx?ga=1&id=%2Fpersonal%2Fwalter%5Frocchia%5Fiit%5Fit%2FDocuments%2FExamples%2Ftleap%5Ftutorial&view=0
 
 The configuration file
 -----------------------

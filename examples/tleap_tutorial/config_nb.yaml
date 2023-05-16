@@ -1,0 +1,59 @@
+paths:
+    gmxrc: /usr/local/gromacs/bin
+    scoring_functions: /home/pbarletta/labo/22/locuaz/rebin
+    mutator: /home/pbarletta/labo/22/locuaz/rebin/dlpacker
+    mdp: /home/pbarletta/labo/22/locuaz/daux/mdp
+    input: [ /home/pbarletta/labo/22/locuaz/daux/oct_nb ]
+    tleap: /home/pbarletta/labo/22/locuaz/daux/oct_nb/tleap
+    work: /home/pbarletta/labo/22/locuaz/daux/cacha
+
+main:
+    name: nb
+    starting_epoch: 0
+
+protocol:
+    epochs: 5
+    branches: 2
+    memory_size: 4
+    failed_memory_size: 6
+    memory_positions: [[2, 3, 4, 6, 7, 8], [], [], [] ]
+
+pruning:
+    pruner: consensus
+    consensus_threshold: 1
+
+generation:
+    generator: SPM4i
+    probe_radius: 3
+
+mutation:
+    mutator: dlpr
+    reconstruct_radius: 5
+
+md:
+    gmx_mdrun: gmx mdrun
+    mdp_names:
+        min_mdp: min.mdp
+        nvt_mdp: short_nvt.mdp
+        npt_mdp: short_npt.mdp
+    ngpus: 1
+    mpi_procs: 1
+    omp_procs: 4
+    pinoffsets: [0]
+    use_tleap: true
+    box_type: octahedron
+
+target:
+    chainID: [A]
+
+binder:
+    chainID: [B]
+    mutating_chainID: [B]
+    mutating_resSeq: [[294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309]]
+    mutating_resname: [['K', 'A', 'S', 'R', 'S', 'A', 'G', 'G', 'A', 'L', 'E', 'G', 'A', 'R', 'G', 'Q']]
+
+scoring:
+    #functions: [evoef2, bluues, gmxmmpbsa]
+    functions: [evoef2]
+    nthreads: 6
+    mpiprocs: 4

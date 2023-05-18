@@ -486,6 +486,12 @@
         <span class="n">cutoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
         <span class="n">use_tleap</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PDBStructure</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    remove_overlapping_solvent() is overlapped with later stages. It may leave a system without ions,</span>
+<span class="sd">    but not in a state that would imply discontinuity between ions and solvent, when ions are added</span>
+<span class="sd">    on a later step.</span>
+<span class="sd">    Thus, it removes all ions, relying on later steps (the building of Complex) to add them if necessary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">pdb_in_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">overlapped_pdb</span><span class="p">)</span>
     <span class="n">u</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pdb_in_fn</span><span class="p">))</span>
 

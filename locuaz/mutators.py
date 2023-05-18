@@ -10,7 +10,7 @@ __all__ = ("mutators",)
 mutators: Dict[str, Type[BaseMutator]] = {
     "biobb": MutatorBiobb,
     "evoef2": MutatorEvoEF2,
-}
+} #: Dictionary of all currently available mutators.
 
 try:
     from locuaz.mutatordlpr import MutatorDLPackerReconstruct

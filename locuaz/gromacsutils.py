@@ -391,6 +391,12 @@ def remove_overlapping_solvent(
         cutoff: float = 3,
         use_tleap=False,
 ) -> PDBStructure:
+    """
+    remove_overlapping_solvent() is overlapped with later stages. It may leave a system without ions,
+    but not in a state that would imply discontinuity between ions and solvent, when ions are added
+    on a later step.
+    Thus, it removes all ions, relying on later steps (the building of Complex) to add them if necessary.
+    """
     pdb_in_fn = Path(overlapped_pdb)
     u = mda.Universe(str(pdb_in_fn))
 

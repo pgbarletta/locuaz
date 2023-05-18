@@ -25,6 +25,13 @@ As always, the name of our environment is *locuaz*, so we start by activating it
 
     mamba activate locuaz
 
+
+.. warning::
+    GROMACS and Amber have different conventions when it comes to *resSeq* numbering. GROMACS goes for a strided
+    progression, assigning a *resSeq* number of 1 to the first residue of each chain. Amber, on the other hand,
+    expects all residues to have different *resSeq* numbers. *locuaz* supports both conventions, but be aware
+    that setting ``use_tleap`` to ``True`` will change the resSeq numbering standard.
+
 Setting up the system
 ----------------------
 The starting complex (**p53-VHH**) in this tutorial has been obtained using `HADDOCK`_, followed by an
@@ -78,7 +85,8 @@ of the YAML config file. A more detailed explanation of the available options, c
 :ref:`configurationfile:YAML configuration file`. The materials for this tutorial are located in
 the ``examples/tleap_tutorial`` `folder`_:
 
-1. ``nb.pdb``: the PDB file of the pre-equilibrated complex.
+1. ``nb.pdb``: the PDB file of the pre-equilibrated complex. Remembar that since we are using *Tleap*,
+   residues should be numbered on a continuous progression.
 2. ``tleap``: *Tleap* dir with the script to build the topology of the system each time a mutation is performed.
    This script will be identical to the one above, with the exception of the ``solvatebox`` line, since the
    solvent is already there. Another thing to notice is the usage of ``addions``. We keep this commands
@@ -190,7 +198,6 @@ to take care of that.
 * pinoffsets: notice that we are using 4 OMP processors and 2 GPUs, hence, ``pinoffsets`` has a length of 2,
   one for each GPU run, and with a spacing of 4 threads.
 * use_tleap: True, this option is specified only if *Tleap* is used to build the topology.
-
 
 target
 ^^^^^^^^

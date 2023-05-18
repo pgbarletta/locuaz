@@ -112,6 +112,7 @@
 <div class="viewcode-block" id="BaseMutator"><a class="viewcode-back" href="../../mutators.html#locuaz.basemutator.BaseMutator">[docs]</a><span class="k">class</span> <span class="nc">BaseMutator</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;BaseMutator offers 4 static methods to help development of new mutators: split_solute_solvent(), fix_pdb(),</span>
 <span class="sd">    port_mutation() and add_water().</span>
+<span class="sd">    A Mutator may output a PDB that has waters overlapping with the newly mutated residue.</span>
 <span class="sd">    Args:</span>
 <span class="sd">        bin_dir (Path): path to the binary file.</span>
 <span class="sd">        radius (float): radius freesasa will use to define the Ag-Ab interface. Default: 5A.</span>

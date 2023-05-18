@@ -17,6 +17,7 @@ from locuaz.primitives import AA_MAP
 class BaseMutator:
     """BaseMutator offers 4 static methods to help development of new mutators: split_solute_solvent(), fix_pdb(),
     port_mutation() and add_water().
+    A Mutator may output a PDB that has waters overlapping with the newly mutated residue.
     Args:
         bin_dir (Path): path to the binary file.
         radius (float): radius freesasa will use to define the Ag-Ab interface. Default: 5A.

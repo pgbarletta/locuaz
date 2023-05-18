@@ -31,6 +31,13 @@ The contents are up to the user. For example, for a simple MM-GBSA::
     igb=2, saltcon=0.150,
     /
 
+
+We advise ``igb=2`` since ``igb=5`` requires a modification of the topology
+that is not available in the protocol. From the Amber manual:
+
+*With this option (igb=5), you should use the command "set default PBradii mbondi2"
+in setting up the prmtop file, although "set default PBradii bondi" is also OK*
+
 And if residue decomposition is needed (for a mmpbsa generator)::
 
     &general

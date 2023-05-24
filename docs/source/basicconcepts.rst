@@ -1,32 +1,32 @@
-==========================================
+==================
 Basic concepts
-==========================================
+==================
 
-Main idea
--------------
+Introduction and blocks
+------------------------
 
-*locuaz* is a protocol for the *in silico* optimization of antibodies and antibody fragments, such as nanobodies.
-It could also be employed to optimise other objects such as (poli)peptides or other binders.
-
-The procedure begins with the *Mutation Generator* generating a new random mutation for the binder sequence,
-which is carried out by a *Mutator*, thus generating a new set of complexes between the binder and the target.
+*locuaz* has several moving parts and each of them has its role in the optimization process.
+The optimization procedure begins with the *Mutation Generator* generating a new random mutation
+for the binder sequence, which is carried out by a *Mutator*, thus generating a new set of complexes between the binder and the target.
 Subsequently, each complex is minimized, equilibrated with a NVT run and then sampled through a
-NPT molecular dynamics simulation, so the target and binder interactions can be assessed with the chosen
-scoring method(s). Finally, the *Pruner* applies a selection criterion using the binding scores in order to
-accept or reject the mutation. If the mutations does not significantly improve the affinity, then the mutants
-are discarded and a new set of mutants are generated, based on the original complex(es).
+NPT *Molecular Dynamics* simulation, so the target and binder interactions can be assessed with the chosen
+*Scoring Function*(s). Finally, the *Pruner* applies a selection criterion using the binding scores in order to
+accept or reject the mutation.
 
 The process is repeated iteratively to explore new sequences with potentially improved affinities
 towards their targets. This workflow is outlined in Figure 1.
 
-.. figure:: ./resources/protocol_workflow_simple.png
+.. figure:: ./resources/blocks_workflow.png
         :alt: workflow
         :scale: 75%
 
-        Figure 1: The protocol's workflow.
+        Figure 1: The protocol's workflow with respect to its **blocks**.
 
-We will refer to each new set of mutants (or complexes) as an **epoch**, while each complex is referred to
-as an **iteration**. 
+Many complexes can be generated on each run of this workflow and each of them will have MD data, scores, etc..
+We will refer to each complex, plus its data as **iteration**, while the set of **iterations** from the same
+run of this workflow is called an **epoch**.
+
+We will now make a review of each of the **blocks** depicted in Figure 1.
 
 .. note::
 
@@ -34,11 +34,11 @@ as an **iteration**.
     various options as ``config["main"]["name"]``, ``config["scoring"]["functions"]``, etc...
 
 
-Units
+Blocks
 --------
 
 *locuaz* has to coordinate between several external programs and be flexible enough to allow different
-protocols to be run, hence, some abstractions are needed. We will call these abstractions *units*.
+protocols to be run, hence, some abstractions are needed. We will call these abstractions *blocks*.
 
 .. important::
 
@@ -54,7 +54,7 @@ protocols to be run, hence, some abstractions are needed. We will call these abs
 
 Mutation Generator
 ------------------------
-These units are the one in charge of generating the new binders. These are the currently available generators:
+These blocks are the one in charge of generating the new binders. These are the currently available generators:
 
 SPM4
 """""
@@ -75,7 +75,7 @@ Given the positions selected by the user on ``config["binder"]["mutating_resSeq"
 discard those that are not part of the target/binder interface.
 To determine the interface, *locuaz* uses the **freesasa** library which uses a rolling-probe,
 whose radius can be set using the ``config["generation"]["probe_radius"]`` to any value ranging
-from ``0.1`` to ``4.0`` (in angstrom units). The bigger the radius, the more residues will be classified
+from ``0.1`` to ``4.0`` (in angstrom blocks). The bigger the radius, the more residues will be classified
 as part of the interface; the default is ``1.4``.
 
 Set ``config["generation"]["generator"]`` to ``SPM4i`` to use this generator.
@@ -103,7 +103,7 @@ You can also set the probe radius in this mutator.
         print_res="within 4"
         /
 
-Check Amber's manual and `gmx-mmpbsa <https://valdes-tresanco-ms.github.io/gmx_MMPBSA/dev/input_file/>`_ docs for more info.
+Check Amber's manual and `gmx_MMPBSA`_ docs for more info.
 
 Set ``config["generation"]["generator"]`` to ``SPM4gmxmmpbsa`` use this generator.
 
@@ -131,7 +131,8 @@ dlpr mutator
 """"""""""""""
 
 Set ``config["mutation"]["mutator"]`` to ``dlpr`` use this mutator and adjust the reconstruct radius with the
-``config['mutation']['reconstruct_radius']`` option. Check :ref:`mutators:Mutators` for more info about this.
+``config['mutation']['reconstruct_radius']`` option.
+Check :ref:`installation:Post-installation` or :ref:`mutators:Mutators` for more info about this.
 
 evoef2 mutator
 """"""""""""""
@@ -144,7 +145,7 @@ Set ``config["mutation"]["mutator"]`` to ``evoef2`` use this mutator.
 Molecular Dynamics (MD)
 ------------------------
 MD of the complexes is carried out using the `GROMACS`_ simulation package, so some of the options associated
-to this unit are transparent wrappers to GROMACS command line options, like ``config['md']['mpi_procs']``,
+to this block are transparent wrappers to GROMACS command line options, like ``config['md']['mpi_procs']``,
 ``config['md']['omp_procs']`` and ``config['md']['pinoffsets']``, which map to ``-ntmpi``, ``-ntomp`` and
 ``-pinoffset``. Other GROMACS options are hard-coded, like ``-pin on`` and the use of the GPU for all interactions
 but the bonded ones.
@@ -200,7 +201,7 @@ then the new complex is accepted. Check this `reference`_ for more details.
 Summary
 --------
 
-All these units can be configured, giving rise to many different protocols.
+All these blocks can be configured, giving rise to many different protocols.
 Refer to the Figure 2 for a graphical abstract of them and check the tutorials for some concrete examples.
 
 .. figure:: ./resources/protocol_workflow.png
@@ -215,4 +216,5 @@ Refer to the Figure 2 for a graphical abstract of them and check the tutorials f
 .. _here: https://istitutoitalianotecnologia-my.sharepoint.com/:u:/g/personal/walter_rocchia_iit_it/Efzdf2sgKwJNmJskcHDE7yUBQMVgFsbpACeQLDGRYKvQOA?e=2E0daX
 .. _GROMACS: https://manual.gromacs.org/current/index.html
 .. _Amber: https://ambermd.org/Manuals.php
+.. _gmx_MMPBSA: https://valdes-tresanco-ms.github.io/gmx_MMPBSA/dev/input_file/
 .. _reference: https://pubs.rsc.org/en/content/articlelanding/2019/cc/c9cc06182g

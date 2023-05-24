@@ -6,13 +6,13 @@ Installation
 
 There are 3 options for installing locuaz. Conda + pip (Option 1) is recommended, since its both lightweight
 and quick. A pure conda install is also available (Option2). It is also possible to compile from source (Option 3).
-In all cases a post-installation is required.
+In all cases a :ref:`installation:Post-installation` step is required.
 
 Prerequisites
 ---------------
 
-Given that pure conda is too slow, `Mambaforge <https://github.com/conda-forge/miniforge>`_ is
-recommended instead.
+We recommend using `Mambaforge <https://github.com/conda-forge/miniforge>`_ instead of pure conda,
+since it's much faster
 
 Stable release
 --------------
@@ -46,7 +46,8 @@ Then, activate the environment and install the protocol through pip:
     mamba activate locuaz
     pip install locuaz
 
-This is a bit more involved that installing through conda, but the resulting environment won't be as heavy.
+This option takes an extra step with respect to using only conda, but the process will be faster and the
+resulting environment won't be as heavy.
 
 conda (Option 2)
 ^^^^^^^^^^^^^^^^

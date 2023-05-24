@@ -100,7 +100,24 @@
 <a class="reference external image-reference" href="https://locuaz.readthedocs.io/en/latest/?version=latest"><img alt="Documentation Status" src="https://readthedocs.org/projects/locuaz/badge/?version=latest" /></a>
 <a class="reference external image-reference" href="citing.html"><img alt="Cite LOCUAZ" src="https://img.shields.io/badge/cite-locuaz-red" /></a>
 <a class="reference external image-reference" href="citing.html"><img alt="License" src="https://img.shields.io/badge/license-MIT-yellow" /></a>
-<p>Looping Uniquely Catered Amino Acid Sequences</p>
+<p><em>locuaz</em> is a protocol for the <em>in silico</em> optimization of antibodies and antibody fragments, such as nanobodies.
+It could also be employed to optimise other objects such as (poli)peptides or other binders.</p>
+<p>The procedure begins with random mutations in the binder sequence, which generate different target-binder
+complexes. Subsequently, the complexes are minimized, equilibrated with a NVT run and then sampled
+through a NPT Molecular Dynamics (MD) simulation, so the target and binder interactions can be assessed
+with the chosen scoring method(s)
+Finally, a consensus criterion is applied to the binding scores in order to accept or reject the mutation.
+If the mutation does not significantly improve the affinity, then the mutants are discarded and a new
+set of mutants are generated, based on the original complex(es). On the other hand, when accepted, the
+complex is fed into the next run of the process, to keep exploring new sequences with potentially improved affinities
+towards their targets.</p>
+<p>This workflow is outlined in Figure 1.</p>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="_images/protocol_workflow_simple.png"><img alt="workflow" src="_images/protocol_workflow_simple.png" style="width: 530.25px; height: 527.25px;" /></a>
+<figcaption>
+<p><span class="caption-text">Figure 1: The protocol’s workflow.</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
 <ul>
@@ -117,8 +134,8 @@
 <p class="caption" role="heading"><span class="caption-text">Learning</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="basicconcepts.html">Basic concepts</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="basicconcepts.html#main-idea">Main idea</a></li>
-<li class="toctree-l2"><a class="reference internal" href="basicconcepts.html#units">Units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basicconcepts.html#introduction-and-blocks">Introduction and blocks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basicconcepts.html#blocks">Blocks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="basicconcepts.html#mutation-generator">Mutation Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="basicconcepts.html#mutator">Mutator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="basicconcepts.html#molecular-dynamics-md">Molecular Dynamics (MD)</a></li>

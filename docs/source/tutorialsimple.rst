@@ -109,7 +109,7 @@ Global options of the protocol run go here.
    to generate at least 1 *iteration* that improves the binding score is backed up (its folder is prefixed with ``bu_``)
    and is not included in the total number. So this will be the total number of successful epochs.
  * ``branches``: in principle, the number of iterations that will be created at each epoch. If we look at
-   the workflow from :ref:`basicconcepts:Main idea`, it would be the 'width'. This option depends on other
+   the workflow from :ref:`basicconcepts:Introduction`, it would be the 'width'. This option depends on other
    option called ``constant_width``, see below for more info.
  * ``memory_size``: we want to prevent *locuaz* from mutating a position that was recently mutated, so we set this
    number to ``4``, this means that if position, say, ``128`` is mutated on epoch ``12``, then it won't be mutated again
@@ -135,8 +135,8 @@ generation
         generator: SPM4gmxmmpbsa
         probe_radius: 3
 
-Now we begin to deal with a *locuaz* concept, :ref:`basicconcepts:Units`. These are the moving parts of *locuaz*.
-The first one is the mutation generator, the *unit* that is in charge of taking the sequence of the current
+Now we begin to deal with a *locuaz* concept, :ref:`basicconcepts:Blocks`. These are the moving parts of *locuaz*.
+The first one is the mutation generator, the *block* that is in charge of taking the sequence of the current
 complex and generating a new sequence from it.
 
  * ``generator``: we are using the :ref:`basicconcepts:SPM4gmxmmpbsa` generator, so later we will have to include *gmxmmpbsa* as a
@@ -171,7 +171,7 @@ mutation
         mutator: dlpr
         reconstruct_radius: 5
 
-This is another *unit*, the one that is in charge of performing the actual mutation.
+This is another *block*, the one that is in charge of performing the actual mutation.
 
  * ``mutator``: the external program to mutate the complex and find a suitable side-chain orientation. We are using
    ``dlpr`` since it depends on the *DLPacker* program which comes built-in with *locuaz* and also performs a nice
@@ -190,7 +190,7 @@ pruning
         pruner: consensus
         threshold: 2
 
-In this *unit*, you can set how the top *iterations* from an *epoch* will be selected to pass onto the next one.
+In this *block*, you can set how the top *iterations* from an *epoch* will be selected to pass onto the next one.
 
  * ``pruner``: the *consensus* pruner is the default one.
  * ``threshold``: the minimum number of scoring functions that have to improve for an *iteration*

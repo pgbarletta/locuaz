@@ -1,6 +1,6 @@
 Pruners
 ====================
-These is the unit in charge of deciding which *Iterations* go through the next epoch, according to their scores.
+These is the block in charge of deciding which *Iterations* go through the next epoch, according to their scores.
 
 locuaz.pruners module
 ---------------------

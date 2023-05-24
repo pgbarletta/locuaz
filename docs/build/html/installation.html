@@ -51,11 +51,11 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#stable-release">Stable release</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#conda-recommended">conda (recommended)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pip">pip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#conda-pip-option-1">conda + pip (Option 1)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#conda-option-2">conda (Option 2)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#from-sources">From sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#from-sources-option-3">From sources (Option 3)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#post-installation">Post-installation</a></li>
 </ul>
 </li>
@@ -107,6 +107,9 @@
              
   <section id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h1>
+<p>There are 3 options for installing locuaz. Conda + pip (Option 1) is recommended, since its both lightweight
+and quick. A pure conda install is also available (Option2). It is also possible to compile from source (Option 3).
+In all cases a post-installation is required.</p>
 <section id="prerequisites">
 <h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading"></a></h2>
 <p>Given that pure conda is too slow, <a class="reference external" href="https://github.com/conda-forge/miniforge">Mambaforge</a> is
@@ -114,16 +117,8 @@ recommended instead.</p>
 </section>
 <section id="stable-release">
 <h2>Stable release<a class="headerlink" href="#stable-release" title="Permalink to this heading"></a></h2>
-<section id="conda-recommended">
-<h3>conda (recommended)<a class="headerlink" href="#conda-recommended" title="Permalink to this heading"></a></h3>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mamba install locuaz</span>
-</pre></div>
-</div>
-<p>A drawback from the conda install is that when installing <strong>biobb</strong> through conda, it comes with some heavy
-dependencies, like <strong>GROMACS</strong> itself.</p>
-</section>
-<section id="pip">
-<h3>pip<a class="headerlink" href="#pip" title="Permalink to this heading"></a></h3>
+<section id="conda-pip-option-1">
+<h3>conda + pip (Option 1)<a class="headerlink" href="#conda-pip-option-1" title="Permalink to this heading"></a></h3>
 <p>Create a conda environment from the <a class="reference download internal" download="" href="_downloads/5c1543975947835403a013a0ed019156/usr_deps.yaml"><code class="xref download docutils literal notranslate"><span class="pre">usr_deps.yaml</span></code></a>, which looks like this:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">name: locuaz</span>
 <span class="go">channels:</span>
@@ -134,15 +129,28 @@ dependencies, like <strong>GROMACS</strong> itself.</p>
 <span class="go">  - conda-forge::tensorflow</span>
 </pre></div>
 </div>
-<p>Then, activate the environment and install the protocol through pip:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install locuaz</span>
+<p>To create the environment:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mamba create -f usr_deps.yaml</span>
 </pre></div>
 </div>
-<p>This is more involved that installing through conda, but the resulting environment won’t be as heavy.</p>
+<p>Then, activate the environment and install the protocol through pip:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mamba activate locuaz</span>
+<span class="go">pip install locuaz</span>
+</pre></div>
+</div>
+<p>This is a bit more involved that installing through conda, but the resulting environment won’t be as heavy.</p>
+</section>
+<section id="conda-option-2">
+<h3>conda (Option 2)<a class="headerlink" href="#conda-option-2" title="Permalink to this heading"></a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mamba install locuaz</span>
+</pre></div>
+</div>
+<p>A drawback from the conda install is that when installing <strong>biobb</strong> through conda, it comes with some heavy
+dependencies, like <strong>GROMACS</strong> itself.</p>
 </section>
 </section>
-<section id="from-sources">
-<h2>From sources<a class="headerlink" href="#from-sources" title="Permalink to this heading"></a></h2>
+<section id="from-sources-option-3">
+<h2>From sources (Option 3)<a class="headerlink" href="#from-sources-option-3" title="Permalink to this heading"></a></h2>
 <p>Clone the <a class="reference external" href="https://github.com/pgbarletta/locuaz">repo</a>:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">git clone https://github.com/pgbarletta/locuaz</span>
 </pre></div>

@@ -4,6 +4,10 @@
 Installation
 ============
 
+There are 3 options for installing locuaz. Conda + pip (Option 1) is recommended, since its both lightweight
+and quick. A pure conda install is also available (Option2). It is also possible to compile from source (Option 3).
+In all cases a post-installation is required.
+
 Prerequisites
 ---------------
 
@@ -13,18 +17,8 @@ recommended instead.
 Stable release
 --------------
 
-conda (recommended)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: console
-
-    mamba install locuaz
-
-A drawback from the conda install is that when installing **biobb** through conda, it comes with some heavy
-dependencies, like **GROMACS** itself.
-
-pip
-^^^
+conda + pip (Option 1)
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Create a conda environment from the :download:`usr_deps.yaml<../../usr_deps.yaml>`, which looks like this:
 
@@ -38,16 +32,34 @@ Create a conda environment from the :download:`usr_deps.yaml<../../usr_deps.yaml
       - conda-forge::ambertools>=22.0.0
       - conda-forge::tensorflow
 
+To create the environment:
+
+.. code-block:: console
+
+    mamba create -f usr_deps.yaml
+
+
 Then, activate the environment and install the protocol through pip:
 
 .. code-block:: console
 
+    mamba activate locuaz
     pip install locuaz
 
-This is more involved that installing through conda, but the resulting environment won't be as heavy.
+This is a bit more involved that installing through conda, but the resulting environment won't be as heavy.
 
-From sources
-------------
+conda (Option 2)
+^^^^^^^^^^^^^^^^
+
+.. code-block:: console
+
+    mamba install locuaz
+
+A drawback from the conda install is that when installing **biobb** through conda, it comes with some heavy
+dependencies, like **GROMACS** itself.
+
+From sources (Option 3)
+------------------------
 
 Clone the `repo`_:
 
@@ -68,7 +80,6 @@ Post-installation
 
 If you want to use the ``dlp`` mutator You'll also have to get DLPacker's `weights <https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQseE0LQ/view?usp=sharing>`_
 and place them on a dedicated ``dlpacker`` (actual name doesn't matter) directory, more info on :ref:`mutators:Mutators`.
-
 
 .. _repo: https://github.com/pgbarletta/locuaz
 

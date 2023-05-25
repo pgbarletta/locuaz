@@ -187,12 +187,12 @@ Pruner
 After scoring the affinity, the chosen *Pruner* will decide if the mutation was successful or not.
 More info on this at :ref:`pruners:Pruners`.
 
-threshold
+metropolis
 """""""""""
 When using just one scoring function, the *metropolis* pruner can be used which, as its name suggests,
 uses the metropolis acceptance ratio to decide if the mutation is accepted or not.
 
-metropolis
+consensus
 """""""""""
 If many scoring functions are used, the *consensus* pruner checks how many of them improved their scores
 on the mutated complex with respect to the previous one, if enough of them indicate an in increase in affinity,

@@ -1,6 +1,6 @@
 Pruners
 ====================
-These is the block in charge of deciding which *Iterations* go through the next epoch, according to their scores.
+This block is in charge of deciding which *Iterations* go through the next epoch, according to their scores.
 
 locuaz.pruners module
 ---------------------
@@ -22,11 +22,17 @@ locuaz.abstractpruner module
 locuaz.prunerconsensus module
 ------------------------------
 For a new complex to pass onto the next *epoch*, it has to beat all previous complexes that gave rise to it.
-Using this pruner, a new complex beats a previous one, when the means of its scores are lower than those
-from the previous complex. Now, since scoring functions tend to diverge, it's not necessary for all of them
-to improve, if a user is using, say, **4** scoring functions, the user can set the ``threshold`` to, say, **2**
-and if 2 scoring functions indicate an improvement, then the new complex beats the old one.
-More formally:
+Using this pruner, a new complex beats a previous one when the means of its scores are lower than those
+from the previous complex, given that a lower score number indicates higher affinity between the
+target and the binder.
+
+Now, since scoring functions tend to diverge, it's not necessary for all of them to improve.
+The user can set a minimum threshold of scoring functions that have to improve so a binder can
+be considered better than another.
+
+For example, if a user is using **4** scoring functions, the user can set the ``threshold``
+to, say, **2** and if 2 scoring functions indicate an improvement, then the new complex
+beats the old one. More formally:
 
 .. math::
 
@@ -37,13 +43,23 @@ More formally:
     \end{array}
     \right.
 
-Where :math:`c_{k}^{i}` counts where scoring functinos :math:`k` approves complex :math:`i`.
+Where
+:math:`c_{k}^{i}` counts how many scoring functions improved with respect to the previous complex,
+while :math:`k` and :math:`i` are the indices for scoring functions and complexes, respectively.
+
+
 Then, a consensus number :math:`C^{i}` is obtained by adding all the :math:`c_{k}^{i}` for the
 :math:`N` scoring functions, and this number is compared against the threshold :math:`T`:
 
 .. math::
 
-    C^{i} = \sum_{k=1}^{N} c_{k}^{i} \geq T
+    C^{i} = \sum_{k=1}^{N} c_{k}^{i}
+    
+.. math::
+    C^{i} \geq T ?
+
+If the last statement is true, then complex :math:`i+1` beats :math:`i` and can be considered
+for a next round of mutations.
 
 .. automodule:: locuaz.prunerconsensus
    :members:

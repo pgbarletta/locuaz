@@ -16,20 +16,22 @@ LOCUAZ optimization protocol
         :target: citing.html
         :alt: License
 
-*locuaz* is a protocol for the *in silico* optimization of antibodies and antibody fragments, such as nanobodies.
-It could also be employed to optimise other objects such as (poli)peptides or other binders.
+*locuaz* is a high-performance software platform designed specifically for *in-silico* optimization of antibodies,
+antibody fragments like nanobodies, or any peptide binder towards other proteins and small ligands.
 
-The procedure begins with random mutations in the binder sequence, which generate different target-binder
-complexes. Subsequently, the complexes are minimized, equilibrated with a NVT run and then sampled
-through a NPT Molecular Dynamics (MD) simulation, so the target and binder interactions can be assessed
-with the chosen scoring method(s)
-Finally, a consensus criterion is applied to the binding scores in order to accept or reject the mutation.
-If the mutation does not significantly improve the affinity, then the mutants are discarded and a new
-set of mutants are generated, based on the original complex(es). On the other hand, when accepted, the
-complex is fed into the next run of the process, to keep exploring new sequences with potentially improved affinities
-towards their targets.
+Rather than being a single protocol, *locuaz* provides a robust foundation upon which multiple optimization protocols
+can be implemented, thus offering versatility and adaptability to diverse scientific needs.
 
+*locuaz* initiates the optimization process by generating a variety of target-binder complexes through
+random mutations in the binder sequence. Following this, the complexes undergo minimization and equilibration
+before a NPT Molecular Dynamics (MD) simulation is ran. Target-binder interactions are then assessed by
+a set of scoring functions to then estimate if the mutations improved affinity. If so, the procedure is repeated
+with the new complexes, continuing the exploration of new binders.
 This workflow is outlined in Figure 1.
+
+With its tailored design for HPC environments and a flexible approach to various protocols, *locuaz*
+delivers efficient *in-silico* optimization.
+
 
 .. figure:: ./resources/protocol_workflow_simple.png
         :alt: workflow

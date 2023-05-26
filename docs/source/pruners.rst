@@ -2,26 +2,10 @@ Pruners
 ====================
 This block is in charge of deciding which *Iterations* go through the next epoch, according to their scores.
 
-locuaz.pruners module
----------------------
-
-.. automodule:: locuaz.pruners
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
-locuaz.abstractpruner module
------------------------------
-
-.. automodule:: locuaz.abstractpruner
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 locuaz.prunerconsensus module
 ------------------------------
-For a new complex to pass onto the next *epoch*, it has to beat all previous complexes that gave rise to it.
+Under this *pruner*, for a new complex to pass onto the next *epoch*, it has to beat all previous complexes
+that gave rise to it.
 Using this pruner, a new complex beats a previous one when the means of its scores are lower than those
 from the previous complex, given that a lower score number indicates higher affinity between the
 target and the binder.
@@ -61,6 +45,41 @@ Then, a consensus number :math:`C^{i}` is obtained by adding all the :math:`c_{k
 If the last statement is true, then complex :math:`i+1` beats :math:`i` and can be considered
 for a next round of mutations.
 
+consensus run example
+^^^^^^^^^^^^^^^^^^^^^^^
+In this example the user started with 1 complex and the options ``pruner: consensus``, ``consensus_threshold: 3``,
+``branches: 4`` and ``width: True``, among others. Figure 1 shows a Directed Acyclic Graph (DAG) of the current progress
+for the optimization. It shows 3 epochs (the height of the DAG) and each node corresponds to a different *iteration*.
+Each *iteration* is connected with the one that preceded it and labeled with the performed mutation.
+
+.. figure:: ./resources/consensus_example.png
+        :alt: dag
+        :scale: 75%
+
+        Figure 1: 3 **epochs** of a protocol using the *consensus* pruner.
+
+On epoch 2, the protocol randomly chooses position 27 on the chain **B** to mutate and given that the user
+asked for 4 branches, 4 new complexes are generated. Then, after running and scoring the 4 new complexes
+the *consensus pruner* gets as input a set of 5 *iterations*: **None** (the original complex),
+**B:G27P**, **B:G27E**, **B:G27R** and **B:G27I** (the recently generated complexes).
+It then compares the means of the scoring functions of each of the 4 generated complexes against the original
+complex and determines the following:
+
+ * For **B:G27P**: only 1 scoring function improved with respect to the original.
+ * For **B:G27E**: 2 scoring functions improved with respect to the original.
+ * For **B:G27R**: 4 scoring functions improved with respect to the original.
+ * For **B:G27I**: 3 scoring functions improved with respect to the original.
+
+Since ``consensus_threshold`` was set to 3, only **B:G27R** and **B:G27I** are kept and mutated again on the
+next **epoch**. And since the user set ``branches`` to 4 and a constant width, these **iterations** will be
+mutated twice each, for the generation of the next **epoch**.
+
+Finally, on **epoch** 3, after the MD and the scoring of the generated complexes is done, the *pruner* will get
+6 **iterations**: **B:D29K**, **B:D29G**, **B:G29R**, **B:D29S** and the previous ones: **B:G27R** and **B:G27I**.
+For the new **iterations** to pass, they will have to beat both **B:G27R** and **B:G27I** and that means, again,
+improving the average score on, at least, 3 scoring functions.
+
+
 .. automodule:: locuaz.prunerconsensus
    :members:
    :undoc-members:
@@ -68,7 +87,7 @@ for a next round of mutations.
 
 locuaz.prunermetropolis module
 --------------------------------
-When using only 1 scoring functino, the well known *metropolis acceptance criteria* can be used to decide
+When using only 1 scoring function, the well known *metropolis acceptance criteria* can be used to decide
 whether a complex passes to the next *epoch*:
 
 .. math::
@@ -83,3 +102,19 @@ then the new complex is considered to beat the old one.
    :undoc-members:
    :show-inheritance:
 
+locuaz.pruners module
+---------------------
+
+.. automodule:: locuaz.pruners
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+locuaz.abstractpruner module
+-----------------------------
+
+.. automodule:: locuaz.abstractpruner
+   :members:
+   :undoc-members:
+   :show-inheritance:

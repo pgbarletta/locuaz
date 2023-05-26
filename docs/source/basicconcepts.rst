@@ -185,18 +185,22 @@ More info on all scoring functions can be found at :ref:`scoringfunctions:Scorin
 Pruner
 ----------
 After scoring the affinity, the chosen *Pruner* will decide if the mutation was successful or not.
+*Pruners* will take the original complex(es) and the newly mutated ones and will output the best of them
+for the next round of optimization.
+The exact criteria that will decide which complex(es) are at the top depends on the chosen *pruner*.
 More info on this at :ref:`pruners:Pruners`.
 
 metropolis
 """""""""""
-When using just one scoring function, the *metropolis* pruner can be used which, as its name suggests,
+When using just one scoring function, the *metropolis* *pruner* can be used which, as its name suggests,
 uses the metropolis acceptance ratio to decide if the mutation is accepted or not.
 
 consensus
 """""""""""
-If many scoring functions are used, the *consensus* pruner checks how many of them improved their scores
+If many scoring functions are used, the *consensus* *pruner* checks how many of them improved their scores
 on the mutated complex with respect to the previous one, if enough of them indicate an in increase in affinity,
-then the new complex is accepted. Check this `reference`_ for more details.
+then the new complex is accepted. Check :ref:`pruners:locuaz.prunerconsensus module` for more info and
+this `reference`_ for more details.
 
 Summary
 --------

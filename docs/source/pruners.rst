@@ -1,6 +1,15 @@
 Pruners
 ====================
-This block is in charge of deciding which *Iterations* go through the next epoch, according to their scores.
+This block is in charge of deciding which *iterations* from the last 2 **epochs** go through
+onto the next **epoch**, according to their scores. It takes the top *iterations* from the previous
+**epoch** and the current iterations from the current **epoch** and decides which are the top *iterations*
+of the current **epoch**.
+
+.. figure:: ./resources/pruner.png
+        :alt: pruner
+        :scale: 100%
+
+        Figure 1: inputs and outputs of a *pruner*.
 
 locuaz.prunerconsensus module
 ------------------------------
@@ -48,7 +57,7 @@ for a next round of mutations.
 consensus run example
 ^^^^^^^^^^^^^^^^^^^^^^^
 In this example the user started with 1 complex and the options ``pruner: consensus``, ``consensus_threshold: 3``,
-``branches: 4`` and ``width: True``, among others. Figure 1 shows a Directed Acyclic Graph (DAG) of the current progress
+``branches: 4`` and ``width: True``, among others. Figure 2 shows a Directed Acyclic Graph (DAG) of the current progress
 for the optimization. It shows 3 epochs (the height of the DAG) and each node corresponds to a different *iteration*.
 Each *iteration* is connected with the one that preceded it and labeled with the performed mutation.
 
@@ -56,7 +65,7 @@ Each *iteration* is connected with the one that preceded it and labeled with the
         :alt: dag
         :scale: 75%
 
-        Figure 1: 3 **epochs** of a protocol using the *consensus* pruner.
+        Figure 2: 3 **epochs** of a protocol using the *consensus* pruner.
 
 On epoch 2, the protocol randomly chooses position 27 on the chain **B** to mutate and given that the user
 asked for 4 branches, 4 new complexes are generated. Then, after running and scoring the 4 new complexes

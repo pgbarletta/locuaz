@@ -9,7 +9,13 @@ of the current **epoch**.
         :alt: pruner
         :scale: 100%
 
-        Figure 1: inputs and outputs of a *pruner*.
+        Figure 1: inputs and outputs of a *pruner* at *epoch* **i**. The exact process by which the
+        *pruner* compares *iterations* to decide which ones improve the affinity and should be used
+        as a substrate for the next mutations depended on the chosen *pruner*.
+
+.. warning::
+    For the purposes of these docs, we'll be using **complex** and **iteration** as synonyms, though technically,
+    an *iteration* is comprised of a complex and other information, like its trajectory, its scores, etc...
 
 locuaz.prunerconsensus module
 ------------------------------
@@ -56,37 +62,43 @@ for a next round of mutations.
 
 consensus run example
 ^^^^^^^^^^^^^^^^^^^^^^^
-In this example the user started with 1 complex and the options ``pruner: consensus``, ``consensus_threshold: 3``,
-``branches: 4`` and ``width: True``, among others. Figure 2 shows a Directed Acyclic Graph (DAG) of the current progress
-for the optimization. It shows 3 epochs (the height of the DAG) and each node corresponds to a different *iteration*.
-Each *iteration* is connected with the one that preceded it and labeled with the performed mutation.
+Recapping the hypothetical example from :ref:`platformflow:Platform DAGs`, we are going to focus on *epoch*
+3 to see how the pruner decides that *iterations* **A3**, **B3** and **C3** should go through, but not **D3**.
 
-.. figure:: ./resources/consensus_example.png
+In this example the user selected the options ``pruner: consensus``, ``consensus_threshold: 3``,
+``branches: 2`` and ``constant_width: False``, among others. Check the tutorials and the
+:ref:`configurationfile:YAML configuration file` if you need a refresh on these options.
+Figure 2 focuses on this step.
+
+.. figure:: ./resources/consensus_pruner_1.png
         :alt: dag
-        :scale: 75%
+        :height: 220px
+        :width: 800 px
 
-        Figure 2: 3 **epochs** of a protocol using the *consensus* pruner.
+        Figure 2: at *epoch* 3, *epoch* 2 and 3 are considered. Since we're going back to *epoch* 3,
+        **A3**, **B3**, **C3** and **D3** show up in gray, as the *pruner* hasn't decided yet which ones
+        improve on the affinity and which ones don't. Average scores according to each of the scoring
+        functions (**S1**, **S2**, **S3** and **S4**) show up on the side.
 
-On epoch 2, the protocol randomly chooses position 27 on the chain **B** to mutate and given that the user
-asked for 4 branches, 4 new complexes are generated. Then, after running and scoring the 4 new complexes
-the *consensus pruner* gets as input a set of 5 *iterations*: **None** (the original complex),
-**B:G27P**, **B:G27E**, **B:G27R** and **B:G27I** (the recently generated complexes).
-It then compares the means of the scoring functions of each of the 4 generated complexes against the original
-complex and determines the following:
 
- * For **B:G27P**: only 1 scoring function improved with respect to the original.
- * For **B:G27E**: 2 scoring functions improved with respect to the original.
- * For **B:G27R**: 4 scoring functions improved with respect to the original.
- * For **B:G27I**: 3 scoring functions improved with respect to the original.
+After the MD is ran and the scoring is done, it's time for the *pruner*.
+The *consensus pruner* does the following: for each *iteration* on the current *epoch* being pruned,
+its average scores are compared against the scores of all the *top iterations* from the previous *epoch*.
+For example, Figure 3A shows the comparison of **A3** *iteration* against the 2 previous *top iterations*.
+Since on both cases it beats the previous *top iteration* in 3 out of 4 scoring functions, **A3** *iteration*
+will be the first *top iteration* of *epoch* 3. On the other hand, we can see that **C3** only improves on 1
+scoring function with respect to the previous *top iteration* **B2** and, hence, it can't move forward
+since the user selected a ``consensus_threshold`` fo 3.
 
-Since ``consensus_threshold`` was set to 3, only **B:G27R** and **B:G27I** are kept and mutated again on the
-next **epoch**. And since the user set ``branches`` to 4 and a constant width, these **iterations** will be
-mutated twice each, for the generation of the next **epoch**.
+.. figure:: ./resources/consensus_pruner_2.png
+        :alt: dag
+        :height: 400px
+        :width: 800 px
 
-Finally, on **epoch** 3, after the MD and the scoring of the generated complexes is done, the *pruner* will get
-6 **iterations**: **B:D29K**, **B:D29G**, **B:G29R**, **B:D29S** and the previous ones: **B:G27R** and **B:G27I**.
-For the new **iterations** to pass, they will have to beat both **B:G27R** and **B:G27I** and that means, again,
-improving the average score on, at least, 3 scoring functions.
+        Figure 3: each panel shows the comparisons between each of the *epoch* 3 *iterations* and the
+        *epoch* 2 *top iterations*. Average scores highlighted in green are the ones that are better
+        than their respective counterparts, while the red ones are worse. *Iteration* **C3** "looses"
+        when compared against **B2** and hence won't be moving forward.
 
 
 .. automodule:: locuaz.prunerconsensus

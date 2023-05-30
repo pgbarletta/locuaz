@@ -32,7 +32,7 @@ A *locuaz* project is made of these iterations, as can be seen on Figure 1.
         Each folder corresponds to an **iteration**. The one from **epoch 0** is highlighted.
         *iterations* are identified by the residues that are being optimized and the chainID they correspond to.
         *iterations* names are prepended by the *epoch* they belong to. So, the initial complex begins with
-        **0-** and then 3 sequences (all belonging to chainID **B**) are identfied by their 1-letter coded
+        **0-** and then 3 sequences (all belonging to chainID **B**) are identified by their 1-letter coded
         amino acids, these are the CDRs
 
 While Figure 1 shows how the a *locuaz* project is actually laid out, we don't think about *epochs*
@@ -78,7 +78,7 @@ potential solutions that are explored.
         Figure 3: same system as the one from Figure 1, but this time the user selected a constant
         width, so the number of branches is the number of *iterations* that are run at each *epoch*.
 
-Summray
+Summary
 --------
 *locuaz* works by extending this DAG. Its shape will be decided by the user configuration and the
 results of the optimization process. And while we skipped over several important details during

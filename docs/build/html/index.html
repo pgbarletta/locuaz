@@ -51,7 +51,8 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Learning</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="basicconcepts.html">Basic concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="platformflow.html">Platform flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="blocks.html">Blocks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorialsimple.html">Tutorial: running a simple optimization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorialtleap.html">Tutorial: using Tleap topologies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorialligand.html">Tutorial: optimizing an antibody against a ligand</a></li>
@@ -100,15 +101,17 @@
 <a class="reference external image-reference" href="https://locuaz.readthedocs.io/en/latest/?version=latest"><img alt="Documentation Status" src="https://readthedocs.org/projects/locuaz/badge/?version=latest" /></a>
 <a class="reference external image-reference" href="citing.html"><img alt="Cite LOCUAZ" src="https://img.shields.io/badge/cite-locuaz-red" /></a>
 <a class="reference external image-reference" href="citing.html"><img alt="License" src="https://img.shields.io/badge/license-MIT-yellow" /></a>
-<p><em>locuaz</em> is a high-performance software platform designed specifically for <em>in-silico</em> optimization of antibodies,
-antibody fragments like nanobodies, or any peptide binder towards other proteins and small ligands.</p>
-<p>Rather than being a single protocol, <em>locuaz</em> provides a robust foundation upon which multiple optimization protocols
+<p><em>locuaz</em> is a high-performance software platform designed specifically for <em>in-silico</em> optimization of
+antibodies, antibody fragments like nanobodies, or any peptide binder towards other proteins and
+small ligands.</p>
+<p>Rather than being a single protocol, <em>locuaz</em> provides a platform upon which multiple optimization protocols
 can be implemented, thus offering versatility and adaptability to diverse scientific needs.</p>
 <p><em>locuaz</em> initiates the optimization process by generating a variety of target-binder complexes through
-random mutations in the binder sequence. Following this, the complexes undergo minimization and equilibration
-before a NPT Molecular Dynamics (MD) simulation is ran. Target-binder interactions are then assessed by
-a set of scoring functions to then estimate if the mutations improved affinity. If so, the procedure is repeated
-with the new complexes, continuing the exploration of new binders.
+random mutations in the binder sequence. Following this, the complexes undergo parallel minimization and
+equilibration before a NPT Molecular Dynamics (MD) simulation is ran.
+Target-binder interactions on each frame are then simultaneously assessed by a set of scoring functions,
+utlizing available processors to then estimate if the mutations improved affinity. If so,
+the procedure is repeated with the new complexes, continuing the exploration of new binders.
 This workflow is outlined in Figure 1.</p>
 <p>With its tailored design for HPC environments and a flexible approach to various protocols, <em>locuaz</em>
 delivers efficient <em>in-silico</em> optimization.</p>
@@ -133,15 +136,20 @@ delivers efficient <em>in-silico</em> optimization.</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Learning</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="basicconcepts.html">Basic concepts</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="basicconcepts.html#introduction-and-blocks">Introduction and blocks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="basicconcepts.html#blocks">Blocks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="basicconcepts.html#mutation-generator">Mutation Generator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="basicconcepts.html#mutator">Mutator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="basicconcepts.html#molecular-dynamics-md">Molecular Dynamics (MD)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="basicconcepts.html#scoring-function">Scoring Function</a></li>
-<li class="toctree-l2"><a class="reference internal" href="basicconcepts.html#pruner">Pruner</a></li>
-<li class="toctree-l2"><a class="reference internal" href="basicconcepts.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="platformflow.html">Platform flow</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="platformflow.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="platformflow.html#platform-dags">Platform DAGs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="platformflow.html#summray">Summray</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="blocks.html">Blocks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="blocks.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="blocks.html#mutation-generator">Mutation Generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="blocks.html#mutator">Mutator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="blocks.html#molecular-dynamics-md">Molecular Dynamics (MD)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="blocks.html#scoring-function">Scoring Function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="blocks.html#pruner">Pruner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="blocks.html#summary">Summary</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tutorialsimple.html">Tutorial: running a simple optimization</a><ul>

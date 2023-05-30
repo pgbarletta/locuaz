@@ -1,9 +1,9 @@
 ==================
-Basic concepts
+Blocks
 ==================
 
-Introduction and blocks
-------------------------
+Introduction
+--------------
 
 *locuaz* has several moving parts and each of them has its role in the optimization process.
 The optimization procedure begins with the *Mutation Generator* generating a new random mutation
@@ -33,9 +33,6 @@ We will now make a review of each of the **blocks** depicted in Figure 1.
     Throughout this documentation, we will refer to the user configuration options as ``config``, and its
     various options as ``config["main"]["name"]``, ``config["scoring"]["functions"]``, etc...
 
-
-Blocks
---------
 
 *locuaz* has to coordinate between several external programs and be flexible enough to allow different
 protocols to be run, hence, some abstractions are needed. We will call these abstractions *blocks*.

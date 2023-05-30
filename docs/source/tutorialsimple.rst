@@ -109,7 +109,7 @@ Global options of the protocol run go here.
    to generate at least 1 *iteration* that improves the binding score is backed up (its folder is prefixed with ``bu_``)
    and is not included in the total number. So this will be the total number of successful epochs.
  * ``branches``: in principle, the number of iterations that will be created at each epoch. If we look at
-   the workflow from :ref:`basicconcepts:Introduction`, it would be the 'width'. This option depends on other
+   the workflow from :ref:`blocks:Introduction`, it would be the 'width'. This option depends on other
    option called ``constant_width``, see below for more info.
  * ``memory_size``: we want to prevent *locuaz* from mutating a position that was recently mutated, so we set this
    number to ``4``, this means that if position, say, ``128`` is mutated on epoch ``12``, then it won't be mutated again
@@ -135,15 +135,15 @@ generation
         generator: SPM4gmxmmpbsa
         probe_radius: 3
 
-Now we begin to deal with a *locuaz* concept, :ref:`basicconcepts:Blocks`. These are the moving parts of *locuaz*.
+Now we begin to deal with a *locuaz* concept, :ref:`blocks:Blocks`. These are the moving parts of *locuaz*.
 The first one is the mutation generator, the *block* that is in charge of taking the sequence of the current
 complex and generating a new sequence from it.
 
- * ``generator``: we are using the :ref:`basicconcepts:SPM4gmxmmpbsa` generator, so later we will have to include *gmxmmpbsa* as a
+ * ``generator``: we are using the :ref:`blocks:SPM4gmxmmpbsa` generator, so later we will have to include *gmxmmpbsa* as a
    scoring function, so this generator can read the energy decomposition file from *gmxmmpbsa* and choose the position
    with the lowest contribution to the affinity as the position to mutate.
  * ``probe_radius``: this parameter is only used when the generator includes interface information, which is the case
-   for SPM4gmxmmpbsa and others (eg: :ref:`basicconcepts:SPM4i`). The *generator* uses *freesasa* to determine the CDR residues
+   for SPM4gmxmmpbsa and others (eg: :ref:`blocks:SPM4i`). The *generator* uses *freesasa* to determine the CDR residues
    that form part of the interface and only considers those as potentials candidates for mutation. Since *freesasa* is
    a rolling-probe method, ``probe_radius`` allows the user to set the size of this probe. In this example we are using
    a radius of ``3``, a rather large probe, so more residues end up being classified as part of the interface.

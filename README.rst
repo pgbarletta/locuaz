@@ -19,7 +19,7 @@ Looping Uniquely Catered Amino Acid Sequences
 Install
 --------
 
-Create a conda environment from the :download:`usr_deps.yaml<../../usr_deps.yaml>`, which looks like this:
+Create a conda environment YAML file named, for example, ``usr_deps.yaml``:
 
 .. code-block:: console
 
@@ -30,6 +30,12 @@ Create a conda environment from the :download:`usr_deps.yaml<../../usr_deps.yaml
       - conda-forge::python>=3.9,<3.10
       - conda-forge::ambertools>=22.0.0
       - conda-forge::tensorflow
+
+by running:
+
+.. code-block:: console
+
+    mamba env create -f usr_deps.yaml
 
 Then, activate the environment and install the protocol through pip:
 

@@ -85,8 +85,8 @@ of the YAML config file. A more detailed explanation of the available options, c
 :ref:`configurationfile:YAML configuration file`. The materials for this tutorial are located in
 the ``examples/tleap_tutorial`` `folder`_:
 
-1. ``nb.pdb``: the PDB file of the pre-equilibrated complex. Remembar that since we are using *Tleap*,
-   residues should be numbered on a continuous progression.
+1. ``nb.pdb``: the PDB file of the pre-equilibrated complex. As usual, target chains go first, also,
+   remember that since we are using *Tleap* residues should be numbered on a continuous progression.
 2. ``tleap``: *Tleap* dir with the script to build the topology of the system each time a mutation is performed.
    This script will be identical to the one above, with the exception of the ``solvatebox`` line, since the
    solvent is already there. Another thing to notice is the usage of ``addions``. We keep this commands

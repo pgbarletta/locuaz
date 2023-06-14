@@ -2,6 +2,10 @@
 History
 =======
 
+0.3.9 (2023-06-)
+------------------
+ * Added ``locuaz`` as executable.
+
 0.3.8 (2023-05-)
 ------------------
  * *DLPacker* data files ``library.npz`` and ``charges.rtp`` are now included with the install. Only the weights have

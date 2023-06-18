@@ -26,17 +26,17 @@ def main() -> int:
         try:
             prev_id = work_pjct.epochs[-2].id
             prev_epoch = work_pjct.epochs[-2]
-            for iter_name, iteration in prev_epoch.items():
-                log.info(f"Scoring NPT run from iteration: {prev_id}-{iter_name}")
-                score(work_pjct, iteration)
+            for iter_name, branch in prev_epoch.items():
+                log.info(f"Scoring NPT run from branch: {prev_id}-{iter_name}")
+                score(work_pjct, branch)
         except (Exception,):
             log.info("Cannot score previous epoch.")
             pass
 
         curr_id = work_pjct.epochs[-1].id
-        for iter_name, iteration in work_pjct.epochs[-1].items():
-            log.info(f"Scoring NPT run from iteration: {curr_id}-{iter_name}")
-            score(work_pjct, iteration)
+        for iter_name, branch in work_pjct.epochs[-1].items():
+            log.info(f"Scoring NPT run from branch: {curr_id}-{iter_name}")
+            score(work_pjct, branch)
         return 0
 
     cnt = 0
@@ -47,9 +47,9 @@ def main() -> int:
         run_epoch(work_pjct)
 
         log.info(f"Scoring epoch {old_id} ({cnt} on this run).")
-        for iter_name, iteration in work_pjct.epochs[-1].items():
-            log.info(f"Scoring NPT run from iteration: {iter_name}")
-            score(work_pjct, iteration)
+        for iter_name, branch in work_pjct.epochs[-1].items():
+            log.info(f"Scoring NPT run from branch: {iter_name}")
+            score(work_pjct, branch)
 
         log.info(f"Pruning epoch {old_id}.")
         prune(work_pjct)

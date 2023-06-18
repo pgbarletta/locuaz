@@ -4,7 +4,7 @@ import concurrent.futures as cf
 import numpy as np
 from numpy.typing import NDArray
 
-from locuaz.projectutils import Iteration
+from locuaz.projectutils import Branch
 from locuaz.basestatistic import BaseStatistic
 from locuaz.interface import get_interface_surface
 
@@ -12,8 +12,8 @@ from locuaz.interface import get_interface_surface
 class StatisticInterface(BaseStatistic):
     TIMEOUT_PER_FRAME: int = 2
 
-    def __init__(self, iteration: Iteration, stats_config: dict) -> None:
-        super().__init__(iteration, stats_config)
+    def __init__(self, branch: Branch, stats_config: dict) -> None:
+        super().__init__(branch, stats_config)
 
     def __call__(self, start: int, end: int) -> NDArray[float]:
         # The first unused frames will be discarded later

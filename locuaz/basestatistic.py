@@ -6,7 +6,7 @@ from abc import abstractmethod
 import numpy as np
 from numpy.typing import NDArray
 
-from locuaz.projectutils import Iteration
+from locuaz.projectutils import Branch
 
 
 class BaseStatistic:
@@ -18,10 +18,10 @@ class BaseStatistic:
     visitor: Dict[str, Callable]
     stats_config: Dict[str, float]
 
-    def __init__(self, iteration: Iteration, stats_config: Dict) -> None:
-        self.frames_path = Path(iteration.score_dir)
-        self.trj_suffix = Path(iteration.complex.tra).suffix
-        self.name = iteration.complex.name
+    def __init__(self, branch: Branch, stats_config: Dict) -> None:
+        self.frames_path = Path(branch.score_dir)
+        self.trj_suffix = Path(branch.complex.tra).suffix
+        self.name = branch.complex.name
         self.nthreads = stats_config.get("nthreads", 1)
 
         self.visitor = {"warn_above": self.__warn_above__,

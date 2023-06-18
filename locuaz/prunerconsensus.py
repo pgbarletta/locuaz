@@ -3,13 +3,13 @@ from typing import Dict, Tuple
 import logging
 
 from locuaz.abstractpruner import AbstractPruner
-from locuaz.projectutils import Epoch, Iteration
+from locuaz.projectutils import Epoch, Branch
 
 
 class PrunerConsensus(AbstractPruner):
-    """PrunerConsensus select all iterations that satisfy the threshold of approved scoring functions
-    (SFs), that is, if according to a SF the new Iteration is better than all the previous ones, that
-    SF counts as 1 approved SF for the new Iteration.
+    """PrunerConsensus select all branches that satisfy the threshold of approved scoring functions
+    (SFs), that is, if according to a SF the new Branch is better than all the previous ones, that
+    SF counts as 1 approved SF for the new Branch.
     """
 
     def __init__(self, prev_epoch: Epoch, this_epoch: Epoch, log: logging.Logger):
@@ -29,8 +29,8 @@ class PrunerConsensus(AbstractPruner):
         Returns
         -------
         passing_iters: PriorityQueue
-            ordered queue with the iterations from the new epoch that are better than all the
-            iterations from the old epoch. It may be empty.
+            ordered queue with the branches from the new epoch that are better than all the
+            branches from the old epoch. It may be empty.
         """
         return self.__get_passing_iters__(config["pruning"]["consensus_threshold"])
 
@@ -40,35 +40,35 @@ class PrunerConsensus(AbstractPruner):
         Parameters
         ----------
         threshold : int
-            number of scoring functions that have to improve for an iteration to be
+            number of scoring functions that have to improve for an branch to be
             considered better than another one.
 
         Returns
         -------
         passing_iters: PriorityQueue
-            ordered queue with the iterations from the new epoch that are better than all the
-            iterations from the old epoch. It may be empty.
+            ordered queue with the branches from the new epoch that are better than all the
+            branches from the old epoch. It may be empty.
         """
         better_iters: PriorityQueue = PriorityQueue()
 
-        for iteration in self.this_epoch.values():
+        for branch in self.this_epoch.values():
             better_overall: bool = True
             rank_overall: int = 0
-            for prev_iter in self.prev_epoch.top_iterations.values():
-                better, rank = self.__beats_old_iter__(prev_iter, iteration, threshold)
+            for prev_iter in self.prev_epoch.top_branches.values():
+                better, rank = self.__beats_old_iter__(prev_iter, branch, threshold)
                 better_overall &= better
                 rank_overall += rank
             if better_overall:
-                better_iters.put((-rank_overall, iteration))
+                better_iters.put((-rank_overall, branch))
 
         return better_iters
 
-    def __beats_old_iter__(self, old_iter: Iteration, new_iter: Iteration, threshold: int) -> Tuple[bool, int]:
+    def __beats_old_iter__(self, old_iter: Branch, new_iter: Branch, threshold: int) -> Tuple[bool, int]:
         """
         Parameters
         ----------
-        old_iter: Iteration
-        new_iter : Iteration
+        old_iter: Branch
+        new_iter : Branch
         threshold : int
             number of scoring functions that have to improve for the new_iter to be
             considered better than the old_iter.
@@ -79,12 +79,12 @@ class PrunerConsensus(AbstractPruner):
             whether if it does beat the old iter and the number of improved SFs.
         """
         # Allow the user to change scoring functions mid-run and only use
-        # the subset present in both iterations.
+        # the subset present in both branches.
         old_SFs = set(old_iter.scores.keys())
         new_SFs = set(new_iter.scores.keys())
         scoring_functions = old_SFs & new_SFs
         if len(scoring_functions) == 0:
-            raise RuntimeError(f"No common scoring functions between the ones from the old iteration ({old_SFs}) "
+            raise RuntimeError(f"No common scoring functions between the ones from the old branch ({old_SFs}) "
                                f"and those from the new one ({new_SFs}). Cannot prune.")
         self.log.info(f"Scoring functions: {scoring_functions}")
         count = sum([old_iter.mean_scores[SF] >= new_iter.mean_scores[SF]

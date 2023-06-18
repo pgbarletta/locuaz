@@ -25,7 +25,7 @@ class AbstractPruner(ABC):
         Returns
         -------
         passing_iters: PriorityQueue
-            ordered queue with the iterations from the new epoch that are better than all the
-            iterations from the old epoch. It may be empty.
+            ordered queue with the branches from the new epoch that are better than all the
+            branches from the old epoch. It may be empty.
         """
         pass

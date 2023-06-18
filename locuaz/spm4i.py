@@ -4,7 +4,7 @@ from random import choice
 from collections import defaultdict
 from logging import Logger
 
-from locuaz.projectutils import Iteration, Epoch
+from locuaz.projectutils import Branch, Epoch
 from locuaz.mutation import Mutation
 from locuaz.interface import get_interfacing_residues
 from locuaz.spm4 import SPM4
@@ -37,22 +37,22 @@ class SPM4i(SPM4):
 
     def __generate_position__(self, epoch: Epoch, use_tleap: bool = False,
                               logger: Logger = None) -> Tuple[int, str, int, int]:
-        # Get an iteration to read the chainIDs and the resSeqs.
+        # Get an branch to read the chainIDs and the resSeqs.
         try:
-            any_iteration = next(iter(epoch.top_iterations.values()))
+            any_branch = next(iter(epoch.top_branches.values()))
         except Exception:
             raise RuntimeError(
-                f"No available iterations on Epoch {epoch.id}. "
+                f"No available branches on Epoch {epoch.id}. "
                 "It's likely that all of them failed during MD."
             )
 
         # Get the resSeq of all the residues in the interface and extend it
-        interface_resSeq = get_interfacing_residues(any_iteration.complex.pdb, any_iteration.chainIDs, self.probe_radius,
+        interface_resSeq = get_interfacing_residues(any_branch.complex.pdb, any_branch.chainIDs, self.probe_radius,
                                                     use_tleap)
 
         # Now, filter the mutating resSeqs to keep only the residues that lie on the interface.
         candidates_resSeq: List[int] = []
-        for cdr in any_iteration.resSeqs:
+        for cdr in any_branch.resSeqs:
             for resSeq in cdr:
                 if resSeq in interface_resSeq and resSeq not in self.excluded_pos:
                     candidates_resSeq.append(resSeq)
@@ -61,25 +61,25 @@ class SPM4i(SPM4):
 
         logger.info(f"Generating mutations with: {self}.\n"
                     f"resSeq at the interface: {interface_resSeq}.\n"
-                    f"'mutating_resSeq': {any_iteration.resSeqs}.\n"
+                    f"'mutating_resSeq': {any_branch.resSeqs}.\n"
                     f"excluded resSeq: {self.excluded_pos}.\n"
                     f"'mutating_resSeq' that may be mutated: {candidates_resSeq}.")
 
-        # Choose the position to mutate. This will be the same for all iterations.
+        # Choose the position to mutate. This will be the same for all branches.
         mut_resSeq = choice(candidates_resSeq)
         # Now, get the remaining details associated to `mut_resSeq`, including the chain from where it came from
-        for j, resSeqs in enumerate(any_iteration.resSeqs):
+        for j, resSeqs in enumerate(any_branch.resSeqs):
             if mut_resSeq in resSeqs:
                 mut_idx_chain = j
-                mut_chainID = any_iteration.chainIDs[mut_idx_chain]
+                mut_chainID = any_branch.chainIDs[mut_idx_chain]
                 mut_idx_residue = resSeqs.index(mut_resSeq)
                 return mut_idx_chain, mut_chainID, mut_idx_residue, mut_resSeq
 
     def __pop_random_aa__(self) -> str:
         return super().__pop_random_aa__()
 
-    def __get_random_aa__(self, iteration: Iteration, idx_chain: int, idx_residue: int) -> Tuple[str, str]:
-        return super().__get_random_aa__(iteration, idx_chain, idx_residue)
+    def __get_random_aa__(self, branch: Branch, idx_chain: int, idx_residue: int) -> Tuple[str, str]:
+        return super().__get_random_aa__(branch, idx_chain, idx_residue)
 
     def __fill_mutations__(self, epoch: Epoch, branches: int, mut_idx_chain: int, mut_chainID: str,
                            mut_idx_residue: int, mut_resSeq: int):
@@ -91,7 +91,7 @@ class SPM4i(SPM4):
     def __iter__(self) -> Iterator:
         return super().__iter__()
 
-    def __contains__(self, value: Iteration) -> bool:
+    def __contains__(self, value: Branch) -> bool:
         return super().__contains__(value)
 
     def __len__(self) -> int:

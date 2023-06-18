@@ -68,7 +68,7 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
         assert root_dir.is_dir(), f"Invalid input work dir: {config['paths']['work']}"
         assert (
                 mode == "evolve"
-        ), "`--mode` is not set to 'evolve', a `work` folder with valid iterations is needed."
+        ), "`--mode` is not set to 'evolve', a `work` folder with valid branches is needed."
 
         start = True
 
@@ -87,7 +87,7 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
                                               f"different lengths: {len(resnames)} and {len(resSeqs)}, respectively."
 
     # Check 'branches' and 'generator'
-    if ("SPM4" in config["generation"]["generator"]) and (config["protocol"]["branches"] > 19):
+    if ("SPM4" in config["generation"]["generator"]) and (config["protocol"]["new_branches"] > 19):
         raise UserInputError(f"SPM4 mutation generators cannot generate more than 19 branches")
 
     check_gmxmmpbsa(config)
@@ -104,38 +104,38 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
     return config, start
 
 
-def backup_iteration(it_fn: Union[str, Path]) -> None:
+def backup_branch(it_fn: Union[str, Path]) -> None:
     it_path = Path(it_fn)
     new_path = Path(it_path.parent, "bu_" + it_path.name)
     warn(f"Found incomplete epoch. Will backup {it_path} to {new_path}")
     sh.move(it_path, new_path)
 
 
-def append_iterations(
-        sorted_iters: PriorityQueue, iterations: List, prev_epoch: int
+def append_branches(
+        sorted_iters: PriorityQueue, branches: List, prev_epoch: int
 ) -> str:
     if sorted_iters.empty():
         return ""
 
     epoch_nbr, iter_path = sorted_iters.get()
     if prev_epoch == 1 or epoch_nbr == prev_epoch:
-        iterations.append(str(iter_path))
+        branches.append(str(iter_path))
     else:
         sorted_iters.put((epoch_nbr, iter_path))
         return str(iter_path)
 
-    return append_iterations(sorted_iters, iterations, epoch_nbr)
+    return append_branches(sorted_iters, branches, epoch_nbr)
 
 
 def get_valid_iter_dirs(files_and_dirs: List[str], config: Dict) -> List[Path]:
-    """get_valid_iter_dirs(): filters out paths in input and returns valid iteration paths
+    """get_valid_iter_dirs(): filters out paths in input and returns valid branch paths
 
     Args:
         files_and_dirs (List[str]): list of files and/or dirs
         config (dict): input config.
 
     Returns:
-        List[Path]: list of valid iteration paths
+        List[Path]: list of valid branch paths
     """
 
     def is_incomplete(it_path: Path, name: str) -> bool:
@@ -154,7 +154,7 @@ def get_valid_iter_dirs(files_and_dirs: List[str], config: Dict) -> List[Path]:
                 continue
             if nbr.isnumeric():
                 assert int(nbr) <= config["protocol"]["epochs"], (
-                    f"Max of {config['protocol']['epochs']} epochs solicited, but found iteration "
+                    f"Max of {config['protocol']['epochs']} epochs solicited, but found branch "
                     f"{nbr}-{'-'.join(iter_name)} . Aborting."
                 )
                 iters_per_epoch[nbr] += 1
@@ -166,39 +166,39 @@ def get_valid_iter_dirs(files_and_dirs: List[str], config: Dict) -> List[Path]:
     for iter_path in iter_dirs:
         nbr, *_ = iter_path.name.split("-")
         if nbr in incomplete_epochs:
-            backup_iteration(iter_path)
+            backup_branch(iter_path)
         else:
             valid_iters.append(iter_path)
 
-    assert len(valid_iters) > 0, "No valid iterations in input."
+    assert len(valid_iters) > 0, "No valid branches in input."
 
     return valid_iters
 
 
-def is_not_epoch_0(iterations: Union[List[str], List[Path]], starting_epoch: int):
-    for it_fn in iterations:
+def is_not_epoch_0(branches: Union[List[str], List[Path]], starting_epoch: int):
+    for it_fn in branches:
         it_path = Path(it_fn)
         if int(it_path.name.split("-")[0]) == starting_epoch:
             return False
     return True
 
 
-def lacks_branches(current_iterations: Union[List[str], List[Path]],
-                   top_iterations: Union[List[str], List[Path]], config: Dict[str, Any]) -> bool:
+def lacks_branches(current_branches: Union[List[str], List[Path]],
+                   top_branches: Union[List[str], List[Path]], config: Dict[str, Any]) -> bool:
     if config["protocol"]["prevent_fewer_branches"]:
         if config["protocol"]["constant_width"]:
-            branches = config["protocol"]["branches"]
+            branches = config["protocol"]["new_branches"]
         else:
-            n_top_iters = 1 if len(top_iterations) == 0 else len(top_iterations)
-            branches = config["protocol"]["branches"] * n_top_iters
-        nbr_branches = len(current_iterations)
+            n_top_iters = 1 if len(top_branches) == 0 else len(top_branches)
+            branches = config["protocol"]["new_branches"] * n_top_iters
+        nbr_branches = len(current_branches)
         starting_epoch = config["main"]["starting_epoch"]
 
         # Check that the epoch wasn't cut short during its initialization.
         # This may happen if last run was cut during initialize_new_epoch().
-        if nbr_branches < branches and is_not_epoch_0(current_iterations, starting_epoch):
-            for it_fn in current_iterations:
-                backup_iteration(it_fn)
+        if nbr_branches < branches and is_not_epoch_0(current_branches, starting_epoch):
+            for it_fn in current_branches:
+                backup_branch(it_fn)
             return True
     return False
 
@@ -221,17 +221,17 @@ def get_tracking_files(config: Dict) -> bool:
         warn("Could not read tracking file.")
         return False
     try:
-        previous_iterations = get_valid_iter_dirs(tracking["previous_iterations"], config)
-        current_iterations = get_valid_iter_dirs(tracking["current_iterations"], config)
-        top_iterations = get_valid_iter_dirs(tracking["top_iterations"], config)
+        previous_branches = get_valid_iter_dirs(tracking["previous_branches"], config)
+        current_branches = get_valid_iter_dirs(tracking["current_branches"], config)
+        top_branches = get_valid_iter_dirs(tracking["top_branches"], config)
 
-        if lacks_branches(current_iterations, top_iterations, config):
-            warn("Will ignore the tracking file. The current iterations field is invalid.")
+        if lacks_branches(current_branches, top_branches, config):
+            warn("Will ignore the tracking file. The current branches field is invalid.")
             return False
 
-        config["paths"]["previous_iterations"] = previous_iterations
-        config["paths"]["current_iterations"] = current_iterations
-        config["paths"]["top_iterations"] = top_iterations
+        config["paths"]["previous_branches"] = previous_branches
+        config["paths"]["current_branches"] = current_branches
+        config["paths"]["top_branches"] = top_branches
         config["misc"]["epoch_mutated_positions"] = set(tracking["epoch_mutated_positions"])
 
         if "memory_positions" in config["protocol"]:
@@ -257,15 +257,15 @@ def get_tracking_files(config: Dict) -> bool:
 
     return True
 
-def set_iterations(config: Dict) -> Dict:
-    """set_iterations Set config["paths"]["current_iterations"],
-    config["paths"]["previous_iterations"] and possibly config["paths"]["top_iterations"].
+def set_branches(config: Dict) -> Dict:
+    """set_branches Set config["paths"]["current_branches"],
+    config["paths"]["previous_branches"] and possibly config["paths"]["top_branches"].
 
     Args:
         config (Dict): dictionary with input config
 
     Raises:
-        ValueError: when there are no valid iteration dirs.
+        ValueError: when there are no valid branch dirs.
     """
     files_and_dirs = glob.glob(str(Path(config["paths"]["work"], "*")))
     valid_iters = get_valid_iter_dirs(files_and_dirs, config)
@@ -274,20 +274,20 @@ def set_iterations(config: Dict) -> Dict:
     for iter_path in valid_iters:
         nbr, *_ = iter_path.name.split("-")
         iters.put((-int(nbr), iter_path))
-    # Iterations are sorted by epoch number now
+    # Branchs are sorted by epoch number now
     while not iters.empty():
-        config["paths"]["current_iterations"] = []
-        iter_str = append_iterations(iters, config["paths"]["current_iterations"], 1)
+        config["paths"]["current_branches"] = []
+        iter_str = append_branches(iters, config["paths"]["current_branches"], 1)
 
-        if lacks_branches(config["paths"]["current_iterations"], [], config):
+        if lacks_branches(config["paths"]["current_branches"], [], config):
             # Start over, this time, the incomplete epoch will not be in `iters`.
             continue
 
         if iter_str != "":
-            config["paths"]["previous_iterations"] = []
-            append_iterations(iters, config["paths"]["previous_iterations"], 1)
+            config["paths"]["previous_branches"] = []
+            append_branches(iters, config["paths"]["previous_branches"], 1)
         return config
-    raise ValueError("No valid iterations in work_dir. Aborting.")
+    raise ValueError("No valid branches in work_dir. Aborting.")
 
 
 def check_gmxmmpbsa(config: Dict) -> None:
@@ -328,9 +328,9 @@ def set_statistics(config: Dict) -> None:
 
 
 def get_memory(config: Dict) -> Tuple[Set, List[List]]:
-    """get_memory() compares character by character of the iteration folders resnames to
+    """get_memory() compares character by character of the branch folders resnames to
     find differences among them that would correspond to previously done mutations.
-    Small issue in this function: when an epoch was generated from more than 1 top iteration,
+    Small issue in this function: when an epoch was generated from more than 1 top branch,
     the mutations performed on that epoch will be memorized and also the ones that were actually
     performed on a previous epoch and were already present, since it will find differences among them.
 
@@ -347,11 +347,11 @@ def get_memory(config: Dict) -> Tuple[Set, List[List]]:
         config (Dict): input config options from the user.
 
     Returns:
-        List[List[int]]: resSeqs where different AAs where found. It may be empty, when the iteration folders
+        List[List[int]]: resSeqs where different AAs where found. It may be empty, when the branch folders
         being proved don't have the same number of chains and the same length of residues being mutated.
     """
 
-    # Get all the iterations sorted by epoch
+    # Get all the branches sorted by epoch
     iters: PriorityQueue = PriorityQueue()
     for filename in glob.glob(str(Path(config["paths"]["work"], "*"))):
         iter_path = Path(filename)
@@ -360,7 +360,7 @@ def get_memory(config: Dict) -> Tuple[Set, List[List]]:
             try:
                 iters.put((-int(nbr), iter_path))
             except ValueError:
-                # not valid iteration folder
+                # not valid branch folder
                 continue
 
     input_n_chains = len(config["binder"]["mutating_chainID"])
@@ -369,8 +369,8 @@ def get_memory(config: Dict) -> Tuple[Set, List[List]]:
     # Memorize `config["protocol"]["memory_size"]` epochs.
     for _ in range(config["protocol"]["memory_size"]):
         epoch_iters_paths: List[str] = []
-        # Get all the paths for the iterations of the current epoch
-        append_iterations(iters, epoch_iters_paths, 1)
+        # Get all the paths for the branches of the current epoch
+        append_branches(iters, epoch_iters_paths, 1)
 
         # Reformat the paths
         epoch_iternames = [
@@ -462,10 +462,10 @@ def main() -> Tuple[Dict, bool]:
             print("Read tracking file from work dir.", flush=True)
         else:
             print(
-                "Will try to get the previous iterations, the current iterations and the memory of the "
+                "Will try to get the previous branches, the current branches and the memory of the "
                 "last mutated positions from the work dir. Memory of failed mutations won't be loaded.",
                 flush=True)
-            config = set_iterations(config)
+            config = set_branches(config)
             config = set_empty_dags(config)
             # Set up the memory
             requested_memory = "memory_size" in config["protocol"]

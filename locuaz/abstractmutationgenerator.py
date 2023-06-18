@@ -3,7 +3,7 @@ from typing import Set, Iterator
 from collections.abc import Mapping
 from logging import Logger
 
-from locuaz.projectutils import Iteration, Epoch
+from locuaz.projectutils import Branch, Epoch
 from locuaz.mutation import Mutation
 
 
@@ -23,7 +23,7 @@ class AbstractMutationGenerator(ABC, Mapping):
         pass
 
     @abstractmethod
-    def __getitem__(self, key: Iteration) -> Mutation:
+    def __getitem__(self, key: Branch) -> Mutation:
         pass
 
     @abstractmethod
@@ -31,5 +31,5 @@ class AbstractMutationGenerator(ABC, Mapping):
         pass
 
     @abstractmethod
-    def __contains__(self, value: Iteration) -> bool:
+    def __contains__(self, value: Branch) -> bool:
         pass

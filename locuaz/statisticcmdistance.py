@@ -5,7 +5,7 @@ from numpy.typing import NDArray
 import MDAnalysis as mda
 from MDAnalysis.analysis.distances import distance_array
 
-from locuaz.projectutils import Iteration
+from locuaz.projectutils import Branch
 from locuaz.molecules import XtcTrajectory, PDBStructure
 from locuaz.basestatistic import BaseStatistic
 
@@ -14,8 +14,8 @@ class StatisticCMDistance(BaseStatistic):
     pdb_top: PDBStructure
     trj: XtcTrajectory
 
-    def __init__(self, iteration: Iteration, stats_config: Dict) -> None:
-        super().__init__(iteration, stats_config)
+    def __init__(self, branch: Branch, stats_config: Dict) -> None:
+        super().__init__(branch, stats_config)
         self.pdb_top = XtcTrajectory.from_path(self.frames_path / f"fix_{self.name}.pdb")
         self.trj = XtcTrajectory.from_path(self.frames_path / f"fix_{self.name}{self.trj_suffix}")
 

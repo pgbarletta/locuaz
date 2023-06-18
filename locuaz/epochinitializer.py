@@ -12,7 +12,7 @@ from locuaz.molecules import PDBStructure
 from locuaz.mutationgenerators import mutation_generators
 from locuaz.basemutator import memorize_mutations
 from locuaz.mutators import mutators
-from locuaz.projectutils import WorkProject, Epoch, Iteration
+from locuaz.projectutils import WorkProject, Epoch, Branch
 
 
 def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
@@ -25,7 +25,7 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
     name = work_pjct.config["main"]["name"]
     old_epoch = work_pjct.epochs[-1]
     epoch_id = old_epoch.id + 1
-    current_epoch = Epoch(epoch_id, iterations={}, nvt_done=False, npt_done=False)
+    current_epoch = Epoch(epoch_id, branches={}, nvt_done=False, npt_done=False)
 
     # Create required mutator
     mutator = mutators[work_pjct.config["mutation"]["mutator"]](
@@ -36,9 +36,9 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
     successful_mutations = 0
 
     if work_pjct.config["protocol"]["constant_width"]:
-        branches = work_pjct.config["protocol"]["branches"]
+        branches = work_pjct.config["protocol"]["new_branches"]
     else:
-        branches = work_pjct.config["protocol"]["branches"] * len(old_epoch.top_iterations)
+        branches = work_pjct.config["protocol"]["new_branches"] * len(old_epoch.top_branches)
 
     # Usually, this `while` would only be executed once, unless the Mutator program fails to perform a mutation.
     while successful_mutations < branches:
@@ -52,7 +52,7 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
             probe_radius=work_pjct.config["generation"]["probe_radius"])
 
         for old_iter_name, mutations in mutation_generator.items():
-            old_iter = old_epoch.top_iterations[old_iter_name]
+            old_iter = old_epoch.top_branches[old_iter_name]
 
             if work_pjct.config["md"]["use_tleap"]:
                 # GROMACS renumbers resSeqs to strided numbering. If using Amber's continuous
@@ -70,7 +70,7 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
                 iter_name, iter_resnames = old_iter.generate_name_resname(mutation)
                 iter_path = Path(work_pjct.dir_handle, f"{epoch_id}-{iter_name}")
 
-                this_iter = Iteration(
+                this_iter = Branch(
                     DirHandle(iter_path, make=True),
                     iter_name=iter_name,
                     chainIDs=old_iter.chainIDs,
@@ -81,7 +81,7 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
 
                 init_wt = Path(iter_path, "init_wt.pdb")
                 sh.copy(old_pdb, init_wt)
-                log.info(f"New mutation: {mutation} on Epoch-Iteration: {epoch_id}-{iter_name}")
+                log.info(f"New mutation: {mutation} on Epoch-Branch: {epoch_id}-{iter_name}")
 
                 # Mutate the PDB
                 with warnings.catch_warnings():

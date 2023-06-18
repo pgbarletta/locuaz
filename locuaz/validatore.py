@@ -20,9 +20,9 @@ class Validatore(Validator):
             if len(set_fields.intersection(constraints)) == 0:
                 self._error(field, f"Must contain any of: {constraints}")
 
-            if ("current_iterations" in set_fields) and ("previous_iterations" not in set_fields):
-                warn("Warning: `current_iterations` is set, but `previous_iterations` isn't. "
-                    "Won't be able to prune the current iterations. Make sure there are enough branches.")
+            if ("current_branches" in set_fields) and ("previous_branches" not in set_fields):
+                warn("Warning: `current_branches` is set, but `previous_branches` isn't. "
+                    "Won't be able to prune the current branches. Make sure there are enough branches.")
 
     def _validate_step_bigger_than(self, other, field, value):
         """_validate_step_bigger_than
@@ -179,8 +179,8 @@ class Validatore(Validator):
             if not Path(value).is_dir():
                 self._error(field, "should be an existing directory.")
 
-    def _validate_is_iteration_dir(self, flag, field, value):
-        """_validate_is_iteration_dir
+    def _validate_is_branch_dir(self, flag, field, value):
+        """_validate_is_branch_dir
 
         The rule's arguments are validated against this schema:
         {'type': 'boolean'}
@@ -189,44 +189,44 @@ class Validatore(Validator):
             try:
                 nbr, *chains_resnames = Path(value).name.split("-")
             except ValueError:
-                self._error(field, f"{value} is not a valid iteration folder.")
+                self._error(field, f"{value} is not a valid branch folder.")
                 return
 
             if not nbr.isnumeric():
                 self._error(
                     field,
-                    f"{value} is not a valid iteration folder. {nbr} is not a "
+                    f"{value} is not a valid branch folder. {nbr} is not a "
                     "valid epoch number.",
                 )
             for chain_resname in chains_resnames:
                 try:
                     chainID, resname = chain_resname.split("_")
                 except ValueError:
-                    self._error(field, f"{value} is not a valid iteration folder.")
+                    self._error(field, f"{value} is not a valid branch folder.")
                     return
 
                 if not len(chainID) == 1:
                     self._error(
                         field,
-                        f"{value} is not a valid iteration folder. {chainID} "
+                        f"{value} is not a valid branch folder. {chainID} "
                         "is not a valid chainID.",
                     )
                 if not resname.isalpha() or not resname.isupper():
                     self._error(
                         field,
-                        f"{value} is not a valid iteration folder. {resname} "
+                        f"{value} is not a valid branch folder. {resname} "
                         "is not a valid resname sequence.",
                     )
 
-    def _validate_contains_iteration_dirs(self, flag, field, value):
-        """_validate_contains_iteration_dirs
+    def _validate_contains_branch_dirs(self, flag, field, value):
+        """_validate_contains_branch_dirs
 
         The rule's arguments are validated against this schema:
         {'type': 'boolean'}
         """
         for filename in glob.glob(str(Path(value, "*"))):
             if Path(filename).is_dir():
-                self._validate_is_iteration_dir(flag, field, filename)
+                self._validate_is_branch_dir(flag, field, filename)
 
     def _validate_warn_overrides(self, other, field, value):
         """_validate_warn_overrides

@@ -1,7 +1,7 @@
 import logging
 from typing import Dict, Optional, Type
 
-from locuaz.projectutils import Iteration
+from locuaz.projectutils import Branch
 from locuaz.basestatistic import BaseStatistic
 from locuaz.statisticcmdistance import StatisticCMDistance
 from locuaz.statisticinterface import StatisticInterface
@@ -12,15 +12,15 @@ all_stats: Dict[str, Type[BaseStatistic]] = {
 }
 
 
-def run_stats(iteration: Iteration, config: dict, start: int, end: int,
+def run_stats(branch: Branch, config: dict, start: int, end: int,
               log: Optional[logging.Logger] = None) -> None:
     if config["statistics"]["get_statistics"]:
         for stat, stat_opts in config["statistics"].items():
             if stat == "get_statistics":
                 continue
             log.info(f"Getting stat '{stat}' from the trajectory. ", extra={'end': ''})
-            run_stat = all_stats[stat](iteration, stat_opts)
+            run_stat = all_stats[stat](branch, stat_opts)
             stat_result = run_stat(start, end)
-            iteration.set_stat(stat, stat_result, log)
+            branch.set_stat(stat, stat_result, log)
 
-        iteration.write_down_stats()
+        branch.write_down_stats()

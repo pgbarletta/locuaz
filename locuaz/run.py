@@ -35,7 +35,7 @@ def run_min_nvt_epoch(work_pjct: WorkProject) -> None:
             gpu_id[iter_name] = idx % ngpus
             pinoffset[iter_name] = pinoffsets[idx % ngpus]
             
-            log.info(f"Queuing MIN of the iteration {iter_name} to GPU {gpu_id[iter_name]} "
+            log.info(f"Queuing MIN of the branch {iter_name} to GPU {gpu_id[iter_name]} "
             f"and pinoffset: {pinoffset[iter_name]}.")
 
             min = MDrun.min(iter.dir_handle, work_pjct=work_pjct, gpu_id = gpu_id[iter_name],
@@ -50,7 +50,7 @@ def run_min_nvt_epoch(work_pjct: WorkProject) -> None:
             iter_name = '-'.join(min_complex.dir.dir_path.name.split('-')[1:])
             iter = epoch[iter_name]
             
-            log.info(f"Queuing NVT of the iteration {iter_name} to GPU {gpu_id[iter_name]} "
+            log.info(f"Queuing NVT of the branch {iter_name} to GPU {gpu_id[iter_name]} "
             f"and pinoffset: {pinoffset[iter_name]}.")
 
             nvt = MDrun.nvt(
@@ -84,7 +84,7 @@ def run_npt_epoch(work_pjct: WorkProject) -> None:
             gpu_nbr = idx % ngpus
             gpu_id[iter_name] = idx % ngpus
             pinoffset[iter_name] = pinoffsets[idx % ngpus]
-            log.info(f"Queuing NPT of the iteration {iter_name} to GPU {gpu_nbr} "
+            log.info(f"Queuing NPT of the branch {iter_name} to GPU {gpu_nbr} "
             f"and pinoffset: {pinoffset[iter_name]}.")
             
             npt = MDrun.npt(
@@ -97,7 +97,7 @@ def run_npt_epoch(work_pjct: WorkProject) -> None:
         for futu_npt in cf.as_completed(futuros_npt):
             iter_name = futuros_npt[futu_npt]
             if futu_npt.exception():
-                log.error(f"Exception while running NPT from iteration: {iter_name}\n"
+                log.error(f"Exception while running NPT from branch: {iter_name}\n"
                     f"{futu_npt.exception()}")
                 del epoch[iter_name]
                 continue

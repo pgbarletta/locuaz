@@ -142,15 +142,16 @@ class MDrun:
         run_edr = Path(self.dir) / (self.out_name + ".edr")
         run_log = Path(self.dir) / (self.out_name + ".log")
         run_cpt = Path(self.dir) / (self.out_name + ".cpt")
-        run_pux = Path(self.dir) / (f"pullx_{self.out_name}.xvg")
-        run_puf = Path(self.dir) / (f"pullf_{self.out_name}.xvg")
+        run_pux = Path(self.dir) / f"pullx_{self.out_name}.xvg"
+        run_puf = Path(self.dir) / f"pullf_{self.out_name}.xvg"
 
         comando_md = f'{self.binary_path} -nobackup -nocopyright'
         comando_md += f' -s {run_tpr} -c {run_gro}'
         comando_md += f' -cpi {run_cpt}' if run_cpt.is_file() else ""
-        comando_md += f' -px {run_pux} -pf {run_puf}'
+        comando_md += f' -px {run_pux} -pf {run_puf} -e {run_edr}'
         comando_md += f' -o {run_trr} -x {run_xtc} -g {run_log} -cpo {run_cpt}'
-        comando_md += f' {self.dev} -gpu_id {self.gpu_id} -ntmpi {self.num_threads_mpi} -ntomp {self.num_threads_omp}'
+        comando_md += f' {self.dev} -gpu_id {self.gpu_id}'
+        comando_md += f' -ntmpi {self.num_threads_mpi} -ntomp {self.num_threads_omp}'
 
         try:
             p = sp.run(
@@ -221,7 +222,7 @@ class MDrun:
         f"should be in zip format. Current topology: {complex.top}."
 
     def assert_outfile(self, out_file: Union[str, Path, FileHandle], *, stdout: str, stderr: str,
-                           command: str) -> Path:
+                       command: str) -> Path:
         out_file_path = Path(out_file)
         assert out_file_path.is_file(), f"""{self} error. Can't parse: {out_file_path}
 from:

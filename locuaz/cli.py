@@ -176,9 +176,8 @@ def get_valid_branch_dirs(files_and_dirs: List[str], config: Dict) -> List[str]:
 
 
 def is_not_epoch_0(branches: Union[List[str], List[Path]], starting_epoch: int):
-    for it_fn in branches:
-        it_path = Path(it_fn)
-        if int(it_path.name.split("-")[0]) == starting_epoch:
+    for branch_name in branches:
+        if int(branch_name.split("-")[0]) == starting_epoch:
             return False
     return True
 
@@ -197,8 +196,8 @@ def lacks_branches(current_branches: Union[List[str], List[Path]],
         # Check that the epoch wasn't cut short during its initialization.
         # This may happen if last run was cut during initialize_new_epoch().
         if nbr_branches < branches and is_not_epoch_0(current_branches, starting_epoch):
-            for it_fn in current_branches:
-                backup_branch(it_fn)
+            for branch_fn in current_branches:
+                backup_branch(Path(config["paths"]["work"], branch_fn))
             return True
     return False
 

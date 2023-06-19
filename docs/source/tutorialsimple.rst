@@ -106,9 +106,9 @@ protocol
 Global options of the protocol run go here.
 
  * ``epochs``: the number of *epochs* we want to run. Remember that a failed *epoch*, that is, an *epoch* that fails
-   to generate at least 1 *iteration* that improves the binding score is backed up (its folder is prefixed with ``bu_``)
+   to generate at least 1 *branch* that improves the binding score is backed up (its folder is prefixed with ``bu_``)
    and is not included in the total number. So this will be the total number of successful epochs.
- * ``branches``: in principle, the number of iterations that will be created at each epoch. If we look at
+ * ``branches``: in principle, the number of branches that will be created at each epoch. If we look at
    the workflow from :ref:`blocks:Introduction`, it would be the 'width'. This option depends on other
    option called ``constant_width``, see below for more info.
  * ``memory_size``: we want to prevent *locuaz* from mutating a position that was recently mutated, so we set this
@@ -119,13 +119,13 @@ Global options of the protocol run go here.
    same time we don't want to increase the ``memory_size`` too much, which would eliminate a lot of randomness from out
    run. We will set it to ``8``.
 
-``constant_width`` is defaulted to ``True``, this means that each *epoch* will have 4 *iterations* so if,
+``constant_width`` is defaulted to ``True``, this means that each *epoch* will have 4 *branches* so if,
 for example, 1 *complex* moves on to the next *epoch*, then 4 mutations will be performed on this complex
 but if it were 3 complexes then 2 of them would be mutated just once, and only one of them (chosen randomly),
-will be mutated twice; thus giving 4 new *iterations*.
+will be mutated twice; thus giving 4 new *branches*.
 If ``constant_width`` was ``False``, then ``branches`` is the number of mutations performed on each complex from the
 previous step. So if 2 complexes move on to the next epoch and ``branches=4``, then the next *epoch* will run 8
-iterations, since 4 new complexes were obtained from each surviving complex.
+branches, since 4 new complexes were obtained from each surviving complex.
 
 generation
 ^^^^^^^^^^^
@@ -190,10 +190,10 @@ pruning
         pruner: consensus
         threshold: 2
 
-In this *block*, you can set how the top *iterations* from an *epoch* will be selected to pass onto the next one.
+In this *block*, you can set how the top *branches* from an *epoch* will be selected to pass onto the next one.
 
  * ``pruner``: the *consensus* pruner is the default one.
- * ``threshold``: the minimum number of scoring functions that have to improve for an *iteration*
+ * ``threshold``: the minimum number of scoring functions that have to improve for a *branch*
    to be considered better than its parents. Check :ref:`pruners:Pruners` for more info.
 
 
@@ -229,7 +229,7 @@ Options related to the molecular dynamics run go in here.
  * ``force_field``: force field used to build the topology of the system.
  * ``box_type``: *locuaz* actually doesn't change the box (no calls to *editconf*), but it if this option
    is set to *triclinic*, it will check that the system doesn't go out of the box after the MD run. If it
-   does, the *iteration* will be discarded by assigning **+inf** values to each score value.
+   does, the *branch* will be discarded by assigning **+inf** values to each score value.
 
 target
 ^^^^^^^^
@@ -300,6 +300,6 @@ by firstly activating the environment, if you haven't already.
 
 
 Now the protocol will create the working directory folder. In this folder, the progress of the protocol
-will be written on the nb.log file and folders corresponding to each epochs and iterations will be
+will be written on the nb.log file and folders corresponding to each epochs and branches will be
 created in this directory.
 

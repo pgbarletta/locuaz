@@ -142,7 +142,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="misc.html#locuaz.molecules.AmberTopology">AmberTopology (class in locuaz.molecules)</a>
 </li>
-      <li><a href="misc.html#locuaz.cli.append_iterations">append_iterations() (in module locuaz.cli)</a>
+      <li><a href="misc.html#locuaz.cli.append_branches">append_branches() (in module locuaz.cli)</a>
 </li>
       <li><a href="mutators.html#locuaz.basemutator.BaseMutator.assert_outfile">assert_outfile() (locuaz.basemutator.BaseMutator method)</a>
 
@@ -166,7 +166,7 @@
 </li>
       <li><a href="misc.html#locuaz.projectutils.Epoch.backup">backup() (locuaz.projectutils.Epoch method)</a>
 </li>
-      <li><a href="misc.html#locuaz.cli.backup_iteration">backup_iteration() (in module locuaz.cli)</a>
+      <li><a href="misc.html#locuaz.cli.backup_branch">backup_branch() (in module locuaz.cli)</a>
 </li>
       <li><a href="mutators.html#locuaz.basemutator.BaseMutator">BaseMutator (class in locuaz.basemutator)</a>
 </li>
@@ -196,6 +196,12 @@
         <li><a href="scoringfunctions.html#locuaz.bluuesbmf.BluuesBmf.bmf_bin_path">(locuaz.bluuesbmf.BluuesBmf attribute)</a>
 </li>
       </ul></li>
+      <li><a href="misc.html#locuaz.projectutils.Branch">Branch (class in locuaz.projectutils)</a>
+</li>
+      <li><a href="misc.html#locuaz.projectutils.WorkProject.branch_from_str">branch_from_str() (locuaz.projectutils.WorkProject method)</a>
+</li>
+      <li><a href="misc.html#locuaz.projectutils.Epoch.branches">branches (locuaz.projectutils.Epoch attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -216,7 +222,7 @@
 </li>
       <li><a href="mutators.html#locuaz.mutation.Mutation.chainID_idx">chainID_idx (locuaz.mutation.Mutation attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.projectutils.Iteration.chainIDs">chainIDs (locuaz.projectutils.Iteration attribute)</a>
+      <li><a href="misc.html#locuaz.projectutils.Branch.chainIDs">chainIDs (locuaz.projectutils.Branch attribute)</a>
 </li>
       <li><a href="mutators.html#locuaz.mutatordlp.MutatorDLPacker.charges_path">charges_path (locuaz.mutatordlp.MutatorDLPacker attribute)</a>
 </li>
@@ -230,7 +236,7 @@
 </li>
       <li><a href="misc.html#locuaz.validatore.Validatore.coercers">coercers (locuaz.validatore.Validatore attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.projectutils.Iteration.complex">complex (locuaz.projectutils.Iteration attribute)</a>
+      <li><a href="misc.html#locuaz.projectutils.Branch.complex">complex (locuaz.projectutils.Branch attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.projectutils.WorkProject.config">config (locuaz.projectutils.WorkProject attribute)</a>
 </li>
@@ -264,7 +270,7 @@
         <li><a href="misc.html#locuaz.runutils.MDrun.dir">(locuaz.runutils.MDrun attribute)</a>
 </li>
       </ul></li>
-      <li><a href="misc.html#locuaz.projectutils.Iteration.dir_handle">dir_handle (locuaz.projectutils.Iteration attribute)</a>
+      <li><a href="misc.html#locuaz.projectutils.Branch.dir_handle">dir_handle (locuaz.projectutils.Branch attribute)</a>
 
       <ul>
         <li><a href="misc.html#locuaz.projectutils.WorkProject.dir_handle">(locuaz.projectutils.WorkProject attribute)</a>
@@ -276,7 +282,7 @@
 </li>
       <li><a href="misc.html#locuaz.fileutils.DirHandle">DirHandle (class in locuaz.fileutils)</a>
 </li>
-      <li><a href="scoringfunctions.html#locuaz.scoring.discard_iteration">discard_iteration() (in module locuaz.scoring)</a>
+      <li><a href="scoringfunctions.html#locuaz.scoring.discard_branch">discard_branch() (in module locuaz.scoring)</a>
 </li>
       <li><a href="misc.html#locuaz.projectutils.WorkProject.draw_dag">draw_dag() (locuaz.projectutils.WorkProject static method)</a>
 </li>
@@ -288,7 +294,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="misc.html#locuaz.projectutils.Epoch">Epoch (class in locuaz.projectutils)</a>
 </li>
-      <li><a href="misc.html#locuaz.projectutils.Iteration.epoch_id">epoch_id (locuaz.projectutils.Iteration attribute)</a>
+      <li><a href="misc.html#locuaz.projectutils.Branch.epoch_id">epoch_id (locuaz.projectutils.Branch attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.projectutils.WorkProject.epochs">epochs (locuaz.projectutils.WorkProject attribute)</a>
 </li>
@@ -378,7 +384,7 @@
         <li><a href="misc.html#locuaz.complex.GROComplex.from_pdb">(locuaz.complex.GROComplex class method)</a>
 </li>
       </ul></li>
-      <li><a href="misc.html#locuaz.projectutils.Iteration.full_name">full_name() (locuaz.projectutils.Iteration method)</a>
+      <li><a href="misc.html#locuaz.projectutils.Branch.full_name">full_name() (locuaz.projectutils.Branch method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -386,7 +392,7 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="misc.html#locuaz.projectutils.Iteration.generate_name_resname">generate_name_resname() (locuaz.projectutils.Iteration method)</a>
+      <li><a href="misc.html#locuaz.projectutils.Branch.generate_name_resname">generate_name_resname() (locuaz.projectutils.Branch method)</a>
 </li>
       <li><a href="misc.html#locuaz.molecules.generate_ndx">generate_ndx() (in module locuaz.molecules)</a>
 </li>
@@ -480,21 +486,15 @@
 </li>
       <li><a href="misc.html#locuaz.runutils.MDrun.image_after">image_after (locuaz.runutils.MDrun attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.gromacsutils.image_traj">image_traj() (in module locuaz.gromacsutils)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="misc.html#locuaz.gromacsutils.image_traj">image_traj() (in module locuaz.gromacsutils)</a>
+</li>
       <li><a href="scoringfunctions.html#locuaz.scoring.initialize_scoring_folder">initialize_scoring_folder() (in module locuaz.scoring)</a>
 </li>
       <li><a href="misc.html#locuaz.cli.is_not_epoch_0">is_not_epoch_0() (in module locuaz.cli)</a>
 </li>
-      <li><a href="misc.html#locuaz.projectutils.Iteration.iter_name">iter_name (locuaz.projectutils.Iteration attribute)</a>
-</li>
-      <li><a href="misc.html#locuaz.projectutils.Iteration">Iteration (class in locuaz.projectutils)</a>
-</li>
-      <li><a href="misc.html#locuaz.projectutils.WorkProject.iteration_from_str">iteration_from_str() (locuaz.projectutils.WorkProject method)</a>
-</li>
-      <li><a href="misc.html#locuaz.projectutils.Epoch.iterations">iterations (locuaz.projectutils.Epoch attribute)</a>
+      <li><a href="misc.html#locuaz.projectutils.Branch.iter_name">iter_name (locuaz.projectutils.Branch attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -876,7 +876,7 @@
 </li>
       <li><a href="misc.html#locuaz.runutils.MDrun">MDrun (class in locuaz.runutils)</a>
 </li>
-      <li><a href="misc.html#locuaz.projectutils.Iteration.mean_scores">mean_scores (locuaz.projectutils.Iteration attribute)</a>
+      <li><a href="misc.html#locuaz.projectutils.Branch.mean_scores">mean_scores (locuaz.projectutils.Branch attribute)</a>
 </li>
       <li><a href="mutators.html#locuaz.basemutator.memorize_mutations">memorize_mutations() (in module locuaz.basemutator)</a>
 </li>
@@ -997,9 +997,9 @@
       </ul></li>
       <li><a href="mutators.html#locuaz.mutation.Mutation">Mutation (class in locuaz.mutation)</a>
 </li>
-      <li><a href="misc.html#locuaz.projectutils.Iteration.mutation">mutation (locuaz.projectutils.Iteration attribute)</a>
+      <li><a href="misc.html#locuaz.projectutils.Branch.mutation">mutation (locuaz.projectutils.Branch attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.projectutils.Iteration.mutation_str">mutation_str() (locuaz.projectutils.Iteration method)</a>
+      <li><a href="misc.html#locuaz.projectutils.Branch.mutation_str">mutation_str() (locuaz.projectutils.Branch method)</a>
 </li>
       <li><a href="mutationgenerators.html#locuaz.spm4.SPM4.mutations">mutations (locuaz.spm4.SPM4 attribute)</a>
 </li>
@@ -1087,7 +1087,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="misc.html#locuaz.runutils.MDrun.out_name">out_name (locuaz.runutils.MDrun attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.projectutils.Iteration.outside_box">outside_box (locuaz.projectutils.Iteration attribute)</a>
+      <li><a href="misc.html#locuaz.projectutils.Branch.outside_box">outside_box (locuaz.projectutils.Branch attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1105,7 +1105,7 @@
         <li><a href="scoringfunctions.html#locuaz.pisa.Pisa.parameters_handle">(locuaz.pisa.Pisa attribute)</a>
 </li>
       </ul></li>
-      <li><a href="misc.html#locuaz.projectutils.Iteration.parent">parent (locuaz.projectutils.Iteration attribute)</a>
+      <li><a href="misc.html#locuaz.projectutils.Branch.parent">parent (locuaz.projectutils.Branch attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.fileutils.FileHandle.path">path (locuaz.fileutils.FileHandle attribute)</a>
 </li>
@@ -1165,7 +1165,7 @@
 </li>
       <li><a href="misc.html#locuaz.molecules.read_ndx">read_ndx() (in module locuaz.molecules)</a>
 </li>
-      <li><a href="misc.html#locuaz.projectutils.Iteration.read_scores">read_scores() (locuaz.projectutils.Iteration method)</a>
+      <li><a href="misc.html#locuaz.projectutils.Branch.read_scores">read_scores() (locuaz.projectutils.Branch method)</a>
 </li>
       <li><a href="mutationgenerators.html#locuaz.spm4.SPM4.remaining_categories">remaining_categories (locuaz.spm4.SPM4 attribute)</a>
 </li>
@@ -1179,7 +1179,7 @@
 </li>
       <li><a href="scoringfunctions.html#locuaz.haddock.Haddock.rescoring_scripts_dir">rescoring_scripts_dir (locuaz.haddock.Haddock attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.projectutils.Iteration.resnames">resnames (locuaz.projectutils.Iteration attribute)</a>
+      <li><a href="misc.html#locuaz.projectutils.Branch.resnames">resnames (locuaz.projectutils.Branch attribute)</a>
 </li>
       <li><a href="mutators.html#locuaz.mutation.Mutation.resSeq">resSeq (locuaz.mutation.Mutation attribute)</a>
 </li>
@@ -1187,7 +1187,7 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="misc.html#locuaz.projectutils.Iteration.resSeqs">resSeqs (locuaz.projectutils.Iteration attribute)</a>
+      <li><a href="misc.html#locuaz.projectutils.Branch.resSeqs">resSeqs (locuaz.projectutils.Branch attribute)</a>
 </li>
       <li><a href="statistics.html#locuaz.basestatistic.BaseStatistic.result">result (locuaz.basestatistic.BaseStatistic attribute)</a>
 </li>
@@ -1223,13 +1223,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="scoringfunctions.html#locuaz.scoring.score">score() (in module locuaz.scoring)</a>
 </li>
-      <li><a href="misc.html#locuaz.projectutils.Iteration.score_dir">score_dir (locuaz.projectutils.Iteration attribute)</a>
+      <li><a href="misc.html#locuaz.projectutils.Branch.score_dir">score_dir (locuaz.projectutils.Branch attribute)</a>
 </li>
       <li><a href="scoringfunctions.html#locuaz.scoring.score_frames">score_frames() (in module locuaz.scoring)</a>
 </li>
       <li><a href="misc.html#locuaz.projectutils.WorkProject.scorers">scorers (locuaz.projectutils.WorkProject attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.projectutils.Iteration.scores">scores (locuaz.projectutils.Iteration attribute)</a>
+      <li><a href="misc.html#locuaz.projectutils.Branch.scores">scores (locuaz.projectutils.Branch attribute)</a>
 </li>
       <li><a href="scoringfunctions.html#locuaz.scoringfunctions.scoringfunctions">scoringfunctions (in module locuaz.scoringfunctions)</a>
 </li>
@@ -1243,19 +1243,19 @@
 </li>
       <li><a href="misc.html#locuaz.molecules.Topology.selection_water">selection_water (locuaz.molecules.Topology attribute)</a>
 </li>
+      <li><a href="misc.html#locuaz.cli.set_branches">set_branches() (in module locuaz.cli)</a>
+</li>
       <li><a href="misc.html#locuaz.molecules.PDBStructure.set_cryst1_record">set_cryst1_record() (locuaz.molecules.PDBStructure method)</a>
 </li>
       <li><a href="misc.html#locuaz.cli.set_empty_dags">set_empty_dags() (in module locuaz.cli)</a>
-</li>
-      <li><a href="misc.html#locuaz.cli.set_iterations">set_iterations() (in module locuaz.cli)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="misc.html#locuaz.projectutils.set_logger">set_logger() (in module locuaz.projectutils)</a>
 </li>
-      <li><a href="misc.html#locuaz.projectutils.Iteration.set_score">set_score() (locuaz.projectutils.Iteration method)</a>
+      <li><a href="misc.html#locuaz.projectutils.Branch.set_score">set_score() (locuaz.projectutils.Branch method)</a>
 </li>
-      <li><a href="misc.html#locuaz.projectutils.Iteration.set_stat">set_stat() (locuaz.projectutils.Iteration method)</a>
+      <li><a href="misc.html#locuaz.projectutils.Branch.set_stat">set_stat() (locuaz.projectutils.Branch method)</a>
 </li>
       <li><a href="misc.html#locuaz.cli.set_statistics">set_statistics() (in module locuaz.cli)</a>
 </li>
@@ -1275,7 +1275,7 @@
 </li>
       <li><a href="statistics.html#locuaz.statisticinterface.StatisticInterface">StatisticInterface (class in locuaz.statisticinterface)</a>
 </li>
-      <li><a href="misc.html#locuaz.projectutils.Iteration.stats">stats (locuaz.projectutils.Iteration attribute)</a>
+      <li><a href="misc.html#locuaz.projectutils.Branch.stats">stats (locuaz.projectutils.Branch attribute)</a>
 </li>
       <li><a href="statistics.html#locuaz.basestatistic.BaseStatistic.stats_config">stats_config (locuaz.basestatistic.BaseStatistic attribute)</a>
 </li>
@@ -1325,7 +1325,7 @@
 </li>
       <li><a href="misc.html#locuaz.complex.AbstractComplex.top">top (locuaz.complex.AbstractComplex attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.projectutils.Epoch.top_iterations">top_iterations (locuaz.projectutils.Epoch attribute)</a>
+      <li><a href="misc.html#locuaz.projectutils.Epoch.top_branches">top_branches (locuaz.projectutils.Epoch attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.molecules.Topology">Topology (class in locuaz.molecules)</a>
 </li>
@@ -1395,9 +1395,9 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="misc.html#locuaz.projectutils.Iteration.write_down_scores">write_down_scores() (locuaz.projectutils.Iteration method)</a>
+      <li><a href="misc.html#locuaz.projectutils.Branch.write_down_scores">write_down_scores() (locuaz.projectutils.Branch method)</a>
 </li>
-      <li><a href="misc.html#locuaz.projectutils.Iteration.write_down_stats">write_down_stats() (locuaz.projectutils.Iteration method)</a>
+      <li><a href="misc.html#locuaz.projectutils.Branch.write_down_stats">write_down_stats() (locuaz.projectutils.Branch method)</a>
 </li>
       <li><a href="misc.html#locuaz.gromacsutils.write_non_overlapping_ndx">write_non_overlapping_ndx() (in module locuaz.gromacsutils)</a>
 </li>

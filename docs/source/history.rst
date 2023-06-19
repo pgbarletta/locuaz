@@ -14,7 +14,7 @@ History
 0.3.7 (2023-05-12)
 ------------------
  * Added Directed Acyclic Graph tracking of the protocol, so a plot of the progression of the protocol can be done,
-   both of the iteration names and the mutations performed on each mutation.
+   both of the branch names and the mutations performed on each mutation.
  * Added docs on https://locuaz.readthedocs.io/
  * Made DLPacker part of the repo. Used for performing mutations.
  * Added metropolis Pruner.

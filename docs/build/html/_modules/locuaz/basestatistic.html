@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.basestatistic &mdash; locuaz 0.3.7 documentation</title>
+  <title>locuaz.basestatistic &mdash; locuaz 0.3.9 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.3.7
+                0.3.9
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -102,7 +102,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">NDArray</span>
 
-<span class="kn">from</span> <span class="nn">locuaz.projectutils</span> <span class="kn">import</span> <span class="n">Iteration</span>
+<span class="kn">from</span> <span class="nn">locuaz.projectutils</span> <span class="kn">import</span> <span class="n">Branch</span>
 
 
 <div class="viewcode-block" id="BaseStatistic"><a class="viewcode-back" href="../../statistics.html#locuaz.basestatistic.BaseStatistic">[docs]</a><span class="k">class</span> <span class="nc">BaseStatistic</span><span class="p">:</span>
@@ -114,10 +114,10 @@
     <span class="n">visitor</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span>
     <span class="n">stats_config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iteration</span><span class="p">:</span> <span class="n">Iteration</span><span class="p">,</span> <span class="n">stats_config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">frames_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">iteration</span><span class="o">.</span><span class="n">score_dir</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">trj_suffix</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">iteration</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">tra</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">iteration</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branch</span><span class="p">:</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">stats_config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frames_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">branch</span><span class="o">.</span><span class="n">score_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trj_suffix</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">branch</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">tra</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">branch</span><span class="o">.</span><span class="n">complex</span><span class="o">.</span><span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nthreads</span> <span class="o">=</span> <span class="n">stats_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nthreads&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">visitor</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;warn_above&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__warn_above__</span><span class="p">,</span>

@@ -1,8 +1,8 @@
 Pruners
 ====================
-This block is in charge of deciding which *iterations* from the last 2 **epochs** go through
-onto the next **epoch**, according to their scores. It takes the top *iterations* from the previous
-**epoch** and the current iterations from the current **epoch** and decides which are the top *iterations*
+This block is in charge of deciding which *branches* from the last 2 **epochs** go through
+onto the next **epoch**, according to their scores. It takes the top *branches* from the previous
+**epoch** and the current branches from the current **epoch** and decides which are the top *branches*
 of the current **epoch**.
 
 .. figure:: ./resources/pruner.png
@@ -10,12 +10,12 @@ of the current **epoch**.
         :scale: 100%
 
         Figure 1: inputs and outputs of a *pruner* at *epoch* **i**. The exact process by which the
-        *pruner* compares *iterations* to decide which ones improve the affinity and should be used
+        *pruner* compares *branches* to decide which ones improve the affinity and should be used
         as a substrate for the next mutations depended on the chosen *pruner*.
 
 .. warning::
-    For the purposes of these docs, we'll be using **complex** and **iteration** as synonyms, though technically,
-    an *iteration* is comprised of a complex and other information, like its trajectory, its scores, etc...
+    For the purposes of these docs, we'll be using **complex** and **branch** as synonyms, though technically,
+    a *branch* is comprised of a complex and other information, like its trajectory, its scores, etc...
 
 locuaz.prunerconsensus module
 ------------------------------
@@ -63,7 +63,7 @@ for a next round of mutations.
 consensus run example
 ^^^^^^^^^^^^^^^^^^^^^^^
 Recapping the hypothetical example from :ref:`platformflow:Platform DAGs`, we are going to focus on *epoch*
-3 to see how the pruner decides that *iterations* **A3**, **B3** and **C3** should go through, but not **D3**.
+3 to see how the pruner decides that *branches* **A3**, **B3** and **C3** should go through, but not **D3**.
 
 In this example the user selected the options ``pruner: consensus``, ``consensus_threshold: 3``,
 ``branches: 2`` and ``constant_width: False``, among others. Check the tutorials and the
@@ -82,12 +82,12 @@ Figure 2 focuses on this step.
 
 
 After the MD is ran and the scoring is done, it's time for the *pruner*.
-The *consensus pruner* does the following: for each *iteration* on the current *epoch* being pruned,
-its average scores are compared against the scores of all the *top iterations* from the previous *epoch*.
-For example, Figure 3A shows the comparison of **A3** *iteration* against the 2 previous *top iterations*.
-Since on both cases it beats the previous *top iteration* in 3 out of 4 scoring functions, **A3** *iteration*
-will be the first *top iteration* of *epoch* 3. On the other hand, we can see that **C3** only improves on 1
-scoring function with respect to the previous *top iteration* **B2** and, hence, it can't move forward
+The *consensus pruner* does the following: for each *branch* on the current *epoch* being pruned,
+its average scores are compared against the scores of all the *top branches* from the previous *epoch*.
+For example, Figure 3A shows the comparison of **A3** *branch* against the 2 previous *top branches*.
+Since on both cases it beats the previous *top branch* in 3 out of 4 scoring functions, **A3** *branch*
+will be the first *top branch* of *epoch* 3. On the other hand, we can see that **C3** only improves on 1
+scoring function with respect to the previous *top branch* **B2** and, hence, it can't move forward
 since the user selected a ``consensus_threshold`` fo 3.
 
 .. figure:: ./resources/consensus_pruner_2.png
@@ -95,9 +95,9 @@ since the user selected a ``consensus_threshold`` fo 3.
         :height: 400px
         :width: 800 px
 
-        Figure 3: each panel shows the comparisons between each of the *epoch* 3 *iterations* and the
-        *epoch* 2 *top iterations*. Average scores highlighted in green are the ones that are better
-        than their respective counterparts, while the red ones are worse. *Iteration* **C3** "looses"
+        Figure 3: each panel shows the comparisons between each of the *epoch* 3 *branches* and the
+        *epoch* 2 *top branches*. Average scores highlighted in green are the ones that are better
+        than their respective counterparts, while the red ones are worse. *Branch* **C3** "looses"
         when compared against **B2** and hence won't be moving forward.
 
 

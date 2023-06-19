@@ -244,12 +244,12 @@ There's nothing new here with respect to the simple tutorial, we just run the pr
 
 
 And as always, the protocol will create the working directory folder and inside of it, a folder for
-each *iteration*:
+each *branch*:
 
 .. figure:: ./resources/tleap_workdir.png
-        :alt: directory structure of an iteration folder
+        :alt: directory structure of a branch folder
 
-        Figure 2: the look of any *iteration* folder after it has been finished. *Tleap* related files
+        Figure 2: the look of any *branch* folder after it has been finished. *Tleap* related files
         are highlighted.
 
 

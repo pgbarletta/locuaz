@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.statisticinterface &mdash; locuaz 0.3.7 documentation</title>
+  <title>locuaz.statisticinterface &mdash; locuaz 0.3.9 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.3.7
+                0.3.9
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -100,7 +100,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">NDArray</span>
 
-<span class="kn">from</span> <span class="nn">locuaz.projectutils</span> <span class="kn">import</span> <span class="n">Iteration</span>
+<span class="kn">from</span> <span class="nn">locuaz.projectutils</span> <span class="kn">import</span> <span class="n">Branch</span>
 <span class="kn">from</span> <span class="nn">locuaz.basestatistic</span> <span class="kn">import</span> <span class="n">BaseStatistic</span>
 <span class="kn">from</span> <span class="nn">locuaz.interface</span> <span class="kn">import</span> <span class="n">get_interface_surface</span>
 
@@ -108,8 +108,8 @@
 <div class="viewcode-block" id="StatisticInterface"><a class="viewcode-back" href="../../statistics.html#locuaz.statisticinterface.StatisticInterface">[docs]</a><span class="k">class</span> <span class="nc">StatisticInterface</span><span class="p">(</span><span class="n">BaseStatistic</span><span class="p">):</span>
     <span class="n">TIMEOUT_PER_FRAME</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iteration</span><span class="p">:</span> <span class="n">Iteration</span><span class="p">,</span> <span class="n">stats_config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">iteration</span><span class="p">,</span> <span class="n">stats_config</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branch</span><span class="p">:</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">stats_config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">branch</span><span class="p">,</span> <span class="n">stats_config</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
         <span class="c1"># The first unused frames will be discarded later</span>

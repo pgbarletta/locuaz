@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.cli &mdash; locuaz 0.3.7 documentation</title>
+  <title>locuaz.cli &mdash; locuaz 0.3.9 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.3.7
+                0.3.9
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -164,7 +164,7 @@
         <span class="k">assert</span> <span class="n">root_dir</span><span class="o">.</span><span class="n">is_dir</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">&quot;Invalid input work dir: </span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;paths&#39;</span><span class="p">][</span><span class="s1">&#39;work&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">assert</span> <span class="p">(</span>
                 <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;evolve&quot;</span>
-        <span class="p">),</span> <span class="s2">&quot;`--mode` is not set to &#39;evolve&#39;, a `work` folder with valid iterations is needed.&quot;</span>
+        <span class="p">),</span> <span class="s2">&quot;`--mode` is not set to &#39;evolve&#39;, a `work` folder with valid branches is needed.&quot;</span>
 
         <span class="n">start</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -183,7 +183,7 @@
                                               <span class="sa">f</span><span class="s2">&quot;different lengths: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">resnames</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">resSeqs</span><span class="p">)</span><span class="si">}</span><span class="s2">, respectively.&quot;</span>
 
     <span class="c1"># Check &#39;branches&#39; and &#39;generator&#39;</span>
-    <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;SPM4&quot;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;generation&quot;</span><span class="p">][</span><span class="s2">&quot;generator&quot;</span><span class="p">])</span> <span class="ow">and</span> <span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;branches&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">19</span><span class="p">):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;SPM4&quot;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;generation&quot;</span><span class="p">][</span><span class="s2">&quot;generator&quot;</span><span class="p">])</span> <span class="ow">and</span> <span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;new_branches&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">19</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">UserInputError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SPM4 mutation generators cannot generate more than 19 branches&quot;</span><span class="p">)</span>
 
     <span class="n">check_gmxmmpbsa</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
@@ -200,38 +200,38 @@
     <span class="k">return</span> <span class="n">config</span><span class="p">,</span> <span class="n">start</span></div>
 
 
-<div class="viewcode-block" id="backup_iteration"><a class="viewcode-back" href="../../misc.html#locuaz.cli.backup_iteration">[docs]</a><span class="k">def</span> <span class="nf">backup_iteration</span><span class="p">(</span><span class="n">it_fn</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="backup_branch"><a class="viewcode-back" href="../../misc.html#locuaz.cli.backup_branch">[docs]</a><span class="k">def</span> <span class="nf">backup_branch</span><span class="p">(</span><span class="n">it_fn</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">it_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">it_fn</span><span class="p">)</span>
     <span class="n">new_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">it_path</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;bu_&quot;</span> <span class="o">+</span> <span class="n">it_path</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
     <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found incomplete epoch. Will backup </span><span class="si">{</span><span class="n">it_path</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">new_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">sh</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">it_path</span><span class="p">,</span> <span class="n">new_path</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="append_iterations"><a class="viewcode-back" href="../../misc.html#locuaz.cli.append_iterations">[docs]</a><span class="k">def</span> <span class="nf">append_iterations</span><span class="p">(</span>
-        <span class="n">sorted_iters</span><span class="p">:</span> <span class="n">PriorityQueue</span><span class="p">,</span> <span class="n">iterations</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">prev_epoch</span><span class="p">:</span> <span class="nb">int</span>
+<div class="viewcode-block" id="append_branches"><a class="viewcode-back" href="../../misc.html#locuaz.cli.append_branches">[docs]</a><span class="k">def</span> <span class="nf">append_branches</span><span class="p">(</span>
+        <span class="n">sorted_iters</span><span class="p">:</span> <span class="n">PriorityQueue</span><span class="p">,</span> <span class="n">branches</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">prev_epoch</span><span class="p">:</span> <span class="nb">int</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">sorted_iters</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
         <span class="k">return</span> <span class="s2">&quot;&quot;</span>
 
     <span class="n">epoch_nbr</span><span class="p">,</span> <span class="n">iter_path</span> <span class="o">=</span> <span class="n">sorted_iters</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">prev_epoch</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">epoch_nbr</span> <span class="o">==</span> <span class="n">prev_epoch</span><span class="p">:</span>
-        <span class="n">iterations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">iter_path</span><span class="p">))</span>
+        <span class="n">branches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">iter_path</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">sorted_iters</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">epoch_nbr</span><span class="p">,</span> <span class="n">iter_path</span><span class="p">))</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">iter_path</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">append_iterations</span><span class="p">(</span><span class="n">sorted_iters</span><span class="p">,</span> <span class="n">iterations</span><span class="p">,</span> <span class="n">epoch_nbr</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">append_branches</span><span class="p">(</span><span class="n">sorted_iters</span><span class="p">,</span> <span class="n">branches</span><span class="p">,</span> <span class="n">epoch_nbr</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="get_valid_iter_dirs"><a class="viewcode-back" href="../../misc.html#locuaz.cli.get_valid_iter_dirs">[docs]</a><span class="k">def</span> <span class="nf">get_valid_iter_dirs</span><span class="p">(</span><span class="n">files_and_dirs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;get_valid_iter_dirs(): filters out paths in input and returns valid iteration paths</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;get_valid_iter_dirs(): filters out paths in input and returns valid branch paths</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        files_and_dirs (List[str]): list of files and/or dirs</span>
 <span class="sd">        config (dict): input config.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        List[Path]: list of valid iteration paths</span>
+<span class="sd">        List[Path]: list of valid branch paths</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">is_incomplete</span><span class="p">(</span><span class="n">it_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -250,7 +250,7 @@
                 <span class="k">continue</span>
             <span class="k">if</span> <span class="n">nbr</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">():</span>
                 <span class="k">assert</span> <span class="nb">int</span><span class="p">(</span><span class="n">nbr</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;epochs&quot;</span><span class="p">],</span> <span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Max of </span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">][</span><span class="s1">&#39;epochs&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> epochs solicited, but found iteration &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Max of </span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">][</span><span class="s1">&#39;epochs&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> epochs solicited, but found branch &quot;</span>
                     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nbr</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="s1">&#39;-&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">iter_name</span><span class="p">)</span><span class="si">}</span><span class="s2"> . Aborting.&quot;</span>
                 <span class="p">)</span>
                 <span class="n">iters_per_epoch</span><span class="p">[</span><span class="n">nbr</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -262,39 +262,39 @@
     <span class="k">for</span> <span class="n">iter_path</span> <span class="ow">in</span> <span class="n">iter_dirs</span><span class="p">:</span>
         <span class="n">nbr</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">iter_path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">nbr</span> <span class="ow">in</span> <span class="n">incomplete_epochs</span><span class="p">:</span>
-            <span class="n">backup_iteration</span><span class="p">(</span><span class="n">iter_path</span><span class="p">)</span>
+            <span class="n">backup_branch</span><span class="p">(</span><span class="n">iter_path</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">valid_iters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">iter_path</span><span class="p">)</span>
 
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_iters</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;No valid iterations in input.&quot;</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_iters</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;No valid branches in input.&quot;</span>
 
     <span class="k">return</span> <span class="n">valid_iters</span></div>
 
 
-<div class="viewcode-block" id="is_not_epoch_0"><a class="viewcode-back" href="../../misc.html#locuaz.cli.is_not_epoch_0">[docs]</a><span class="k">def</span> <span class="nf">is_not_epoch_0</span><span class="p">(</span><span class="n">iterations</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]],</span> <span class="n">starting_epoch</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">it_fn</span> <span class="ow">in</span> <span class="n">iterations</span><span class="p">:</span>
+<div class="viewcode-block" id="is_not_epoch_0"><a class="viewcode-back" href="../../misc.html#locuaz.cli.is_not_epoch_0">[docs]</a><span class="k">def</span> <span class="nf">is_not_epoch_0</span><span class="p">(</span><span class="n">branches</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]],</span> <span class="n">starting_epoch</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">it_fn</span> <span class="ow">in</span> <span class="n">branches</span><span class="p">:</span>
         <span class="n">it_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">it_fn</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">it_path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="n">starting_epoch</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="lacks_branches"><a class="viewcode-back" href="../../misc.html#locuaz.cli.lacks_branches">[docs]</a><span class="k">def</span> <span class="nf">lacks_branches</span><span class="p">(</span><span class="n">current_iterations</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]],</span>
-                   <span class="n">top_iterations</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]],</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="lacks_branches"><a class="viewcode-back" href="../../misc.html#locuaz.cli.lacks_branches">[docs]</a><span class="k">def</span> <span class="nf">lacks_branches</span><span class="p">(</span><span class="n">current_branches</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]],</span>
+                   <span class="n">top_branches</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]],</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;prevent_fewer_branches&quot;</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;constant_width&quot;</span><span class="p">]:</span>
-            <span class="n">branches</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;branches&quot;</span><span class="p">]</span>
+            <span class="n">branches</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;new_branches&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">n_top_iters</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">top_iterations</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="nb">len</span><span class="p">(</span><span class="n">top_iterations</span><span class="p">)</span>
-            <span class="n">branches</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;branches&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_top_iters</span>
-        <span class="n">nbr_branches</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">current_iterations</span><span class="p">)</span>
+            <span class="n">n_top_iters</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">top_branches</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="nb">len</span><span class="p">(</span><span class="n">top_branches</span><span class="p">)</span>
+            <span class="n">branches</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;new_branches&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_top_iters</span>
+        <span class="n">nbr_branches</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">current_branches</span><span class="p">)</span>
         <span class="n">starting_epoch</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;starting_epoch&quot;</span><span class="p">]</span>
 
         <span class="c1"># Check that the epoch wasn&#39;t cut short during its initialization.</span>
         <span class="c1"># This may happen if last run was cut during initialize_new_epoch().</span>
-        <span class="k">if</span> <span class="n">nbr_branches</span> <span class="o">&lt;</span> <span class="n">branches</span> <span class="ow">and</span> <span class="n">is_not_epoch_0</span><span class="p">(</span><span class="n">current_iterations</span><span class="p">,</span> <span class="n">starting_epoch</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">it_fn</span> <span class="ow">in</span> <span class="n">current_iterations</span><span class="p">:</span>
-                <span class="n">backup_iteration</span><span class="p">(</span><span class="n">it_fn</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nbr_branches</span> <span class="o">&lt;</span> <span class="n">branches</span> <span class="ow">and</span> <span class="n">is_not_epoch_0</span><span class="p">(</span><span class="n">current_branches</span><span class="p">,</span> <span class="n">starting_epoch</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">it_fn</span> <span class="ow">in</span> <span class="n">current_branches</span><span class="p">:</span>
+                <span class="n">backup_branch</span><span class="p">(</span><span class="n">it_fn</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">True</span>
     <span class="k">return</span> <span class="kc">False</span></div>
 
@@ -317,17 +317,17 @@
         <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Could not read tracking file.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">previous_iterations</span> <span class="o">=</span> <span class="n">get_valid_iter_dirs</span><span class="p">(</span><span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;previous_iterations&quot;</span><span class="p">],</span> <span class="n">config</span><span class="p">)</span>
-        <span class="n">current_iterations</span> <span class="o">=</span> <span class="n">get_valid_iter_dirs</span><span class="p">(</span><span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;current_iterations&quot;</span><span class="p">],</span> <span class="n">config</span><span class="p">)</span>
-        <span class="n">top_iterations</span> <span class="o">=</span> <span class="n">get_valid_iter_dirs</span><span class="p">(</span><span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;top_iterations&quot;</span><span class="p">],</span> <span class="n">config</span><span class="p">)</span>
+        <span class="n">previous_branches</span> <span class="o">=</span> <span class="n">get_valid_iter_dirs</span><span class="p">(</span><span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;previous_branches&quot;</span><span class="p">],</span> <span class="n">config</span><span class="p">)</span>
+        <span class="n">current_branches</span> <span class="o">=</span> <span class="n">get_valid_iter_dirs</span><span class="p">(</span><span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;current_branches&quot;</span><span class="p">],</span> <span class="n">config</span><span class="p">)</span>
+        <span class="n">top_branches</span> <span class="o">=</span> <span class="n">get_valid_iter_dirs</span><span class="p">(</span><span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;top_branches&quot;</span><span class="p">],</span> <span class="n">config</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">lacks_branches</span><span class="p">(</span><span class="n">current_iterations</span><span class="p">,</span> <span class="n">top_iterations</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
-            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Will ignore the tracking file. The current iterations field is invalid.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">lacks_branches</span><span class="p">(</span><span class="n">current_branches</span><span class="p">,</span> <span class="n">top_branches</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Will ignore the tracking file. The current branches field is invalid.&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;previous_iterations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">previous_iterations</span>
-        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;current_iterations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">current_iterations</span>
-        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;top_iterations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">top_iterations</span>
+        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;previous_branches&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">previous_branches</span>
+        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;current_branches&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">current_branches</span>
+        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;top_branches&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">top_branches</span>
         <span class="n">config</span><span class="p">[</span><span class="s2">&quot;misc&quot;</span><span class="p">][</span><span class="s2">&quot;epoch_mutated_positions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;epoch_mutated_positions&quot;</span><span class="p">])</span>
 
         <span class="k">if</span> <span class="s2">&quot;memory_positions&quot;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">]:</span>
@@ -353,15 +353,15 @@
 
     <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="set_iterations"><a class="viewcode-back" href="../../misc.html#locuaz.cli.set_iterations">[docs]</a><span class="k">def</span> <span class="nf">set_iterations</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;set_iterations Set config[&quot;paths&quot;][&quot;current_iterations&quot;],</span>
-<span class="sd">    config[&quot;paths&quot;][&quot;previous_iterations&quot;] and possibly config[&quot;paths&quot;][&quot;top_iterations&quot;].</span>
+<div class="viewcode-block" id="set_branches"><a class="viewcode-back" href="../../misc.html#locuaz.cli.set_branches">[docs]</a><span class="k">def</span> <span class="nf">set_branches</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;set_branches Set config[&quot;paths&quot;][&quot;current_branches&quot;],</span>
+<span class="sd">    config[&quot;paths&quot;][&quot;previous_branches&quot;] and possibly config[&quot;paths&quot;][&quot;top_branches&quot;].</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        config (Dict): dictionary with input config</span>
 
 <span class="sd">    Raises:</span>
-<span class="sd">        ValueError: when there are no valid iteration dirs.</span>
+<span class="sd">        ValueError: when there are no valid branch dirs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">files_and_dirs</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;work&quot;</span><span class="p">],</span> <span class="s2">&quot;*&quot;</span><span class="p">)))</span>
     <span class="n">valid_iters</span> <span class="o">=</span> <span class="n">get_valid_iter_dirs</span><span class="p">(</span><span class="n">files_and_dirs</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
@@ -370,20 +370,20 @@
     <span class="k">for</span> <span class="n">iter_path</span> <span class="ow">in</span> <span class="n">valid_iters</span><span class="p">:</span>
         <span class="n">nbr</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">iter_path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
         <span class="n">iters</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="o">-</span><span class="nb">int</span><span class="p">(</span><span class="n">nbr</span><span class="p">),</span> <span class="n">iter_path</span><span class="p">))</span>
-    <span class="c1"># Iterations are sorted by epoch number now</span>
+    <span class="c1"># Branchs are sorted by epoch number now</span>
     <span class="k">while</span> <span class="ow">not</span> <span class="n">iters</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
-        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;current_iterations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">iter_str</span> <span class="o">=</span> <span class="n">append_iterations</span><span class="p">(</span><span class="n">iters</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;current_iterations&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;current_branches&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">iter_str</span> <span class="o">=</span> <span class="n">append_branches</span><span class="p">(</span><span class="n">iters</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;current_branches&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">lacks_branches</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;current_iterations&quot;</span><span class="p">],</span> <span class="p">[],</span> <span class="n">config</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">lacks_branches</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;current_branches&quot;</span><span class="p">],</span> <span class="p">[],</span> <span class="n">config</span><span class="p">):</span>
             <span class="c1"># Start over, this time, the incomplete epoch will not be in `iters`.</span>
             <span class="k">continue</span>
 
         <span class="k">if</span> <span class="n">iter_str</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
-            <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;previous_iterations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">append_iterations</span><span class="p">(</span><span class="n">iters</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;previous_iterations&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;previous_branches&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">append_branches</span><span class="p">(</span><span class="n">iters</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;previous_branches&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">config</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No valid iterations in work_dir. Aborting.&quot;</span><span class="p">)</span></div>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No valid branches in work_dir. Aborting.&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="check_gmxmmpbsa"><a class="viewcode-back" href="../../misc.html#locuaz.cli.check_gmxmmpbsa">[docs]</a><span class="k">def</span> <span class="nf">check_gmxmmpbsa</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -424,9 +424,9 @@
 
 
 <div class="viewcode-block" id="get_memory"><a class="viewcode-back" href="../../misc.html#locuaz.cli.get_memory">[docs]</a><span class="k">def</span> <span class="nf">get_memory</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Set</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;get_memory() compares character by character of the iteration folders resnames to</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;get_memory() compares character by character of the branch folders resnames to</span>
 <span class="sd">    find differences among them that would correspond to previously done mutations.</span>
-<span class="sd">    Small issue in this function: when an epoch was generated from more than 1 top iteration,</span>
+<span class="sd">    Small issue in this function: when an epoch was generated from more than 1 top branch,</span>
 <span class="sd">    the mutations performed on that epoch will be memorized and also the ones that were actually</span>
 <span class="sd">    performed on a previous epoch and were already present, since it will find differences among them.</span>
 
@@ -443,11 +443,11 @@
 <span class="sd">        config (Dict): input config options from the user.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        List[List[int]]: resSeqs where different AAs where found. It may be empty, when the iteration folders</span>
+<span class="sd">        List[List[int]]: resSeqs where different AAs where found. It may be empty, when the branch folders</span>
 <span class="sd">        being proved don&#39;t have the same number of chains and the same length of residues being mutated.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># Get all the iterations sorted by epoch</span>
+    <span class="c1"># Get all the branches sorted by epoch</span>
     <span class="n">iters</span><span class="p">:</span> <span class="n">PriorityQueue</span> <span class="o">=</span> <span class="n">PriorityQueue</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;work&quot;</span><span class="p">],</span> <span class="s2">&quot;*&quot;</span><span class="p">))):</span>
         <span class="n">iter_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
@@ -456,7 +456,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">iters</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="o">-</span><span class="nb">int</span><span class="p">(</span><span class="n">nbr</span><span class="p">),</span> <span class="n">iter_path</span><span class="p">))</span>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                <span class="c1"># not valid iteration folder</span>
+                <span class="c1"># not valid branch folder</span>
                 <span class="k">continue</span>
 
     <span class="n">input_n_chains</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;binder&quot;</span><span class="p">][</span><span class="s2">&quot;mutating_chainID&quot;</span><span class="p">])</span>
@@ -465,8 +465,8 @@
     <span class="c1"># Memorize `config[&quot;protocol&quot;][&quot;memory_size&quot;]` epochs.</span>
     <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;memory_size&quot;</span><span class="p">]):</span>
         <span class="n">epoch_iters_paths</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="c1"># Get all the paths for the iterations of the current epoch</span>
-        <span class="n">append_iterations</span><span class="p">(</span><span class="n">iters</span><span class="p">,</span> <span class="n">epoch_iters_paths</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># Get all the paths for the branches of the current epoch</span>
+        <span class="n">append_branches</span><span class="p">(</span><span class="n">iters</span><span class="p">,</span> <span class="n">epoch_iters_paths</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
         <span class="c1"># Reformat the paths</span>
         <span class="n">epoch_iternames</span> <span class="o">=</span> <span class="p">[</span>
@@ -558,10 +558,10 @@
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Read tracking file from work dir.&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span>
-                <span class="s2">&quot;Will try to get the previous iterations, the current iterations and the memory of the &quot;</span>
+                <span class="s2">&quot;Will try to get the previous branches, the current branches and the memory of the &quot;</span>
                 <span class="s2">&quot;last mutated positions from the work dir. Memory of failed mutations won&#39;t be loaded.&quot;</span><span class="p">,</span>
                 <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">config</span> <span class="o">=</span> <span class="n">set_iterations</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="n">set_branches</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
             <span class="n">config</span> <span class="o">=</span> <span class="n">set_empty_dags</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
             <span class="c1"># Set up the memory</span>
             <span class="n">requested_memory</span> <span class="o">=</span> <span class="s2">&quot;memory_size&quot;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">]</span>

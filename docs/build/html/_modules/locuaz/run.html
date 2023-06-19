@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.run &mdash; locuaz 0.3.7 documentation</title>
+  <title>locuaz.run &mdash; locuaz 0.3.9 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.3.7
+                0.3.9
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -131,7 +131,7 @@
             <span class="n">gpu_id</span><span class="p">[</span><span class="n">iter_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span> <span class="o">%</span> <span class="n">ngpus</span>
             <span class="n">pinoffset</span><span class="p">[</span><span class="n">iter_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pinoffsets</span><span class="p">[</span><span class="n">idx</span> <span class="o">%</span> <span class="n">ngpus</span><span class="p">]</span>
             
-            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Queuing MIN of the iteration </span><span class="si">{</span><span class="n">iter_name</span><span class="si">}</span><span class="s2"> to GPU </span><span class="si">{</span><span class="n">gpu_id</span><span class="p">[</span><span class="n">iter_name</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Queuing MIN of the branch </span><span class="si">{</span><span class="n">iter_name</span><span class="si">}</span><span class="s2"> to GPU </span><span class="si">{</span><span class="n">gpu_id</span><span class="p">[</span><span class="n">iter_name</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;and pinoffset: </span><span class="si">{</span><span class="n">pinoffset</span><span class="p">[</span><span class="n">iter_name</span><span class="p">]</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
             <span class="nb">min</span> <span class="o">=</span> <span class="n">MDrun</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="nb">iter</span><span class="o">.</span><span class="n">dir_handle</span><span class="p">,</span> <span class="n">work_pjct</span><span class="o">=</span><span class="n">work_pjct</span><span class="p">,</span> <span class="n">gpu_id</span> <span class="o">=</span> <span class="n">gpu_id</span><span class="p">[</span><span class="n">iter_name</span><span class="p">],</span>
@@ -146,7 +146,7 @@
             <span class="n">iter_name</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">min_complex</span><span class="o">.</span><span class="n">dir</span><span class="o">.</span><span class="n">dir_path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:])</span>
             <span class="nb">iter</span> <span class="o">=</span> <span class="n">epoch</span><span class="p">[</span><span class="n">iter_name</span><span class="p">]</span>
             
-            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Queuing NVT of the iteration </span><span class="si">{</span><span class="n">iter_name</span><span class="si">}</span><span class="s2"> to GPU </span><span class="si">{</span><span class="n">gpu_id</span><span class="p">[</span><span class="n">iter_name</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Queuing NVT of the branch </span><span class="si">{</span><span class="n">iter_name</span><span class="si">}</span><span class="s2"> to GPU </span><span class="si">{</span><span class="n">gpu_id</span><span class="p">[</span><span class="n">iter_name</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;and pinoffset: </span><span class="si">{</span><span class="n">pinoffset</span><span class="p">[</span><span class="n">iter_name</span><span class="p">]</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
             <span class="n">nvt</span> <span class="o">=</span> <span class="n">MDrun</span><span class="o">.</span><span class="n">nvt</span><span class="p">(</span>
@@ -180,7 +180,7 @@
             <span class="n">gpu_nbr</span> <span class="o">=</span> <span class="n">idx</span> <span class="o">%</span> <span class="n">ngpus</span>
             <span class="n">gpu_id</span><span class="p">[</span><span class="n">iter_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span> <span class="o">%</span> <span class="n">ngpus</span>
             <span class="n">pinoffset</span><span class="p">[</span><span class="n">iter_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pinoffsets</span><span class="p">[</span><span class="n">idx</span> <span class="o">%</span> <span class="n">ngpus</span><span class="p">]</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Queuing NPT of the iteration </span><span class="si">{</span><span class="n">iter_name</span><span class="si">}</span><span class="s2"> to GPU </span><span class="si">{</span><span class="n">gpu_nbr</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Queuing NPT of the branch </span><span class="si">{</span><span class="n">iter_name</span><span class="si">}</span><span class="s2"> to GPU </span><span class="si">{</span><span class="n">gpu_nbr</span><span class="si">}</span><span class="s2"> &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;and pinoffset: </span><span class="si">{</span><span class="n">pinoffset</span><span class="p">[</span><span class="n">iter_name</span><span class="p">]</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
             
             <span class="n">npt</span> <span class="o">=</span> <span class="n">MDrun</span><span class="o">.</span><span class="n">npt</span><span class="p">(</span>
@@ -193,7 +193,7 @@
         <span class="k">for</span> <span class="n">futu_npt</span> <span class="ow">in</span> <span class="n">cf</span><span class="o">.</span><span class="n">as_completed</span><span class="p">(</span><span class="n">futuros_npt</span><span class="p">):</span>
             <span class="n">iter_name</span> <span class="o">=</span> <span class="n">futuros_npt</span><span class="p">[</span><span class="n">futu_npt</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">futu_npt</span><span class="o">.</span><span class="n">exception</span><span class="p">():</span>
-                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exception while running NPT from iteration: </span><span class="si">{</span><span class="n">iter_name</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exception while running NPT from branch: </span><span class="si">{</span><span class="n">iter_name</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
                     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">futu_npt</span><span class="o">.</span><span class="n">exception</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">del</span> <span class="n">epoch</span><span class="p">[</span><span class="n">iter_name</span><span class="p">]</span>
                 <span class="k">continue</span>

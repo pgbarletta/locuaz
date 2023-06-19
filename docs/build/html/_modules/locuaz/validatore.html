@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.validatore &mdash; locuaz 0.3.7 documentation</title>
+  <title>locuaz.validatore &mdash; locuaz 0.3.9 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.3.7
+                0.3.9
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -116,9 +116,9 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">set_fields</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">constraints</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_error</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Must contain any of: </span><span class="si">{</span><span class="n">constraints</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;current_iterations&quot;</span> <span class="ow">in</span> <span class="n">set_fields</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="s2">&quot;previous_iterations&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">set_fields</span><span class="p">):</span>
-                <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Warning: `current_iterations` is set, but `previous_iterations` isn&#39;t. &quot;</span>
-                    <span class="s2">&quot;Won&#39;t be able to prune the current iterations. Make sure there are enough branches.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;current_branches&quot;</span> <span class="ow">in</span> <span class="n">set_fields</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="s2">&quot;previous_branches&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">set_fields</span><span class="p">):</span>
+                <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Warning: `current_branches` is set, but `previous_branches` isn&#39;t. &quot;</span>
+                    <span class="s2">&quot;Won&#39;t be able to prune the current branches. Make sure there are enough branches.&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_validate_step_bigger_than</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;_validate_step_bigger_than</span>
@@ -275,8 +275,8 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_error</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="s2">&quot;should be an existing directory.&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_validate_is_iteration_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flag</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;_validate_is_iteration_dir</span>
+    <span class="k">def</span> <span class="nf">_validate_is_branch_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flag</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;_validate_is_branch_dir</span>
 
 <span class="sd">        The rule&#39;s arguments are validated against this schema:</span>
 <span class="sd">        {&#39;type&#39;: &#39;boolean&#39;}</span>
@@ -285,44 +285,44 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">nbr</span><span class="p">,</span> <span class="o">*</span><span class="n">chains_resnames</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_error</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> is not a valid iteration folder.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_error</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> is not a valid branch folder.&quot;</span><span class="p">)</span>
                 <span class="k">return</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">nbr</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_error</span><span class="p">(</span>
                     <span class="n">field</span><span class="p">,</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> is not a valid iteration folder. </span><span class="si">{</span><span class="n">nbr</span><span class="si">}</span><span class="s2"> is not a &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> is not a valid branch folder. </span><span class="si">{</span><span class="n">nbr</span><span class="si">}</span><span class="s2"> is not a &quot;</span>
                     <span class="s2">&quot;valid epoch number.&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="k">for</span> <span class="n">chain_resname</span> <span class="ow">in</span> <span class="n">chains_resnames</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">chainID</span><span class="p">,</span> <span class="n">resname</span> <span class="o">=</span> <span class="n">chain_resname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_error</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> is not a valid iteration folder.&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_error</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> is not a valid branch folder.&quot;</span><span class="p">)</span>
                     <span class="k">return</span>
 
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">chainID</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_error</span><span class="p">(</span>
                         <span class="n">field</span><span class="p">,</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> is not a valid iteration folder. </span><span class="si">{</span><span class="n">chainID</span><span class="si">}</span><span class="s2"> &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> is not a valid branch folder. </span><span class="si">{</span><span class="n">chainID</span><span class="si">}</span><span class="s2"> &quot;</span>
                         <span class="s2">&quot;is not a valid chainID.&quot;</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">resname</span><span class="o">.</span><span class="n">isalpha</span><span class="p">()</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">resname</span><span class="o">.</span><span class="n">isupper</span><span class="p">():</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_error</span><span class="p">(</span>
                         <span class="n">field</span><span class="p">,</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> is not a valid iteration folder. </span><span class="si">{</span><span class="n">resname</span><span class="si">}</span><span class="s2"> &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> is not a valid branch folder. </span><span class="si">{</span><span class="n">resname</span><span class="si">}</span><span class="s2"> &quot;</span>
                         <span class="s2">&quot;is not a valid resname sequence.&quot;</span><span class="p">,</span>
                     <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_validate_contains_iteration_dirs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flag</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;_validate_contains_iteration_dirs</span>
+    <span class="k">def</span> <span class="nf">_validate_contains_branch_dirs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flag</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;_validate_contains_branch_dirs</span>
 
 <span class="sd">        The rule&#39;s arguments are validated against this schema:</span>
 <span class="sd">        {&#39;type&#39;: &#39;boolean&#39;}</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">))):</span>
             <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_validate_is_iteration_dir</span><span class="p">(</span><span class="n">flag</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_validate_is_branch_dir</span><span class="p">(</span><span class="n">flag</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_validate_warn_overrides</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;_validate_warn_overrides</span>

@@ -23,7 +23,7 @@ towards their targets. This workflow is outlined in Figure 1.
         Figure 1: The protocol's workflow with respect to its **blocks**.
 
 Many complexes can be generated on each run of this workflow and each of them will have MD data, scores, etc..
-We will refer to each complex, plus its data as **iteration**, while the set of **iterations** from the same
+We will refer to each complex, plus its data as **branch**, while the set of **branches** from the same
 run of this workflow is called an **epoch**.
 
 We will now make a review of each of the **blocks** depicted in Figure 1.
@@ -208,7 +208,7 @@ Refer to the Figure 2 for a graphical abstract of them and check the tutorials f
 .. figure:: ./resources/protocol_workflow.png
         :alt: enhanced workflow
 
-        Figure 2: the protocol's main concepts and the stages at which they act. An **iteration** is highlighted in green
+        Figure 2: the protocol's main concepts and the stages at which they act. An **branch** is highlighted in green
         and the **epoch** in pink.
 
 

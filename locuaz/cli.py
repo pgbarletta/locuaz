@@ -271,9 +271,9 @@ def set_branches(config: Dict) -> Dict:
     valid_branches = get_valid_branch_dirs(files_and_dirs, config)
 
     branches: PriorityQueue = PriorityQueue()
-    for branch_path in valid_branches:
-        nbr, *_ = branch_path.name.split("-")
-        branches.put((-int(nbr), branch_path))
+    for branc in valid_branches:
+        nbr, *_ = branc.split("-")
+        branches.put((-int(nbr), branc))
     # Branches are sorted by epoch number now
     while not branches.empty():
         config["paths"]["current_branches"] = []

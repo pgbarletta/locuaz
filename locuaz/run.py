@@ -30,16 +30,16 @@ def run_min_nvt_epoch(work_pjct: WorkProject) -> None:
         futuros_nvt = []
         gpu_id = {}
         pinoffset = {}
-        for idx, (iter_name, iter) in enumerate(epoch.items()):
+        for idx, (branch_name, iter) in enumerate(epoch.items()):
             
-            gpu_id[iter_name] = idx % ngpus
-            pinoffset[iter_name] = pinoffsets[idx % ngpus]
+            gpu_id[branch_name] = idx % ngpus
+            pinoffset[branch_name] = pinoffsets[idx % ngpus]
             
-            log.info(f"Queuing MIN of the branch {iter_name} to GPU {gpu_id[iter_name]} "
-            f"and pinoffset: {pinoffset[iter_name]}.")
+            log.info(f"Queuing MIN of the branch {branch_name} to GPU {gpu_id[branch_name]} "
+            f"and pinoffset: {pinoffset[branch_name]}.")
 
-            min = MDrun.min(iter.dir_handle, work_pjct=work_pjct, gpu_id = gpu_id[iter_name],
-                pinoffset=pinoffset[iter_name], out_name="min_" + work_pjct.name)
+            min = MDrun.min(iter.dir_handle, work_pjct=work_pjct, gpu_id = gpu_id[branch_name],
+                pinoffset=pinoffset[branch_name], out_name="min_" + work_pjct.name)
             futuros_min.append(ex.submit(min, iter.complex))
     
         for futu_min in cf.as_completed(futuros_min):
@@ -47,15 +47,15 @@ def run_min_nvt_epoch(work_pjct: WorkProject) -> None:
                 log.error(f"Exception while running MIN: {futu_min.exception()}")
                 
             _, min_complex = futu_min.result()
-            iter_name = '-'.join(min_complex.dir.dir_path.name.split('-')[1:])
-            iter = epoch[iter_name]
+            branch_name = '-'.join(min_complex.dir.dir_path.name.split('-')[1:])
+            iter = epoch[branch_name]
             
-            log.info(f"Queuing NVT of the branch {iter_name} to GPU {gpu_id[iter_name]} "
-            f"and pinoffset: {pinoffset[iter_name]}.")
+            log.info(f"Queuing NVT of the branch {branch_name} to GPU {gpu_id[branch_name]} "
+            f"and pinoffset: {pinoffset[branch_name]}.")
 
             nvt = MDrun.nvt(
-                Path(iter.dir_handle), work_pjct=work_pjct, gpu_id = gpu_id[iter_name],
-                pinoffset=pinoffset[iter_name], out_name="nvt_" + work_pjct.name)
+                Path(iter.dir_handle), work_pjct=work_pjct, gpu_id = gpu_id[branch_name],
+                pinoffset=pinoffset[branch_name], out_name="nvt_" + work_pjct.name)
             futuros_nvt.append(ex.submit(nvt, min_complex))
 
         for futu_nvt in cf.as_completed(futuros_nvt):
@@ -63,8 +63,8 @@ def run_min_nvt_epoch(work_pjct: WorkProject) -> None:
                 log.error(f"Exception while running NVT:  {futu_nvt.exception()} ")
                 
             _, nvt_complex = futu_nvt.result()
-            iter_name = '-'.join(nvt_complex.dir.dir_path.name.split('-')[1:])
-            epoch[iter_name].complex = nvt_complex
+            branch_name = '-'.join(nvt_complex.dir.dir_path.name.split('-')[1:])
+            epoch[branch_name].complex = nvt_complex
     epoch.nvt_done = True
 
 
@@ -80,33 +80,33 @@ def run_npt_epoch(work_pjct: WorkProject) -> None:
         gpu_id = {}
         pinoffset = {}
         futuros_npt = {}
-        for idx, (iter_name, iter) in enumerate(epoch.items()):
+        for idx, (branch_name, iter) in enumerate(epoch.items()):
             gpu_nbr = idx % ngpus
-            gpu_id[iter_name] = idx % ngpus
-            pinoffset[iter_name] = pinoffsets[idx % ngpus]
-            log.info(f"Queuing NPT of the branch {iter_name} to GPU {gpu_nbr} "
-            f"and pinoffset: {pinoffset[iter_name]}.")
+            gpu_id[branch_name] = idx % ngpus
+            pinoffset[branch_name] = pinoffsets[idx % ngpus]
+            log.info(f"Queuing NPT of the branch {branch_name} to GPU {gpu_nbr} "
+            f"and pinoffset: {pinoffset[branch_name]}.")
             
             npt = MDrun.npt(
                 iter.dir_handle, work_pjct=work_pjct, gpu_id = gpu_nbr,
-                pinoffset=pinoffset[iter_name], out_name=prefix + work_pjct.name)
+                pinoffset=pinoffset[branch_name], out_name=prefix + work_pjct.name)
             
             futu_npt = ex.submit(npt, iter.complex)
-            futuros_npt[futu_npt] = iter_name
+            futuros_npt[futu_npt] = branch_name
 
         for futu_npt in cf.as_completed(futuros_npt):
-            iter_name = futuros_npt[futu_npt]
+            branch_name = futuros_npt[futu_npt]
             if futu_npt.exception():
-                log.error(f"Exception while running NPT from branch: {iter_name}\n"
+                log.error(f"Exception while running NPT from branch: {branch_name}\n"
                     f"{futu_npt.exception()}")
-                del epoch[iter_name]
+                del epoch[branch_name]
                 continue
             all_atoms_in_box, npt_complex = futu_npt.result()
             
-            iter = epoch[iter_name]
+            iter = epoch[branch_name]
             iter.complex = npt_complex
             if not all_atoms_in_box and box_type == "triclinic":
-                log.error(f"{epoch.id}-{iter_name} has atoms outside the box. "
+                log.error(f"{epoch.id}-{branch_name} has atoms outside the box. "
                 "This run may not be apt to continue.")
                 iter.outside_box = True
 

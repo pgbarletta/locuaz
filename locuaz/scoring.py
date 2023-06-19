@@ -142,5 +142,5 @@ def score(work_pjct: WorkProject, branch: Branch) -> None:
             run_stats(branch, work_pjct.config, start=start, end=end, log=log)
             score_frames(work_pjct, branch, start=start, end=end)
             log.info(
-                f"Time elapsed during {branch.iter_name}'s {end - start} "
+                f"Time elapsed during {branch.branch_name}'s {end - start} "
                 f"frames scoring: {time.time() - start_time}")

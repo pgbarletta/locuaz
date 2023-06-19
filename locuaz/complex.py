@@ -65,7 +65,7 @@ class AbstractComplex(metaclass=ABCMeta):
         cls,
         *,
         name: str,
-        iter_path: Path,
+        branch_path: Path,
         target_chains: Iterable,
         binder_chains: Iterable,
         ignore_cpt: bool = True,
@@ -205,34 +205,34 @@ class GROComplex(AbstractComplex):
         cls,
         *,
         name: str,
-        iter_path: Path,
+        branch_path: Path,
         target_chains: Iterable,
         binder_chains: Iterable,
         ignore_cpt: bool = True,
         gmx_bin: str = "gmx",
     ) -> "GROComplex":
         try:
-            pdb = PDBStructure.from_path(iter_path / (name + ".pdb"))
-            gro = GROStructure.from_path(iter_path / (name + ".gro"))
+            pdb = PDBStructure.from_path(branch_path / (name + ".pdb"))
+            gro = GROStructure.from_path(branch_path / (name + ".gro"))
             top = ZipTopology.from_path_with_chains(
-                iter_path / (name + ".zip"),
+                branch_path / (name + ".zip"),
                 target_chains=target_chains,
                 binder_chains=binder_chains,
             )
 
             try:
-                traj = XtcTrajectory.from_path(iter_path / (name + ".xtc"))
+                traj = XtcTrajectory.from_path(branch_path / (name + ".xtc"))
             except FileNotFoundError:
                 try:
-                    traj = TrrTrajectory.from_path(iter_path / (name + ".trr"))
+                    traj = TrrTrajectory.from_path(branch_path / (name + ".trr"))
                 except FileNotFoundError as ee:
                     traj = None
-            tpr = TPRFile.from_path(iter_path / (name + ".tpr"))
+            tpr = TPRFile.from_path(branch_path / (name + ".tpr"))
             if ignore_cpt:
                 cpt = None
             else:
                 try:
-                    cpt = FileHandle(iter_path / (name + ".cpt"))
+                    cpt = FileHandle(branch_path / (name + ".cpt"))
                 except FileNotFoundError as e:
                     cpt = None
         except Exception as ee:
@@ -245,7 +245,7 @@ class GROComplex(AbstractComplex):
 
         return GROComplex(
             name,
-            dir=iter_path,
+            dir=branch_path,
             pdb=pdb,
             top=top,
             tra=traj,

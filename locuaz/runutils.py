@@ -205,7 +205,7 @@ class MDrun:
         # Build the new complex
         new_complex = type(complex).from_complex(
             name=self.out_name,
-            iter_path=Path(self.dir),
+            branch_path=Path(self.dir),
             target_chains=complex.top.target_chains,
             binder_chains=complex.top.binder_chains,
             gmx_bin="gmx",

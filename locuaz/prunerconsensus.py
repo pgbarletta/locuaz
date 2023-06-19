@@ -55,7 +55,7 @@ class PrunerConsensus(AbstractPruner):
             better_overall: bool = True
             rank_overall: int = 0
             for prev_iter in self.prev_epoch.top_branches.values():
-                better, rank = self.__beats_old_iter__(prev_iter, branch, threshold)
+                better, rank = self.__beats_old_branch__(prev_iter, branch, threshold)
                 better_overall &= better
                 rank_overall += rank
             if better_overall:
@@ -63,7 +63,7 @@ class PrunerConsensus(AbstractPruner):
 
         return better_iters
 
-    def __beats_old_iter__(self, old_iter: Branch, new_iter: Branch, threshold: int) -> Tuple[bool, int]:
+    def __beats_old_branch__(self, old_iter: Branch, new_iter: Branch, threshold: int) -> Tuple[bool, int]:
         """
         Parameters
         ----------
@@ -89,7 +89,7 @@ class PrunerConsensus(AbstractPruner):
         self.log.info(f"Scoring functions: {scoring_functions}")
         count = sum([old_iter.mean_scores[SF] >= new_iter.mean_scores[SF]
                      for SF in scoring_functions])
-        self.log.info(f"{new_iter.epoch_id}-{new_iter.iter_name} vs. {old_iter.epoch_id}-{old_iter.iter_name} "
+        self.log.info(f"{new_iter.epoch_id}-{new_iter.branch_name} vs. {old_iter.epoch_id}-{old_iter.branch_name} "
                       f"improves on {count} of {len(scoring_functions)} scoring functions.")
 
         return count >= threshold, count

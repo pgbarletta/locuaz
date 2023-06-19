@@ -117,58 +117,58 @@ def append_branches(
     if sorted_iters.empty():
         return ""
 
-    epoch_nbr, iter_path = sorted_iters.get()
+    epoch_nbr, branch_str = sorted_iters.get()
     if prev_epoch == 1 or epoch_nbr == prev_epoch:
-        branches.append(str(iter_path))
+        branches.append(branch_str)
     else:
-        sorted_iters.put((epoch_nbr, iter_path))
-        return str(iter_path)
+        sorted_iters.put((epoch_nbr, branch_str))
+        return branch_str
 
     return append_branches(sorted_iters, branches, epoch_nbr)
 
 
-def get_valid_iter_dirs(files_and_dirs: List[str], config: Dict) -> List[Path]:
-    """get_valid_iter_dirs(): filters out paths in input and returns valid branch paths
+def get_valid_branch_dirs(files_and_dirs: List[str], config: Dict) -> List[str]:
+    """get_valid_branch_dirs(): filters out paths in input and returns valid branch paths
 
     Args:
         files_and_dirs (List[str]): list of files and/or dirs
         config (dict): input config.
 
     Returns:
-        List[Path]: list of valid branch paths
+        List[str]: list of valid branch names
     """
 
     def is_incomplete(it_path: Path, name: str) -> bool:
         return not Path(it_path, f"{name}.pdb").is_file()
 
-    iter_dirs: List[Path] = []
+    branch_dirs: List[Path] = []
     incomplete_epochs: Set[str] = set()
     iters_per_epoch: Dict[str, int] = defaultdict(int)
     for filename in files_and_dirs:
-        dir_path = Path(filename)
+        dir_path = Path(config["paths"]["work"], filename)
         if dir_path.is_dir():
             try:
-                nbr, *iter_name = Path(dir_path).name.split("-")
+                nbr, *branch_name = Path(dir_path).name.split("-")
             except (Exception,):
                 # not an Epoch folder
                 continue
             if nbr.isnumeric():
                 assert int(nbr) <= config["protocol"]["epochs"], (
                     f"Max of {config['protocol']['epochs']} epochs solicited, but found branch "
-                    f"{nbr}-{'-'.join(iter_name)} . Aborting."
+                    f"{nbr}-{'-'.join(branch_name)} . Aborting."
                 )
                 iters_per_epoch[nbr] += 1
-                iter_dirs.append(dir_path)
+                branch_dirs.append(dir_path)
                 if is_incomplete(dir_path, config["main"]["name"]):
                     incomplete_epochs.add(nbr)
 
     valid_iters = []
-    for iter_path in iter_dirs:
-        nbr, *_ = iter_path.name.split("-")
+    for branch_path in branch_dirs:
+        nbr, *_ = branch_path.name.split("-")
         if nbr in incomplete_epochs:
-            backup_branch(iter_path)
+            backup_branch(branch_path)
         else:
-            valid_iters.append(iter_path)
+            valid_iters.append(branch_path.name)
 
     assert len(valid_iters) > 0, "No valid branches in input."
 
@@ -221,9 +221,9 @@ def get_tracking_files(config: Dict) -> bool:
         warn("Could not read tracking file.")
         return False
     try:
-        previous_branches = get_valid_iter_dirs(tracking["previous_branches"], config)
-        current_branches = get_valid_iter_dirs(tracking["current_branches"], config)
-        top_branches = get_valid_iter_dirs(tracking["top_branches"], config)
+        previous_branches = get_valid_branch_dirs(tracking["previous_branches"], config)
+        current_branches = get_valid_branch_dirs(tracking["current_branches"], config)
+        top_branches = get_valid_branch_dirs(tracking["top_branches"], config)
 
         if lacks_branches(current_branches, top_branches, config):
             warn("Will ignore the tracking file. The current branches field is invalid.")
@@ -268,24 +268,24 @@ def set_branches(config: Dict) -> Dict:
         ValueError: when there are no valid branch dirs.
     """
     files_and_dirs = glob.glob(str(Path(config["paths"]["work"], "*")))
-    valid_iters = get_valid_iter_dirs(files_and_dirs, config)
+    valid_branches = get_valid_branch_dirs(files_and_dirs, config)
 
-    iters: PriorityQueue = PriorityQueue()
-    for iter_path in valid_iters:
-        nbr, *_ = iter_path.name.split("-")
-        iters.put((-int(nbr), iter_path))
-    # Branchs are sorted by epoch number now
-    while not iters.empty():
+    branches: PriorityQueue = PriorityQueue()
+    for branch_path in valid_branches:
+        nbr, *_ = branch_path.name.split("-")
+        branches.put((-int(nbr), branch_path))
+    # Branches are sorted by epoch number now
+    while not branches.empty():
         config["paths"]["current_branches"] = []
-        iter_str = append_branches(iters, config["paths"]["current_branches"], 1)
+        branch_str = append_branches(branches, config["paths"]["current_branches"], 1)
 
         if lacks_branches(config["paths"]["current_branches"], [], config):
             # Start over, this time, the incomplete epoch will not be in `iters`.
             continue
 
-        if iter_str != "":
+        if branch_str != "":
             config["paths"]["previous_branches"] = []
-            append_branches(iters, config["paths"]["previous_branches"], 1)
+            append_branches(branches, config["paths"]["previous_branches"], 1)
         return config
     raise ValueError("No valid branches in work_dir. Aborting.")
 
@@ -354,11 +354,11 @@ def get_memory(config: Dict) -> Tuple[Set, List[List]]:
     # Get all the branches sorted by epoch
     iters: PriorityQueue = PriorityQueue()
     for filename in glob.glob(str(Path(config["paths"]["work"], "*"))):
-        iter_path = Path(filename)
-        if iter_path.is_dir():
-            nbr, *_ = Path(iter_path).name.split("-")
+        branch_path = Path(filename)
+        if branch_path.is_dir():
+            nbr, *_ = Path(branch_path).name.split("-")
             try:
-                iters.put((-int(nbr), iter_path))
+                iters.put((-int(nbr), branch_path))
             except ValueError:
                 # not valid branch folder
                 continue
@@ -374,7 +374,7 @@ def get_memory(config: Dict) -> Tuple[Set, List[List]]:
 
         # Reformat the paths
         epoch_iternames = [
-            Path(iter_str).name.split("-")[1:] for iter_str in epoch_iters_paths
+            Path(branch_str).name.split("-")[1:] for branch_str in epoch_iters_paths
         ]
         # Check in case the mutating chains/residues have changed:
         for iterchains in epoch_iternames:

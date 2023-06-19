@@ -87,7 +87,7 @@ class SPM4(AbstractMutationGenerator):
                 resSeq_idx=mut_idx_residue,
             )
 
-            self.mutations[branch.iter_name].append(mutation)
+            self.mutations[branch.branch_name].append(mutation)
             if len(remaining_branches) == 0:
                 # If all branches have been mutated at least once, and we still
                 # have branches to generate, restart `remaining_branches`.

@@ -100,7 +100,7 @@ class SPM4gmxmmpbsa(SPM4):
             List[int]: candidate resSeqs sorted by increasing ΔG
         """
         deltas = defaultdict(int)
-        for iter_name, branch in epoch.top_branches.items():
+        for branch_name, branch in epoch.top_branches.items():
             decomp_mmpbsa = Path(branch.score_dir, "gmxmmpbsa", "decomp_gmxmmpbsa.csv")
             assert decomp_mmpbsa.is_file(), f"No 'decomp_gmxmmpbsa.csv' in {Path(branch.score_dir, 'gmxmmpbsa')}. " \
                                             f"Cannot generate mutation. "

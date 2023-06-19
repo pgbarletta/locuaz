@@ -51,8 +51,8 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
             logger=log,
             probe_radius=work_pjct.config["generation"]["probe_radius"])
 
-        for old_iter_name, mutations in mutation_generator.items():
-            old_iter = old_epoch.top_branches[old_iter_name]
+        for old_branch_name, mutations in mutation_generator.items():
+            old_iter = old_epoch.top_branches[old_branch_name]
 
             if work_pjct.config["md"]["use_tleap"]:
                 # GROMACS renumbers resSeqs to strided numbering. If using Amber's continuous
@@ -67,21 +67,21 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
                 old_pdb = old_iter.complex.pdb
 
             for mutation in mutations:
-                iter_name, iter_resnames = old_iter.generate_name_resname(mutation)
-                iter_path = Path(work_pjct.dir_handle, f"{epoch_id}-{iter_name}")
+                branch_name, branch_resnames = old_iter.generate_name_resname(mutation)
+                branch_path = Path(work_pjct.dir_handle, f"{epoch_id}-{branch_name}")
 
                 this_iter = Branch(
-                    DirHandle(iter_path, make=True),
-                    iter_name=iter_name,
+                    DirHandle(branch_path, make=True),
+                    branch_name=branch_name,
                     chainIDs=old_iter.chainIDs,
-                    resnames=iter_resnames,
+                    resnames=branch_resnames,
                     resSeqs=old_iter.resSeqs,
                     parent=old_iter,
                     mutation=mutation)
 
-                init_wt = Path(iter_path, "init_wt.pdb")
+                init_wt = Path(branch_path, "init_wt.pdb")
                 sh.copy(old_pdb, init_wt)
-                log.info(f"New mutation: {mutation} on Epoch-Branch: {epoch_id}-{iter_name}")
+                log.info(f"New mutation: {mutation} on Epoch-Branch: {epoch_id}-{branch_name}")
 
                 # Mutate the PDB
                 with warnings.catch_warnings():
@@ -89,21 +89,21 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
                     try:
                         overlapped_pdb = mutator.on_pdb(
                             PDBStructure.from_path(init_wt),
-                            iter_path,
+                            branch_path,
                             mutation=mutation,
                             selection_complex=old_iter.complex.top.selection_complex,
                             selection_wations=old_iter.complex.top.selection_not_complex)
                     except AssertionError as e:
                         # Mutator failed. This position will still be memorized.
-                        log.info(f"Mutation of {iter_name} failed. Will try with another one. Backing-up {iter_path} .")
+                        log.info(f"Mutation of {branch_name} failed. Will try with another one. Backing-up {branch_path} .")
                         print(e, file=sys.stderr)
-                        failed_iter_path = Path(work_pjct.dir_handle, f"failed_{epoch_id}-{iter_name}")
-                        sh.move(iter_path, failed_iter_path)
+                        failed_branch_path = Path(work_pjct.dir_handle, f"failed_{epoch_id}-{branch_name}")
+                        sh.move(branch_path, failed_branch_path)
                         continue
                 remove_overlapping_solvent(
                     overlapped_pdb,
                     mutation.resSeq,
-                    Path(iter_path, f"{name}.pdb"),
+                    Path(branch_path, f"{name}.pdb"),
                     log,
                     use_tleap=work_pjct.config["md"]["use_tleap"],
                 )
@@ -113,13 +113,13 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
 
                 this_iter.complex = GROComplex.from_pdb(
                     name=name,
-                    input_dir=iter_path,
+                    input_dir=branch_path,
                     target_chains=work_pjct.config["target"]["chainID"],
                     binder_chains=work_pjct.config["binder"]["chainID"],
                     md_config=work_pjct.config["md"],
                     add_ions=True,
                 )
-                current_epoch[iter_name] = this_iter
+                current_epoch[branch_name] = this_iter
                 successful_mutations += 1
 
             # TODO: check if this works with mutations on different positions

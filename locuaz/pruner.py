@@ -15,13 +15,13 @@ def top_pruner(better_iters: PriorityQueue, prune: int) -> Dict[str, Branch]:
         prune (int): minimum number of branches returned
 
     Returns:
-        Dict[str, Branch]: map of top `iter_name:Branch` for the next epoch.
+        Dict[str, Branch]: map of top `branch_name:Branch` for the next epoch.
     """
 
     top_branches: Dict[str, Branch] = {}
     for i in range(prune):
         iter = better_iters.get()[1]
-        top_branches[iter.iter_name] = iter
+        top_branches[iter.branch_name] = iter
     return top_branches
 
 
@@ -34,7 +34,7 @@ def adaptive_pruner(better_iters: PriorityQueue, prune: int) -> Dict[str, Branch
         prune (int): unused
 
     Returns:
-        Dict[str, Branch]: map of top `iter_name:Branch` for the next epoch.
+        Dict[str, Branch]: map of top `branch_name:Branch` for the next epoch.
     """
     top_branches: Dict[str, Branch] = {}
     prev_count = 1
@@ -45,5 +45,5 @@ def adaptive_pruner(better_iters: PriorityQueue, prune: int) -> Dict[str, Branch
             assert len(top_branches) > 0, f"Logical error. This can't happen."
             break
         prev_count = count
-        top_branches[iter.iter_name] = iter
+        top_branches[iter.branch_name] = iter
     return top_branches

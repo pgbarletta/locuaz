@@ -51,7 +51,7 @@ def pairwise(iterable):
 @define
 class Branch:
     dir_handle: DirHandle = field(converter=DirHandle)  # type: ignore
-    iter_name: str = field(converter=str, kw_only=True)
+    branch_name: str = field(converter=str, kw_only=True)
     chainIDs: List[str] = field(kw_only=True, validator=validators.instance_of(list))
     resnames: List[str] = field(kw_only=True, validator=validators.instance_of(list))
     resSeqs: List[List[int]] = field(
@@ -70,8 +70,8 @@ class Branch:
     def __attrs_post_init__(self) -> None:
         try:
             self.epoch_id = int(Path(self.dir_handle).name.split("-")[0])
-        except Exception as bad_iter_name:
-            raise ValueError("Bad branch name.") from bad_iter_name
+        except Exception as bad_branch_name:
+            raise ValueError("Bad branch name.") from bad_branch_name
         self.scores = {}
         self.mean_scores = {}
         self.stats = {}
@@ -89,7 +89,7 @@ class Branch:
         if abs(avg_score) < std_score:
             log.warning(
                 f"{sf_name} score has a mean of {avg_score:.5f} and a std dev of {std_score:.5f}. "
-                f"This is too much variance. You might want to check {self.epoch_id}-{self.iter_name}"
+                f"This is too much variance. You might want to check {self.epoch_id}-{self.branch_name}"
             )
         return self.mean_scores[sf_name]
 
@@ -126,7 +126,7 @@ class Branch:
                 # No scoring folder
                 return False
                 # raise FileNotFoundError(
-                #     f"read_scores(): {self.iter_name} has no scores."
+                #     f"read_scores(): {self.branch_name} has no scores."
                 # ) from e
         for SF in scoring_functions:
             try:
@@ -134,7 +134,7 @@ class Branch:
                 with open(scores_fn, "r") as f:
                     self.set_score(SF, [float(linea.strip()) for linea in f], log)
             except FileNotFoundError as e:
-                log.warning(f"{self.epoch_id}-{self.iter_name} was not scored with {SF}.")
+                log.warning(f"{self.epoch_id}-{self.branch_name} was not scored with {SF}.")
                 return False
         return True
 
@@ -145,7 +145,7 @@ class Branch:
             return None
 
     def full_name(self) -> str:
-        return f"{self.epoch_id}-{self.iter_name}"
+        return f"{self.epoch_id}-{self.branch_name}"
 
     def __str__(self) -> str:
         return str(self.dir_handle)
@@ -167,7 +167,7 @@ class Branch:
         Returns:
             bool: first branch in alphabetical order according to its name.
         """
-        return self.iter_name < other.iter_name
+        return self.branch_name < other.branch_name
 
     def generate_name_resname(self, mutation: Mutation) -> Tuple[str, List[str]]:
         """
@@ -182,7 +182,7 @@ class Branch:
         -------
         branch_name and resnames: Tuple[str, List[str]]
         """
-        iter_name = ""
+        branch_name = ""
         new_branch_resnames = []
         for idx, (chainID, resname) in enumerate(zip(self.chainIDs, self.resnames)):
             if idx == mutation.chainID_idx:
@@ -191,11 +191,11 @@ class Branch:
             else:
                 # This one remains the same
                 new_resname = "".join([residue for residue in resname])
-            iter_name += f"-{chainID}_{new_resname}"
+            branch_name += f"-{chainID}_{new_resname}"
             new_branch_resnames.append(new_resname)
 
         # Drop the leading '-'
-        return iter_name[1:], new_branch_resnames
+        return branch_name[1:], new_branch_resnames
 
 
 @define
@@ -210,10 +210,10 @@ class Epoch(MutableMapping):
     def set_top_iter(self, config_paths: Dict) -> None:
         # First, check if a "top_branches" was set from a pickle tracking file.
         if "top_branches" in config_paths:
-            for top_it_full in config_paths["top_branches"]:
-                top_it_name = "-".join(Path(top_it_full).name.split("-")[1:])
+            for top_branch_str_with_epoch_nbr in config_paths["top_branches"]:
+                top_branch_str = '-'.join(top_branch_str_with_epoch_nbr.split('-')[1:])
                 try:
-                    self.top_branches[top_it_name] = self.branches[top_it_name]
+                    self.top_branches[top_branch_str] = self.branches[top_branch_str]
                 except Exception as e:
                     raise RuntimeError(
                         f"Could not set top branch from pickle tracking file. Aborting."
@@ -248,7 +248,7 @@ class Epoch(MutableMapping):
                 ), f"Logical error. This can't happen."
                 break
             prev_count = count
-            self.top_branches[branch.iter_name] = branch
+            self.top_branches[branch.branch_name] = branch
 
     def backup(self) -> None:
         for it in self.branches.values():
@@ -332,13 +332,13 @@ class WorkProject:
                 # Remove the working dir, so it can restart easily again.
                 sh.rmtree(Path(self.config["paths"]["work"]))
                 raise e
-            iter_name, chainIDs, resSeqs, resnames = self.__generate_branch_ID__(input_path)
+            branch_name, chainIDs, resSeqs, resnames = self.__generate_branch_ID__(input_path)
 
-            iter_path = Path(self.dir_handle, f"{starting_epoch}-{iter_name}")
-            assert not (iter_path.is_dir() or iter_path.is_file()), f"{iter_path} exists. Wrong input path."
+            branch_path = Path(self.dir_handle, f"{starting_epoch}-{branch_name}")
+            assert not (branch_path.is_dir() or branch_path.is_file()), f"{branch_path} exists. Wrong input path."
             this_iter = Branch(
-                DirHandle(iter_path, make=True),
-                iter_name=iter_name,
+                DirHandle(branch_path, make=True),
+                branch_name=branch_name,
                 chainIDs=chainIDs,
                 resnames=resnames,
                 resSeqs=resSeqs,
@@ -365,7 +365,7 @@ class WorkProject:
                 )
                 raise e_start_cpx
 
-            zero_epoch[iter_name] = this_iter
+            zero_epoch[branch_name] = this_iter
 
         zero_epoch.mutated_positions = set()
         # Finally, add the initial epoch.
@@ -378,21 +378,22 @@ class WorkProject:
         if "previous_branches" in self.config["paths"]:
             prev_epoch = Epoch(epoch_nbr - 1, branches={}, nvt_done=True, npt_done=True)
             prev_epoch.top_branches = {}
-            for iter_str in self.config["paths"]["previous_branches"]:
-                # Get `iter_name` from the input branch dir
-                iter_name, iter_path, this_iter = self.branch_from_str(iter_str)
+            for branch_str in self.config["paths"]["previous_branches"]:
+                # Get `branch_name` from the input branch dir
+                branch_name, branch_path, this_iter = self.branch_from_path(
+                    Path(self.config["paths"]["work"], branch_str))
                 try:
                     # Previous branches should be fully ran.
                     this_iter.complex = GROComplex.from_complex(
                         name=self.config["main"]["prefix"] + self.config["main"]["name"],
-                        iter_path=iter_path,
+                        branch_path=branch_path,
                         target_chains=self.config["target"]["chainID"],
                         binder_chains=self.config["binder"]["chainID"],
                         ignore_cpt=False,
                     )
                 except Exception as e_restart_cpx:
                     log.error(
-                        f"Could not build complex from previous branch: {iter_path}"
+                        f"Could not build complex from previous branch: {branch_path}"
                     )
                     raise e_restart_cpx
 
@@ -405,11 +406,11 @@ class WorkProject:
 
                 # Finally, add its mutation, if present.
                 try:
-                    this_iter.mutation = self.config["mutations"][iter_name]
+                    this_iter.mutation = self.config["mutations"][branch_name]
                 except KeyError:
                     this_iter.mutation = None
                 # Store it in the epoch.
-                prev_epoch[iter_name] = this_iter
+                prev_epoch[branch_name] = this_iter
 
             try:
                 prev_epoch.set_top_iter(self.config["paths"])
@@ -419,7 +420,7 @@ class WorkProject:
 
             top_itrs_str = " ; ".join(
                 [
-                    f"{branch.epoch_id}-{branch.iter_name}"
+                    f"{branch.epoch_id}-{branch.branch_name}"
                     for branch in prev_epoch.top_branches.values()
                 ]
             )
@@ -429,58 +430,58 @@ class WorkProject:
             self.new_epoch(prev_epoch)
 
         current_epoch = Epoch(epoch_nbr, branches={}, nvt_done=True, npt_done=True)
-        for iter_str in self.config["paths"]["current_branches"]:
-            # Get `iter_name` from the input branch dir
-            iter_name, iter_path, this_iter = self.branch_from_str(iter_str)
+        for branch_str in self.config["paths"]["current_branches"]:
+            # Get `branch_name` from the input branch dir
+            branch_name, branch_path, this_iter = self.branch_from_path(Path(self.config["paths"]["work"], branch_str))
             # Create complex with coordinates and topology (should be .zip)
             try:
                 cpx_name = self.config["main"]["prefix"] + self.config["main"]["name"]
                 this_iter.complex = GROComplex.from_complex(
                     name=cpx_name,
-                    iter_path=iter_path,
+                    branch_path=branch_path,
                     target_chains=self.config["target"]["chainID"],
                     binder_chains=self.config["binder"]["chainID"],
                     ignore_cpt=False,
                 )
             except RuntimeError:
                 try:
-                    log.info(f"{iter_path.name} didn't finish its NPT MD.")
+                    log.info(f"{branch_path.name} didn't finish its NPT MD.")
                     current_epoch.npt_done = False
 
                     cpx_name = "nvt_" + self.config["main"]["name"]
                     this_iter.complex = GROComplex.from_complex(
                         name=cpx_name,
-                        iter_path=iter_path,
+                        branch_path=branch_path,
                         target_chains=self.config["target"]["chainID"],
                         binder_chains=self.config["binder"]["chainID"],
                         ignore_cpt=True,
                     )
                 except RuntimeError:
                     try:
-                        log.info(f"{iter_path.name} didn't finish its NVT MD.")
+                        log.info(f"{branch_path.name} didn't finish its NVT MD.")
                         current_epoch.nvt_done = False
                         current_epoch.npt_done = False
 
                         cpx_name = self.config["main"]["name"]
                         this_iter.complex = GROComplex.from_complex(
                             name=cpx_name,
-                            iter_path=iter_path,
+                            branch_path=branch_path,
                             target_chains=self.config["target"]["chainID"],
                             binder_chains=self.config["binder"]["chainID"],
                             ignore_cpt=True,
                         )
                     except Exception as e_restart_cpx:
                         log.error(
-                            f"{iter_path} is in an invalid state. Cannot build complex from it."
+                            f"{branch_path} is in an invalid state. Cannot build complex from it."
                         )
                         raise e_restart_cpx
             # Finally, add its mutation, if present.
             try:
-                this_iter.mutation = self.config["mutations"][iter_name]
+                this_iter.mutation = self.config["mutations"][branch_name]
             except KeyError:
                 this_iter.mutation = None
             # Store it in the epoch.
-            current_epoch[iter_name] = this_iter
+            current_epoch[branch_name] = this_iter
 
         current_epoch.mutated_positions = set(self.config["misc"]["epoch_mutated_positions"])
 
@@ -488,22 +489,38 @@ class WorkProject:
         self.project_dag = self.config["project_dag"]
         self.project_mut_dag = self.config["project_mut_dag"]
 
-    def branch_from_str(self, iter_str: str) -> Tuple[str, Path, Branch]:
-        iter_path = Path(iter_str)
-        _, *name_by_chain = iter_path.name.split("-")
-        iter_name = "-".join(name_by_chain)
-        # `iter_name` comes from the input branch.
+    def branch_from_str(self, branch_str: str) -> Tuple[str, Path, Branch]:
+        branch_path = Path(branch_str)
+        _, *name_by_chain = branch_path.name.split("-")
+        branch_name = "-".join(name_by_chain)
+        # `branch_name` comes from the input branch.
         _, chainIDs, resSeqs, resnames = self.__generate_branch_ID__(
-            iter_path
+            branch_path
         )
         this_iter = Branch(
-            DirHandle(iter_path, make=False),
-            iter_name=iter_name,
+            DirHandle(branch_path, make=False),
+            branch_name=branch_name,
             chainIDs=chainIDs,
             resnames=resnames,
             resSeqs=resSeqs,
         )
-        return iter_name, iter_path, this_iter
+        return branch_name, branch_path, this_iter
+
+    def branch_from_path(self, branch_path: Path) -> Tuple[str, Path, Branch]:
+        _, *name_by_chain = branch_path.name.split("-")
+        branch_name = "-".join(name_by_chain)
+        # `branch_name` comes from the input branch.
+        _, chainIDs, resSeqs, resnames = self.__generate_branch_ID__(
+            branch_path
+        )
+        this_iter = Branch(
+            DirHandle(branch_path, make=False),
+            branch_name=branch_name,
+            chainIDs=chainIDs,
+            resnames=resnames,
+            resSeqs=resSeqs,
+        )
+        return branch_name, branch_path, this_iter
 
     def __add_scoring_functions__(self) -> None:
         for sf in self.config["scoring"]["functions"]:
@@ -549,10 +566,10 @@ class WorkProject:
             )
             resnames = self.__get_mutating_resname__(pdb_path, chainIDs, resSeqs)
 
-        iter_name = "-".join(
+        branch_name = "-".join(
             [f"{chainID}_{resname}" for chainID, resname in zip(chainIDs, resnames)]
         )
-        return iter_name, chainIDs, resSeqs, resnames
+        return branch_name, chainIDs, resSeqs, resnames
 
     def __check_input_pdb__(self, input_path: Path) -> None:
 
@@ -696,10 +713,10 @@ class WorkProject:
         if self.config["md"]["use_tleap"]:
             self.tleap_dir = DirHandle(Path(self.config["paths"]["tleap"]))
 
-    def get_tleap_into_iter(self, iter_dir: Path) -> None:
+    def get_tleap_into_iter(self, branch_dir: Path) -> None:
         if self.config["md"]["use_tleap"]:
             for file in os.listdir(Path(self.tleap_dir)):  # type: ignore
-                sh.copy(Path(self.tleap_dir, file), Path(iter_dir))  # type: ignore
+                sh.copy(Path(self.tleap_dir, file), Path(branch_dir))  # type: ignore
 
     def get_mem_aminoacids(self) -> Set[str]:
         set_of_aas: Set[str] = set()
@@ -761,19 +778,19 @@ class WorkProject:
         try:
             previous_branches: List[str] = []
             mutations: Dict[str, str] = {}
-            for iter_name, branch in self.epochs[-2].items():
-                previous_branches.append(str(branch.dir_handle))
-                mutations[iter_name] = branch.mutation
+            for branch_name, branch in self.epochs[-2].items():
+                previous_branches.append(Path(branch.dir_handle).name)
+                mutations[branch_name] = branch.mutation
 
             current_branches: List[str] = []
-            for iter_name, branch in self.epochs[-1].items():
-                current_branches.append(str(branch.dir_handle))
-                mutations[iter_name] = branch.mutation
+            for branch_name, branch in self.epochs[-1].items():
+                current_branches.append(Path(branch.dir_handle).name)
+                mutations[branch_name] = branch.mutation
 
             top_branches: List[str] = []
-            for iter_name, branch in self.epochs[-2].top_branches.items():
-                top_branches.append(str(branch.dir_handle))
-                mutations[iter_name] = branch.mutation
+            for branch_name, branch in self.epochs[-2].top_branches.items():
+                top_branches.append(Path(branch.dir_handle).name)
+                mutations[branch_name] = branch.mutation
 
             tracking = {
                 "previous_branches": previous_branches,

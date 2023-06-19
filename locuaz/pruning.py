@@ -32,13 +32,13 @@ def prune(work_pjct: WorkProject) -> None:
         this_epoch.top_branches: Dict[str, Branch] = {}
         while not better_iters_queue.empty():
             _, branch = better_iters_queue.get()
-            this_epoch.top_branches[branch.iter_name] = branch
+            this_epoch.top_branches[branch.branch_name] = branch
 
     if work_pjct.has_failed_memory:
         # If epoch was successful, we're appending an empty set, just to move the queue along.
         work_pjct.failed_mutated_positions.appendleft(failed_pos)
 
-    top_itrs_str = " ; ".join([f"{branch.epoch_id}-{branch.iter_name}"
+    top_itrs_str = " ; ".join([f"{branch.epoch_id}-{branch.branch_name}"
                                for branch in work_pjct.epochs[-1].top_branches.values()])
     log.info(f"Top branches: {top_itrs_str}")
 

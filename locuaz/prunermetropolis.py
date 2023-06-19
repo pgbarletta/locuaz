@@ -55,7 +55,7 @@ class PrunerMetropolis(AbstractPruner):
             better_overall: bool = True
             rank_overall: int = 0
             for prev_iter in self.prev_epoch.top_branches.values():
-                better, rank = self.__beats_old_iter__(prev_iter, branch, kT)
+                better, rank = self.__beats_old_branch__(prev_iter, branch, kT)
                 better_overall &= better
                 rank_overall += rank
             if better_overall:
@@ -63,7 +63,7 @@ class PrunerMetropolis(AbstractPruner):
 
         return better_iters
 
-    def __beats_old_iter__(self, old_iter: Branch, new_iter: Branch, kT: float) -> Tuple[bool, int]:
+    def __beats_old_branch__(self, old_iter: Branch, new_iter: Branch, kT: float) -> Tuple[bool, int]:
         """
         Parameters
         ----------
@@ -91,16 +91,16 @@ class PrunerMetropolis(AbstractPruner):
         old_energy = old_iter.mean_scores[sf]
         new_energy = new_iter.mean_scores[sf]
         if new_energy < old_energy:
-            self.log.info(f"{new_iter.epoch_id}-{new_iter.iter_name} vs. {old_iter.epoch_id}-{old_iter.iter_name} "
+            self.log.info(f"{new_iter.epoch_id}-{new_iter.branch_name} vs. {old_iter.epoch_id}-{old_iter.branch_name} "
                           f"improves on 1 scoring function.")
             return True, 1
         else:
             acceptance_probability = np.exp((old_energy - new_energy) / kT)
             if np.random.rand() < acceptance_probability:
-                self.log.info(f"{new_iter.epoch_id}-{new_iter.iter_name} vs. {old_iter.epoch_id}-{old_iter.iter_name} "
+                self.log.info(f"{new_iter.epoch_id}-{new_iter.branch_name} vs. {old_iter.epoch_id}-{old_iter.branch_name} "
                               f"is accepted.")
                 return True, 0
 
-        self.log.info(f"{new_iter.epoch_id}-{new_iter.iter_name} vs. {old_iter.epoch_id}-{old_iter.iter_name} "
+        self.log.info(f"{new_iter.epoch_id}-{new_iter.branch_name} vs. {old_iter.epoch_id}-{old_iter.branch_name} "
                       f"is rejected.")
         return False, 0

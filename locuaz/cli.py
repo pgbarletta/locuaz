@@ -188,6 +188,7 @@ def lacks_branches(current_branches: Union[List[str], List[Path]],
     Checks the integrity of the current epoch. This prevents restart errors after the protocol was interrupted
     during the initialization of new epochs, due to missing branches or incomplete branches (branch wasn't fully
     initialized).
+    
     Parameters
     ----------
     current_branches : Union[List[str], List[Path]]
@@ -199,6 +200,7 @@ def lacks_branches(current_branches: Union[List[str], List[Path]],
         top branches from the previous epoch.
     config : Dict[str, Any]
         user input config file.
+
     Returns
     -------
     lacks_branches: bool
@@ -222,19 +224,21 @@ def lacks_branches(current_branches: Union[List[str], List[Path]],
             return True
 
     # Check that a Complex can be built from each of the current_branches
-    try:
         for branch_fn in current_branches:
             branch_path = Path(config["paths"]["work"], branch_fn)
-            pdb = Path(branch_path, config["main"]["name"] + ".pdb")
-            gro = Path(branch_path, config["main"]["name"] + ".gro")
-            zip = Path(branch_path, config["main"]["name"] + ".zip")
-            tpr = Path(branch_path, config["main"]["name"] + ".tpr")
-            assert pdb.is_file() and gro.is_file() and zip.is_file() and tpr.is_file()
-    except AssertionError:
-        warn(f"Branch {branch_fn} is incomplete. Will back up the whole epoch and generate it again.")
-        for branch_fn in current_branches:
-            backup_branch(Path(config["paths"]["work"], branch_fn))
-        return True
+            pdb_file = Path(branch_path, config["main"]["name"] + ".pdb")
+            gro_file = Path(branch_path, config["main"]["name"] + ".gro")
+            zip_file = Path(branch_path, config["main"]["name"] + ".zip")
+            tpr_file = Path(branch_path, config["main"]["name"] + ".tpr")
+
+            try:
+                assert pdb_file.is_file() and gro_file.is_file() and zip_file.is_file() and tpr_file.is_file()
+            except AssertionError:
+                warn(f"Branch {branch_fn} is incomplete. Will back up the whole epoch and generate it again.")
+                for branch_fn in current_branches:
+                    backup_branch(Path(config["paths"]["work"], branch_fn))
+
+                return True
 
     return False
 
@@ -292,6 +296,7 @@ def get_tracking_files(config: Dict) -> bool:
         return False
 
     return True
+
 
 def set_branches(config: Dict) -> Dict:
     """set_branches Set config["paths"]["current_branches"],

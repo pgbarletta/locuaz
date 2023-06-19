@@ -2,6 +2,12 @@
 History
 =======
 
+0.4.1 (2023-06-)
+------------------
+ * Renamed ``Iteration`` abstraction to ``Branch``
+ * Made ``previous_branches``, ``current_branches``, ``top_branches`` variables in the tracking file ``tracking.pkl``
+   relative paths to the work dir. This allows the work dir to be moved around without errors.
+
 0.3.9 (2023-06-)
 ------------------
  * Added ``locuaz`` as executable.

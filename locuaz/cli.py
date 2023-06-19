@@ -184,6 +184,27 @@ def is_not_epoch_0(branches: Union[List[str], List[Path]], starting_epoch: int):
 
 def lacks_branches(current_branches: Union[List[str], List[Path]],
                    top_branches: Union[List[str], List[Path]], config: Dict[str, Any]) -> bool:
+    """
+    Checks the integrity of the current epoch. This prevents restart errors after the protocol was interrupted
+    during the initialization of new epochs, due to missing branches or incomplete branches (branch wasn't fully
+    initialized).
+    Parameters
+    ----------
+    current_branches : Union[List[str], List[Path]]
+        branches to be checked.
+    top_branches : Union[List[str], List[Path]]
+        used to determine the number of branches there should be in the current epoch.
+        If ``config["protocol"]["constant_width"] = True``, then the number of branches in the current epoch is just
+        ``config["protocol"]["new_branches"]``, if not, then 'new_branches' has to be multiplied by the number of
+        top branches from the previous epoch.
+    config : Dict[str, Any]
+        user input config file.
+    Returns
+    -------
+    lacks_branches: bool
+        indicates whether there are missing branches or not.
+    """
+    # First, check there are as many branches as there should be
     if config["protocol"]["prevent_fewer_branches"]:
         if config["protocol"]["constant_width"]:
             branches = config["protocol"]["new_branches"]
@@ -199,6 +220,22 @@ def lacks_branches(current_branches: Union[List[str], List[Path]],
             for branch_fn in current_branches:
                 backup_branch(Path(config["paths"]["work"], branch_fn))
             return True
+
+    # Check that a Complex can be built from each of the current_branches
+    try:
+        for branch_fn in current_branches:
+            branch_path = Path(config["paths"]["work"], branch_fn)
+            pdb = Path(branch_path, config["main"]["name"] + ".pdb")
+            gro = Path(branch_path, config["main"]["name"] + ".gro")
+            zip = Path(branch_path, config["main"]["name"] + ".zip")
+            tpr = Path(branch_path, config["main"]["name"] + ".tpr")
+            assert pdb.is_file() and gro.is_file() and zip.is_file() and tpr.is_file()
+    except AssertionError:
+        warn(f"Branch {branch_fn} is incomplete. Will back up the whole epoch and generate it again.")
+        for branch_fn in current_branches:
+            backup_branch(Path(config["paths"]["work"], branch_fn))
+        return True
+
     return False
 
 

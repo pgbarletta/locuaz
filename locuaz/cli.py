@@ -188,7 +188,7 @@ def lacks_branches(current_branches: Union[List[str], List[Path]],
     Checks the integrity of the current epoch. This prevents restart errors after the protocol was interrupted
     during the initialization of new epochs, due to missing branches or incomplete branches (branch wasn't fully
     initialized).
-    
+
     Parameters
     ----------
     current_branches : Union[List[str], List[Path]]

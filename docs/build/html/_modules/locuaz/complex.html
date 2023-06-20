@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.complex &mdash; locuaz 0.3.7 documentation</title>
+  <title>locuaz.complex &mdash; locuaz 0.4.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.3.7
+                0.4.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -161,7 +161,7 @@
         <span class="bp">cls</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">iter_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+        <span class="n">branch_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
         <span class="n">target_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span>
         <span class="n">binder_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span>
         <span class="n">ignore_cpt</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -301,34 +301,34 @@
         <span class="bp">cls</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">iter_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+        <span class="n">branch_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
         <span class="n">target_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span>
         <span class="n">binder_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span>
         <span class="n">ignore_cpt</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">gmx_bin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gmx&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;GROComplex&quot;</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">pdb</span> <span class="o">=</span> <span class="n">PDBStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">iter_path</span> <span class="o">/</span> <span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.pdb&quot;</span><span class="p">))</span>
-            <span class="n">gro</span> <span class="o">=</span> <span class="n">GROStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">iter_path</span> <span class="o">/</span> <span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.gro&quot;</span><span class="p">))</span>
+            <span class="n">pdb</span> <span class="o">=</span> <span class="n">PDBStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">branch_path</span> <span class="o">/</span> <span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.pdb&quot;</span><span class="p">))</span>
+            <span class="n">gro</span> <span class="o">=</span> <span class="n">GROStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">branch_path</span> <span class="o">/</span> <span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.gro&quot;</span><span class="p">))</span>
             <span class="n">top</span> <span class="o">=</span> <span class="n">ZipTopology</span><span class="o">.</span><span class="n">from_path_with_chains</span><span class="p">(</span>
-                <span class="n">iter_path</span> <span class="o">/</span> <span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.zip&quot;</span><span class="p">),</span>
+                <span class="n">branch_path</span> <span class="o">/</span> <span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.zip&quot;</span><span class="p">),</span>
                 <span class="n">target_chains</span><span class="o">=</span><span class="n">target_chains</span><span class="p">,</span>
                 <span class="n">binder_chains</span><span class="o">=</span><span class="n">binder_chains</span><span class="p">,</span>
             <span class="p">)</span>
 
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">traj</span> <span class="o">=</span> <span class="n">XtcTrajectory</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">iter_path</span> <span class="o">/</span> <span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.xtc&quot;</span><span class="p">))</span>
+                <span class="n">traj</span> <span class="o">=</span> <span class="n">XtcTrajectory</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">branch_path</span> <span class="o">/</span> <span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.xtc&quot;</span><span class="p">))</span>
             <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">traj</span> <span class="o">=</span> <span class="n">TrrTrajectory</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">iter_path</span> <span class="o">/</span> <span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.trr&quot;</span><span class="p">))</span>
+                    <span class="n">traj</span> <span class="o">=</span> <span class="n">TrrTrajectory</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">branch_path</span> <span class="o">/</span> <span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.trr&quot;</span><span class="p">))</span>
                 <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">ee</span><span class="p">:</span>
                     <span class="n">traj</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">tpr</span> <span class="o">=</span> <span class="n">TPRFile</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">iter_path</span> <span class="o">/</span> <span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.tpr&quot;</span><span class="p">))</span>
+            <span class="n">tpr</span> <span class="o">=</span> <span class="n">TPRFile</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">branch_path</span> <span class="o">/</span> <span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.tpr&quot;</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">ignore_cpt</span><span class="p">:</span>
                 <span class="n">cpt</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">cpt</span> <span class="o">=</span> <span class="n">FileHandle</span><span class="p">(</span><span class="n">iter_path</span> <span class="o">/</span> <span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.cpt&quot;</span><span class="p">))</span>
+                    <span class="n">cpt</span> <span class="o">=</span> <span class="n">FileHandle</span><span class="p">(</span><span class="n">branch_path</span> <span class="o">/</span> <span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.cpt&quot;</span><span class="p">))</span>
                 <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="n">cpt</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ee</span><span class="p">:</span>
@@ -341,7 +341,7 @@
 
         <span class="k">return</span> <span class="n">GROComplex</span><span class="p">(</span>
             <span class="n">name</span><span class="p">,</span>
-            <span class="nb">dir</span><span class="o">=</span><span class="n">iter_path</span><span class="p">,</span>
+            <span class="nb">dir</span><span class="o">=</span><span class="n">branch_path</span><span class="p">,</span>
             <span class="n">pdb</span><span class="o">=</span><span class="n">pdb</span><span class="p">,</span>
             <span class="n">top</span><span class="o">=</span><span class="n">top</span><span class="p">,</span>
             <span class="n">tra</span><span class="o">=</span><span class="n">traj</span><span class="p">,</span>

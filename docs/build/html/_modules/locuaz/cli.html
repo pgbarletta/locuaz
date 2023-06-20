@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.cli &mdash; locuaz 0.3.9 documentation</title>
+  <title>locuaz.cli &mdash; locuaz 0.4.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.3.9
+                0.4.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -213,58 +213,58 @@
     <span class="k">if</span> <span class="n">sorted_iters</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
         <span class="k">return</span> <span class="s2">&quot;&quot;</span>
 
-    <span class="n">epoch_nbr</span><span class="p">,</span> <span class="n">iter_path</span> <span class="o">=</span> <span class="n">sorted_iters</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+    <span class="n">epoch_nbr</span><span class="p">,</span> <span class="n">branch_str</span> <span class="o">=</span> <span class="n">sorted_iters</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">prev_epoch</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">epoch_nbr</span> <span class="o">==</span> <span class="n">prev_epoch</span><span class="p">:</span>
-        <span class="n">branches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">iter_path</span><span class="p">))</span>
+        <span class="n">branches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">branch_str</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">sorted_iters</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">epoch_nbr</span><span class="p">,</span> <span class="n">iter_path</span><span class="p">))</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">iter_path</span><span class="p">)</span>
+        <span class="n">sorted_iters</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">epoch_nbr</span><span class="p">,</span> <span class="n">branch_str</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">branch_str</span>
 
     <span class="k">return</span> <span class="n">append_branches</span><span class="p">(</span><span class="n">sorted_iters</span><span class="p">,</span> <span class="n">branches</span><span class="p">,</span> <span class="n">epoch_nbr</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_valid_iter_dirs"><a class="viewcode-back" href="../../misc.html#locuaz.cli.get_valid_iter_dirs">[docs]</a><span class="k">def</span> <span class="nf">get_valid_iter_dirs</span><span class="p">(</span><span class="n">files_and_dirs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;get_valid_iter_dirs(): filters out paths in input and returns valid branch paths</span>
+<div class="viewcode-block" id="get_valid_branch_dirs"><a class="viewcode-back" href="../../misc.html#locuaz.cli.get_valid_branch_dirs">[docs]</a><span class="k">def</span> <span class="nf">get_valid_branch_dirs</span><span class="p">(</span><span class="n">files_and_dirs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;get_valid_branch_dirs(): filters out paths in input and returns valid branch paths</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        files_and_dirs (List[str]): list of files and/or dirs</span>
 <span class="sd">        config (dict): input config.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        List[Path]: list of valid branch paths</span>
+<span class="sd">        List[str]: list of valid branch names</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">is_incomplete</span><span class="p">(</span><span class="n">it_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">it_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.pdb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span>
 
-    <span class="n">iter_dirs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">branch_dirs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">incomplete_epochs</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
     <span class="n">iters_per_epoch</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">files_and_dirs</span><span class="p">:</span>
-        <span class="n">dir_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">dir_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;work&quot;</span><span class="p">],</span> <span class="n">filename</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">dir_path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">nbr</span><span class="p">,</span> <span class="o">*</span><span class="n">iter_name</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
+                <span class="n">nbr</span><span class="p">,</span> <span class="o">*</span><span class="n">branch_name</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
             <span class="k">except</span> <span class="p">(</span><span class="ne">Exception</span><span class="p">,):</span>
                 <span class="c1"># not an Epoch folder</span>
                 <span class="k">continue</span>
             <span class="k">if</span> <span class="n">nbr</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">():</span>
                 <span class="k">assert</span> <span class="nb">int</span><span class="p">(</span><span class="n">nbr</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;epochs&quot;</span><span class="p">],</span> <span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;Max of </span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">][</span><span class="s1">&#39;epochs&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> epochs solicited, but found branch &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nbr</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="s1">&#39;-&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">iter_name</span><span class="p">)</span><span class="si">}</span><span class="s2"> . Aborting.&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nbr</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="s1">&#39;-&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">branch_name</span><span class="p">)</span><span class="si">}</span><span class="s2"> . Aborting.&quot;</span>
                 <span class="p">)</span>
                 <span class="n">iters_per_epoch</span><span class="p">[</span><span class="n">nbr</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="n">iter_dirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)</span>
+                <span class="n">branch_dirs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">is_incomplete</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]):</span>
                     <span class="n">incomplete_epochs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">nbr</span><span class="p">)</span>
 
     <span class="n">valid_iters</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">iter_path</span> <span class="ow">in</span> <span class="n">iter_dirs</span><span class="p">:</span>
-        <span class="n">nbr</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">iter_path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">branch_path</span> <span class="ow">in</span> <span class="n">branch_dirs</span><span class="p">:</span>
+        <span class="n">nbr</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">branch_path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">nbr</span> <span class="ow">in</span> <span class="n">incomplete_epochs</span><span class="p">:</span>
-            <span class="n">backup_branch</span><span class="p">(</span><span class="n">iter_path</span><span class="p">)</span>
+            <span class="n">backup_branch</span><span class="p">(</span><span class="n">branch_path</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">valid_iters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">iter_path</span><span class="p">)</span>
+            <span class="n">valid_iters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">branch_path</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_iters</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;No valid branches in input.&quot;</span>
 
@@ -272,15 +272,37 @@
 
 
 <div class="viewcode-block" id="is_not_epoch_0"><a class="viewcode-back" href="../../misc.html#locuaz.cli.is_not_epoch_0">[docs]</a><span class="k">def</span> <span class="nf">is_not_epoch_0</span><span class="p">(</span><span class="n">branches</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]],</span> <span class="n">starting_epoch</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">it_fn</span> <span class="ow">in</span> <span class="n">branches</span><span class="p">:</span>
-        <span class="n">it_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">it_fn</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">it_path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="n">starting_epoch</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">branch_name</span> <span class="ow">in</span> <span class="n">branches</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">branch_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="n">starting_epoch</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="lacks_branches"><a class="viewcode-back" href="../../misc.html#locuaz.cli.lacks_branches">[docs]</a><span class="k">def</span> <span class="nf">lacks_branches</span><span class="p">(</span><span class="n">current_branches</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]],</span>
                    <span class="n">top_branches</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]],</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks the integrity of the current epoch. This prevents restart errors after the protocol was interrupted</span>
+<span class="sd">    during the initialization of new epochs, due to missing branches or incomplete branches (branch wasn&#39;t fully</span>
+<span class="sd">    initialized).</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    current_branches : Union[List[str], List[Path]]</span>
+<span class="sd">        branches to be checked.</span>
+<span class="sd">    top_branches : Union[List[str], List[Path]]</span>
+<span class="sd">        used to determine the number of branches there should be in the current epoch.</span>
+<span class="sd">        If ``config[&quot;protocol&quot;][&quot;constant_width&quot;] = True``, then the number of branches in the current epoch is just</span>
+<span class="sd">        ``config[&quot;protocol&quot;][&quot;new_branches&quot;]``, if not, then &#39;new_branches&#39; has to be multiplied by the number of</span>
+<span class="sd">        top branches from the previous epoch.</span>
+<span class="sd">    config : Dict[str, Any]</span>
+<span class="sd">        user input config file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    lacks_branches: bool</span>
+<span class="sd">        indicates whether there are missing branches or not.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># First, check there are as many branches as there should be</span>
     <span class="k">if</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;prevent_fewer_branches&quot;</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;constant_width&quot;</span><span class="p">]:</span>
             <span class="n">branches</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;new_branches&quot;</span><span class="p">]</span>
@@ -293,9 +315,27 @@
         <span class="c1"># Check that the epoch wasn&#39;t cut short during its initialization.</span>
         <span class="c1"># This may happen if last run was cut during initialize_new_epoch().</span>
         <span class="k">if</span> <span class="n">nbr_branches</span> <span class="o">&lt;</span> <span class="n">branches</span> <span class="ow">and</span> <span class="n">is_not_epoch_0</span><span class="p">(</span><span class="n">current_branches</span><span class="p">,</span> <span class="n">starting_epoch</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">it_fn</span> <span class="ow">in</span> <span class="n">current_branches</span><span class="p">:</span>
-                <span class="n">backup_branch</span><span class="p">(</span><span class="n">it_fn</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">branch_fn</span> <span class="ow">in</span> <span class="n">current_branches</span><span class="p">:</span>
+                <span class="n">backup_branch</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;work&quot;</span><span class="p">],</span> <span class="n">branch_fn</span><span class="p">))</span>
             <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="c1"># Check that a Complex can be built from each of the current_branches</span>
+        <span class="k">for</span> <span class="n">branch_fn</span> <span class="ow">in</span> <span class="n">current_branches</span><span class="p">:</span>
+            <span class="n">branch_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;work&quot;</span><span class="p">],</span> <span class="n">branch_fn</span><span class="p">)</span>
+            <span class="n">pdb_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">branch_path</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.pdb&quot;</span><span class="p">)</span>
+            <span class="n">gro_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">branch_path</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.gro&quot;</span><span class="p">)</span>
+            <span class="n">zip_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">branch_path</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.zip&quot;</span><span class="p">)</span>
+            <span class="n">tpr_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">branch_path</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.tpr&quot;</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">pdb_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">gro_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">zip_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">tpr_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
+                <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Branch </span><span class="si">{</span><span class="n">branch_fn</span><span class="si">}</span><span class="s2"> is incomplete. Will back up the whole epoch and generate it again.&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">branch_fn</span> <span class="ow">in</span> <span class="n">current_branches</span><span class="p">:</span>
+                    <span class="n">backup_branch</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;work&quot;</span><span class="p">],</span> <span class="n">branch_fn</span><span class="p">))</span>
+
+                <span class="k">return</span> <span class="kc">True</span>
+
     <span class="k">return</span> <span class="kc">False</span></div>
 
 
@@ -317,9 +357,9 @@
         <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Could not read tracking file.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">previous_branches</span> <span class="o">=</span> <span class="n">get_valid_iter_dirs</span><span class="p">(</span><span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;previous_branches&quot;</span><span class="p">],</span> <span class="n">config</span><span class="p">)</span>
-        <span class="n">current_branches</span> <span class="o">=</span> <span class="n">get_valid_iter_dirs</span><span class="p">(</span><span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;current_branches&quot;</span><span class="p">],</span> <span class="n">config</span><span class="p">)</span>
-        <span class="n">top_branches</span> <span class="o">=</span> <span class="n">get_valid_iter_dirs</span><span class="p">(</span><span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;top_branches&quot;</span><span class="p">],</span> <span class="n">config</span><span class="p">)</span>
+        <span class="n">previous_branches</span> <span class="o">=</span> <span class="n">get_valid_branch_dirs</span><span class="p">(</span><span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;previous_branches&quot;</span><span class="p">],</span> <span class="n">config</span><span class="p">)</span>
+        <span class="n">current_branches</span> <span class="o">=</span> <span class="n">get_valid_branch_dirs</span><span class="p">(</span><span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;current_branches&quot;</span><span class="p">],</span> <span class="n">config</span><span class="p">)</span>
+        <span class="n">top_branches</span> <span class="o">=</span> <span class="n">get_valid_branch_dirs</span><span class="p">(</span><span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;top_branches&quot;</span><span class="p">],</span> <span class="n">config</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">lacks_branches</span><span class="p">(</span><span class="n">current_branches</span><span class="p">,</span> <span class="n">top_branches</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
             <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Will ignore the tracking file. The current branches field is invalid.&quot;</span><span class="p">)</span>
@@ -353,6 +393,7 @@
 
     <span class="k">return</span> <span class="kc">True</span></div>
 
+
 <div class="viewcode-block" id="set_branches"><a class="viewcode-back" href="../../misc.html#locuaz.cli.set_branches">[docs]</a><span class="k">def</span> <span class="nf">set_branches</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;set_branches Set config[&quot;paths&quot;][&quot;current_branches&quot;],</span>
 <span class="sd">    config[&quot;paths&quot;][&quot;previous_branches&quot;] and possibly config[&quot;paths&quot;][&quot;top_branches&quot;].</span>
@@ -364,24 +405,24 @@
 <span class="sd">        ValueError: when there are no valid branch dirs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">files_and_dirs</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;work&quot;</span><span class="p">],</span> <span class="s2">&quot;*&quot;</span><span class="p">)))</span>
-    <span class="n">valid_iters</span> <span class="o">=</span> <span class="n">get_valid_iter_dirs</span><span class="p">(</span><span class="n">files_and_dirs</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+    <span class="n">valid_branches</span> <span class="o">=</span> <span class="n">get_valid_branch_dirs</span><span class="p">(</span><span class="n">files_and_dirs</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
 
-    <span class="n">iters</span><span class="p">:</span> <span class="n">PriorityQueue</span> <span class="o">=</span> <span class="n">PriorityQueue</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">iter_path</span> <span class="ow">in</span> <span class="n">valid_iters</span><span class="p">:</span>
-        <span class="n">nbr</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">iter_path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
-        <span class="n">iters</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="o">-</span><span class="nb">int</span><span class="p">(</span><span class="n">nbr</span><span class="p">),</span> <span class="n">iter_path</span><span class="p">))</span>
-    <span class="c1"># Branchs are sorted by epoch number now</span>
-    <span class="k">while</span> <span class="ow">not</span> <span class="n">iters</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+    <span class="n">branches</span><span class="p">:</span> <span class="n">PriorityQueue</span> <span class="o">=</span> <span class="n">PriorityQueue</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">branc</span> <span class="ow">in</span> <span class="n">valid_branches</span><span class="p">:</span>
+        <span class="n">nbr</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">branc</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
+        <span class="n">branches</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="o">-</span><span class="nb">int</span><span class="p">(</span><span class="n">nbr</span><span class="p">),</span> <span class="n">branc</span><span class="p">))</span>
+    <span class="c1"># Branches are sorted by epoch number now</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">branches</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
         <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;current_branches&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">iter_str</span> <span class="o">=</span> <span class="n">append_branches</span><span class="p">(</span><span class="n">iters</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;current_branches&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">branch_str</span> <span class="o">=</span> <span class="n">append_branches</span><span class="p">(</span><span class="n">branches</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;current_branches&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">lacks_branches</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;current_branches&quot;</span><span class="p">],</span> <span class="p">[],</span> <span class="n">config</span><span class="p">):</span>
             <span class="c1"># Start over, this time, the incomplete epoch will not be in `iters`.</span>
             <span class="k">continue</span>
 
-        <span class="k">if</span> <span class="n">iter_str</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">branch_str</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
             <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;previous_branches&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">append_branches</span><span class="p">(</span><span class="n">iters</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;previous_branches&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">append_branches</span><span class="p">(</span><span class="n">branches</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;previous_branches&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">config</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No valid branches in work_dir. Aborting.&quot;</span><span class="p">)</span></div>
 
@@ -450,11 +491,11 @@
     <span class="c1"># Get all the branches sorted by epoch</span>
     <span class="n">iters</span><span class="p">:</span> <span class="n">PriorityQueue</span> <span class="o">=</span> <span class="n">PriorityQueue</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;work&quot;</span><span class="p">],</span> <span class="s2">&quot;*&quot;</span><span class="p">))):</span>
-        <span class="n">iter_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">iter_path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
-            <span class="n">nbr</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">iter_path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
+        <span class="n">branch_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">branch_path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+            <span class="n">nbr</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">branch_path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">iters</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="o">-</span><span class="nb">int</span><span class="p">(</span><span class="n">nbr</span><span class="p">),</span> <span class="n">iter_path</span><span class="p">))</span>
+                <span class="n">iters</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="o">-</span><span class="nb">int</span><span class="p">(</span><span class="n">nbr</span><span class="p">),</span> <span class="n">branch_path</span><span class="p">))</span>
             <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
                 <span class="c1"># not valid branch folder</span>
                 <span class="k">continue</span>
@@ -470,7 +511,7 @@
 
         <span class="c1"># Reformat the paths</span>
         <span class="n">epoch_iternames</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">Path</span><span class="p">(</span><span class="n">iter_str</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">for</span> <span class="n">iter_str</span> <span class="ow">in</span> <span class="n">epoch_iters_paths</span>
+            <span class="n">Path</span><span class="p">(</span><span class="n">branch_str</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">for</span> <span class="n">branch_str</span> <span class="ow">in</span> <span class="n">epoch_iters_paths</span>
         <span class="p">]</span>
         <span class="c1"># Check in case the mutating chains/residues have changed:</span>
         <span class="k">for</span> <span class="n">iterchains</span> <span class="ow">in</span> <span class="n">epoch_iternames</span><span class="p">:</span>

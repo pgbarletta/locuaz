@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>History &mdash; locuaz 0.3.9 documentation</title>
+  <title>History &mdash; locuaz 0.4.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -35,7 +35,7 @@
             locuaz
           </a>
               <div class="version">
-                0.3.9
+                0.4.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -69,12 +69,13 @@
 <li class="toctree-l1"><a class="reference internal" href="configurationfile.html">YAML configuration file</a></li>
 <li class="toctree-l1"><a class="reference internal" href="citing.html">Citing</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">History</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#id1">0.3.9 (2023-06-)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id2">0.3.8 (2023-05-)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id3">0.3.7 (2023-05-12)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id4">0.2.1 (2023-04-20)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id5">0.2.0 (2022-05-13)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id6">0.1.0 (2022-05-25)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">0.4.1 (2023-06-)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">0.3.9 (2023-06-)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">0.3.8 (2023-05-)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">0.3.7 (2023-05-12)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">0.2.1 (2023-04-20)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">0.2.0 (2022-05-13)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id7">0.1.0 (2022-05-25)</a></li>
 </ul>
 </li>
 </ul>
@@ -106,15 +107,25 @@
   <section id="history">
 <h1>History<a class="headerlink" href="#history" title="Permalink to this heading"></a></h1>
 <section id="id1">
-<h2>0.3.9 (2023-06-)<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
+<h2>0.4.1 (2023-06-)<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><p>Renamed <code class="docutils literal notranslate"><span class="pre">Iteration</span></code> abstraction to <code class="docutils literal notranslate"><span class="pre">Branch</span></code></p></li>
+<li><p>Made <code class="docutils literal notranslate"><span class="pre">previous_branches</span></code>, <code class="docutils literal notranslate"><span class="pre">current_branches</span></code>, <code class="docutils literal notranslate"><span class="pre">top_branches</span></code> variables in the tracking file <code class="docutils literal notranslate"><span class="pre">tracking.pkl</span></code>
+relative paths to the work dir. This allows the work dir to be moved around without errors.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="id2">
+<h2>0.3.9 (2023-06-)<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
 <blockquote>
 <div><ul class="simple">
 <li><p>Added <code class="docutils literal notranslate"><span class="pre">locuaz</span></code> as executable.</p></li>
 </ul>
 </div></blockquote>
 </section>
-<section id="id2">
-<h2>0.3.8 (2023-05-)<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<section id="id3">
+<h2>0.3.8 (2023-05-)<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
 <blockquote>
 <div><ul class="simple">
 <li><p><em>DLPacker</em> data files <code class="docutils literal notranslate"><span class="pre">library.npz</span></code> and <code class="docutils literal notranslate"><span class="pre">charges.rtp</span></code> are now included with the install. Only the weights have
@@ -122,8 +133,8 @@ to be downloaded and extracted into a dir whose path must be specified in the <c
 </ul>
 </div></blockquote>
 </section>
-<section id="id3">
-<h2>0.3.7 (2023-05-12)<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
+<section id="id4">
+<h2>0.3.7 (2023-05-12)<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h2>
 <blockquote>
 <div><ul class="simple">
 <li><p>Added Directed Acyclic Graph tracking of the protocol, so a plot of the progression of the protocol can be done,
@@ -134,20 +145,20 @@ both of the branch names and the mutations performed on each mutation.</p></li>
 </ul>
 </div></blockquote>
 </section>
-<section id="id4">
-<h2>0.2.1 (2023-04-20)<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h2>
+<section id="id5">
+<h2>0.2.1 (2023-04-20)<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p>The protocol is now fully installable by pip, provided that ambertools and tensorflow are present in the conda environment (no available pip install for them)</p></li>
 </ul>
 </section>
-<section id="id5">
-<h2>0.2.0 (2022-05-13)<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h2>
+<section id="id6">
+<h2>0.2.0 (2022-05-13)<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p>First fully functional release.</p></li>
 </ul>
 </section>
-<section id="id6">
-<h2>0.1.0 (2022-05-25)<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h2>
+<section id="id7">
+<h2>0.1.0 (2022-05-25)<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p>First release on PyPI.</p></li>
 </ul>

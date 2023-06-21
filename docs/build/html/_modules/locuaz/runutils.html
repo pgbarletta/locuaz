@@ -67,6 +67,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../configurationfile.html">YAML configuration file</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../citing.html">Citing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developing.html">Developing</a></li>
 </ul>
 
         </div>
@@ -247,7 +248,9 @@
         <span class="n">comando_md</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; -px </span><span class="si">{</span><span class="n">run_pux</span><span class="si">}</span><span class="s1"> -pf </span><span class="si">{</span><span class="n">run_puf</span><span class="si">}</span><span class="s1"> -e </span><span class="si">{</span><span class="n">run_edr</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="n">comando_md</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; -o </span><span class="si">{</span><span class="n">run_trr</span><span class="si">}</span><span class="s1"> -x </span><span class="si">{</span><span class="n">run_xtc</span><span class="si">}</span><span class="s1"> -g </span><span class="si">{</span><span class="n">run_log</span><span class="si">}</span><span class="s1"> -cpo </span><span class="si">{</span><span class="n">run_cpt</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="n">comando_md</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dev</span><span class="si">}</span><span class="s1"> -gpu_id </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gpu_id</span><span class="si">}</span><span class="s1">&#39;</span>
-        <span class="n">comando_md</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; -ntmpi </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_threads_mpi</span><span class="si">}</span><span class="s1"> -ntomp </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_threads_omp</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">comando_md</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; -ntomp </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_threads_omp</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_threads_mpi</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">comando_md</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39; -ntmpi </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_threads_mpi</span><span class="si">}</span><span class="s1">&#39;</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">p</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>

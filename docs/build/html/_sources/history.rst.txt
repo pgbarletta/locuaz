@@ -2,6 +2,10 @@
 History
 =======
 
+0.4.2 (2023-07-)
+------------------
+ * Made MPI usage on GROMACS MD optional, so systems without MPI support can still run.
+
 0.4.1 (2023-06-)
 ------------------
  * Renamed ``Iteration`` abstraction to ``Branch``
@@ -28,7 +32,6 @@ History
 0.2.1 (2023-04-20)
 ------------------
 * The protocol is now fully installable by pip, provided that ambertools and tensorflow are present in the conda environment (no available pip install for them)
-
 
 0.2.0 (2022-05-13)
 ------------------

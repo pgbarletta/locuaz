@@ -73,6 +73,7 @@ delivers efficient *in-silico* optimization.
     configurationfile
     citing
     history
+    developing
 
 Indices and tables
 ==================

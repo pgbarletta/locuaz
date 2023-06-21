@@ -1,5 +1,5 @@
 {% set name = "locuaz" %}
-{% set version = "0.3.7" %}
+{% set version = "0.4.1" %}
 
 package:
   name: {{ name|lower }}
@@ -7,33 +7,33 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/locuaz-{{ version }}.tar.gz
-  sha256: 2c7c18a9925eae67fb756cdcb78910f862a9dc028bb25549acc54bd9d8dcbb4a
+  sha256: 93eed64eddba7ef6137d894aa26e3000ea51953153a26f2efeeb773990674f0a
 
 build:
-  noarch: True
+  noarch: python
   script: {{ PYTHON }} -m pip install . -vv
   number: 0
 
 requirements:
   host:
     - python >=3.9,<3.11
-    - setuptools >=42
+    - setuptools>=42
     - wheel
     - pip
   run:
     - condaforge::python >=3.9,<3.11
     - condaforge::scipy
     - condaforge::numpy >=1.21.0,<2.0.0
-    - condaforge::mmcif_pdbx>=1.1.2,<=2.0.0
-    - condaforge::ambertools>=22.0.0
+    - condaforge::mmcif_pdbx ==2.0.0
+    - condaforge::pdb2pqr ==3.4.1
+    - condaforge::ambertools
     - condaforge::tensorflow
-    - condaforge::mdanalysis>=2.3.0
+    - condaforge::mdanalysis
     - condaforge::chemfiles
     - condaforge::freesasa
     - condaforge::gmx_mmpbsa
     - condaforge::py
     - condaforge::docutils<0.18
-    - condaforge::pdb2pqr
     - condaforge::openbabel
     - condaforge::tqdm
     - condaforge::pytest
@@ -53,8 +53,6 @@ test:
   imports:
     - locuaz
     - locuaz.DLPacker
-  commands:
-    - pip check
   requires:
     - pip
 

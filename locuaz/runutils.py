@@ -151,9 +151,7 @@ class MDrun:
         comando_md += f' -px {run_pux} -pf {run_puf} -e {run_edr}'
         comando_md += f' -o {run_trr} -x {run_xtc} -g {run_log} -cpo {run_cpt}'
         comando_md += f' {self.dev} -gpu_id {self.gpu_id}'
-        comando_md += f' -ntomp {self.num_threads_omp}'
-        if self.num_threads_mpi != 1:
-            comando_md += f' -ntmpi {self.num_threads_mpi}'
+        comando_md += f' -ntmpi {self.num_threads_mpi} -ntomp {self.num_threads_omp}'
 
         try:
             p = sp.run(

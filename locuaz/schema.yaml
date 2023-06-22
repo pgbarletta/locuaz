@@ -345,7 +345,7 @@ scoring:
             min: 1
             max: 256
             required: true
-        mpiprocs:
+        mpi_procs:
             type: integer
             min: 1
             max: 256

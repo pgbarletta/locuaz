@@ -527,7 +527,7 @@ class WorkProject:
             self.scorers[str(sf)] = scoringfunctions[sf](
                 self.config["paths"]["scoring_functions"],
                 nthreads=self.config["scoring"]["nthreads"],
-                mpiprocs=self.config["scoring"]["mpiprocs"],
+                mpi_procs=self.config["scoring"]["mpi_procs"],
             )
 
     @staticmethod

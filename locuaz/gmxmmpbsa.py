@@ -16,14 +16,14 @@ class GmxMmpbsa(AbstractScoringFunction):
     bin_name = "gmx_MMPBSA"
     TIMEOUT_PER_FRAME: int = 20
 
-    def __init__(self, sf_dir, *, nthreads=2, mpiprocs=2) -> None:
-        super().__init__(sf_dir, nthreads=nthreads, mpiprocs=mpiprocs)
+    def __init__(self, sf_dir, *, nthreads=2, mpi_procs=2) -> None:
+        super().__init__(sf_dir, nthreads=nthreads, mpi_procs=mpi_procs)
         # `gmxmmpbsa` isn't actually the binary, but the config file
         # This happens because gmx_MMPBSA is the only SF that comes with the protocol instead of
         # being an external binary.
         self.in_path = self.bin_path
-        if mpiprocs > 1:
-            self.bin_name = f"mpirun -np {mpiprocs} gmx_MMPBSA MPI"
+        if mpi_procs > 1:
+            self.bin_name = f"mpirun -np {mpi_procs} gmx_MMPBSA MPI"
 
     def __parse_outfile_list__(self, score_file: Union[Path, FileHandle], original_command: str) -> List[float]:
 

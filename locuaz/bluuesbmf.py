@@ -14,13 +14,12 @@ class BluuesBmf(AbstractScoringFunction):
     pdb2pqr_bin_path: str = "pdb2pqr30"
     TIMEOUT_PER_FRAME: int = 60
 
-    def __init__(self, sf_dir, *, nthreads=2, mpiprocs=2) -> None:
-        # super().__init__(sf_dir, nthreads=nthreads, mpiprocs=mpiprocs)
+    def __init__(self, sf_dir, *, nthreads=2, mpi_procs=2) -> None:
         self.name = str(self)
         self.root_dir = DirHandle(Path(sf_dir, self.name), make=False)
         self.bin_path = FileHandle(Path(self.root_dir, "bluues"))
         self.nthreads = nthreads
-        self.mpiprocs = mpiprocs
+        self.mpi_procs = mpi_procs
         self.bmf_bin_path = FileHandle(Path(self.root_dir, "bmf"))
 
 

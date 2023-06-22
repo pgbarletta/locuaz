@@ -13,11 +13,11 @@ class PiePisa(AbstractScoringFunction):
     parameters_handle: FileHandle
     TIMEOUT_PER_FRAME: int = 2
 
-    def __init__(self, sf_dir, *, nthreads=2, mpiprocs=2) -> None:
+    def __init__(self, sf_dir, *, nthreads=2, mpi_procs=2) -> None:
         self.name = str(self)
         self.root_dir = DirHandle(Path(sf_dir, self.name), make=False)
         self.nthreads = nthreads
-        self.mpiprocs = mpiprocs
+        self.mpi_procs = mpi_procs
 
         self.bin_path_pie = FileHandle(Path(self.root_dir, "pie"))
         self.parameters_handle_pie = FileHandle(Path(self.root_dir, f"pie.params"))

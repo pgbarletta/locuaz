@@ -12,8 +12,8 @@ class Pisa(AbstractScoringFunction):
     parameters_handle: FileHandle
     TIMEOUT_PER_FRAME: int = 2
 
-    def __init__(self, sf_dir, *, nthreads=2, mpiprocs=2) -> None:
-        super().__init__(sf_dir, nthreads=nthreads, mpiprocs=mpiprocs)
+    def __init__(self, sf_dir, *, nthreads=2, mpi_procs=2) -> None:
+        super().__init__(sf_dir, nthreads=nthreads, mpi_procs=mpi_procs)
         self.parameters_handle = FileHandle(Path(self.root_dir, f"{self.name}.params"))
 
     def __parse_stdout__(self, score_stdout: str, original_command: str) -> float:

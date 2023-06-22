@@ -13,8 +13,8 @@ class AutodockVina(AbstractScoringFunction):
     CPU_TO_MEM_RATIO: int = 1000
     TIMEOUT_PER_FRAME: int = 1
 
-    def __init__(self, sf_dir, *, nthreads=2, mpiprocs=2) -> None:
-        super().__init__(sf_dir, nthreads=nthreads, mpiprocs=mpiprocs)
+    def __init__(self, sf_dir, *, nthreads=2, mpi_procs=2) -> None:
+        super().__init__(sf_dir, nthreads=nthreads, mpi_procs=mpi_procs)
         self.max_concurrent_jobs = self.CPU_TO_MEM_RATIO * self.nthreads
         self.openbabel_bin = "obabel"
         self.rgx = re.compile("Estimated Free Energy of Binding\s*:\s([+-]?([0-9]*[.])?[0-9]+)")

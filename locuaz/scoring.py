@@ -95,7 +95,7 @@ def initialize_scoring_folder(
 
 def score_frames(work_pjct: WorkProject, branch: Branch, *, start: int, end: int) -> None:
     log = logging.getLogger(f"{work_pjct.name}")
-
+    log.info(f"Beginning scoring.")
     for sf_name, scorer in work_pjct.scorers.items():
         try:
             scores = scorer(start=start, end=end, frames_path=Path(branch.score_dir), cpx=branch.complex)

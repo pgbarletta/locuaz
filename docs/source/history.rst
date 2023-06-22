@@ -4,7 +4,9 @@ History
 
 0.4.2 (2023-07-)
 ------------------
- * Made MPI usage on GROMACS MD optional, so systems without MPI support can still run.
+ * Better login.
+ * Fixed ``gmxmmpbsa`` bug when MPI was not used.
+ * Added **Developing** section to the reference docs.
 
 0.4.1 (2023-06-)
 ------------------
@@ -18,7 +20,7 @@ History
 
 0.3.8 (2023-05-)
 ------------------
- * *DLPacker* data files ``library.npz`` and ``charges.rtp`` are now included with the install. Only the weights have
+ * *DLPacker* data files ``library.npz`` and ``charges.rtp`` are now inscluded with the install. Only the weights have
    to be downloaded and extracted into a dir whose path must be specified in the ``config['paths']['mutator']`` option.
 
 0.3.7 (2023-05-12)

@@ -223,7 +223,7 @@ scoring
     scoring:
         functions: [ bluuesbmf, piepisa, evoef2, gmx_mmpbsa ]
         nthreads: 80
-        mpiprocs: 2
+        mpi_procs: 2
         start: 50
         end: -1
 

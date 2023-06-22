@@ -274,14 +274,14 @@ scoring
     scoring:
         functions: [evoef2, bluues, piepisa, gmxmmpbsa]
         nthreads: 6
-        mpiprocs: 4
+        mpi_procs: 4
 
 Finally, we have the options related to scoring.
 
  * ``functions``: list of scoring functions to use. Check :ref:`configurationfile:schema.yaml` for a
    reference of all the currently available ones.
  * ``nthreads``: number of processes used for all the scoring functions but *gmxmmpbsa*.
- * ``mpiprocs``: number of MPI processors used for *gmxmmpbsa*. If set to ``1``, *gmxmmpbsa* will not use
+ * ``mpi_procs``: number of MPI processors used for *gmxmmpbsa*. If set to ``1``, *gmxmmpbsa* will not use
    its MPI capabilites. Useful if you are having issues with MPI, though it will be slow.
  * ``start``: Useful if you want to skip a few frames before starting to score. 0-indexed.
  * ``end``: Also 0-indexed. Defaults to ``-1``, which means all remaining frames.

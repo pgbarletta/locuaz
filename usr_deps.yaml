@@ -5,4 +5,3 @@ dependencies:
   - conda-forge::python>=3.9.15,<3.10
   - conda-forge::ambertools>=22.0.0
   - conda-forge::tensorflow
-  - conda-forge::numactl

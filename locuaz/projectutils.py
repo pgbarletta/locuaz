@@ -826,7 +826,7 @@ class WorkProject:
 
     def __draw_dags__(self, out_path: Path) -> None:
         # Try to set a nice plot size
-        w = max(dict(self.project_dag.degree()).values()) * 2.5 + 4
+        w = max(dict(self.project_dag.degree()).values()) * 3 + 4
         h = (nx.dag_longest_path_length(self.project_dag) + 1) * 4 + 2
         _, axes = plt.subplots(1, 2, figsize=(w, h))
         # _, axes = plt.subplots(1, 2)

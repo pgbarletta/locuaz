@@ -75,6 +75,17 @@ The following steps have to be completed in order to release a new version of *l
 10. Make a PR to the feedstock and update it following conda-forge `instructions`_
 
 
+Modifying the schema
+---------------------
+If at any time there's a change on the ``schema.yaml`` file, some documentation
+needs to be updated:
+
+1. ``configurationfile.rst``
+2. Tutorials: ``tutorialsimple.rst``, ``tutorialtleap.rst`` and ``tutorialligand.rst``.
+3. The configuration files in the example folders: ``/simple_tutorial/config_simple.yaml``,
+   ``/tleap_tutorial/config_nb.yaml`` and ``/ligand_tutorial/config_ligand.yaml``.
+   Then, update these new config files to the onedrive.
+
 .. _pypi: https://pypi.org/project/locuaz/#files
 .. _instructions: https://conda-forge.org/docs/maintainer/updating_pkgs.html
 

@@ -10,6 +10,7 @@ from itertools import product
 from pathlib import Path
 from queue import PriorityQueue
 from typing import Dict, List, Final, Set, Tuple, Union, Any
+import subprocess as sp
 
 import yaml
 import networkx as nx
@@ -17,6 +18,14 @@ import networkx as nx
 from locuaz.validatore import Validatore
 from locuaz.primitives import UserInputError
 
+def get_ngpus():
+    try:
+        p = sp.run("nvidia-smi -L | wc -l", stdout=sp.PIPE, stderr=sp.PIPE, shell=True, text=True)
+        ngpus = int(p.stdout)
+        assert ngpus != 0
+    except (ValueError, AssertionError, Exception):
+        raise RuntimeError("No GPUs detected. Can't run locuaz.")
+    return ngpus
 
 def get_dir_size(folder: Path) -> float:
     B_TO_MB: Final = 1048576
@@ -467,28 +476,20 @@ def main() -> Tuple[Dict, bool]:
     """Console script for locuaz."""
     simplefilter("default")
     parser = argparse.ArgumentParser()
+    parser.add_argument("config_file", help="File containing all the necessary parameters to run the protocol")
     parser.add_argument(
-        "config_file",
-        help="File containing all the necessary parameters to run the protocol",
-    )
-    parser.add_argument(
-        "-m",
-        "--mode",
+        "-m", "--mode",
         help="Choose whether to start/restart an evolution protocol or just perform a single task.",
         default="evolve",
         type=str,
         required=False,
-        choices=("evolve", "run", "run_npt", "score"),
-    )
-    parser.add_argument(
-        "--debug",
-        help="Set/unset debug mode.",
-        action="store_true",
-    )
+        choices=("evolve", "run", "run_npt", "score"))
+    parser.add_argument("--debug", help="Set/unset debug mode.", action="store_true")
     args = parser.parse_args()
 
     raw_config = get_raw_config(args.config_file)
     config, starts = validate_input(raw_config, args.mode, args.debug)
+    get_ngpus()
     set_statistics(config)
     config["misc"] = {}
     if starts:

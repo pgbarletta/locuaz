@@ -3,7 +3,7 @@ import os
 import pickle
 import shutil as sh
 import time
-from collections import deque
+from collections import deque, Counter
 from collections.abc import MutableMapping
 # TODO: replace own pairwise with itertools' on 3.10
 # from itertools import pairwise
@@ -825,11 +825,13 @@ class WorkProject:
         return next(iter(self.epochs[0].items()))
 
     def __draw_dags__(self, out_path: Path) -> None:
-        # Try to set a nice plot size
-        w = max(dict(self.project_dag.degree()).values()) * 3 + 4
+        # Try to set a nice plot size. The necessary width may still be underestimated, since the nodes may be
+        # continually going to one side, making the necessary width higher, even if the tree-width is not that high.
+        anchos = Counter([int(node.split('-')[0]) for node in self.project_dag.nodes])
+        w = anchos.most_common()[0][1] * 5 + 4
         h = (nx.dag_longest_path_length(self.project_dag) + 1) * 4 + 2
-        _, axes = plt.subplots(1, 2, figsize=(w, h))
-        # _, axes = plt.subplots(1, 2)
+        fig, axes = plt.subplots(1, 2, figsize=(w, h))
+        fig.tight_layout()
 
         ##### Branchs graph
         plt.sca(axes[0])
@@ -852,27 +854,6 @@ class WorkProject:
         # Remove axes and save.
         axes[0].set_axis_off()
         axes[1].set_axis_off()
-        plt.savefig(out_path)
-
-    @staticmethod
-    def draw_dag(dag: nx.Graph, out_path: Path, *, reformat: bool = False) -> None:
-        node_size = 4000
-        w = max(dict(dag.degree()).values()) * 2 + 2
-        h = (nx.dag_longest_path_length(dag) + 1) * 4 + 2
-        plt.figure(figsize=(w, h))
-
-        if reformat:
-            # For a better display of the branches names.
-            label_remap = {node: node.replace('-', '\n') for node in dag.nodes}
-            dag = nx.relabel_nodes(dag, label_remap)
-
-            # Adjuste node and plot sizes, so it fits nicely, hopefully.
-            one_label = next(iter(label_remap.keys()))
-            node_size = max([len(piece) for piece in one_label.split('\n')]) * 500
-
-        # Plot and save
-        pos = nx.drawing.nx_agraph.graphviz_layout(dag, prog="dot")
-        nx.draw(dag, pos, with_labels=True, node_size=node_size, node_color="lightblue", font_size=10)
         plt.savefig(out_path)
 
 

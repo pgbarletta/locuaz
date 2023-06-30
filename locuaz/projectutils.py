@@ -385,7 +385,7 @@ class WorkProject:
                 try:
                     # Previous branches should be fully ran.
                     this_iter.complex = GROComplex.from_complex(
-                        name=self.config["main"]["prefix"] + self.config["main"]["name"],
+                        name=f'npt_{self.config["main"]["name"]}',
                         branch_path=branch_path,
                         target_chains=self.config["target"]["chainID"],
                         binder_chains=self.config["binder"]["chainID"],
@@ -435,7 +435,7 @@ class WorkProject:
             branch_name, branch_path, this_iter = self.branch_from_path(Path(self.config["paths"]["work"], branch_str))
             # Create complex with coordinates and topology (should be .zip)
             try:
-                cpx_name = self.config["main"]["prefix"] + self.config["main"]["name"]
+                cpx_name = f'npt_{self.config["main"]["name"]}'
                 this_iter.complex = GROComplex.from_complex(
                     name=cpx_name,
                     branch_path=branch_path,
@@ -561,9 +561,7 @@ class WorkProject:
             resnames = self.__get_mutating_resname__(pdb_path, chainIDs, resSeqs)
         except FileNotFoundError:
             # Give it another chance, we only need the PDB for topology info.
-            pdb_path = input_path / (
-                    self.config["main"]["prefix"] + self.config["main"]["name"] + ".pdb"
-            )
+            pdb_path = input_path / f'npt_{self.config["main"]["name"]}.pdb'
             resnames = self.__get_mutating_resname__(pdb_path, chainIDs, resSeqs)
 
         branch_name = "-".join(

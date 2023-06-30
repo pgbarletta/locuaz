@@ -67,6 +67,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../configurationfile.html">YAML configuration file</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../citing.html">Citing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developing.html">Developing</a></li>
 </ul>
 
         </div>
@@ -191,7 +192,7 @@
 
 <div class="viewcode-block" id="score_frames"><a class="viewcode-back" href="../../scoringfunctions.html#locuaz.scoring.score_frames">[docs]</a><span class="k">def</span> <span class="nf">score_frames</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">:</span> <span class="n">WorkProject</span><span class="p">,</span> <span class="n">branch</span><span class="p">:</span> <span class="n">Branch</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Beginning scoring.&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">sf_name</span><span class="p">,</span> <span class="n">scorer</span> <span class="ow">in</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">scorers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">scores</span> <span class="o">=</span> <span class="n">scorer</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> <span class="n">frames_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">branch</span><span class="o">.</span><span class="n">score_dir</span><span class="p">),</span> <span class="n">cpx</span><span class="o">=</span><span class="n">branch</span><span class="o">.</span><span class="n">complex</span><span class="p">)</span>

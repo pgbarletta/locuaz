@@ -67,6 +67,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../configurationfile.html">YAML configuration file</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../citing.html">Citing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developing.html">Developing</a></li>
 </ul>
 
         </div>
@@ -106,12 +107,23 @@
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">PriorityQueue</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Final</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">import</span> <span class="nn">subprocess</span> <span class="k">as</span> <span class="nn">sp</span>
 
 <span class="kn">import</span> <span class="nn">yaml</span>
 <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
 
 <span class="kn">from</span> <span class="nn">locuaz.validatore</span> <span class="kn">import</span> <span class="n">Validatore</span>
 <span class="kn">from</span> <span class="nn">locuaz.primitives</span> <span class="kn">import</span> <span class="n">UserInputError</span>
+
+
+<div class="viewcode-block" id="get_ngpus"><a class="viewcode-back" href="../../misc.html#locuaz.cli.get_ngpus">[docs]</a><span class="k">def</span> <span class="nf">get_ngpus</span><span class="p">():</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;nvidia-smi -L | wc -l&quot;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">ngpus</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">ngpus</span> <span class="o">!=</span> <span class="mi">0</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">AssertionError</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No GPUs detected. Can&#39;t run locuaz.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ngpus</span></div>
 
 
 <div class="viewcode-block" id="get_dir_size"><a class="viewcode-back" href="../../misc.html#locuaz.cli.get_dir_size">[docs]</a><span class="k">def</span> <span class="nf">get_dir_size</span><span class="p">(</span><span class="n">folder</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -196,6 +208,18 @@
         <span class="k">assert</span> <span class="n">t</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Threshold (</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">) should be equal or lower than the number of scoring functions (</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">)&quot;</span>
     <span class="k">elif</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;pruning&quot;</span><span class="p">][</span><span class="s2">&quot;pruner&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;metropolis&quot;</span><span class="p">:</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;scoring&quot;</span><span class="p">][</span><span class="s2">&quot;functions&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Can only use 1 scoring function when pruner is &#39;metropolis&#39;.&quot;</span>
+
+    <span class="c1"># Check MD related options</span>
+    <span class="n">numa_regions</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;md&quot;</span><span class="p">][</span><span class="s2">&quot;numa_regions&quot;</span><span class="p">]</span>
+    <span class="n">ngpus</span> <span class="o">=</span> <span class="n">get_ngpus</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">numa_regions</span> <span class="o">&lt;=</span> <span class="n">ngpus</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;There can&#39;t be more NUMA regions that GPUs available. </span><span class="si">{</span><span class="n">numa_regions</span><span class="si">=}</span><span class="s2"> -- </span><span class="si">{</span><span class="n">ngpus</span><span class="si">=}</span><span class="s2">&quot;</span>
+    <span class="n">all_threads</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sched_getaffinity</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
+    <span class="k">assert</span> <span class="n">numa_regions</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_threads</span><span class="p">),</span>\
+        <span class="sa">f</span><span class="s2">&quot;There can&#39;t be more NUMA regions than threads available. </span><span class="si">{</span><span class="n">numa_regions</span><span class="si">=}</span><span class="s2"> -- </span><span class="si">{</span><span class="n">all_threads</span><span class="si">=}</span><span class="s2">&quot;</span>
+    <span class="k">if</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;md&quot;</span><span class="p">][</span><span class="s2">&quot;mps&quot;</span><span class="p">]:</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;nvidia-cuda-mps-control -d&quot;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;command not found&quot;</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">stderr</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not start the MPS server. Error msg: </span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">stderr</span><span class="si">}</span><span class="s2">. Aborting.&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">config</span><span class="p">,</span> <span class="n">start</span></div>
 
@@ -319,7 +343,7 @@
                 <span class="n">backup_branch</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;work&quot;</span><span class="p">],</span> <span class="n">branch_fn</span><span class="p">))</span>
             <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="c1"># Check that a Complex can be built from each of the current_branches</span>
+        <span class="c1"># Check that a Complex can be built from each of the current_branches</span>
         <span class="k">for</span> <span class="n">branch_fn</span> <span class="ow">in</span> <span class="n">current_branches</span><span class="p">:</span>
             <span class="n">branch_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;work&quot;</span><span class="p">],</span> <span class="n">branch_fn</span><span class="p">)</span>
             <span class="n">pdb_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">branch_path</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.pdb&quot;</span><span class="p">)</span>
@@ -563,24 +587,15 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Console script for locuaz.&quot;&quot;&quot;</span>
     <span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;config_file&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;File containing all the necessary parameters to run the protocol&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;config_file&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;File containing all the necessary parameters to run the protocol&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-m&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;--mode&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;--mode&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Choose whether to start/restart an evolution protocol or just perform a single task.&quot;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="s2">&quot;evolve&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;evolve&quot;</span><span class="p">,</span> <span class="s2">&quot;run&quot;</span><span class="p">,</span> <span class="s2">&quot;run_npt&quot;</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="p">),</span>
-    <span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;--debug&quot;</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Set/unset debug mode.&quot;</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;evolve&quot;</span><span class="p">,</span> <span class="s2">&quot;run&quot;</span><span class="p">,</span> <span class="s2">&quot;run_npt&quot;</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="p">))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--debug&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Set/unset debug mode.&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">)</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 
     <span class="n">raw_config</span> <span class="o">=</span> <span class="n">get_raw_config</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">config_file</span><span class="p">)</span>
@@ -616,11 +631,15 @@
                 <span class="n">config</span><span class="p">[</span><span class="s2">&quot;misc&quot;</span><span class="p">][</span><span class="s2">&quot;epoch_mutated_positions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
     <span class="c1"># Set up environment</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;OMP_PLACES&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;threads&quot;</span>
-    <span class="n">omp_procs_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;md&quot;</span><span class="p">][</span><span class="s2">&quot;omp_procs&quot;</span><span class="p">])</span>
-    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;OMP_NUM_THREADS&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="n">omp_procs_str</span><span class="p">:</span>
-        <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Setting &#39;OMP_NUM_THREADS&#39; environment variable to input &#39;omp_procs&#39; </span><span class="si">{</span><span class="n">omp_procs_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;OMP_NUM_THREADS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">omp_procs_str</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">omp_procs_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;md&quot;</span><span class="p">][</span><span class="s2">&quot;omp_procs&quot;</span><span class="p">])</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;OMP_PLACES&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;threads&quot;</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;OMP_NUM_THREADS&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="n">omp_procs_str</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Setting &#39;OMP_NUM_THREADS&#39; environment variable to input &#39;omp_procs&#39; </span><span class="si">{</span><span class="n">omp_procs_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;OMP_NUM_THREADS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">omp_procs_str</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="c1"># User asked for MPS.</span>
+        <span class="k">pass</span>
 
     <span class="k">return</span> <span class="n">config</span><span class="p">,</span> <span class="n">starts</span></div>
 </pre></div>

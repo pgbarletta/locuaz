@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.validatore &mdash; locuaz 0.3.9 documentation</title>
+  <title>locuaz.validatore &mdash; locuaz 0.4.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.3.9
+                0.4.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -67,6 +67,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../configurationfile.html">YAML configuration file</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../citing.html">Citing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developing.html">Developing</a></li>
 </ul>
 
         </div>
@@ -367,7 +368,22 @@
             <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;dlpr&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">r</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_error</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> needs a `reconstruct_radius`&quot;</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">value</span> <span class="o">!=</span> <span class="s2">&quot;dlpr&quot;</span> <span class="ow">and</span> <span class="n">r</span><span class="p">:</span>
-                <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: `</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">` does not make use of `reconstruct_radius`.&quot;</span><span class="p">)</span></div>
+                <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: `</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">` does not make use of `reconstruct_radius`.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_validate_forbidden_if_true_mandatory_if_false</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">others</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;_validate_forbidden_if_true_mandatory_if_false</span>
+
+<span class="sd">        The rule&#39;s arguments are validated against this schema:</span>
+<span class="sd">        {&#39;type&#39;: &#39;list&#39;}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">others</span><span class="p">:</span>
+            <span class="n">forbidden_opts</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">others</span><span class="p">)</span>
+            <span class="n">specified_opts</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">document</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">forbidden_opts</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">specified_opts</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_error</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot; is set. The following options cannot be also set: </span><span class="si">{</span><span class="n">others</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">forbidden_opts</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">specified_opts</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_error</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot; is not set. The following options must be set: </span><span class="si">{</span><span class="n">others</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

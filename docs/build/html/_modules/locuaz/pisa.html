@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.pisa &mdash; locuaz 0.3.7 documentation</title>
+  <title>locuaz.pisa &mdash; locuaz 0.4.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.3.7
+                0.4.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -67,6 +67,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../configurationfile.html">YAML configuration file</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../citing.html">Citing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developing.html">Developing</a></li>
 </ul>
 
         </div>
@@ -108,8 +109,8 @@
     <span class="n">parameters_handle</span><span class="p">:</span> <span class="n">FileHandle</span>
     <span class="n">TIMEOUT_PER_FRAME</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sf_dir</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">nthreads</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">mpiprocs</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sf_dir</span><span class="p">,</span> <span class="n">nthreads</span><span class="o">=</span><span class="n">nthreads</span><span class="p">,</span> <span class="n">mpiprocs</span><span class="o">=</span><span class="n">mpiprocs</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sf_dir</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">nthreads</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">mpi_procs</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sf_dir</span><span class="p">,</span> <span class="n">nthreads</span><span class="o">=</span><span class="n">nthreads</span><span class="p">,</span> <span class="n">mpi_procs</span><span class="o">=</span><span class="n">mpi_procs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parameters_handle</span> <span class="o">=</span> <span class="n">FileHandle</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.params&quot;</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">__parse_stdout__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score_stdout</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">original_command</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>

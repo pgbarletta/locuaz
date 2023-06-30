@@ -106,12 +106,7 @@ def run_npt_epoch(work_pjct: WorkProject) -> None:
             iter = epoch[branch_name]
             iter.complex = npt_complex
             if not all_atoms_in_box and box_type == "triclinic":
-                log.error(f"{epoch.id}-{branch_name} has atoms outside the box. "
-                "This run may not be apt to continue.")
-                iter.outside_box = True
+                log.error(f"{epoch.id}-{branch_name} has atoms outside the box. This run will not be scored.")
+                branch.outside_box = True
 
-            
     epoch.npt_done = True
-
-
-        

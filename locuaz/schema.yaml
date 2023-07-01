@@ -47,10 +47,6 @@ main:
             required: true
             default: "evolve"
             allowed: ["evolve", "run", "score"]
-        prefix:
-            type: string
-            required: false
-            default: "npt_"
         starting_epoch:
             type: integer
             default: 0
@@ -208,28 +204,35 @@ md:
                 npt_mdp:
                     type: string
                     default: "npt.mdp"
+        mps:
+            type: boolean
+            default: false
+            forbidden_if_true_mandatory_if_false: [ngpus, mpi_procs, omp_procs, pinoffsets]
+        numa_regions:
+            type: integer
+            allowed: [1, 2, 4, 8]
+            default: 4
         ngpus:
             type: integer
             min: 1
             max: 12
-            required: true
-            warn_thread_availability: [mpi_procs, omp_procs]
+            required: false
             same_as_length_of: pinoffsets
         mpi_procs:
             type: integer
             min: 1
             max: 48
-            default: 1
+            required: false
         omp_procs:
             type: integer
             min: 1
             max: 48
-            default: 1
+            required: false
         pinoffsets:
             type: list
             minlength: 1
             maxlength: 12
-            required: true
+            required: false
             schema:
                 type: integer
         use_tleap:

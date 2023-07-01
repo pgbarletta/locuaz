@@ -739,10 +739,13 @@ class WorkProject:
 
     def get_mdps(self, dir_path: Path, mdp_names: Dict) -> None:
         self.mdps = {}
+        self.config["md"]["mdp_paths"] = {}
         for mdp_name, mdp_filename in mdp_names.items():
             mdp_path = Path(dir_path, mdp_filename)
             try:
+                # Store it in both places. This is not ideal.
                 self.mdps[mdp_name] = FileHandle(mdp_path)
+                self.config["md"]["mdp_paths"][mdp_name] = mdp_path
             except Exception as e:
                 print(f"Could not get mdp file from: {mdp_path}.", flush=True)
                 raise e

@@ -18,6 +18,7 @@ import networkx as nx
 from locuaz.validatore import Validatore
 from locuaz.primitives import UserInputError
 
+
 def get_ngpus():
     try:
         p = sp.run("nvidia-smi -L | wc -l", stdout=sp.PIPE, stderr=sp.PIPE, shell=True, text=True)
@@ -26,6 +27,7 @@ def get_ngpus():
     except (ValueError, AssertionError, Exception):
         raise RuntimeError("No GPUs detected. Can't run locuaz.")
     return ngpus
+
 
 def get_dir_size(folder: Path) -> float:
     B_TO_MB: Final = 1048576
@@ -109,6 +111,18 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
         assert t <= n, f"Threshold ({t}) should be equal or lower than the number of scoring functions ({n})"
     elif config["pruning"]["pruner"] == "metropolis":
         assert len(config["scoring"]["functions"]) == 1, f"Can only use 1 scoring function when pruner is 'metropolis'."
+
+    # Check MD related options
+    numa_regions = config["md"]["numa_regions"]
+    ngpus = get_ngpus()
+    assert numa_regions <= ngpus, f"There can't be more NUMA regions that GPUs available. {numa_regions=} -- {ngpus=}"
+    all_threads = sorted(list(os.sched_getaffinity(0)))
+    assert numa_regions < len(all_threads),\
+        f"There can't be more NUMA regions than threads available. {numa_regions=} -- {all_threads=}"
+    if config["md"]["mps"]:
+        p = sp.run("nvidia-cuda-mps-control -d", stdout=sp.PIPE, stderr=sp.PIPE, shell=True, text=True)
+        if "command not found" in p.stderr:
+            raise RuntimeError(f"Could not start the MPS server. Error msg: {p.stderr}. Aborting.")
 
     return config, start
 
@@ -232,7 +246,7 @@ def lacks_branches(current_branches: Union[List[str], List[Path]],
                 backup_branch(Path(config["paths"]["work"], branch_fn))
             return True
 
-    # Check that a Complex can be built from each of the current_branches
+        # Check that a Complex can be built from each of the current_branches
         for branch_fn in current_branches:
             branch_path = Path(config["paths"]["work"], branch_fn)
             pdb_file = Path(branch_path, config["main"]["name"] + ".pdb")
@@ -489,7 +503,6 @@ def main() -> Tuple[Dict, bool]:
 
     raw_config = get_raw_config(args.config_file)
     config, starts = validate_input(raw_config, args.mode, args.debug)
-    get_ngpus()
     set_statistics(config)
     config["misc"] = {}
     if starts:
@@ -521,10 +534,14 @@ def main() -> Tuple[Dict, bool]:
                 config["misc"]["epoch_mutated_positions"] = set()
 
     # Set up environment
-    os.environ["OMP_PLACES"] = "threads"
-    omp_procs_str = str(config["md"]["omp_procs"])
-    if os.environ.get("OMP_NUM_THREADS", "") != omp_procs_str:
-        warn(f"Setting 'OMP_NUM_THREADS' environment variable to input 'omp_procs' {omp_procs_str}")
-        os.environ["OMP_NUM_THREADS"] = omp_procs_str
+    try:
+        omp_procs_str = str(config["md"]["omp_procs"])
+        os.environ["OMP_PLACES"] = "threads"
+        if os.environ.get("OMP_NUM_THREADS", "") != omp_procs_str:
+            warn(f"Setting 'OMP_NUM_THREADS' environment variable to input 'omp_procs' {omp_procs_str}")
+            os.environ["OMP_NUM_THREADS"] = omp_procs_str
+    except KeyError:
+        # User asked for MPS.
+        pass
 
     return config, starts

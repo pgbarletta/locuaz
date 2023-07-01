@@ -272,3 +272,18 @@ class Validatore(Validator):
                 self._error(field, f"{value} needs a `reconstruct_radius`")
             elif value != "dlpr" and r:
                 warn(f"Warning: `{value}` does not make use of `reconstruct_radius`.")
+
+    def _validate_forbidden_if_true_mandatory_if_false(self, others, field, value):
+        """_validate_forbidden_if_true_mandatory_if_false
+
+        The rule's arguments are validated against this schema:
+        {'type': 'list'}
+        """
+        if others:
+            forbidden_opts = set(others)
+            specified_opts = set(self.document.keys())
+            if value:
+                if len(forbidden_opts.intersection(specified_opts)) != 0:
+                    self._error(field, f" is set. The following options cannot be also set: {others}.")
+            elif not forbidden_opts.issubset(specified_opts):
+                self._error(field, f" is not set. The following options must be set: {others}.")

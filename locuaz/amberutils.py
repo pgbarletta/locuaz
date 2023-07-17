@@ -50,9 +50,7 @@ def create_tleap_script(local_dir: Union[DirHandle, Path], name: str) -> FileHan
             elif linea[0:13] == "saveamberparm":
                 assert mol, "Bad tleap script. Please follow the expected format."
                 out_contents.append(
-                    f"saveamberparm {mol} pre_{ext(name, 'prmtop')} pre_{ext(name, 'rst7')}"
-                    "\n"
-                )
+                    f"saveamberparm {mol} pre_{ext(name, 'prmtop')} pre_{ext(name, 'rst7')}""\n")
             else:
                 out_contents.append(linea)
 
@@ -296,14 +294,8 @@ def fixup_top(
 
     # Add posres_.itp include on each molecule.itp
     for mol, mol_path in mol_itp_files.items():
-        posres_include_text = f"""; Include Position restraint file
-#ifdef POSRES
-#include "posre_{mol}.itp"
-#endif
-
-"""
         with open(mol_path, "a") as file:
-            file.write(posres_include_text)
+            file.write(get_posres_include(mol, target_chains, binder_chains))
 
     includes_top = ["; Include chain topologies" "\n"]
     for mol_path in mol_itp_files.values():
@@ -347,6 +339,21 @@ def fixup_top(
 
     return FileHandle(zip_top_path)
 
+def get_posres_include(mol_name: str, target_chains: Iterable[str], binder_chains: Iterable[str]) -> str:
+    # TODO: Also add this possibility for systems made with GROMACS topologies. For now this will do.
+    posres_define = "POSRES"
+    if mol_name in target_chains:
+        posres_define = f"POSRES_TARGET"
+    elif mol_name in binder_chains:
+        posres_define = f"POSRES_BINDER"
+
+    posres_include_text = f"""; Include Position restraint file
+#ifdef {posres_define}
+#include "posre_{mol_name}.itp"
+#endif
+
+    """
+    return posres_include_text
 
 # DEPRECATED
 def run_acpype(

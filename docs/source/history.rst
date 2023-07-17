@@ -2,6 +2,10 @@
 History
 =======
 
+0.5.1 (2023-07-)
+------------------
+ * Fix *DLPacker* data download through pip.
+
 0.5.0 (2023-07-)
 ------------------
  * Added MPS usage. Now multiple runs can be queued up onto the same GPU and *locuaz* will decide the parameters for

@@ -73,7 +73,7 @@ def image_traj(cpx: GROComplex, out_trj_fn: Path, use_tleap: bool = False, gmx_b
     orig_u = mda.Universe(str(cpx.tpr), str(cpx.tra))
     #### TODO: remove when mdanalysis is updated
     if orig_u.atoms.segids[0][:3] == "seg":
-        orig_u.segments.segids = np.array([segid[6:] for segid in orig_u.segments.segids])
+        orig_u.segments.segids = np.array([segid.split("_")[-1] for segid in orig_u.segments.segids])
     #### TODO: remove when mdanalysis is updated
     orig_u.add_TopologyAttr('chainID', orig_u.atoms.segids)
 

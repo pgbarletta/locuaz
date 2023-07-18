@@ -2,12 +2,15 @@
 History
 =======
 
-0.5.1 (2023-07-)
+0.5.2 (2023-07-)
 ------------------
- * Fix *DLPacker* data download through pip.
  * Fix the PDB left as  reference inside the ``scoring`` dir. ``fix_npt_{name}.pdb`` is left as a topology
    for the cleaned trajectory file ``fix_npt_{name}.xtc``. Now it contains PDB contains **chainID** info.
  * Pinned Python version to 3.10 and newer.
+
+0.5.1 (2023-07-)
+------------------
+ * Fix *DLPacker* data download through pip.
 
 0.5.0 (2023-07-)
 ------------------

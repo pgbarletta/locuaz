@@ -18,7 +18,7 @@ A full *branch* includes:
  * Minimization files: all files generated from the minimization run, prefixed by **min_**
  * NVT files: all files generated from the NVT run, prefixed by **nvt_**
  * NPT files: all files generated from the NPT run, prefixed by **npt_**
- * A **scoring** folder with the affinity scores for each frame, from each scoring function.
+ * A **scoring** folder with the affinity scores for each frame, from each scorer.
  * Other miscellaneous files: leftover files from the mutation process *Tleap* script, if used, etc...
 
 A *locuaz* project is made of these branches, as can be seen on Figure 1.

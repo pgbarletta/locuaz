@@ -25,12 +25,12 @@ Using this pruner, a new complex beats a previous one when the means of its scor
 from the previous complex, given that a lower score number indicates higher affinity between the
 target and the binder.
 
-Now, since scoring functions tend to diverge, it's not necessary for all of them to improve.
-The user can set a minimum threshold of scoring functions that have to improve so a binder can
+Now, since scorers tend to diverge, it's not necessary for all of them to improve.
+The user can set a minimum threshold of scorers that have to improve so a binder can
 be considered better than another.
 
-For example, if a user is using **4** scoring functions, the user can set the ``threshold``
-to, say, **2** and if 2 scoring functions indicate an improvement, then the new complex
+For example, if a user is using **4** scorers, the user can set the ``threshold``
+to, say, **2** and if 2 scorers indicate an improvement, then the new complex
 beats the old one. More formally:
 
 .. math::
@@ -43,12 +43,12 @@ beats the old one. More formally:
     \right.
 
 Where
-:math:`c_{k}^{i}` counts how many scoring functions improved with respect to the previous complex,
-while :math:`k` and :math:`i` are the indices for scoring functions and complexes, respectively.
+:math:`c_{k}^{i}` counts how many scorers improved with respect to the previous complex,
+while :math:`k` and :math:`i` are the indices for scorers and complexes, respectively.
 
 
 Then, a consensus number :math:`C^{i}` is obtained by adding all the :math:`c_{k}^{i}` for the
-:math:`N` scoring functions, and this number is compared against the threshold :math:`T`:
+:math:`N` scorers, and this number is compared against the threshold :math:`T`:
 
 .. math::
 
@@ -85,9 +85,9 @@ After the MD is ran and the scoring is done, it's time for the *pruner*.
 The *consensus pruner* does the following: for each *branch* on the current *epoch* being pruned,
 its average scores are compared against the scores of all the *top branches* from the previous *epoch*.
 For example, Figure 3A shows the comparison of **A3** *branch* against the 2 previous *top branches*.
-Since on both cases it beats the previous *top branch* in 3 out of 4 scoring functions, **A3** *branch*
+Since on both cases it beats the previous *top branch* in 3 out of 4 scorers, **A3** *branch*
 will be the first *top branch* of *epoch* 3. On the other hand, we can see that **C3** only improves on 1
-scoring function with respect to the previous *top branch* **B2** and, hence, it can't move forward
+scorer with respect to the previous *top branch* **B2** and, hence, it can't move forward
 since the user selected a ``consensus_threshold`` fo 3.
 
 .. figure:: ./resources/consensus_pruner_2.png
@@ -108,7 +108,7 @@ since the user selected a ``consensus_threshold`` fo 3.
 
 locuaz.prunermetropolis module
 --------------------------------
-When using only 1 scoring function, the well known *metropolis acceptance criteria* can be used to decide
+When using only 1 scorer, the well known *metropolis acceptance criteria* can be used to decide
 whether a complex passes to the next *epoch*:
 
 .. math::

@@ -10,7 +10,7 @@ Coming soon
 ``allowed_nonstandard_residues``
 
 remember that for scoring, the target chains are named A, and the ones from the binder, B.
-write about the sanitization the protocol does with the splitted frames. All scoring functions but gmxmmpbsa use this PDBs.
+write about the sanitization the protocol does with the splitted frames. All scorers but gmxmmpbsa use this PDBs.
 
 
 ``memory_positions`` and ``failed_memory_positions``:

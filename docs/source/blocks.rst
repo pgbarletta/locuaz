@@ -8,16 +8,16 @@ Introduction
 *locuaz* has several moving parts and each of them has its role in the optimization process.
 The optimization procedure begins with the *Mutation Generator* generating a new random mutation
 for the binder sequence, which is carried out by a *Mutator*, thus generating a new set of complexes between the binder and the target.
-Subsequently, each complex is minimized, equilibrated with a NVT run and then sampled through a
-NPT *Molecular Dynamics* simulation, so the target and binder interactions can be assessed with the chosen
-*Scoring Function*(s). Finally, the *Pruner* applies a selection criterion using the binding scores in order to
-accept or reject the mutation.
+Subsequently, a *Sampler* runs a minimization, NVT equilibration and a NPT simulation, so the target and binder
+interactions can be assessed with the chosen *Scorer*(s).
+Finally, the *Pruner* applies a selection criterion using the binding scores in order to accept or reject the mutation.
 
 The process is repeated iteratively to explore new sequences with potentially improved affinities
 towards their targets. This workflow is outlined in Figure 1.
 
-.. figure:: ./resources/blocks_workflow.png
+.. figure:: ./resources/blocks_flow.png
         :alt: workflow
+        :align: center
         :scale: 75%
 
         Figure 1: The protocol's workflow with respect to its **blocks**.
@@ -43,10 +43,10 @@ protocols to be run, hence, some abstractions are needed. We will call these abs
     This is why *locuaz* puts a layer of abstraction over them and standardizes their names. All external programs
     and any files they depend on (like their binaries), are named in lowercase letters without any other symbols.
     So, for example, while *gmx-mmpbsa* may be named at times *gmx_mmpbsa*,  *gmx-MMPBSA*, etc., we will always refer
-    to it as :ref:`scoringfunctions:gmxmmpbsa` and its input script has to be named **gmxmmpbsa** and be
+    to it as :ref:`scorers:gmxmmpbsa` and its input script has to be named **gmxmmpbsa** and be
     located inside a folder called **gmxmmpbsa**.
 
-    Other programs like the :ref:`scoringfunctions:rosetta` scoring function may need additional files.
+    Other programs like the :ref:`scorers:rosetta` scorer may need additional files.
     These are listed on its dedicated section.
 
 Mutation Generator
@@ -88,7 +88,7 @@ You can also set the probe radius in this mutator.
 
 .. important::
 
-    Don't forget to include ``gmxmmpbsa`` alongside your other scoring functions (in ``config["scoring"]["functions"]``),
+    Don't forget to include ``gmxmmpbsa`` alongside your other scorers (in ``config["scoring"]["functions"]``),
     and to include instructions in the **gmxmmpbsa** input file to perform the decompositions. The decomposition section
     should look something like this:
 
@@ -133,24 +133,23 @@ Check :ref:`installation:Post-installation` or :ref:`mutators:Mutators` for more
 
 evoef2 mutator
 """"""""""""""
-``evoef2`` is one of the available scoring functions but, at heart, it's a Potential Energy Function (PEF) and it can
+``evoef2`` is one of the available scorers but, at heart, it's a Potential Energy Function (PEF) and it can
 also replace a residue for another one, and then reorient it by minimizing its PEF. To use it, clone the `evoef2 repo`_,
 rename it to ``evoef2`` compile it using the ``build.sh`` script and rename the binary to ``evoef2``.
 
 Set ``config["mutation"]["mutator"]`` to ``evoef2`` use this mutator.
 
-Molecular Dynamics (MD)
-------------------------
-MD of the complexes is carried out using the `GROMACS`_ simulation package, so some of the options associated
-to this block are transparent wrappers to GROMACS command line options, like ``config['md']['mpi_procs']``,
-``config['md']['omp_procs']`` and ``config['md']['pinoffsets']``, which map to ``-ntmpi``, ``-ntomp`` and
-``-pinoffset``. Other GROMACS options are hard-coded, like ``-pin on`` and the use of the GPU for all interactions
-but the bonded ones.
+Smpler
+-------
+Molecular Dynamics (MD) of the complexes are carried out using the `GROMACS`_ simulation package,
+so some of the options associated to this block are transparent wrappers to GROMACS command line options
+like ``config['md']['mpi_procs']``, ``config['md']['omp_procs']`` and ``config['md']['pinoffsets']``,
+which map to ``-ntmpi``, ``-ntomp`` and ``-pinoffset``, respectively. Other GROMACS options are hard-coded,
+like ``-pin on`` and the use of the GPU for all interactions but the bonded ones.
 
 Naturally, the *mdp* inputs also need to be specified in ``config['md']['mdp_names']['min_mdp']``,
 ``config['md']['mdp_names']['nvt_mdp']`` and ``config['md']['mdp_names']['npt_mdp']``, which correspond to
 the minimization, NVT and NPT, respectively.
-
 
 Another important one is ``config['md']['ngpus']``, which will determine the number of parallel runs that can be ran.
 With respect to topologies, these can be built and updated iteravely either with GROMACS or `Amber`_'s Tleap.
@@ -172,12 +171,12 @@ While the engine is always GROMACS, the topology can be built through Amber as w
 so *locuaz* can copy the path with all the necessary files to rebuild the topology after each mutation.
 
 
-Scoring Function
+Scorer
 -----------------
 These are abstractions over external programs that estimate the affinity between the target and the binder over
 each frame of the MD. *gmxmmpbsa* is the only one that comes built-in with *locuaz* and does not
 an external binary, but it does need an input script.
-More info on all scoring functions can be found at :ref:`scoringfunctions:Scoring Functions`.
+More info on all scorers can be found at :ref:`scorers:scorers`.
 
 Pruner
 ----------
@@ -189,12 +188,12 @@ More info on this at :ref:`pruners:Pruners`.
 
 metropolis
 """""""""""
-When using just one scoring function, the *metropolis* *pruner* can be used which, as its name suggests,
+When using just one scorer, the *metropolis* *pruner* can be used which, as its name suggests,
 uses the metropolis acceptance ratio to decide if the mutation is accepted or not.
 
 consensus
 """""""""""
-If many scoring functions are used, the *consensus* *pruner* checks how many of them improved their scores
+If many scorers are used, the *consensus* *pruner* checks how many of them improved their scores
 on the mutated complex with respect to the previous one, if enough of them indicate an in increase in affinity,
 then the new complex is accepted. Check :ref:`pruners:locuaz.prunerconsensus module` for more info and
 this `reference`_ for more details.

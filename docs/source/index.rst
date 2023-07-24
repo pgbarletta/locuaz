@@ -26,8 +26,8 @@ can be implemented, thus offering versatility and adaptability to diverse scient
 *locuaz* initiates the optimization process by generating a variety of target-binder complexes through
 random mutations in the binder sequence. Following this, the complexes undergo parallel minimization and
 equilibration before a NPT Molecular Dynamics (MD) simulation is ran.
-Target-binder interactions on each frame are then simultaneously assessed by a set of scoring functions,
-utlizing available processors to then estimate if the mutations improved affinity. If so,
+Target-binder interactions on each frame are then simultaneously assessed by a set of scorers,
+utilizing available processors to then estimate if the mutations improved affinity. If so,
 the procedure is repeated with the new complexes, continuing the exploration of new binders.
 This workflow is outlined in Figure 1.
 
@@ -65,7 +65,7 @@ delivers efficient *in-silico* optimization.
     :caption: Reference
 
     mutationgenerators
-    scoringfunctions
+    scorers
     mutators
     statistics
     pruners

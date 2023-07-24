@@ -1,24 +1,24 @@
 ====================
-Scoring Functions
+Scorers
 ====================
 
-All scoring functions (SFs) should be inside the ``['paths']['scoring_functions']`` (see input config yaml) directory.
-Their folder names should match the exact SF names used in the config file and their binaries
-should be on the top level of their folders and also be named with the exact SF name.
-Some scoring functions have additional requirements, like parameter files,
-or the case of **gmxmmpbsa** which is included with the protocol and only needs an input text file.
+All scorers (SFs) should be inside the ``['paths']['scoring_functions']`` (see input config yaml) directory.
+Their folder names should match the exact names of the scorers used in the config file and their binaries
+should be on the top level of their folders and also be named with the exact scorer's name.
+Some scorers have additional requirements, like parameter files, or the case of **gmxmmpbsa**
+which is included with the protocol and only needs an input text file.
 
 Additional requirements for specific SFs
 ---------------------------------------------
 
 
-Assuming a scoring functions folder set to: ``['paths']['scoring_functions']=home/user/my_SFs``.
+Assuming a scorers folder set to: ``['paths']['scoring_functions']=home/user/my_SFs``.
 
 gmxmmpbsa
 ^^^^^^^^^^^
 | gmxmmpbsa directory: ``home/user/my_SFs/gmxmmpbsa``
 
-This is the only scoring function that comes bundled with the protocol.
+This is the only scorer that comes bundled with the protocol.
 Inside the **gmxmmpbsa** folder, a **gmxmmpbsa** input text file is needed.
 The contents are up to the user. For example, for a simple MM-GBSA::
 
@@ -81,7 +81,7 @@ haddock
 ^^^^^^^^^
 | haddock directory: ``home/user/my_SFs/haddock``
 
-As with all the scoring functions, all the necessary files have to be at the top level.
+As with all the scorers, all the necessary files have to be at the top level.
 The **template_scoring.inp** file has to be at the top level of the haddock, as the **rescoring-scripts** folder
 (included with the protocol insed the **sample_bin** folder).
 Then, the following smybolic links have to be created.
@@ -99,10 +99,10 @@ piepisa
 
 Download `pie <https://clsbweb.oden.utexas.edu/dock_details.html>`_. If you can run the binary, good,
 if you can't, then you probably won't be able to run it, since compiling and running it in a
-modern PC is quite cumbersome. Then, normalize the directory to the scoring functions standard:
+modern PC is quite cumbersome. Then, normalize the directory to the scorers standard:
 
 * rename the **pie** folder to **piepisa**
-* be sure to also have the **pisa** scoring function
+* be sure to also have the **pisa** scorer
 * Inside the **piepisa** folder, make symbolic links to the binaries and parameters so they have proper names::
 
     ln -s bin/pie_score pie
@@ -143,7 +143,7 @@ autodockvina
 | autodockvina directory: ``home/user/my_SFs/autodockvina``
 
 Download `autodockvina <https://github.com/ccsb-scripps/AutoDock-Vina/releases>`_.
-Then, normalize the directory to the scoring functions standard:
+Then, normalize the directory to the scorers standard:
 * create a folder named **autodockvina** with the downloaded binary
 * Inside the **autodockvina** folder, make symbolic links to the binary so it has a proper name::
 
@@ -151,10 +151,10 @@ Then, normalize the directory to the scoring functions standard:
 
 
 
-locuaz.scoringfunctions module
+locuaz.scorer module
 ------------------------------
 
-.. automodule:: locuaz.scoringfunctions
+.. automodule:: locuaz.scorer
    :members:
    :undoc-members:
    :show-inheritance:

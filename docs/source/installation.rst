@@ -79,9 +79,9 @@ That's it. You can also change the environment's name by editing the `name` fiel
 Post-installation
 ------------------
 
-If you want to use the ``dlp`` mutator You'll also have to get DLPacker's `weights <https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQseE0LQ/view?usp=sharing>`_
-and place them on a dedicated ``dlpacker`` (actual name doesn't matter) directory, more info on :ref:`mutators:Mutators`.
+If you want to use the ``dlp`` mutator You'll also have to get DLPacker's `weights`_ and place them on a dedicated
+``dlpacker`` (actual name doesn't matter) directory, more info on :ref:`mutators:Mutators`.
+You also may want extra scorers, check the :ref:`scorers:scorers`
 
 .. _repo: https://github.com/pgbarletta/locuaz
-
-For more info, check the :ref:`scoringfunctions:Scoring Functions`
+.. _weights: https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQseE0LQ/view?usp=sharing

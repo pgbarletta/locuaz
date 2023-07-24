@@ -3,7 +3,7 @@ Tutorial: running a simple optimization
 ==========================================
 
 To recap, locuaz iteratively performs mutations on the selected residues of the binder, followed by minimization and
-MD simulation. The trajectory is then scored with various scoring functions, to assess whether the mutation
+MD simulation. The trajectory is then scored with various scorers, to assess whether the mutation
 results in higher or lower affinity. If the mutation results in better affinity, the mutation is accepted,
 and the process is repeated. If the mutation does not significantly improve the affinity, then the mutants
 are discarded and a new set of mutants are generated, based on the original complex(es).
@@ -45,7 +45,7 @@ the ``examples/simple_tutorial`` folder. You can dowload them from `this link`_
 1. ``d11.pdb``: the PDB file of the pre-equilibrated complex. Target chains go first and then the binders.
 2. ``config_simple.yaml``: the configuration file; all options go in here.
 3. ``mdp`` directory: minimization, NVT and NPT *GROMACS* input files.
-4. ``gmxmmpbsa``: the input file for the *gmxmmpbsa* scoring function
+4. ``gmxmmpbsa``: the input file for the *gmxmmpbsa* scorer
 
 .. _reference: http://dx.doi.org/10.1016/j.ccr.2012.08.003
 .. _this link: https://istitutoitalianotecnologia-my.sharepoint.com/personal/walter_rocchia_iit_it/_layouts/15/onedrive.aspx?ga=1&id=%2Fpersonal%2Fwalter%5Frocchia%5Fiit%5Fit%2FDocuments%2FExamples%2Fsimple%5Ftutorial&view=0
@@ -68,7 +68,7 @@ paths
 
 If you are running this example, you will have to change every field on this section, since these are system dependent.
  * ``gmxrc``: is the location of *GROMACS* ``GMXRC`` script and binaries.
- * ``scoring_functions``: all scoring functions have to be in this folder, with a folder for each one and all its
+ * ``scoring_functions``: all scorers have to be in this folder, with a folder for each one and all its
    necessary files inside. So, for example, if you are using *bluues*, *evoef2* and *gmxmmpbsa*, inside the
    ``scoring_functions`` directory you will need the ``bluues`` folder with the **bluues** binary inside, the ``evoef2``
    with the **evoef2** binary inside and the ``gmxmmpbsa`` folder with the **gmxmmpbsa** input script inside.
@@ -140,7 +140,7 @@ The first one is the mutation generator, the *block* that is in charge of taking
 complex and generating a new sequence from it.
 
  * ``generator``: we are using the :ref:`blocks:SPM4gmxmmpbsa` generator, so later we will have to include *gmxmmpbsa* as a
-   scoring function, so this generator can read the energy decomposition file from *gmxmmpbsa* and choose the position
+   scorer, so this generator can read the energy decomposition file from *gmxmmpbsa* and choose the position
    with the lowest contribution to the affinity as the position to mutate.
  * ``probe_radius``: this parameter is only used when the generator includes interface information, which is the case
    for SPM4gmxmmpbsa and others (eg: :ref:`blocks:SPM4i`). The *generator* uses *freesasa* to determine the CDR residues
@@ -193,7 +193,7 @@ pruning
 In this *block*, you can set how the top *branches* from an *epoch* will be selected to pass onto the next one.
 
  * ``pruner``: the *consensus* pruner is the default one.
- * ``threshold``: the minimum number of scoring functions that have to improve for a *branch*
+ * ``threshold``: the minimum number of scorers that have to improve for a *branch*
    to be considered better than its parents. Check :ref:`pruners:Pruners` for more info.
 
 
@@ -278,15 +278,15 @@ scoring
 
 Finally, we have the options related to scoring.
 
- * ``functions``: list of scoring functions to use. Check :ref:`configurationfile:schema.yaml` for a
+ * ``functions``: list of scorers to use. Check :ref:`configurationfile:schema.yaml` for a
    reference of all the currently available ones.
- * ``nthreads``: number of processes used for all the scoring functions but *gmxmmpbsa*.
+ * ``nthreads``: number of processes used for all the scorers but *gmxmmpbsa*.
  * ``mpi_procs``: number of MPI processors used for *gmxmmpbsa*. If set to ``1``, *gmxmmpbsa* will not use
    its MPI capabilites. Useful if you are having issues with MPI, though it will be slow.
  * ``start``: Useful if you want to skip a few frames before starting to score. 0-indexed.
  * ``end``: Also 0-indexed. Defaults to ``-1``, which means all remaining frames.
 
-Check :ref:`scoringfunctions:Scoring Functions` for more info on each scoring function.
+Check :ref:`scorers:scorers` for more info on each scorer.
 
 Running the protocol
 ---------------------

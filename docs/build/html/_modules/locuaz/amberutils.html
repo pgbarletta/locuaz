@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.amberutils &mdash; locuaz 0.3.9 documentation</title>
+  <title>locuaz.amberutils &mdash; locuaz 0.5.2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -11,9 +11,6 @@
   <![endif]-->
   
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -33,7 +30,7 @@
             locuaz
           </a>
               <div class="version">
-                0.3.9
+                0.5.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -59,7 +56,6 @@
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../scoringfunctions.html">Scoring Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../mutators.html">Mutators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../statistics.html">Stats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pruners.html">Pruners</a></li>
@@ -67,6 +63,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../configurationfile.html">YAML configuration file</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../citing.html">Citing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developing.html">Developing</a></li>
 </ul>
 
         </div>
@@ -146,9 +143,7 @@
             <span class="k">elif</span> <span class="n">linea</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">13</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;saveamberparm&quot;</span><span class="p">:</span>
                 <span class="k">assert</span> <span class="n">mol</span><span class="p">,</span> <span class="s2">&quot;Bad tleap script. Please follow the expected format.&quot;</span>
                 <span class="n">out_contents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;saveamberparm </span><span class="si">{</span><span class="n">mol</span><span class="si">}</span><span class="s2"> pre_</span><span class="si">{</span><span class="n">ext</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;prmtop&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> pre_</span><span class="si">{</span><span class="n">ext</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;rst7&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="p">)</span>
+                    <span class="sa">f</span><span class="s2">&quot;saveamberparm </span><span class="si">{</span><span class="n">mol</span><span class="si">}</span><span class="s2"> pre_</span><span class="si">{</span><span class="n">ext</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;prmtop&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2"> pre_</span><span class="si">{</span><span class="n">ext</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;rst7&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">out_contents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">linea</span><span class="p">)</span>
 
@@ -392,14 +387,8 @@
 
     <span class="c1"># Add posres_.itp include on each molecule.itp</span>
     <span class="k">for</span> <span class="n">mol</span><span class="p">,</span> <span class="n">mol_path</span> <span class="ow">in</span> <span class="n">mol_itp_files</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">posres_include_text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;; Include Position restraint file</span>
-<span class="s2">#ifdef POSRES</span>
-<span class="s2">#include &quot;posre_</span><span class="si">{</span><span class="n">mol</span><span class="si">}</span><span class="s2">.itp&quot;</span>
-<span class="s2">#endif</span>
-
-<span class="s2">&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">mol_path</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">posres_include_text</span><span class="p">)</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">get_posres_include</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">target_chains</span><span class="p">,</span> <span class="n">binder_chains</span><span class="p">))</span>
 
     <span class="n">includes_top</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;; Include chain topologies&quot;</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">mol_path</span> <span class="ow">in</span> <span class="n">mol_itp_files</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -443,6 +432,21 @@
 
     <span class="k">return</span> <span class="n">FileHandle</span><span class="p">(</span><span class="n">zip_top_path</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="get_posres_include"><a class="viewcode-back" href="../../misc.html#locuaz.amberutils.get_posres_include">[docs]</a><span class="k">def</span> <span class="nf">get_posres_include</span><span class="p">(</span><span class="n">mol_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">target_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">binder_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># TODO: Also add this possibility for systems made with GROMACS topologies. For now this will do.</span>
+    <span class="n">posres_define</span> <span class="o">=</span> <span class="s2">&quot;POSRES&quot;</span>
+    <span class="k">if</span> <span class="n">mol_name</span> <span class="ow">in</span> <span class="n">target_chains</span><span class="p">:</span>
+        <span class="n">posres_define</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;POSRES_TARGET&quot;</span>
+    <span class="k">elif</span> <span class="n">mol_name</span> <span class="ow">in</span> <span class="n">binder_chains</span><span class="p">:</span>
+        <span class="n">posres_define</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;POSRES_BINDER&quot;</span>
+
+    <span class="n">posres_include_text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;; Include Position restraint file</span>
+<span class="s2">#ifdef </span><span class="si">{</span><span class="n">posres_define</span><span class="si">}</span>
+<span class="s2">#include &quot;posre_</span><span class="si">{</span><span class="n">mol_name</span><span class="si">}</span><span class="s2">.itp&quot;</span>
+<span class="s2">#endif</span>
+
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">posres_include_text</span></div>
 
 <span class="c1"># DEPRECATED</span>
 <div class="viewcode-block" id="run_acpype"><a class="viewcode-back" href="../../misc.html#locuaz.amberutils.run_acpype">[docs]</a><span class="k">def</span> <span class="nf">run_acpype</span><span class="p">(</span>

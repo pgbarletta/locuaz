@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LOCUAZ optimization protocol &mdash; locuaz 0.4.1 documentation</title>
+  <title>LOCUAZ optimization protocol &mdash; locuaz 0.5.2 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -12,9 +12,6 @@
   <![endif]-->
   
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -35,7 +32,7 @@
             locuaz
           </a>
               <div class="version">
-                0.4.1
+                0.5.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -61,7 +58,7 @@
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="mutationgenerators.html">Mutation Generators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="scoringfunctions.html">Scoring Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scorers.html">Scorers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mutators.html">Mutators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="statistics.html">Stats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pruners.html">Pruners</a></li>
@@ -110,8 +107,8 @@ can be implemented, thus offering versatility and adaptability to diverse scient
 <p><em>locuaz</em> initiates the optimization process by generating a variety of target-binder complexes through
 random mutations in the binder sequence. Following this, the complexes undergo parallel minimization and
 equilibration before a NPT Molecular Dynamics (MD) simulation is ran.
-Target-binder interactions on each frame are then simultaneously assessed by a set of scoring functions,
-utlizing available processors to then estimate if the mutations improved affinity. If so,
+Target-binder interactions on each frame are then simultaneously assessed by a set of scorers,
+utilizing available processors to then estimate if the mutations improved affinity. If so,
 the procedure is repeated with the new complexes, continuing the exploration of new binders.
 This workflow is outlined in Figure 1.</p>
 <p>With its tailored design for HPC environments and a flexible approach to various protocols, <em>locuaz</em>
@@ -147,8 +144,8 @@ delivers efficient <em>in-silico</em> optimization.</p>
 <li class="toctree-l2"><a class="reference internal" href="blocks.html#introduction">Introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="blocks.html#mutation-generator">Mutation Generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="blocks.html#mutator">Mutator</a></li>
-<li class="toctree-l2"><a class="reference internal" href="blocks.html#molecular-dynamics-md">Molecular Dynamics (MD)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="blocks.html#scoring-function">Scoring Function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="blocks.html#smpler">Smpler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="blocks.html#scorer">Scorer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="blocks.html#pruner">Pruner</a></li>
 <li class="toctree-l2"><a class="reference internal" href="blocks.html#summary">Summary</a></li>
 </ul>
@@ -182,7 +179,7 @@ delivers efficient <em>in-silico</em> optimization.</p>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="mutationgenerators.html">Mutation Generators</a></li>
-<li class="toctree-l1"><a class="reference internal" href="scoringfunctions.html">Scoring Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scorers.html">Scorers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mutators.html">Mutators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="statistics.html">Stats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pruners.html">Pruners</a></li>

@@ -6,7 +6,7 @@ from warnings import warn
 from Bio.SeqUtils import seq1
 
 # This will be used to map non-conventional AAs to conventional ones, so the
-# scoring functions don't fail.
+# scorers.
 AA_MAP: Dict[str, str] = {
     "ALA": "ALA",
     "ARG": "ARG",

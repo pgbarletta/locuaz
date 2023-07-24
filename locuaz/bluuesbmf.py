@@ -2,14 +2,14 @@ import concurrent.futures as cf
 import subprocess as sp
 from operator import itemgetter
 from pathlib import Path
-from typing import Tuple, List, Any
+from typing import Tuple, List
 
-from locuaz.abstractscoringfunction import AbstractScoringFunction
+from locuaz.abstractscorer import AbstractScorer
 from locuaz.complex import GROComplex
 from locuaz.fileutils import FileHandle, DirHandle
 
 
-class BluuesBmf(AbstractScoringFunction):
+class BluuesBmf(AbstractScorer):
     bmf_bin_path: FileHandle
     pdb2pqr_bin_path: str = "pdb2pqr30"
     TIMEOUT_PER_FRAME: int = 60
@@ -21,7 +21,6 @@ class BluuesBmf(AbstractScoringFunction):
         self.nthreads = nthreads
         self.mpi_procs = mpi_procs
         self.bmf_bin_path = FileHandle(Path(self.root_dir, "bmf"))
-
 
     def __pdb2pqr_worker__(self, frames_path: Path, i: int) -> int:
 
@@ -61,7 +60,8 @@ class BluuesBmf(AbstractScoringFunction):
 
         return i
 
-    def __parse_output__(self, score_files: Tuple[Path, Path]) -> float:
+    @staticmethod
+    def __parse_output__(score_files: Tuple[Path, Path]) -> float:
 
         bluues_raw = 0.0
 
@@ -95,8 +95,8 @@ class BluuesBmf(AbstractScoringFunction):
             shell=True,
             text=True,
         )
-        self.__assert_scoring_function_outfile__(blu_mol_out_solv_fn, stdout=pbluues.stdout, stderr=pbluues.stderr,
-                                                 command=comando_bluues)
+        self.__assert_scorer_outfile_(blu_mol_out_solv_fn, stdout=pbluues.stdout, stderr=pbluues.stderr,
+                                      command=comando_bluues)
 
         # BMF
         bmf_mol_out = f"bmf_{mol}-{i}.out"
@@ -111,13 +111,13 @@ class BluuesBmf(AbstractScoringFunction):
             shell=True,
             text=True,
         )
-        self.__assert_scoring_function_outfile__(bmf_mol_out_fn, stdout=pbmf.stdout, stderr=pbmf.stderr,
-                                                 command=comando_bmf)
+        self.__assert_scorer_outfile_(bmf_mol_out_fn, stdout=pbmf.stdout, stderr=pbmf.stderr,
+                                      command=comando_bmf)
 
         bmf = self.__parse_output__((blu_mol_out_fn, bmf_mol_out_fn))
 
-        # bluues = self.__parse_outfile__(score_file=blu_mol_out_fn, original_command=comando_bluues)
-        # bmf = self.__parse_outfile__(score_file=bmf_mol_out_fn, original_command=comando_bmf)
+        # bluues = self.__parse_outfile_(score_file=blu_mol_out_fn, original_command=comando_bluues)
+        # bmf = self.__parse_outfile_(score_file=bmf_mol_out_fn, original_command=comando_bmf)
 
         return bmf
 

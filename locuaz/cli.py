@@ -103,14 +103,14 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
 
     check_gmxmmpbsa(config)
 
-    # Check consensus threshold and scoring functions
+    # Check consensus threshold and scorers
     if config["pruning"]["pruner"] == "consensus":
         assert "consensus_threshold" in config["pruning"], "Set 'consensus_threshold' when using 'consensus' pruner."
         t = config["pruning"]["consensus_threshold"]
-        n = len(config["scoring"]["functions"])
-        assert t <= n, f"Threshold ({t}) should be equal or lower than the number of scoring functions ({n})"
+        n = len(config["scoring"]["scorers"])
+        assert t <= n, f"Threshold ({t}) should be equal or lower than the number of scorers ({n})"
     elif config["pruning"]["pruner"] == "metropolis":
-        assert len(config["scoring"]["functions"]) == 1, f"Can only use 1 scoring function when pruner is 'metropolis'."
+        assert len(config["scoring"]["scorers"]) == 1, f"Can only use 1 scoring function when pruner is 'metropolis'."
 
     # Check MD related options
     numa_regions = config["md"]["numa_regions"]
@@ -356,12 +356,12 @@ def set_branches(config: Dict) -> Dict:
 
 def check_gmxmmpbsa(config: Dict) -> None:
     if config["generation"]["generator"] == "SPM4gmxmmpbsa":
-        if "gmxmmpbsa" not in config["scoring"]["functions"]:
+        if "gmxmmpbsa" not in config["scoring"]["scorers"]:
             print(f"'gmxmmbpsa' function is necessary to use the 'SPM4mmpbsa' mutator",
                   flush=True, file=sys.stderr)
             raise UserInputError
         else:
-            with open(Path(config["paths"]["scoring_functions"], "gmxmmpbsa", "gmxmmpbsa"), 'r') as file:
+            with open(Path(config["paths"]["scorers"], "gmxmmpbsa", "gmxmmpbsa"), 'r') as file:
                 for line in file:
                     if "idecomp" in line:
                         return

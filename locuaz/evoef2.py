@@ -3,12 +3,12 @@ import subprocess as sp
 from pathlib import Path
 from typing import List, Tuple
 
-from locuaz.abstractscoringfunction import AbstractScoringFunction
+from locuaz.abstractscorer import AbstractScorer
 from locuaz.complex import GROComplex
 from locuaz.fileutils import DirHandle
 
 
-class Evoef2(AbstractScoringFunction):
+class Evoef2(AbstractScorer):
     CPU_TO_MEM_RATIO: int = 1000
     TIMEOUT_PER_FRAME: int = 1
 

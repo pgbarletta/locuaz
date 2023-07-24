@@ -77,17 +77,17 @@ class PrunerMetropolis(AbstractPruner):
         beats and count: Tuple[bool, int]
             whether if it does beat the old iter and the number of improved SFs.
         """
-        # Allow the user to change scoring functions mid-run and only use
+        # Allow the user to change scorers mid-run and only use
         # the subset present in both branches.
         old_SFs = set(old_iter.scores.keys())
         new_SFs = set(new_iter.scores.keys())
-        scoring_functions = old_SFs & new_SFs
-        if len(scoring_functions) == 0:
-            raise RuntimeError(f"No common scoring functions between the ones from the old branch ({old_SFs}) "
+        scorers = old_SFs & new_SFs
+        if len(scorers) == 0:
+            raise RuntimeError(f"No common scorers between the ones from the old branch ({old_SFs}) "
                                f"and those from the new one ({new_SFs}). Cannot prune.")
-        self.log.info(f"Scoring function: {scoring_functions}")
+        self.log.info(f"Scoring function: {scorers}")
 
-        sf = scoring_functions.pop()
+        sf = scorers.pop()
         old_energy = old_iter.mean_scores[sf]
         new_energy = new_iter.mean_scores[sf]
         if new_energy < old_energy:

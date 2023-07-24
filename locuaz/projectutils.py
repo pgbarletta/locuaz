@@ -31,11 +31,11 @@ from attrs import define, field, validators
 import matplotlib.pyplot as plt
 import networkx as nx
 
-from locuaz.abstractscoringfunction import AbstractScoringFunction
+from locuaz.abstractscorer import AbstractScorer
 from locuaz.complex import AbstractComplex, GROComplex
 from locuaz.fileutils import FileHandle, DirHandle, copy_to
 from locuaz.primitives import AA_MAP, my_seq1
-from locuaz.scoringfunctions import scoringfunctions
+from locuaz.scorers import scorers
 from locuaz.interface import get_freesasa_residues
 from locuaz.mutation import Mutation
 
@@ -114,9 +114,7 @@ class Branch:
                 for val in result:
                     f.write(str(round(val, 3)) + "\n")
 
-    def read_scores(
-            self, scoring_functions: Iterable, log: Optional[logging.Logger] = None
-    ) -> bool:
+    def read_scores(self, scorers: Iterable, log: Optional[logging.Logger] = None) -> bool:
         if not log:
             log = logging.getLogger("root")
         if not getattr(self, "score_dir", None):
@@ -128,7 +126,7 @@ class Branch:
                 # raise FileNotFoundError(
                 #     f"read_scores(): {self.branch_name} has no scores."
                 # ) from e
-        for SF in scoring_functions:
+        for SF in scorers:
             try:
                 scores_fn = Path(self.score_dir, "scores_" + SF)
                 with open(scores_fn, "r") as f:
@@ -227,13 +225,13 @@ class Epoch(MutableMapping):
             for other_it in self.branches.values():
                 if it == other_it:
                     continue
-                # Allow the user to change scoring functions mid-run and only use
+                # Allow the user to change scorers mid-run and only use
                 # the subset present in both branches.
-                scoring_functions = set(it.scores.keys()) & set(other_it.scores.keys())
+                scorers = set(it.scores.keys()) & set(other_it.scores.keys())
                 count += sum(
                     [
                         other_it.mean_scores[SF] >= it.mean_scores[SF]
-                        for SF in scoring_functions
+                        for SF in scorers
                     ]
                 )
             better_iters.put((-count, it))
@@ -285,7 +283,7 @@ class WorkProject:
     dir_handle: DirHandle
     epochs: List[Epoch]
     mdps: Dict[str, FileHandle]
-    scorers: Dict[str, AbstractScoringFunction] = {}
+    scorers: Dict[str, AbstractScorer] = {}
     project_dag: nx.DiGraph = nx.DiGraph()
     project_mut_dag: nx.DiGraph = nx.DiGraph()
     mutated_positions: Deque[Set[int]] = deque(set())
@@ -309,7 +307,7 @@ class WorkProject:
             self.__restart_work__(log)
 
         self.get_mdps(self.config["paths"]["mdp"], self.config["md"]["mdp_names"])
-        self.__add_scoring_functions__()
+        self.__add_scorers__()
         self.__set_memory__()
         self.__set_failed_memory__()
 
@@ -399,7 +397,7 @@ class WorkProject:
 
                 # Previous branches should be fully scored.
                 try:
-                    this_iter.read_scores(self.config["scoring"]["functions"])
+                    this_iter.read_scores(self.config["scoring"]["scorers"])
                 except Exception as e_score:
                     log.error(f"Previous epoch not fully scored. Run in --score mode.")
                     raise e_score
@@ -522,10 +520,10 @@ class WorkProject:
         )
         return branch_name, branch_path, this_iter
 
-    def __add_scoring_functions__(self) -> None:
-        for sf in self.config["scoring"]["functions"]:
-            self.scorers[str(sf)] = scoringfunctions[sf](
-                self.config["paths"]["scoring_functions"],
+    def __add_scorers__(self) -> None:
+        for sf in self.config["scoring"]["scorers"]:
+            self.scorers[str(sf)] = scorers[sf](
+                self.config["paths"]["scorers"],
                 nthreads=self.config["scoring"]["nthreads"],
                 mpi_procs=self.config["scoring"]["mpi_procs"],
             )
@@ -581,12 +579,13 @@ class WorkProject:
         chainIDs = self.config["target"]["chainID"] + self.config["binder"]["chainID"]
         for segid, chainID in zip_longest(segids, chainIDs):
             if chainID:
-                assert (segid == chainID), f"PDBs chainIDs ({segids}) and input target-binder chainIDs " \
-                                           f"({chainIDs}) from the config should have the same ordering and the target chains should go first."
+                assert (segid == chainID), (f"PDBs chainIDs ({segids}) and input target-binder chainIDs "
+                                            f"({chainIDs}) from the config should have the same ordering and the "
+                                            "target chains should go first.")
             else:
-                assert (segid == '' or segid == 'X'), f"There're unaccounted segments. {segid} has to either be, " \
-                                                      f"target or binder. If it's solvent or ions, then its segid " \
-                                                      "and chainID should be empty ('') or 'X'."
+                assert (segid == '' or segid == 'X'), (f"There're unaccounted segments. {segid} has to either be, "
+                                                       f"target or binder. If it's solvent or ions, then its segid "
+                                                       "and chainID should be empty ('') or 'X'.")
 
         # Check amino acids
         all_residues = "protein or " + " or ".join(
@@ -818,7 +817,7 @@ class WorkProject:
                 pickle.dump(tracking, cur_file)
 
             self.__draw_dags__(Path(self.dir_handle, "dags.png"))
-        except Exception as e:
+        except (Exception,):
             if log:
                 log.warning(f"Not a full WorkProject yet, could not track it.")
 
@@ -834,7 +833,7 @@ class WorkProject:
         fig, axes = plt.subplots(1, 2, figsize=(w, h))
         fig.tight_layout()
 
-        ##### Branchs graph
+        # Branchs graph
         plt.sca(axes[0])
         # For a better display of the branches names.
         label_remap = {node: node.replace('-', '\n') for node in self.project_dag.nodes}
@@ -846,7 +845,7 @@ class WorkProject:
         pos = nx.drawing.nx_agraph.graphviz_layout(dag, prog="dot")
         nx.draw(dag, pos, with_labels=True, node_size=node_size, node_color="lightblue", font_size=10)
 
-        ##### Mutations graph
+        # Mutations graph
         plt.sca(axes[1])
         # Plot
         pos = nx.drawing.nx_agraph.graphviz_layout(self.project_mut_dag, prog="dot")

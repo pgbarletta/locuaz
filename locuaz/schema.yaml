@@ -7,7 +7,7 @@ paths:
             type: string
             required: true
             is_directory: true
-        scoring_functions:
+        scorers:
             type: string
             required: true
             is_directory: true
@@ -334,7 +334,7 @@ scoring:
     type: dict
     required: true
     schema:
-        functions:
+        scorers:
             type: list
             minlength: 1
             maxlength: 20

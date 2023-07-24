@@ -6,13 +6,13 @@ from pathlib import Path
 from typing import List, Union
 from warnings import warn
 
-from locuaz.abstractscoringfunction import AbstractScoringFunction
+from locuaz.abstractscorer import AbstractScorer
 from locuaz.complex import GROComplex
 from locuaz.fileutils import DirHandle, FileHandle
 from locuaz.molecules import ZipTopology
 
 
-class GmxMmpbsa(AbstractScoringFunction):
+class GmxMmpbsa(AbstractScorer):
     bin_name = "gmx_MMPBSA"
     TIMEOUT_PER_FRAME: int = 20
 
@@ -68,7 +68,7 @@ class GmxMmpbsa(AbstractScoringFunction):
             print(f"{self.name} subprocess timed out.", flush=True)
             raise e
 
-        self.__assert_scoring_function_outfile__(score_gmxmmpbsa, stdout=p.stdout, stderr=p.stderr,
+        self.__assert_scorer_outfile_(score_gmxmmpbsa, stdout=p.stdout, stderr=p.stderr,
                                                  command=comando_gmx_MMPBSA)
         mmpbsa_score = self.__parse_outfile_list__(score_gmxmmpbsa, comando_gmx_MMPBSA)
 

@@ -5,12 +5,12 @@ import subprocess as sp
 from pathlib import Path
 from typing import Tuple, List, Union
 
-from locuaz.abstractscoringfunction import AbstractScoringFunction
+from locuaz.abstractscorer import AbstractScorer
 from locuaz.complex import GROComplex
 from locuaz.fileutils import FileHandle, DirHandle, copy_to
 
 
-class Haddock(AbstractScoringFunction):
+class Haddock(AbstractScorer):
     template_scoring_inp_handle: FileHandle
     haddock_protocols_dir: DirHandle
     haddock_toppar_dir: DirHandle
@@ -76,7 +76,7 @@ class Haddock(AbstractScoringFunction):
 
         return scoring_inp_file
 
-    def __parse_outfile__(self, score_file: Union[Path, FileHandle], original_command: str) -> float:
+    def __parse_outfile_(self, score_file: Union[Path, FileHandle], original_command: str) -> float:
         assert (
             score_file is not None
         ), f"This shouldn't happen. {self} couldn't parse {score_file}\nfrom: \n{original_command}"
@@ -110,9 +110,9 @@ class Haddock(AbstractScoringFunction):
         )
 
         output_haddock_file = Path(self.results_dir, f"mod_complex-{i}_conv.psf")
-        self.__assert_scoring_function_outfile__(output_haddock_file, stdout=p.stdout, stderr=p.stderr,
+        self.__assert_scorer_outfile_(output_haddock_file, stdout=p.stdout, stderr=p.stderr,
                                                  command=comando_haddock)
-        score_haddock = self.__parse_outfile__(output_haddock_file, comando_haddock)
+        score_haddock = self.__parse_outfile_(output_haddock_file, comando_haddock)
 
         return i, score_haddock
 

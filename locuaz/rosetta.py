@@ -4,12 +4,12 @@ import subprocess as sp
 from pathlib import Path
 from typing import Tuple, List, Union
 
-from locuaz.abstractscoringfunction import AbstractScoringFunction
+from locuaz.abstractscorer import AbstractScorer
 from locuaz.complex import GROComplex
 from locuaz.fileutils import DirHandle, FileHandle
 
 
-class Rosetta(AbstractScoringFunction):
+class Rosetta(AbstractScorer):
     TIMEOUT_PER_FRAME: int = 30
 
     def __init__(self, sf_dir, *, nthreads=2, mpi_procs=2) -> None:
@@ -30,7 +30,7 @@ class Rosetta(AbstractScoringFunction):
                 + str(parameters_external_dir)
         )
 
-    def __parse_outfile__(self, score_file: Union[Path, FileHandle], original_command: str) -> float:
+    def __parse_outfile_(self, score_file: Union[Path, FileHandle], original_command: str) -> float:
 
         assert (
             score_file is not None
@@ -66,7 +66,7 @@ class Rosetta(AbstractScoringFunction):
             shell=True,
             text=True,
         )
-        score_rosetta = self.__parse_outfile__(
+        score_rosetta = self.__parse_outfile_(
             score_file=out_rosetta_fn, original_command=comando_rosetta
         )
 

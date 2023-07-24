@@ -3,12 +3,12 @@ import subprocess as sp
 from pathlib import Path
 from typing import Tuple, List
 
-from locuaz.abstractscoringfunction import AbstractScoringFunction
+from locuaz.abstractscorer import AbstractScorer
 from locuaz.complex import GROComplex
 from locuaz.fileutils import FileHandle, DirHandle
 
 
-class Pisa(AbstractScoringFunction):
+class Pisa(AbstractScorer):
     parameters_handle: FileHandle
     TIMEOUT_PER_FRAME: int = 2
 

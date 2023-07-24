@@ -25,7 +25,7 @@ Some other things to highlight:
 
 1. ``config['paths']['gmxrc']``: path to where the ``GMXRC`` is located, along with the GROMACS binary, usually
    called `gmx`
-2. ``config['paths']['scoring_functions']``: root directory where each scorer will have its own folder.
+2. ``config['paths']['scorers']``: root directory where each scorer will have its own folder.
    Check :ref:`scorers:scorers` for more info.
 3. ``config['paths']['mutator']``: mutator binary and/or parameters have to be here and be named appropriately.
    Check :ref:`mutators:Mutators` for more info.

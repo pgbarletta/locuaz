@@ -4,12 +4,12 @@ from pathlib import Path
 from typing import List, Tuple, Union
 import re
 
-from locuaz.abstractscoringfunction import AbstractScoringFunction
+from locuaz.abstractscorer import AbstractScorer
 from locuaz.complex import GROComplex
 from locuaz.fileutils import DirHandle, FileHandle
 
 
-class AutodockVina(AbstractScoringFunction):
+class AutodockVina(AbstractScorer):
     CPU_TO_MEM_RATIO: int = 1000
     TIMEOUT_PER_FRAME: int = 1
 
@@ -29,7 +29,7 @@ class AutodockVina(AbstractScoringFunction):
 
         p = sp.run(comando_ob_target, stdout=sp.PIPE, stderr=sp.PIPE, cwd=self.results_dir, shell=True,text=True)
 
-        self.__assert_scoring_function_outfile__(Path(self.results_dir, target_pdbqt), stdout=p.stdout, stderr=p.stderr,
+        self.__assert_scorer_outfile_(Path(self.results_dir, target_pdbqt), stdout=p.stdout, stderr=p.stderr,
                                                  command=comando_ob_target)
         # Get PDBQT file for binder
         binder_pdb = f"../binder-{i}.pdb"
@@ -40,7 +40,7 @@ class AutodockVina(AbstractScoringFunction):
 
         p = sp.run(comando_ob_binder, stdout=sp.PIPE, stderr=sp.PIPE, cwd=self.results_dir, shell=True, text=True)
 
-        self.__assert_scoring_function_outfile__(Path(self.results_dir, binder_pdbqt), stdout=p.stdout, stderr=p.stderr,
+        self.__assert_scorer_outfile_(Path(self.results_dir, binder_pdbqt), stdout=p.stdout, stderr=p.stderr,
                                                  command=comando_ob_binder)
 
         comando_vina = f"{self.bin_path} --score_only --ligand {target_pdbqt} --receptor {binder_pdbqt} --autobox"
@@ -100,5 +100,5 @@ class AutodockVina(AbstractScoringFunction):
         # Discard the first 0 frames
         return scores[start:]
 
-    def __parse_outfile__(self, score_file: Union[Path, FileHandle], original_command: str) -> float:
+    def __parse_outfile_(self, score_file: Union[Path, FileHandle], original_command: str) -> float:
         pass

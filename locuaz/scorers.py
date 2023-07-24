@@ -1,6 +1,6 @@
 from typing import Dict, Type
 
-from locuaz.abstractscoringfunction import AbstractScoringFunction
+from locuaz.abstractscorer import AbstractScorer
 from locuaz.bach import Bach
 from locuaz.bluues import Bluues
 from locuaz.bluuesbmf import BluuesBmf
@@ -12,7 +12,7 @@ from locuaz.piepisa import PiePisa
 from locuaz.rosetta import Rosetta
 from locuaz.autodockvina import AutodockVina
 
-scoringfunctions: Dict[str, Type[AbstractScoringFunction]] = {
+scorers: Dict[str, Type[AbstractScorer]] = {
     "bach": Bach,
     "bluues": Bluues,
     "bluuesbmf": BluuesBmf,
@@ -23,4 +23,4 @@ scoringfunctions: Dict[str, Type[AbstractScoringFunction]] = {
     "rosetta": Rosetta,
     "gmxmmpbsa": GmxMmpbsa,
     "autodockvina": AutodockVina,
-} #: Dictionary of all currently available scoring functions.
+}  #: Dictionary of all currently available scorers.

@@ -3,12 +3,12 @@ import subprocess as sp
 from pathlib import Path
 from typing import Tuple, List, Union
 
-from locuaz.abstractscoringfunction import AbstractScoringFunction
+from locuaz.abstractscorer import AbstractScorer
 from locuaz.complex import GROComplex
 from locuaz.fileutils import FileHandle, DirHandle
 
 
-class Bluues(AbstractScoringFunction):
+class Bluues(AbstractScorer):
     bmf_bin_path: FileHandle
     pdb2pqr_bin_path: str = "pdb2pqr30"
     TIMEOUT_PER_FRAME: int = 60
@@ -55,7 +55,7 @@ class Bluues(AbstractScoringFunction):
 
         return i
 
-    def __parse_outfile__(self, score_file: Union[Path, FileHandle], original_command: str) -> float:
+    def __parse_outfile_(self, score_file: Union[Path, FileHandle], original_command: str) -> float:
 
         with open(Path(score_file), "r") as f:
             for linea in f:
@@ -77,9 +77,9 @@ class Bluues(AbstractScoringFunction):
         )
         # blu_mol_out_fn = Path(self.results_dir, f"bluues_{mol}-{i}.out")
         blu_mol_out_solv_fn = Path(self.results_dir, f"bluues_{mol}-{i}.out.solv_nrg")
-        self.__assert_scoring_function_outfile__(blu_mol_out_solv_fn, stdout=pbluues.stdout, stderr=pbluues.stderr,
+        self.__assert_scorer_outfile_(blu_mol_out_solv_fn, stdout=pbluues.stdout, stderr=pbluues.stderr,
                                                  command=comando_bluues)
-        bluues = self.__parse_outfile__(blu_mol_out_solv_fn, comando_bluues)
+        bluues = self.__parse_outfile_(blu_mol_out_solv_fn, comando_bluues)
 
         return bluues
 

@@ -103,14 +103,14 @@ def join_target_binder(
 
 
 def rm_aux_scoring_files(
-        frames_path: DirHandle, scoring_functions: Iterable, *, start: int, end: int
+        frames_path: DirHandle, scorers: Iterable, *, start: int, end: int
 ) -> None:
     for i in range(start, end):
         Path(frames_path, f"target-{i}.pdb").unlink()
         Path(frames_path, f"binder-{i}.pdb").unlink()
         Path(frames_path, f"complex-{i}.pdb").unlink()
 
-    if "bluues" in scoring_functions:
+    if "bluues" in scorers:
         bluues_dir = frames_path / "bluues"
         for solv_nrg_file in glob.glob(str(Path(bluues_dir, "*solv_nrg"))):
             Path(solv_nrg_file).unlink()
@@ -119,7 +119,7 @@ def rm_aux_scoring_files(
         for log_file in glob.glob(str(Path(bluues_dir, "*log"))):
             Path(log_file).unlink()
 
-    if "haddock" in scoring_functions:
+    if "haddock" in scorers:
         haddock_dir = frames_path / "haddock"
         for pdb_file in glob.glob(str(Path(haddock_dir, "*pdb"))):
             Path(pdb_file).unlink()
@@ -130,7 +130,7 @@ def rm_aux_scoring_files(
         for inp_file in glob.glob(str(Path(haddock_dir, "*inp"))):
             Path(inp_file).unlink()
 
-    if "gmxmmpbsa" in scoring_functions:
+    if "gmxmmpbsa" in scorers:
         haddock_dir = frames_path / "gmxmmpbsa"
         for xtc_file in glob.glob(str(Path(haddock_dir, "*xtc"))):
             Path(xtc_file).unlink()

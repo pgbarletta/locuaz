@@ -6,7 +6,7 @@ from locuaz.complex import GROComplex
 from locuaz.fileutils import FileHandle, DirHandle
 
 
-class AbstractScoringFunction(metaclass=ABCMeta):
+class AbstractScorer(metaclass=ABCMeta):
     name: str
     root_dir: DirHandle
     results_dir: DirHandle
@@ -28,7 +28,7 @@ class AbstractScoringFunction(metaclass=ABCMeta):
     def __call__(self, *, start: int, end: int, frames_path: Path, cpx: GROComplex) -> Any:
         pass
 
-    def __parse_outfile__(self, score_file: Union[Path, FileHandle], original_command: str) -> float:
+    def __parse_outfile_(self, score_file: Union[Path, FileHandle], original_command: str) -> float:
         pass
 
     def __parse_outfile_list__(self, score_file: Union[Path, FileHandle], original_command: str) -> List[float]:
@@ -41,8 +41,8 @@ class AbstractScoringFunction(metaclass=ABCMeta):
     def __str__(self) -> str:
         return str(type(self)).split("'")[1].split(".")[1].lower()
 
-    def __assert_scoring_function_outfile__(self, score_file: Union[str, Path, FileHandle], *,
-                                            stdout: str, stderr: str, command: str) -> Path:
+    def __assert_scorer_outfile_(self, score_file: Union[str, Path, FileHandle], *,
+                                 stdout: str, stderr: str, command: str) -> Path:
         score_file_path = Path(score_file)
         assert score_file_path.is_file(), f"""{self} error. Can't parse: {score_file}
 from:

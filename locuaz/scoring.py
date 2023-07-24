@@ -22,7 +22,7 @@ def initialize_scoring_folder(
     Creates scoring folder inside the branch dir, fixes PBC issues with the original NPT trajectory
     to create a 'fix_{name}.xtc' trajectory and a 'fix_{name}.pdb'.
     'target' and 'binder' will get chainIDs of 'A' and 'B', no matter  their original chainIDs
-    or number of chains. This is to prevent scoring functions from choking.
+    or number of chains. This is to prevent scorers from choking.
     Args:
         branch (Branch): Branch object
         config (dict): input config file

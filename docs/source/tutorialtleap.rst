@@ -108,7 +108,7 @@ paths
 
     paths:
         gmxrc: /usr/local/gromacs/bin
-        scoring_functions: /home/pbarletta/labo/22/locuaz/rebin
+        scorers: /home/pbarletta/labo/22/locuaz/rebin
         mutator: /home/pbarletta/labo/22/locuaz/rebin/dlpacker
         mdp: /home/pbarletta/labo/22/locuaz/daux/mdp
         input: [ /home/pbarletta/labo/22/locuaz/daux/oct_nb ]

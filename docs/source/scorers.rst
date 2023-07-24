@@ -2,7 +2,7 @@
 Scorers
 ====================
 
-All scorers (SFs) should be inside the ``['paths']['scoring_functions']`` (see input config yaml) directory.
+All scorers (SFs) should be inside the ``['paths']['scorers']`` (see input config yaml) directory.
 Their folder names should match the exact names of the scorers used in the config file and their binaries
 should be on the top level of their folders and also be named with the exact scorer's name.
 Some scorers have additional requirements, like parameter files, or the case of **gmxmmpbsa**
@@ -12,7 +12,7 @@ Additional requirements for specific SFs
 ---------------------------------------------
 
 
-Assuming a scorers folder set to: ``['paths']['scoring_functions']=home/user/my_SFs``.
+Assuming a scorers folder set to: ``['paths']['scorers']=home/user/my_SFs``.
 
 gmxmmpbsa
 ^^^^^^^^^^^

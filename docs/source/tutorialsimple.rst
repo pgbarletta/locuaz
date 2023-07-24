@@ -60,7 +60,7 @@ paths
 
     paths:
         gmxrc: /usr/local/gromacs/bin
-        scoring_functions: /home/pbarletta/labo/22/locuaz/bin
+        scorers: /home/pbarletta/labo/22/locuaz/bin
         mutator: /home/pbarletta/labo/22/locuaz/sample_bin/dlpacker
         mdp: /home/pbarletta/labo/22/locuaz/daux/mdp
         input: [ /home/pbarletta/labo/22/locuaz/daux/d11_oct ]
@@ -68,9 +68,9 @@ paths
 
 If you are running this example, you will have to change every field on this section, since these are system dependent.
  * ``gmxrc``: is the location of *GROMACS* ``GMXRC`` script and binaries.
- * ``scoring_functions``: all scorers have to be in this folder, with a folder for each one and all its
+ * ``scorers``: all scorers have to be in this folder, with a folder for each one and all its
    necessary files inside. So, for example, if you are using *bluues*, *evoef2* and *gmxmmpbsa*, inside the
-   ``scoring_functions`` directory you will need the ``bluues`` folder with the **bluues** binary inside, the ``evoef2``
+   ``scorers`` directory you will need the ``bluues`` folder with the **bluues** binary inside, the ``evoef2``
    with the **evoef2** binary inside and the ``gmxmmpbsa`` folder with the **gmxmmpbsa** input script inside.
  * ``mutator``: the necessary files for the mutator have to be here. We are using the *dlpr* mutator in this example,
    so the *DLPacker* files have to be here: **charges.rtp**, **DLPacker_weights.h5** and **library.npz**.

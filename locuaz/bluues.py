@@ -77,7 +77,7 @@ class Bluues(AbstractScorer):
         )
         # blu_mol_out_fn = Path(self.results_dir, f"bluues_{mol}-{i}.out")
         blu_mol_out_solv_fn = Path(self.results_dir, f"bluues_{mol}-{i}.out.solv_nrg")
-        self.__assert_scorer_outfile_(blu_mol_out_solv_fn, stdout=pbluues.stdout, stderr=pbluues.stderr,
+        self.__assert_scorer_outfile__(blu_mol_out_solv_fn, stdout=pbluues.stdout, stderr=pbluues.stderr,
                                                  command=comando_bluues)
         bluues = self.__parse_outfile_(blu_mol_out_solv_fn, comando_bluues)
 

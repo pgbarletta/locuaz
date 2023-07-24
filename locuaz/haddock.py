@@ -110,7 +110,7 @@ class Haddock(AbstractScorer):
         )
 
         output_haddock_file = Path(self.results_dir, f"mod_complex-{i}_conv.psf")
-        self.__assert_scorer_outfile_(output_haddock_file, stdout=p.stdout, stderr=p.stderr,
+        self.__assert_scorer_outfile__(output_haddock_file, stdout=p.stdout, stderr=p.stderr,
                                                  command=comando_haddock)
         score_haddock = self.__parse_outfile_(output_haddock_file, comando_haddock)
 

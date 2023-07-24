@@ -41,7 +41,7 @@ class AbstractScorer(metaclass=ABCMeta):
     def __str__(self) -> str:
         return str(type(self)).split("'")[1].split(".")[1].lower()
 
-    def __assert_scorer_outfile_(self, score_file: Union[str, Path, FileHandle], *,
+    def __assert_scorer_outfile__(self, score_file: Union[str, Path, FileHandle], *,
                                  stdout: str, stderr: str, command: str) -> Path:
         score_file_path = Path(score_file)
         assert score_file_path.is_file(), f"""{self} error. Can't parse: {score_file}

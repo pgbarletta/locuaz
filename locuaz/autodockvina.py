@@ -29,7 +29,7 @@ class AutodockVina(AbstractScorer):
 
         p = sp.run(comando_ob_target, stdout=sp.PIPE, stderr=sp.PIPE, cwd=self.results_dir, shell=True,text=True)
 
-        self.__assert_scorer_outfile_(Path(self.results_dir, target_pdbqt), stdout=p.stdout, stderr=p.stderr,
+        self.__assert_scorer_outfile__(Path(self.results_dir, target_pdbqt), stdout=p.stdout, stderr=p.stderr,
                                                  command=comando_ob_target)
         # Get PDBQT file for binder
         binder_pdb = f"../binder-{i}.pdb"
@@ -40,7 +40,7 @@ class AutodockVina(AbstractScorer):
 
         p = sp.run(comando_ob_binder, stdout=sp.PIPE, stderr=sp.PIPE, cwd=self.results_dir, shell=True, text=True)
 
-        self.__assert_scorer_outfile_(Path(self.results_dir, binder_pdbqt), stdout=p.stdout, stderr=p.stderr,
+        self.__assert_scorer_outfile__(Path(self.results_dir, binder_pdbqt), stdout=p.stdout, stderr=p.stderr,
                                                  command=comando_ob_binder)
 
         comando_vina = f"{self.bin_path} --score_only --ligand {target_pdbqt} --receptor {binder_pdbqt} --autobox"

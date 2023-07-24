@@ -14,7 +14,7 @@ from locuaz.molecules import ZipTopology
 
 class GmxMmpbsa(AbstractScorer):
     bin_name = "gmx_MMPBSA"
-    TIMEOUT_PER_FRAME: int = 20
+    TIMEOUT_PER_FRAME: int = 40
 
     def __init__(self, sf_dir, *, nthreads=2, mpi_procs=2) -> None:
         super().__init__(sf_dir, nthreads=nthreads, mpi_procs=mpi_procs)
@@ -68,7 +68,7 @@ class GmxMmpbsa(AbstractScorer):
             print(f"{self.name} subprocess timed out.", flush=True)
             raise e
 
-        self.__assert_scorer_outfile_(score_gmxmmpbsa, stdout=p.stdout, stderr=p.stderr,
+        self.__assert_scorer_outfile__(score_gmxmmpbsa, stdout=p.stdout, stderr=p.stderr,
                                                  command=comando_gmx_MMPBSA)
         mmpbsa_score = self.__parse_outfile_list__(score_gmxmmpbsa, comando_gmx_MMPBSA)
 

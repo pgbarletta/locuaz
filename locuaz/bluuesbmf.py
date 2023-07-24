@@ -95,7 +95,7 @@ class BluuesBmf(AbstractScorer):
             shell=True,
             text=True,
         )
-        self.__assert_scorer_outfile_(blu_mol_out_solv_fn, stdout=pbluues.stdout, stderr=pbluues.stderr,
+        self.__assert_scorer_outfile__(blu_mol_out_solv_fn, stdout=pbluues.stdout, stderr=pbluues.stderr,
                                       command=comando_bluues)
 
         # BMF
@@ -111,7 +111,7 @@ class BluuesBmf(AbstractScorer):
             shell=True,
             text=True,
         )
-        self.__assert_scorer_outfile_(bmf_mol_out_fn, stdout=pbmf.stdout, stderr=pbmf.stderr,
+        self.__assert_scorer_outfile__(bmf_mol_out_fn, stdout=pbmf.stdout, stderr=pbmf.stderr,
                                       command=comando_bmf)
 
         bmf = self.__parse_output__((blu_mol_out_fn, bmf_mol_out_fn))

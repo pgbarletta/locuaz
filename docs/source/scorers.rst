@@ -151,18 +151,18 @@ Then, normalize the directory to the scorers standard:
 
 
 
-locuaz.scorer module
+locuaz.scorers module
 ------------------------------
 
-.. automodule:: locuaz.scorer
+.. automodule:: locuaz.scorers
    :members:
    :undoc-members:
    :show-inheritance:
 
-locuaz.abstractscoringfunction module
+locuaz.abstractscorer module
 -------------------------------------
 
-.. automodule:: locuaz.abstractscoringfunction
+.. automodule:: locuaz.abstractscorer
    :members:
    :undoc-members:
    :show-inheritance:

@@ -56,6 +56,7 @@
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../scorers.html">Scorers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../mutators.html">Mutators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../statistics.html">Stats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pruners.html">Pruners</a></li>
@@ -115,7 +116,7 @@
 <span class="sd">    Creates scoring folder inside the branch dir, fixes PBC issues with the original NPT trajectory</span>
 <span class="sd">    to create a &#39;fix_{name}.xtc&#39; trajectory and a &#39;fix_{name}.pdb&#39;.</span>
 <span class="sd">    &#39;target&#39; and &#39;binder&#39; will get chainIDs of &#39;A&#39; and &#39;B&#39;, no matter  their original chainIDs</span>
-<span class="sd">    or number of chains. This is to prevent scoring functions from choking.</span>
+<span class="sd">    or number of chains. This is to prevent scorers from choking.</span>
 <span class="sd">    Args:</span>
 <span class="sd">        branch (Branch): Branch object</span>
 <span class="sd">        config (dict): input config file</span>

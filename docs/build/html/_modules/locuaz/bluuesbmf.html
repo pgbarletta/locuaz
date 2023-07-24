@@ -56,6 +56,7 @@
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../scorers.html">Scorers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../mutators.html">Mutators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../statistics.html">Stats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pruners.html">Pruners</a></li>
@@ -95,14 +96,14 @@
 <span class="kn">import</span> <span class="nn">subprocess</span> <span class="k">as</span> <span class="nn">sp</span>
 <span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">itemgetter</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span>
 
-<span class="kn">from</span> <span class="nn">locuaz.abstractscoringfunction</span> <span class="kn">import</span> <span class="n">AbstractScoringFunction</span>
+<span class="kn">from</span> <span class="nn">locuaz.abstractscorer</span> <span class="kn">import</span> <span class="n">AbstractScorer</span>
 <span class="kn">from</span> <span class="nn">locuaz.complex</span> <span class="kn">import</span> <span class="n">GROComplex</span>
 <span class="kn">from</span> <span class="nn">locuaz.fileutils</span> <span class="kn">import</span> <span class="n">FileHandle</span><span class="p">,</span> <span class="n">DirHandle</span>
 
 
-<div class="viewcode-block" id="BluuesBmf"><a class="viewcode-back" href="../../scorers.html#locuaz.bluuesbmf.BluuesBmf">[docs]</a><span class="k">class</span> <span class="nc">BluuesBmf</span><span class="p">(</span><span class="n">AbstractScoringFunction</span><span class="p">):</span>
+<div class="viewcode-block" id="BluuesBmf"><a class="viewcode-back" href="../../scorers.html#locuaz.bluuesbmf.BluuesBmf">[docs]</a><span class="k">class</span> <span class="nc">BluuesBmf</span><span class="p">(</span><span class="n">AbstractScorer</span><span class="p">):</span>
     <span class="n">bmf_bin_path</span><span class="p">:</span> <span class="n">FileHandle</span>
     <span class="n">pdb2pqr_bin_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;pdb2pqr30&quot;</span>
     <span class="n">TIMEOUT_PER_FRAME</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">60</span>
@@ -114,7 +115,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">nthreads</span> <span class="o">=</span> <span class="n">nthreads</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mpi_procs</span> <span class="o">=</span> <span class="n">mpi_procs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bmf_bin_path</span> <span class="o">=</span> <span class="n">FileHandle</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_dir</span><span class="p">,</span> <span class="s2">&quot;bmf&quot;</span><span class="p">))</span>
-
 
     <span class="k">def</span> <span class="nf">__pdb2pqr_worker__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frames_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 
@@ -154,7 +154,8 @@
 
         <span class="k">return</span> <span class="n">i</span>
 
-    <span class="k">def</span> <span class="nf">__parse_output__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score_files</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__parse_output__</span><span class="p">(</span><span class="n">score_files</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 
         <span class="n">bluues_raw</span> <span class="o">=</span> <span class="mf">0.0</span>
 
@@ -188,8 +189,8 @@
             <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__assert_scoring_function_outfile__</span><span class="p">(</span><span class="n">blu_mol_out_solv_fn</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">pbluues</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">pbluues</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
-                                                 <span class="n">command</span><span class="o">=</span><span class="n">comando_bluues</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__assert_scorer_outfile__</span><span class="p">(</span><span class="n">blu_mol_out_solv_fn</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">pbluues</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">pbluues</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
+                                      <span class="n">command</span><span class="o">=</span><span class="n">comando_bluues</span><span class="p">)</span>
 
         <span class="c1"># BMF</span>
         <span class="n">bmf_mol_out</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;bmf_</span><span class="si">{</span><span class="n">mol</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.out&quot;</span>
@@ -204,13 +205,13 @@
             <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__assert_scoring_function_outfile__</span><span class="p">(</span><span class="n">bmf_mol_out_fn</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">pbmf</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">pbmf</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
-                                                 <span class="n">command</span><span class="o">=</span><span class="n">comando_bmf</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__assert_scorer_outfile__</span><span class="p">(</span><span class="n">bmf_mol_out_fn</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">pbmf</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">pbmf</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
+                                      <span class="n">command</span><span class="o">=</span><span class="n">comando_bmf</span><span class="p">)</span>
 
         <span class="n">bmf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parse_output__</span><span class="p">((</span><span class="n">blu_mol_out_fn</span><span class="p">,</span> <span class="n">bmf_mol_out_fn</span><span class="p">))</span>
 
-        <span class="c1"># bluues = self.__parse_outfile__(score_file=blu_mol_out_fn, original_command=comando_bluues)</span>
-        <span class="c1"># bmf = self.__parse_outfile__(score_file=bmf_mol_out_fn, original_command=comando_bmf)</span>
+        <span class="c1"># bluues = self.__parse_outfile_(score_file=blu_mol_out_fn, original_command=comando_bluues)</span>
+        <span class="c1"># bmf = self.__parse_outfile_(score_file=bmf_mol_out_fn, original_command=comando_bmf)</span>
 
         <span class="k">return</span> <span class="n">bmf</span>
 

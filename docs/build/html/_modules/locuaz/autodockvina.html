@@ -56,6 +56,7 @@
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../scorers.html">Scorers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../mutators.html">Mutators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../statistics.html">Stats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pruners.html">Pruners</a></li>
@@ -97,12 +98,12 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
-<span class="kn">from</span> <span class="nn">locuaz.abstractscoringfunction</span> <span class="kn">import</span> <span class="n">AbstractScoringFunction</span>
+<span class="kn">from</span> <span class="nn">locuaz.abstractscorer</span> <span class="kn">import</span> <span class="n">AbstractScorer</span>
 <span class="kn">from</span> <span class="nn">locuaz.complex</span> <span class="kn">import</span> <span class="n">GROComplex</span>
 <span class="kn">from</span> <span class="nn">locuaz.fileutils</span> <span class="kn">import</span> <span class="n">DirHandle</span><span class="p">,</span> <span class="n">FileHandle</span>
 
 
-<div class="viewcode-block" id="AutodockVina"><a class="viewcode-back" href="../../scorers.html#locuaz.autodockvina.AutodockVina">[docs]</a><span class="k">class</span> <span class="nc">AutodockVina</span><span class="p">(</span><span class="n">AbstractScoringFunction</span><span class="p">):</span>
+<div class="viewcode-block" id="AutodockVina"><a class="viewcode-back" href="../../scorers.html#locuaz.autodockvina.AutodockVina">[docs]</a><span class="k">class</span> <span class="nc">AutodockVina</span><span class="p">(</span><span class="n">AbstractScorer</span><span class="p">):</span>
     <span class="n">CPU_TO_MEM_RATIO</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span>
     <span class="n">TIMEOUT_PER_FRAME</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
 
@@ -122,7 +123,7 @@
 
         <span class="n">p</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">comando_ob_target</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">results_dir</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">__assert_scoring_function_outfile__</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results_dir</span><span class="p">,</span> <span class="n">target_pdbqt</span><span class="p">),</span> <span class="n">stdout</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__assert_scorer_outfile__</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results_dir</span><span class="p">,</span> <span class="n">target_pdbqt</span><span class="p">),</span> <span class="n">stdout</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
                                                  <span class="n">command</span><span class="o">=</span><span class="n">comando_ob_target</span><span class="p">)</span>
         <span class="c1"># Get PDBQT file for binder</span>
         <span class="n">binder_pdb</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;../binder-</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.pdb&quot;</span>
@@ -133,7 +134,7 @@
 
         <span class="n">p</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">comando_ob_binder</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">results_dir</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">__assert_scoring_function_outfile__</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results_dir</span><span class="p">,</span> <span class="n">binder_pdbqt</span><span class="p">),</span> <span class="n">stdout</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__assert_scorer_outfile__</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results_dir</span><span class="p">,</span> <span class="n">binder_pdbqt</span><span class="p">),</span> <span class="n">stdout</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
                                                  <span class="n">command</span><span class="o">=</span><span class="n">comando_ob_binder</span><span class="p">)</span>
 
         <span class="n">comando_vina</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_path</span><span class="si">}</span><span class="s2"> --score_only --ligand </span><span class="si">{</span><span class="n">target_pdbqt</span><span class="si">}</span><span class="s2"> --receptor </span><span class="si">{</span><span class="n">binder_pdbqt</span><span class="si">}</span><span class="s2"> --autobox&quot;</span>
@@ -193,7 +194,7 @@
         <span class="c1"># Discard the first 0 frames</span>
         <span class="k">return</span> <span class="n">scores</span><span class="p">[</span><span class="n">start</span><span class="p">:]</span>
 
-    <span class="k">def</span> <span class="nf">__parse_outfile__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">FileHandle</span><span class="p">],</span> <span class="n">original_command</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__parse_outfile_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">FileHandle</span><span class="p">],</span> <span class="n">original_command</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="k">pass</span></div>
 </pre></div>
 

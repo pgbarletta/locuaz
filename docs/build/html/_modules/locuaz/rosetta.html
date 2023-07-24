@@ -56,6 +56,7 @@
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../scorers.html">Scorers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../mutators.html">Mutators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../statistics.html">Stats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pruners.html">Pruners</a></li>
@@ -97,12 +98,12 @@
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">locuaz.abstractscoringfunction</span> <span class="kn">import</span> <span class="n">AbstractScoringFunction</span>
+<span class="kn">from</span> <span class="nn">locuaz.abstractscorer</span> <span class="kn">import</span> <span class="n">AbstractScorer</span>
 <span class="kn">from</span> <span class="nn">locuaz.complex</span> <span class="kn">import</span> <span class="n">GROComplex</span>
 <span class="kn">from</span> <span class="nn">locuaz.fileutils</span> <span class="kn">import</span> <span class="n">DirHandle</span><span class="p">,</span> <span class="n">FileHandle</span>
 
 
-<div class="viewcode-block" id="Rosetta"><a class="viewcode-back" href="../../scorers.html#locuaz.rosetta.Rosetta">[docs]</a><span class="k">class</span> <span class="nc">Rosetta</span><span class="p">(</span><span class="n">AbstractScoringFunction</span><span class="p">):</span>
+<div class="viewcode-block" id="Rosetta"><a class="viewcode-back" href="../../scorers.html#locuaz.rosetta.Rosetta">[docs]</a><span class="k">class</span> <span class="nc">Rosetta</span><span class="p">(</span><span class="n">AbstractScorer</span><span class="p">):</span>
     <span class="n">TIMEOUT_PER_FRAME</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sf_dir</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">nthreads</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">mpi_procs</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -123,7 +124,7 @@
                 <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">parameters_external_dir</span><span class="p">)</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__parse_outfile__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">FileHandle</span><span class="p">],</span> <span class="n">original_command</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__parse_outfile_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">FileHandle</span><span class="p">],</span> <span class="n">original_command</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 
         <span class="k">assert</span> <span class="p">(</span>
             <span class="n">score_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
@@ -159,7 +160,7 @@
             <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">score_rosetta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parse_outfile__</span><span class="p">(</span>
+        <span class="n">score_rosetta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parse_outfile_</span><span class="p">(</span>
             <span class="n">score_file</span><span class="o">=</span><span class="n">out_rosetta_fn</span><span class="p">,</span> <span class="n">original_command</span><span class="o">=</span><span class="n">comando_rosetta</span>
         <span class="p">)</span>
 

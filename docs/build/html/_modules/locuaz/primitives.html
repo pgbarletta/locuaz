@@ -56,6 +56,7 @@
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../scorers.html">Scorers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../mutators.html">Mutators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../statistics.html">Stats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../pruners.html">Pruners</a></li>
@@ -99,7 +100,7 @@
 <span class="kn">from</span> <span class="nn">Bio.SeqUtils</span> <span class="kn">import</span> <span class="n">seq1</span>
 
 <span class="c1"># This will be used to map non-conventional AAs to conventional ones, so the</span>
-<span class="c1"># scoring functions don&#39;t fail.</span>
+<span class="c1"># scorers.</span>
 <span class="n">AA_MAP</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;ALA&quot;</span><span class="p">:</span> <span class="s2">&quot;ALA&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ARG&quot;</span><span class="p">:</span> <span class="s2">&quot;ARG&quot;</span><span class="p">,</span>

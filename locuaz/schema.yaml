@@ -260,6 +260,25 @@ md:
             min: 0
             max: 20
             default: 0
+        npt_restraints:
+            type: dict
+            required: false
+            schema:
+                target:
+                    type: float
+                    min: 1
+                    max: 10000
+                    default: 1000
+                binder:
+                    type: float
+                    min: 1
+                    max: 10000
+                    default: 1000
+                rest:
+                    type: float
+                    min: 1
+                    max: 10000
+                    default: 1000
 
 target:
     type: dict

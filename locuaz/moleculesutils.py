@@ -114,6 +114,7 @@ def get_gro_ziptop_from_pdb_tleap(
         pdb: PDBStructure,
         target_chains: Iterable,
         binder_chains: Iterable,
+        md_config: Dict,
 ) -> Tuple[PDBStructure, GROStructure, ZipTopology]:
     """get_gro_ziptop_from_pdb_tleap runs .
 
@@ -149,6 +150,7 @@ def get_gro_ziptop_from_pdb_tleap(
         rst,
         target_chains=target_chains,
         binder_chains=binder_chains,
+        restraints=md_config["restraints"],
     )
 
     return pdb, gro, ziptop

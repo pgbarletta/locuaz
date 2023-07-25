@@ -2,6 +2,11 @@
 History
 =======
 
+0.5.3 (2023-07-)
+------------------
+ * Renamed ``scoring functions`` to ``scorers``.
+ *
+
 0.5.2 (2023-07-)
 ------------------
  * Fix the PDB left as  reference inside the ``scoring`` dir. ``fix_npt_{name}.pdb`` is left as a topology

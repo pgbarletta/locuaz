@@ -5,7 +5,8 @@ History
 0.5.3 (2023-07-)
 ------------------
  * Renamed ``scoring functions`` to ``scorers``.
- *
+ * Added support for positional retraints.
+ * Pinned Python version to 3.10.X.
 
 0.5.2 (2023-07-)
 ------------------

@@ -27,7 +27,7 @@ Create a conda environment YAML file named, for example, ``usr_deps.yaml``:
     channels:
       - conda-forge
     dependencies:
-      - conda-forge::python>=3.10
+      - conda-forge::python>=3.10,<3.11
       - conda-forge::ambertools>=22.0.0
       - conda-forge::tensorflow
 

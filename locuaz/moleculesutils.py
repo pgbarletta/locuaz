@@ -150,7 +150,6 @@ def get_gro_ziptop_from_pdb_tleap(
         rst,
         target_chains=target_chains,
         binder_chains=binder_chains,
-        restraints=md_config["restraints"],
     )
 
     return pdb, gro, ziptop
@@ -181,3 +180,22 @@ def fix_wat_naming(
         u.atoms.write(str(pdb_out))  # type: ignore
 
     return PDBStructure.from_path(pdb_out)
+
+def set_posres(in_posres: Path, out_posres: Path, restraint: float) -> None:
+
+    with open(in_posres, "r") as file:
+        txt_in_posres = file.readlines()
+
+    with open(out_posres, "w") as file:
+        for linea in txt_in_posres:
+            new_line = linea
+            if linea[0] not in {';', '[', '\n'}:
+                # This line should look something like: '    13     1  1000  1000  1000'
+                try:
+                    atm = int(linea.split()[0])
+                    new_line = f"{atm:6d}{1:6d}{restraint:6d}{restraint:6d}{restraint:=6d}\n"
+                except ValueError:
+                    # well, apparently it didn't
+                    pass
+            file.write(new_line)
+    return

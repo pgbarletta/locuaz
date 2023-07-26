@@ -1,11 +1,13 @@
 import os
 from pathlib import Path
-from shutil import SameFileError
-from typing import Tuple, Union, Dict, List, Final
+import shutil
+from typing import Tuple, Union, Dict, List, Final, Optional
 import subprocess as sp
 from math import ceil
 import numpy as np
 from itertools import chain
+from zipfile import ZipFile
+from warnings import warn
 
 from attrs import define, field
 from biobb_analysis.gromacs.gmx_trjconv_str import GMXTrjConvStr
@@ -14,6 +16,7 @@ from biobb_gromacs.gromacs.grompp import Grompp
 from locuaz.complex import AbstractComplex, GROComplex
 from locuaz.fileutils import DirHandle, FileHandle
 from locuaz.molecules import ZipTopology, copy_mol_to
+from locuaz.moleculesutils import set_posres
 from locuaz.fixbox import fix_box_cpx
 from locuaz.primitives import launch_biobb, GromacsError
 from locuaz.projectutils import Epoch
@@ -36,6 +39,7 @@ class MDrun:
     out_name: str = field(converter=str, kw_only=True)
     image_after: bool = field(converter=bool, kw_only=True, default=False)
     maxwarn: int = field(converter=int, kw_only=True, default=0)
+    restraints: Optional[Dict[str, float]] = field(kw_only=True, default=None)
 
     @classmethod
     def min(cls, root_dir: Union[Path, DirHandle], *, gmx_mdrun: str, min_mdp: Path, gpu_id: int = 0,
@@ -60,28 +64,29 @@ class MDrun:
     @classmethod
     def npt(cls, root_dir: Union[Path, DirHandle], *, gmx_mdrun: str, npt_mdp: Path, gpu_id: int = 0,
             omp_threads: int = 2, mpi_threads: int = 1, pinoffset: int = 0, out_name="npt", image_after=True,
-            maxwarn: int = 0) -> "MDrun":
+            maxwarn: int = 0, restraints: Optional[Dict[str, float]] = None) -> "MDrun":
 
         obj = cls(DirHandle(root_dir), binary_path=gmx_mdrun, mdp=FileHandle(npt_mdp), gpu_id=gpu_id,
                   num_threads_omp=omp_threads, num_threads_mpi=mpi_threads, pinoffset=pinoffset,
                   dev=f"-nb gpu -pme gpu -pin on -pinoffset {pinoffset}", out_name=out_name, maxwarn=maxwarn,
-                  image_after=image_after)
+                  image_after=image_after, restraints=restraints)
         return obj
 
     def __call__(self, complex: GROComplex) -> Tuple[bool, GROComplex]:
-        # Check
         self.__check_input__(complex)
+
+        restrained_top = self.__set_restraints__(complex.top)
 
         # Build .tpr file for the run
         run_tpr = Path(str(self.dir)) / (self.out_name + ".tpr")
         if complex.cpt:
             grompepe = Grompp(input_mdp_path=str(self.mdp), input_gro_path=str(complex.gro.file.path),
-                              input_top_zip_path=str(complex.top.file.path), input_cpt_path=str(complex.cpt),
+                              input_top_zip_path=str(restrained_top.file.path), input_cpt_path=str(complex.cpt),
                               input_ndx_path=str(complex.ndx), output_tpr_path=str(run_tpr),
                               properties={"binary_path": "gmx", "maxwarn": self.maxwarn})
         else:
             grompepe = Grompp(input_mdp_path=str(self.mdp), input_gro_path=str(complex.gro.file.path),
-                              input_top_zip_path=str(complex.top.file.path), input_ndx_path=str(complex.ndx),
+                              input_top_zip_path=str(restrained_top.file.path), input_ndx_path=str(complex.ndx),
                               output_tpr_path=str(run_tpr), properties={"binary_path": "gmx", "maxwarn": self.maxwarn})
         launch_biobb(grompepe, backup_dict=Path(self.dir))
 
@@ -114,7 +119,7 @@ class MDrun:
         # Finally, build the Complex.
         try:
             copy_mol_to(complex.top, self.dir, f"{self.out_name}.zip")
-        except SameFileError:
+        except shutil.SameFileError:
             # This happens when there was an attempt to run MD on a finished run and gromacs started from `name`.cpt.
             # This only happens when a run was interrupted after some branches were finished and others weren't.
             # Otherwise, the `npt_done` flag of the epoch would be set and this step would be skipped.
@@ -153,7 +158,6 @@ class MDrun:
         return all_atoms_in_box, new_complex
 
     def __check_input__(self, complex: AbstractComplex) -> None:
-
         assert complex.dir == self.dir, f"Input complex directory: "
         f"{complex.dir}, does not match {type(self)}'s directory: {self.dir}"
 
@@ -172,6 +176,42 @@ and stderr:
 {stderr}
 """
         return out_file_path
+
+    def __set_restraints__(self, topology: ZipTopology) -> ZipTopology:
+        if self.restraints is None:
+            return topology
+        zipped_top = ZipFile(topology.file.path)
+        filelist = [file.filename for file in zipped_top.filelist]
+        posres_filelist = {filename for filename in filelist if "posre" in filename}
+        if len(posres_filelist) == 0:
+            warn("ZipTopology does not contain any file beginning with 'posres_...', MDrun can't set restraints.")
+            return topology
+
+        with zipped_top as sipesipe:
+            sipesipe.extractall(Path(self.dir))
+
+        for posre_file in posres_filelist:
+            posre_strings = set(posre_file.split('.')[0].split('_'))
+
+            if len(posre_strings.intersection(set(topology.target_chains))) != 0:
+                self.__overwrite_posres_file__(Path(self.dir, posre_file), self.restraints["target"])
+            elif len(posre_strings.intersection(set(topology.binder_chains))) != 0:
+                self.__overwrite_posres_file__(Path(self.dir, posre_file), self.restraints["binder"])
+            else:
+                self.__overwrite_posres_file__(Path(self.dir, posre_file), self.restraints["rest"])
+        zip_top_path = Path(self.dir, f"restrained_{self.out_name}.zip")
+        with ZipFile(zip_top_path, mode="w") as zf:
+            for posre_file in filelist:
+                zf.write(Path(self.dir, posre_file), arcname=posre_file)
+        return ZipTopology.from_path_with_chains(zip_top_path, target_chains=topology.target_chains,
+                                                 binder_chains=topology.binder_chains)
+
+    @staticmethod
+    def __overwrite_posres_file__(posre_file: Path, new_restraint: float) -> None:
+        if new_restraint != 1000:
+            set_posres(posre_file, Path(posre_file.parent, "temp_posres.itp"), new_restraint)
+            shutil.move(Path(posre_file.parent, "temp_posres.itp"), posre_file)
+        return
 
 
 @define(frozen=True)

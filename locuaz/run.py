@@ -94,7 +94,7 @@ def run_npt_epoch(epoch: Epoch, md_config: Dict[str, Any], md_params: Dict[str, 
             npt = MDrun.npt(branch.dir_handle, gmx_mdrun=md_config["gmx_mdrun"],
                             npt_mdp=md_config["mdp_paths"]["npt_mdp"], gpu_id=gpu_id, omp_threads=omp_threads,
                             mpi_threads=mpi_threads, pinoffset=pinoffset, out_name=f"npt_{name}",
-                            maxwarn=md_config["maxwarn"])
+                            maxwarn=md_config["maxwarn"], restraints=md_config["npt_restraints"])
             futu_npt = ex.submit(npt, branch.complex)
             futuros_npt[futu_npt] = branch_name
 

@@ -28,7 +28,7 @@ Create a conda environment from the :download:`usr_deps.yaml<../../usr_deps.yaml
     channels:
       - conda-forge
     dependencies:
-      - conda-forge::python>=3.10
+      - conda-forge::python>=3.10,<3.11
       - conda-forge::ambertools>=22.0.0
       - conda-forge::tensorflow
 
@@ -36,7 +36,7 @@ To create the environment:
 
 .. code-block:: console
 
-    mamba create -f usr_deps.yaml
+    mamba env create -f usr_deps.yaml
 
 
 Then, activate the environment and install the protocol through pip:
@@ -49,8 +49,8 @@ Then, activate the environment and install the protocol through pip:
 This option takes an extra step with respect to using only conda, but the process will be faster and the
 resulting environment won't be as heavy.
 
-conda (Option 2)
-^^^^^^^^^^^^^^^^
+conda (Option 2) NOT YET AVAILABLE
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: console
 
@@ -59,8 +59,8 @@ conda (Option 2)
 A drawback from the conda install is that when installing **biobb** through conda, it comes with some heavy
 dependencies, like **GROMACS** itself.
 
-From sources (Option 3)
-------------------------
+From sources (Option 3, developers only)
+-----------------------------------------
 
 Clone the `repo`_:
 
@@ -68,11 +68,15 @@ Clone the `repo`_:
 
     git clone https://github.com/pgbarletta/locuaz
 
-And create the environment and install all the necessary dependencies at once:
+Create the environment and install all the necessary dependencies at once:
 
 .. code-block:: console
 
     mamba env create -f dev_deps.yaml
+
+And inside the newly cloned dir, install *locuaz* in development mode: ::
+
+    pip install -e .
 
 That's it. You can also change the environment's name by editing the `name` field of the `dev_deps.yml` file, before creating it.
 

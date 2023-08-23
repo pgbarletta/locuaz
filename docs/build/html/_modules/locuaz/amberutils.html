@@ -3,16 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.amberutils &mdash; locuaz 0.5.2 documentation</title>
+  <title>locuaz.amberutils &mdash; locuaz 0.5.3 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=2a2fe768"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -30,7 +32,7 @@
             locuaz
           </a>
               <div class="version">
-                0.5.2
+                0.5.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -98,7 +100,7 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
 <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Deque</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">TextIO</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Deque</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Dict</span>
 <span class="kn">from</span> <span class="nn">zipfile</span> <span class="kn">import</span> <span class="n">ZipFile</span>
 
 <span class="kn">import</span> <span class="nn">MDAnalysis</span> <span class="k">as</span> <span class="nn">mda</span>
@@ -112,7 +114,9 @@
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="chunk"><a class="viewcode-back" href="../../misc.html#locuaz.amberutils.chunk">[docs]</a><span class="k">def</span> <span class="nf">chunk</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">TextIO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span>
+<div class="viewcode-block" id="chunk">
+<a class="viewcode-back" href="../../misc.html#locuaz.amberutils.chunk">[docs]</a>
+<span class="k">def</span> <span class="nf">chunk</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">TextIO</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span>
     <span class="n">linea</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span>
     <span class="k">while</span> <span class="n">linea</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
         <span class="n">text</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -131,7 +135,10 @@
         <span class="k">yield</span> <span class="n">text</span></div>
 
 
-<div class="viewcode-block" id="create_tleap_script"><a class="viewcode-back" href="../../misc.html#locuaz.amberutils.create_tleap_script">[docs]</a><span class="k">def</span> <span class="nf">create_tleap_script</span><span class="p">(</span><span class="n">local_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DirHandle</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FileHandle</span><span class="p">:</span>
+
+<div class="viewcode-block" id="create_tleap_script">
+<a class="viewcode-back" href="../../misc.html#locuaz.amberutils.create_tleap_script">[docs]</a>
+<span class="k">def</span> <span class="nf">create_tleap_script</span><span class="p">(</span><span class="n">local_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DirHandle</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FileHandle</span><span class="p">:</span>
     <span class="n">in_tleap</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">local_dir</span><span class="p">,</span> <span class="s2">&quot;tleap&quot;</span><span class="p">)</span>
     <span class="n">out_contents</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -159,7 +166,10 @@
     <span class="k">return</span> <span class="n">FileHandle</span><span class="p">(</span><span class="n">out_tleap</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="fix_pdb"><a class="viewcode-back" href="../../misc.html#locuaz.amberutils.fix_pdb">[docs]</a><span class="k">def</span> <span class="nf">fix_pdb</span><span class="p">(</span><span class="n">in_pdb</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PDBStructure</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">out_pdb_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PDBStructure</span><span class="p">:</span>
+
+<div class="viewcode-block" id="fix_pdb">
+<a class="viewcode-back" href="../../misc.html#locuaz.amberutils.fix_pdb">[docs]</a>
+<span class="k">def</span> <span class="nf">fix_pdb</span><span class="p">(</span><span class="n">in_pdb</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PDBStructure</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">out_pdb_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PDBStructure</span><span class="p">:</span>
     <span class="n">pdb_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">in_pdb</span><span class="p">)</span>
 
     <span class="n">pdbfixer</span> <span class="o">=</span> <span class="n">AmberPDBFixer</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pdb_path</span><span class="p">))</span>
@@ -178,9 +188,10 @@
     <span class="k">return</span> <span class="n">PDBStructure</span><span class="p">(</span><span class="n">FileHandle</span><span class="p">(</span><span class="n">out_pdb_path</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="run_tleap"><a class="viewcode-back" href="../../misc.html#locuaz.amberutils.run_tleap">[docs]</a><span class="k">def</span> <span class="nf">run_tleap</span><span class="p">(</span>
-    <span class="n">tleap_script</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">FileHandle</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">PDBStructure</span><span class="p">,</span> <span class="n">FileHandle</span><span class="p">,</span> <span class="n">FileHandle</span><span class="p">]:</span>
+
+<div class="viewcode-block" id="run_tleap">
+<a class="viewcode-back" href="../../misc.html#locuaz.amberutils.run_tleap">[docs]</a>
+<span class="k">def</span> <span class="nf">run_tleap</span><span class="p">(</span><span class="n">tleap_script</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">FileHandle</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">PDBStructure</span><span class="p">,</span> <span class="n">FileHandle</span><span class="p">,</span> <span class="n">FileHandle</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;runs tleap script and then uses a local PDB to add chainID info</span>
 <span class="sd">    to the .prmtop and box info to the .rst7. Then it uses both to overwrite the</span>
 <span class="sd">    PDB to keep everything in sync (in case, for example, that the tleap script</span>
@@ -264,14 +275,17 @@
     <span class="k">return</span> <span class="n">pdb</span><span class="p">,</span> <span class="n">prmtop</span><span class="p">,</span> <span class="n">rst</span></div>
 
 
-<div class="viewcode-block" id="amb_to_gmx"><a class="viewcode-back" href="../../misc.html#locuaz.amberutils.amb_to_gmx">[docs]</a><span class="k">def</span> <span class="nf">amb_to_gmx</span><span class="p">(</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">pdb</span><span class="p">:</span> <span class="n">PDBStructure</span><span class="p">,</span>
-    <span class="n">prmtop</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">FileHandle</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
-    <span class="n">rst</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">FileHandle</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">target_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-    <span class="n">binder_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+
+<div class="viewcode-block" id="amb_to_gmx">
+<a class="viewcode-back" href="../../misc.html#locuaz.amberutils.amb_to_gmx">[docs]</a>
+<span class="k">def</span> <span class="nf">amb_to_gmx</span><span class="p">(</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">pdb</span><span class="p">:</span> <span class="n">PDBStructure</span><span class="p">,</span>
+        <span class="n">prmtop</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">FileHandle</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+        <span class="n">rst</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">FileHandle</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">target_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">binder_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">GROStructure</span><span class="p">,</span> <span class="n">ZipTopology</span><span class="p">]:</span>
     <span class="n">local_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">prmtop</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
     <span class="n">amb</span> <span class="o">=</span> <span class="n">pmd</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">prmtop</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">rst</span><span class="p">))</span>
@@ -298,13 +312,15 @@
     <span class="k">return</span> <span class="n">gro</span><span class="p">,</span> <span class="n">zip_top</span></div>
 
 
-<div class="viewcode-block" id="fixup_top"><a class="viewcode-back" href="../../misc.html#locuaz.amberutils.fixup_top">[docs]</a><span class="k">def</span> <span class="nf">fixup_top</span><span class="p">(</span>
-    <span class="n">top_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">target_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-    <span class="n">binder_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FileHandle</span><span class="p">:</span>
+
+<div class="viewcode-block" id="fixup_top">
+<a class="viewcode-back" href="../../misc.html#locuaz.amberutils.fixup_top">[docs]</a>
+<span class="k">def</span> <span class="nf">fixup_top</span><span class="p">(</span><span class="n">top_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+              <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+              <span class="o">*</span><span class="p">,</span>
+              <span class="n">target_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+              <span class="n">binder_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+              <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FileHandle</span><span class="p">:</span>
     <span class="n">local_dir</span> <span class="o">=</span> <span class="n">top_path</span><span class="o">.</span><span class="n">parent</span>
     <span class="c1"># Backup topology</span>
     <span class="n">norestr_name</span> <span class="o">=</span> <span class="s2">&quot;norestr_&quot;</span> <span class="o">+</span> <span class="n">top_path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.top&quot;</span>
@@ -351,10 +367,10 @@
 <span class="s2">    [ position_restraints ]</span>
 <span class="s2">    ; atom  type      fx      fy      fz</span>
 <span class="s2">&quot;&quot;&quot;</span>
-    <span class="n">wat_header</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;automatically generated by LOCUAZ</span>
+    <span class="n">wat_header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;automatically generated by LOCUAZ</span>
 <span class="s2">    [ position_restraints ]</span>
 <span class="s2">    ;  i funct       fcx        fcy        fcz</span>
-<span class="s2">    1    1       1000       1000       1000</span>
+<span class="s2">       1    1       1000       1000       1000</span>
 <span class="s2">&quot;&quot;&quot;</span>
     <span class="n">ion_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;     1     1  1000  1000  1000</span>
 <span class="s2">&quot;&quot;&quot;</span>
@@ -433,13 +449,16 @@
 
     <span class="k">return</span> <span class="n">FileHandle</span><span class="p">(</span><span class="n">zip_top_path</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="get_posres_include"><a class="viewcode-back" href="../../misc.html#locuaz.amberutils.get_posres_include">[docs]</a><span class="k">def</span> <span class="nf">get_posres_include</span><span class="p">(</span><span class="n">mol_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">target_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">binder_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="c1"># TODO: Also add this possibility for systems made with GROMACS topologies. For now this will do.</span>
-    <span class="n">posres_define</span> <span class="o">=</span> <span class="s2">&quot;POSRES&quot;</span>
+
+<div class="viewcode-block" id="get_posres_include">
+<a class="viewcode-back" href="../../misc.html#locuaz.amberutils.get_posres_include">[docs]</a>
+<span class="k">def</span> <span class="nf">get_posres_include</span><span class="p">(</span><span class="n">mol_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">target_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">binder_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># I may decide to add different POSRES to target and binder.</span>
+    <span class="n">posres_define</span> <span class="o">=</span> <span class="s2">&quot;POSRES_WATER&quot;</span>
     <span class="k">if</span> <span class="n">mol_name</span> <span class="ow">in</span> <span class="n">target_chains</span><span class="p">:</span>
-        <span class="n">posres_define</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;POSRES_TARGET&quot;</span>
+        <span class="n">posres_define</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;POSRES&quot;</span>
     <span class="k">elif</span> <span class="n">mol_name</span> <span class="ow">in</span> <span class="n">binder_chains</span><span class="p">:</span>
-        <span class="n">posres_define</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;POSRES_BINDER&quot;</span>
+        <span class="n">posres_define</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;POSRES&quot;</span>
 
     <span class="n">posres_include_text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;; Include Position restraint file</span>
 <span class="s2">#ifdef </span><span class="si">{</span><span class="n">posres_define</span><span class="si">}</span>
@@ -449,14 +468,17 @@
 <span class="s2">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">posres_include_text</span></div>
 
+
 <span class="c1"># DEPRECATED</span>
-<div class="viewcode-block" id="run_acpype"><a class="viewcode-back" href="../../misc.html#locuaz.amberutils.run_acpype">[docs]</a><span class="k">def</span> <span class="nf">run_acpype</span><span class="p">(</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">prmtop</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">FileHandle</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
-    <span class="n">rst</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">FileHandle</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">target_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span>
-    <span class="n">binder_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span>
+<div class="viewcode-block" id="run_acpype">
+<a class="viewcode-back" href="../../misc.html#locuaz.amberutils.run_acpype">[docs]</a>
+<span class="k">def</span> <span class="nf">run_acpype</span><span class="p">(</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">prmtop</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">FileHandle</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+        <span class="n">rst</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">FileHandle</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">target_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span>
+        <span class="n">binder_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">GROStructure</span><span class="p">,</span> <span class="n">ZipTopology</span><span class="p">]:</span>
     <span class="n">local_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">prmtop</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
     <span class="n">p</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
@@ -492,6 +514,7 @@
         <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">error_msg</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
 
     <span class="k">return</span> <span class="n">gro</span><span class="p">,</span> <span class="n">zip_top</span></div>
+
 </pre></div>
 
            </div>

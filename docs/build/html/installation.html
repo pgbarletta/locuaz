@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Installation &mdash; locuaz 0.5.2 documentation</title>
+  <title>Installation &mdash; locuaz 0.5.3 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=2a2fe768"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -33,7 +35,7 @@
             locuaz
           </a>
               <div class="version">
-                0.5.2
+                0.5.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -49,10 +51,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#stable-release">Stable release</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#conda-pip-option-1">conda + pip (Option 1)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#conda-option-2">conda (Option 2)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#conda-option-2-not-yet-available">conda (Option 2) NOT YET AVAILABLE</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#from-sources-option-3">From sources (Option 3)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#from-sources-option-3-developers-only">From sources (Option 3, developers only)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#post-installation">Post-installation</a></li>
 </ul>
 </li>
@@ -105,31 +107,31 @@
            <div itemprop="articleBody">
              
   <section id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h1>
+<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h1>
 <p>There are 3 options for installing locuaz. Conda + pip (Option 1) is recommended, since its both lightweight
 and quick. A pure conda install is also available (Option2). It is also possible to compile from source (Option 3).
 In all cases a <a class="reference internal" href="#post-installation"><span class="std std-ref">Post-installation</span></a> step is required.</p>
 <section id="prerequisites">
-<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading"></a></h2>
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading"></a></h2>
 <p>We recommend using <a class="reference external" href="https://github.com/conda-forge/miniforge">Mambaforge</a> instead of pure conda,
 since it’s much faster</p>
 </section>
 <section id="stable-release">
-<h2>Stable release<a class="headerlink" href="#stable-release" title="Permalink to this heading"></a></h2>
+<h2>Stable release<a class="headerlink" href="#stable-release" title="Link to this heading"></a></h2>
 <section id="conda-pip-option-1">
-<h3>conda + pip (Option 1)<a class="headerlink" href="#conda-pip-option-1" title="Permalink to this heading"></a></h3>
+<h3>conda + pip (Option 1)<a class="headerlink" href="#conda-pip-option-1" title="Link to this heading"></a></h3>
 <p>Create a conda environment from the <a class="reference download internal" download="" href="_downloads/5c1543975947835403a013a0ed019156/usr_deps.yaml"><code class="xref download docutils literal notranslate"><span class="pre">usr_deps.yaml</span></code></a>, which looks like this:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">name: locuaz</span>
 <span class="go">channels:</span>
 <span class="go">  - conda-forge</span>
 <span class="go">dependencies:</span>
-<span class="go">  - conda-forge::python&gt;=3.10</span>
+<span class="go">  - conda-forge::python&gt;=3.10,&lt;3.11</span>
 <span class="go">  - conda-forge::ambertools&gt;=22.0.0</span>
 <span class="go">  - conda-forge::tensorflow</span>
 </pre></div>
 </div>
 <p>To create the environment:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mamba create -f usr_deps.yaml</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mamba env create -f usr_deps.yaml</span>
 </pre></div>
 </div>
 <p>Then, activate the environment and install the protocol through pip:</p>
@@ -140,8 +142,8 @@ since it’s much faster</p>
 <p>This option takes an extra step with respect to using only conda, but the process will be faster and the
 resulting environment won’t be as heavy.</p>
 </section>
-<section id="conda-option-2">
-<h3>conda (Option 2)<a class="headerlink" href="#conda-option-2" title="Permalink to this heading"></a></h3>
+<section id="conda-option-2-not-yet-available">
+<h3>conda (Option 2) NOT YET AVAILABLE<a class="headerlink" href="#conda-option-2-not-yet-available" title="Link to this heading"></a></h3>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mamba install locuaz</span>
 </pre></div>
 </div>
@@ -149,20 +151,24 @@ resulting environment won’t be as heavy.</p>
 dependencies, like <strong>GROMACS</strong> itself.</p>
 </section>
 </section>
-<section id="from-sources-option-3">
-<h2>From sources (Option 3)<a class="headerlink" href="#from-sources-option-3" title="Permalink to this heading"></a></h2>
+<section id="from-sources-option-3-developers-only">
+<h2>From sources (Option 3, developers only)<a class="headerlink" href="#from-sources-option-3-developers-only" title="Link to this heading"></a></h2>
 <p>Clone the <a class="reference external" href="https://github.com/pgbarletta/locuaz">repo</a>:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">git clone https://github.com/pgbarletta/locuaz</span>
 </pre></div>
 </div>
-<p>And create the environment and install all the necessary dependencies at once:</p>
+<p>Create the environment and install all the necessary dependencies at once:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mamba env create -f dev_deps.yaml</span>
+</pre></div>
+</div>
+<p>And inside the newly cloned dir, install <em>locuaz</em> in development mode:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
 </pre></div>
 </div>
 <p>That’s it. You can also change the environment’s name by editing the <cite>name</cite> field of the <cite>dev_deps.yml</cite> file, before creating it.</p>
 </section>
 <section id="post-installation">
-<h2>Post-installation<a class="headerlink" href="#post-installation" title="Permalink to this heading"></a></h2>
+<h2>Post-installation<a class="headerlink" href="#post-installation" title="Link to this heading"></a></h2>
 <p>If you want to use the <code class="docutils literal notranslate"><span class="pre">dlp</span></code> mutator You’ll also have to get DLPacker’s <a class="reference external" href="https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQseE0LQ/view?usp=sharing">weights</a> and place them on a dedicated
 <code class="docutils literal notranslate"><span class="pre">dlpacker</span></code> (actual name doesn’t matter) directory, more info on <a class="reference internal" href="mutators.html#mutators"><span class="std std-ref">Mutators</span></a>.
 You also may want extra scorers, check the <a class="reference internal" href="scorers.html#scorers"><span class="std std-ref">Scorers</span></a></p>

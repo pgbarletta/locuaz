@@ -26,12 +26,12 @@ Here's an example script with SLURM:
     #SBATCH --exclusive
 
     cd $SLURM_SUBMIT_DIR
-    source /m100/home/userexternal/pbarlett/.bashrc
-    conda activate locuaz
     module load profile/lifesc
     module load autoload gromacs/2021.4
+    source /m100/home/userexternal/pbarlett/.bashrc
+    conda activate locuaz
 
-    python /home/user/locuaz/locuaz/locuaz.py config.yaml
+    locuaz config.yaml
 
 
 Running from PBS
@@ -49,9 +49,9 @@ And another one with PBS:
 
     cd $PBS_O_WORKDIR
     export OMP_NUM_THREADS=4
-    source /home/pbarletta/.bashrc
     module load gromacs/2021.4
     module load mpi
+    source /home/pbarletta/.bashrc
     conda activate locuaz
 
-    python /home/user/locuaz/locuaz/locuaz.py config.yaml
+    locuaz.py config.yaml

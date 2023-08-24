@@ -1,4 +1,4 @@
-name: locuaz
+name: concept
 channels:
   - conda-forge
 dependencies:

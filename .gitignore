@@ -1,8 +1,9 @@
 log*err
 log*out
-*nc
-*xtc
-*trr
+*.nc
+*.xtc
+*.trr
+*.sif
 __pycache__
 nohup.out
 DLPacker_weights.h5

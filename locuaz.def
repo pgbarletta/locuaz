@@ -26,3 +26,11 @@ From: nvcr.io/nvidia/cuda:11.7.0-runtime-ubuntu22.04
 
 %files
     usr_deps.yaml opt/
+
+%labels
+    Author Patricio Barletta
+    Version 0.5.3
+
+%help
+    Apptainer container for locuaz. Check https://locuaz.readthedocs.io/en/latest/ for more info.
+

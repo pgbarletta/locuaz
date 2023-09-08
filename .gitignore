@@ -8,4 +8,5 @@ __pycache__
 nohup.out
 DLPacker_weights.h5
 locuaz.egg-info/
-build/
+build/bdist.linux-x86_64
+build/lib

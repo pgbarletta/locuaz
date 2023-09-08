@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YAML configuration file &mdash; locuaz 0.5.3 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=2a2fe768"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Citing" href="citing.html" />
+    <link rel="prev" title="Miscellaneous" href="misc.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            locuaz
+          </a>
+              <div class="version">
+                0.5.3
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="platformflow.html">Platform flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorialsimple.html">Tutorial: running a simple optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorialtleap.html">Tutorial: using Tleap topologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorialligand.html">Tutorial: optimizing an antibody against a ligand</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jobsubmission.html">Job submission</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scorers.html">Scorers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mutators.html">Mutators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="statistics.html">Stats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pruners.html">Pruners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellaneous</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">YAML configuration file</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#config-sections"><code class="docutils literal notranslate"><span class="pre">config</span></code> sections</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#config-paths"><code class="docutils literal notranslate"><span class="pre">config['paths']</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#config-main"><code class="docutils literal notranslate"><span class="pre">config['main']</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#config-protocol"><code class="docutils literal notranslate"><span class="pre">config['protocol']</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#config-generation"><code class="docutils literal notranslate"><span class="pre">config['generation']</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#config-mutation"><code class="docutils literal notranslate"><span class="pre">config['mutation']</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#config-pruning"><code class="docutils literal notranslate"><span class="pre">config['pruning']</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#config-md"><code class="docutils literal notranslate"><span class="pre">config['md']</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#config-target"><code class="docutils literal notranslate"><span class="pre">config['target']</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#config-binder"><code class="docutils literal notranslate"><span class="pre">config['binder']</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#config-scoring"><code class="docutils literal notranslate"><span class="pre">config['scoring']</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#config-statistics"><code class="docutils literal notranslate"><span class="pre">config['statistics']</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#schema-yaml">schema.yaml</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="citing.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developing.html">Developing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">locuaz</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">YAML configuration file</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/configurationfile.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="yaml-configuration-file">
+<h1>YAML configuration file<a class="headerlink" href="#yaml-configuration-file" title="Link to this heading"></a></h1>
+<p>locuaz behaviour is highly customizable, there are a lot of moving parts and alternative ways of carrying out the
+same function. Hence this reference, in which we’ll refer to the input configuration as <code class="docutils literal notranslate"><span class="pre">config</span></code> and explain each
+of its “sections”.</p>
+<section id="config-sections">
+<h2><code class="docutils literal notranslate"><span class="pre">config</span></code> sections<a class="headerlink" href="#config-sections" title="Link to this heading"></a></h2>
+<p>Given the high number of options, <code class="docutils literal notranslate"><span class="pre">config</span></code> has a hierarchical structure, where similar options are
+grouped in sections.</p>
+<section id="config-paths">
+<h3><code class="docutils literal notranslate"><span class="pre">config['paths']</span></code><a class="headerlink" href="#config-paths" title="Link to this heading"></a></h3>
+<p>All paths go in this section. And all of them are required, except for:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">config['paths']['input']</span></code>: only used when starting a new protocol run, since during restarts the protocol
+will read the necessary files from the current epoch.
+The input PDB file has to be here and be named <code class="docutils literal notranslate"><span class="pre">{config['paths']['name']}.pdb</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config['paths']['tleap']</span></code>: only necessary when using tleap to build topologies. The <strong>tleap</strong> script and
+any other auxiliary file (<code class="docutils literal notranslate"><span class="pre">.frcmod</span></code> or <code class="docutils literal notranslate"><span class="pre">.lib</span></code> files) should be here.</p></li>
+</ol>
+<p>Some other things to highlight:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">config['paths']['gmxrc']</span></code>: path to where the <code class="docutils literal notranslate"><span class="pre">GMXRC</span></code> is located, along with the GROMACS binary, usually
+called <cite>gmx</cite></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config['paths']['scorers']</span></code>: root directory where each scorer will have its own folder.
+Check <a class="reference internal" href="scorers.html#scorers"><span class="std std-ref">Scorers</span></a> for more info.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config['paths']['mutator']</span></code>: mutator binary and/or parameters have to be here and be named appropriately.
+Check <a class="reference internal" href="mutators.html#mutators"><span class="std std-ref">Mutators</span></a> for more info.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config['paths']['work']</span></code>: name of the working dir. If it’s an existing directory, the protocol will assume
+it’s restarting from a previous run, if not, it will start a new one.</p></li>
+</ol>
+</section>
+<section id="config-main">
+<h3><code class="docutils literal notranslate"><span class="pre">config['main']</span></code><a class="headerlink" href="#config-main" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">config['main']['name']</span></code>: system’s name.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config['main']['mode']</span></code>: in case you want to just finish the MD run of the last epoch on your work dir, set
+this to <code class="docutils literal notranslate"><span class="pre">run</span></code>, if you just want to score it set it to <code class="docutils literal notranslate"><span class="pre">score</span></code>. In most scenarios, the default option <code class="docutils literal notranslate"><span class="pre">evolve</span></code>
+is what you want. This is also the only <code class="docutils literal notranslate"><span class="pre">config</span></code> option that may be overrided by a CLI option
+(eg: <code class="docutils literal notranslate"><span class="pre">--mode</span> <span class="pre">evolve</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config['main']['prefix']</span></code>: the prefix files from the NPT run will get. Not very useful.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config['main']['starting_epoch']</span></code>: useful when a starting a new protocol from a PDB, or set of PDBs, that
+was already optimized by a protocol run, eg: when running an unrestrained optimization after a restrained one.</p></li>
+</ol>
+</section>
+<section id="config-protocol">
+<h3><code class="docutils literal notranslate"><span class="pre">config['protocol']</span></code><a class="headerlink" href="#config-protocol" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">config['protocol']['epochs']</span></code>: .</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config['protocol']['branches']</span></code>: .</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config['protocol']['prevent_fewer_branches']</span></code>: .</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config['protocol']['memory_size']</span></code>: .</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config['protocol']['memory_positions']</span></code>: .</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config['protocol']['failed_memory_size']</span></code>: .</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config['protocol']['failed_memory_positions']</span></code>: .</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config['protocol']['memory_aminoacids']</span></code>: not yet implemented.</p></li>
+</ol>
+</section>
+<section id="config-generation">
+<h3><code class="docutils literal notranslate"><span class="pre">config['generation']</span></code><a class="headerlink" href="#config-generation" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">config['generation']['generator']</span></code>: check the currently available generators below.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config['generation']['probe_radius']</span></code>: some generators exclude positions that are not currently on the
+interface, which is calculated by the rolling probe method
+(<a class="reference external" href="https://freesasa.github.io/doxygen/Geometry.html">freesasa</a>); the bigger the probe, the more residues that
+will be classified as being part of the interface.</p></li>
+</ol>
+</section>
+<section id="config-mutation">
+<h3><code class="docutils literal notranslate"><span class="pre">config['mutation']</span></code><a class="headerlink" href="#config-mutation" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">config['mutation']['mutator']</span></code>: check the currently available mutators below.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config['mutation']['reconstruct_radius']</span></code>: when using the <strong>dlpr</strong> mutator, residues within this radius from
+the mutated residue will get their sidechains reoriented by <a class="reference external" href="https://github.com/nekitmm/DLPacker">DLPacker</a>.</p></li>
+</ol>
+</section>
+<section id="config-pruning">
+<h3><code class="docutils literal notranslate"><span class="pre">config['pruning']</span></code><a class="headerlink" href="#config-pruning" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">config['pruning']['pruner']</span></code>: check the currently available pruners below.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config['pruning']['remaining_branches']</span></code>: you can set this value when the chosen pruner leaves a fixed number
+of branches after pruning.</p></li>
+</ol>
+</section>
+<section id="config-md">
+<h3><code class="docutils literal notranslate"><span class="pre">config['md']</span></code><a class="headerlink" href="#config-md" title="Link to this heading"></a></h3>
+</section>
+<section id="config-target">
+<h3><code class="docutils literal notranslate"><span class="pre">config['target']</span></code><a class="headerlink" href="#config-target" title="Link to this heading"></a></h3>
+</section>
+<section id="config-binder">
+<h3><code class="docutils literal notranslate"><span class="pre">config['binder']</span></code><a class="headerlink" href="#config-binder" title="Link to this heading"></a></h3>
+</section>
+<section id="config-scoring">
+<h3><code class="docutils literal notranslate"><span class="pre">config['scoring']</span></code><a class="headerlink" href="#config-scoring" title="Link to this heading"></a></h3>
+</section>
+<section id="config-statistics">
+<h3><code class="docutils literal notranslate"><span class="pre">config['statistics']</span></code><a class="headerlink" href="#config-statistics" title="Link to this heading"></a></h3>
+</section>
+</section>
+<section id="schema-yaml">
+<h2>schema.yaml<a class="headerlink" href="#schema-yaml" title="Link to this heading"></a></h2>
+<p>Input configuration files are validated against the following schema, which also works as a reference you can check
+when in doubt, given its plain-english syntax. For example, you can check whether an option is mandatory or not
+(<code class="docutils literal notranslate"><span class="pre">required</span></code>), if it requires a string, a number, etc. (<code class="docutils literal notranslate"><span class="pre">type</span></code>), if it has a default value (<code class="docutils literal notranslate"><span class="pre">default</span></code>), etc.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">paths</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dict</span>
+<span class="w">    </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">contains_any_of</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">input</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">work</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">gmxrc</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">            </span><span class="nt">is_directory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">scorers</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">            </span><span class="nt">is_directory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">mutator</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">            </span><span class="nt">is_directory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">mdp</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">            </span><span class="nt">is_directory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">input</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
+<span class="w">            </span><span class="nt">minlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">            </span><span class="nt">maxlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12</span>
+<span class="w">            </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">                </span><span class="nt">is_directory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">        </span><span class="nt">work</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">tleap</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">            </span><span class="nt">is_directory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="nt">main</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dict</span>
+<span class="w">    </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">mode</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">            </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;evolve&quot;</span>
+<span class="w">            </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;evolve&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;run&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;score&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">starting_epoch</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">            </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+
+<span class="nt">protocol</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dict</span>
+<span class="w">    </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">    </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">epochs</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">            </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">            </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">            </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">48</span>
+<span class="w">        </span><span class="nt">new_branches</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">            </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">            </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">            </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">24</span>
+<span class="w">        </span><span class="nt">constant_width</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">boolean</span>
+<span class="w">            </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">prevent_fewer_branches</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">boolean</span>
+<span class="w">            </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">memory_size</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">            </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">            </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12</span>
+<span class="w">            </span><span class="nt">higher_than_length_of</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">memory_positions</span>
+<span class="w">        </span><span class="nt">memory_positions</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">            </span><span class="nt">dependencies</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">memory_size</span>
+<span class="w">            </span><span class="nt">minlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">            </span><span class="nt">maxlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12</span>
+<span class="w">            </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
+<span class="w">                </span><span class="nt">minlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">                </span><span class="nt">maxlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">36</span>
+<span class="w">                </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">                    </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">                    </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">99999</span>
+<span class="w">        </span><span class="nt">failed_memory_size</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">            </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">            </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12</span>
+<span class="w">            </span><span class="nt">higher_than_length_of</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">failed_memory_positions</span>
+<span class="w">        </span><span class="nt">failed_memory_positions</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">            </span><span class="nt">dependencies</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">memory_size</span>
+<span class="w">            </span><span class="nt">minlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">            </span><span class="nt">maxlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12</span>
+<span class="w">            </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
+<span class="w">                </span><span class="nt">minlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">                </span><span class="nt">maxlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">36</span>
+<span class="w">                </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">                    </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">                    </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">99999</span>
+
+<span class="w">        </span><span class="nt">memory_aminoacids</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">            </span><span class="nt">minlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">            </span><span class="nt">maxlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12</span>
+<span class="w">            </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
+<span class="w">                </span><span class="nt">minlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">                </span><span class="nt">maxlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">19</span>
+<span class="w">                </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">                    </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;A&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;R&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;N&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;D&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;C&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;E&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;Q&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;G&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;H&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;I&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;L&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;K&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;M&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;F&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;P&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;S&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;T&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;W&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;Y&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;V&#39;</span><span class="p p-Indicator">]</span>
+<span class="w">                    </span><span class="nt">minlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">                    </span><span class="nt">maxlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+
+<span class="nt">generation</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dict</span>
+<span class="w">    </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">generator</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">            </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SPM4i</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="w">            </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">SPM4</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">SPM4i</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">SPM4gmxmmpbsa</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">probe_radius</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float</span>
+<span class="w">            </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
+<span class="w">            </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4.0</span>
+<span class="w">            </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.4</span>
+
+<span class="nt">mutation</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dict</span>
+<span class="w">    </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">mutator</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">            </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dlp</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+<span class="w">            </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="nv">evoef2</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">dlp</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">dlpr</span><span class="w"> </span><span class="p p-Indicator">]</span>
+<span class="w">            </span><span class="nt">crosscheck_radius</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">reconstruct_radius</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float</span>
+<span class="w">            </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0</span>
+<span class="w">            </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20.0</span>
+<span class="w">            </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5.0</span>
+
+<span class="nt">pruning</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dict</span>
+<span class="w">    </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">prune</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">            </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">            </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
+<span class="w">        </span><span class="nt">pruner</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">            </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;consensus&quot;</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">            </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;consensus&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;metropolis&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">consensus_threshold</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">            </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">            </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="w">            </span><span class="nt">dependencies</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">pruner</span><span class="p">:</span><span class="w"> </span><span class="nv">consensus</span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">kT</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float</span>
+<span class="w">            </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
+<span class="w">            </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5.0</span>
+<span class="w">            </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.593</span>
+
+<span class="nt">md</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dict</span>
+<span class="w">    </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">gmx_mdrun</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">            </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;gmx</span><span class="nv"> </span><span class="s">mdrun&quot;</span>
+<span class="w">        </span><span class="nt">mdp_names</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dict</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">            </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">min_mdp</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">                    </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;min.mdp&quot;</span>
+<span class="w">                </span><span class="nt">nvt_mdp</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">                    </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;nvt.mdp&quot;</span>
+<span class="w">                </span><span class="nt">npt_mdp</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">                    </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;npt.mdp&quot;</span>
+<span class="w">        </span><span class="nt">mps</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">boolean</span>
+<span class="w">            </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">            </span><span class="nt">forbidden_if_true_mandatory_if_false</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">ngpus</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">mpi_procs</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">omp_procs</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">pinoffsets</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">numa_regions</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">            </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">2</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">4</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">8</span><span class="p p-Indicator">]</span>
+<span class="w">            </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
+<span class="w">        </span><span class="nt">ngpus</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">            </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">            </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">            </span><span class="nt">same_as_length_of</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pinoffsets</span>
+<span class="w">        </span><span class="nt">mpi_procs</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">            </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">            </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">48</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">        </span><span class="nt">omp_procs</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">            </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">            </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">48</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">        </span><span class="nt">pinoffsets</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
+<span class="w">            </span><span class="nt">minlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">            </span><span class="nt">maxlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">            </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">        </span><span class="nt">use_tleap</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">boolean</span>
+<span class="w">            </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">        </span><span class="nt">force_field</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">            </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;amber03&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;amber94&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;amber96&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;amber99&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;amber99sb-ildn&quot;</span><span class="p p-Indicator">,</span>
+<span class="w">                        </span><span class="s">&quot;amber99sb&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;amberGS&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;charmm27&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;gromos43a1&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;gromos43a2&quot;</span><span class="p p-Indicator">,</span>
+<span class="w">                        </span><span class="s">&quot;gromos45a3&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;gromos53a5&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;gromos53a6&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;gromos54a7&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;oplsaa&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">            </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;amber99sb-ildn&quot;</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">        </span><span class="nt">water_type</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">            </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;tip3p&quot;</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">            </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;tip3p&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;tip4p&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;tip4pew&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;tip5p&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;spc&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;spce&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">box_type</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">            </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;triclinic&quot;</span>
+<span class="w">            </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;triclinic&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;dodecahedron&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;octahedron&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">maxwarn</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">            </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">            </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="w">            </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">        </span><span class="nt">npt_restraints</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dict</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">            </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">target</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float</span>
+<span class="w">                    </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">                    </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10000</span>
+<span class="w">                    </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+<span class="w">                </span><span class="nt">binder</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float</span>
+<span class="w">                    </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">                    </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10000</span>
+<span class="w">                    </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+<span class="w">                </span><span class="nt">rest</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float</span>
+<span class="w">                    </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">                    </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10000</span>
+<span class="w">                    </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+
+<span class="nt">target</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dict</span>
+<span class="w">    </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">chainID</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
+<span class="w">            </span><span class="nt">minlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">            </span><span class="nt">maxlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">            </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">                </span><span class="nt">maxlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+
+<span class="nt">binder</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dict</span>
+<span class="w">    </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">chainID</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
+<span class="w">            </span><span class="nt">minlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">            </span><span class="nt">maxlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">            </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">                </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">A</span><span class="p p-Indicator">,</span><span class="nv">B</span><span class="p p-Indicator">,</span><span class="nv">C</span><span class="p p-Indicator">,</span><span class="nv">D</span><span class="p p-Indicator">,</span><span class="nv">E</span><span class="p p-Indicator">,</span><span class="nv">F</span><span class="p p-Indicator">,</span><span class="nv">G</span><span class="p p-Indicator">,</span><span class="nv">H</span><span class="p p-Indicator">,</span><span class="nv">I</span><span class="p p-Indicator">,</span><span class="nv">J</span><span class="p p-Indicator">,</span><span class="nv">K</span><span class="p p-Indicator">,</span><span class="nv">L</span><span class="p p-Indicator">,</span><span class="nv">M</span><span class="p p-Indicator">,</span><span class="nv">N</span><span class="p p-Indicator">,</span><span class="nv">O</span><span class="p p-Indicator">,</span><span class="nv">P</span><span class="p p-Indicator">,</span><span class="nv">Q</span><span class="p p-Indicator">,</span><span class="nv">R</span><span class="p p-Indicator">,</span><span class="nv">S</span><span class="p p-Indicator">,</span><span class="nv">T</span><span class="p p-Indicator">,</span><span class="nv">U</span><span class="p p-Indicator">,</span><span class="nv">V</span><span class="p p-Indicator">,</span><span class="nv">W</span><span class="p p-Indicator">,</span><span class="nv">X</span><span class="p p-Indicator">,</span><span class="nv">Y</span><span class="p p-Indicator">,</span><span class="nv">Z</span><span class="p p-Indicator">]</span>
+<span class="w">                </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">mutating_chainID</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
+<span class="w">            </span><span class="nt">minlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">            </span><span class="nt">maxlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">            </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">                </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">A</span><span class="p p-Indicator">,</span><span class="nv">B</span><span class="p p-Indicator">,</span><span class="nv">C</span><span class="p p-Indicator">,</span><span class="nv">D</span><span class="p p-Indicator">,</span><span class="nv">E</span><span class="p p-Indicator">,</span><span class="nv">F</span><span class="p p-Indicator">,</span><span class="nv">G</span><span class="p p-Indicator">,</span><span class="nv">H</span><span class="p p-Indicator">,</span><span class="nv">I</span><span class="p p-Indicator">,</span><span class="nv">J</span><span class="p p-Indicator">,</span><span class="nv">K</span><span class="p p-Indicator">,</span><span class="nv">L</span><span class="p p-Indicator">,</span><span class="nv">M</span><span class="p p-Indicator">,</span><span class="nv">N</span><span class="p p-Indicator">,</span><span class="nv">O</span><span class="p p-Indicator">,</span><span class="nv">P</span><span class="p p-Indicator">,</span><span class="nv">Q</span><span class="p p-Indicator">,</span><span class="nv">R</span><span class="p p-Indicator">,</span><span class="nv">S</span><span class="p p-Indicator">,</span><span class="nv">T</span><span class="p p-Indicator">,</span><span class="nv">U</span><span class="p p-Indicator">,</span><span class="nv">V</span><span class="p p-Indicator">,</span><span class="nv">W</span><span class="p p-Indicator">,</span><span class="nv">X</span><span class="p p-Indicator">,</span><span class="nv">Y</span><span class="p p-Indicator">,</span><span class="nv">Z</span><span class="p p-Indicator">]</span>
+<span class="w">                </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">mutating_resSeq</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
+<span class="w">            </span><span class="nt">minlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">            </span><span class="nt">maxlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">            </span><span class="nt">same_length</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mutating_chainID</span>
+<span class="w">            </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
+<span class="w">                </span><span class="nt">minlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">                </span><span class="nt">maxlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="w">                </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">                </span><span class="nt">sorted</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">                </span><span class="nt">unique</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">                </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">                    </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">                    </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">99999</span>
+<span class="w">                    </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">mutating_resname</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
+<span class="w">            </span><span class="nt">minlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">            </span><span class="nt">maxlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">            </span><span class="nt">same_length</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mutating_chainID</span>
+<span class="w">            </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
+<span class="w">                </span><span class="nt">minlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">                </span><span class="nt">maxlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="w">                </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">                </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">                    </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">A</span><span class="p p-Indicator">,</span><span class="nv">C</span><span class="p p-Indicator">,</span><span class="nv">D</span><span class="p p-Indicator">,</span><span class="nv">E</span><span class="p p-Indicator">,</span><span class="nv">F</span><span class="p p-Indicator">,</span><span class="nv">G</span><span class="p p-Indicator">,</span><span class="nv">H</span><span class="p p-Indicator">,</span><span class="nv">I</span><span class="p p-Indicator">,</span><span class="nv">K</span><span class="p p-Indicator">,</span><span class="nv">L</span><span class="p p-Indicator">,</span><span class="nv">M</span><span class="p p-Indicator">,</span><span class="nv">N</span><span class="p p-Indicator">,</span><span class="nv">P</span><span class="p p-Indicator">,</span><span class="nv">Q</span><span class="p p-Indicator">,</span><span class="nv">R</span><span class="p p-Indicator">,</span><span class="nv">S</span><span class="p p-Indicator">,</span><span class="nv">T</span><span class="p p-Indicator">,</span><span class="nv">V</span><span class="p p-Indicator">,</span><span class="nv">W</span><span class="p p-Indicator">,</span><span class="nv">Y</span><span class="p p-Indicator">]</span>
+<span class="w">                    </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="nt">scoring</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dict</span>
+<span class="w">    </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">scorers</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
+<span class="w">            </span><span class="nt">minlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">            </span><span class="nt">maxlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">            </span><span class="nt">unique_values</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">            </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">                </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;bach&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;bluues&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;bluuesbmf&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;evoef2&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;haddock&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;piepisa&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;pisa&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;rosetta&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;gmxmmpbsa&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;autodockvina&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">        </span><span class="nt">nthreads</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">            </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">            </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">256</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">mpi_procs</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">            </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">            </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">256</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">start</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">            </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">            </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">            </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">999999</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">        </span><span class="nt">end</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">            </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span>
+<span class="w">            </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span>
+<span class="w">            </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">999999</span>
+<span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">            </span><span class="nt">scoring_end</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">        </span><span class="nt">allowed_nonstandard_residues</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
+<span class="w">            </span><span class="nt">minlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">            </span><span class="nt">maxlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12</span>
+<span class="w">            </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">                </span><span class="nt">minlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">                </span><span class="nt">maxlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
+<span class="w">            </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[]</span>
+<span class="nt">statistics</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dict</span>
+<span class="w">    </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">    </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">interface</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dict</span>
+<span class="w">            </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">run</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">boolean</span>
+<span class="w">                </span><span class="nt">warn_above</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float</span>
+<span class="w">                    </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">                    </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">999.0</span>
+<span class="w">                    </span><span class="nt">higher_than</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">warn_below</span>
+<span class="w">                </span><span class="nt">warn_below</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float</span>
+<span class="w">                    </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">                    </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">999.0</span>
+<span class="w">                </span><span class="nt">warn_above_relative</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float</span>
+<span class="w">                    </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0</span>
+<span class="w">                    </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0</span>
+<span class="w">                </span><span class="nt">warn_below_relative</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float</span>
+<span class="w">                    </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">                    </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0</span>
+<span class="w">                </span><span class="nt">warn_variance</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float</span>
+<span class="w">                    </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">                    </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">99999.0</span>
+<span class="w">                </span><span class="nt">warn_variance_relative</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float</span>
+<span class="w">                    </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">                    </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5.0</span>
+<span class="w">                </span><span class="nt">nthreads</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">                    </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">                    </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">24</span>
+<span class="w">                    </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">        </span><span class="nt">cmdistance</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dict</span>
+<span class="w">            </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">run</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">boolean</span>
+<span class="w">                </span><span class="nt">warn_above</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float</span>
+<span class="w">                    </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">                    </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">999.0</span>
+<span class="w">                    </span><span class="nt">higher_than</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">warn_below</span>
+<span class="w">                </span><span class="nt">warn_below</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float</span>
+<span class="w">                    </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">                    </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">999.0</span>
+<span class="w">                </span><span class="nt">warn_above_relative</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float</span>
+<span class="w">                    </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0</span>
+<span class="w">                    </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0</span>
+<span class="w">                </span><span class="nt">warn_below_relative</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float</span>
+<span class="w">                    </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">                    </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0</span>
+<span class="w">                </span><span class="nt">warn_variance</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float</span>
+<span class="w">                    </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">                    </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">99999.0</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="misc.html" class="btn btn-neutral float-left" title="Miscellaneous" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="citing.html" class="btn btn-neutral float-right" title="Citing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Patricio Barletta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

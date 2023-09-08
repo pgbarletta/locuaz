@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorial: optimizing an antibody against a ligand &mdash; locuaz 0.5.3 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=2a2fe768"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Job submission" href="jobsubmission.html" />
+    <link rel="prev" title="Tutorial: using Tleap topologies" href="tutorialtleap.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            locuaz
+          </a>
+              <div class="version">
+                0.5.3
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Learning</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="platformflow.html">Platform flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorialsimple.html">Tutorial: running a simple optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorialtleap.html">Tutorial: using Tleap topologies</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial: optimizing an antibody against a ligand</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#coming-soon">Coming soon</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#misc">misc</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="jobsubmission.html">Job submission</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scorers.html">Scorers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mutators.html">Mutators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="statistics.html">Stats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pruners.html">Pruners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellaneous</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configurationfile.html">YAML configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="citing.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developing.html">Developing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">locuaz</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Tutorial: optimizing an antibody against a ligand</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/tutorialligand.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tutorial-optimizing-an-antibody-against-a-ligand">
+<h1>Tutorial: optimizing an antibody against a ligand<a class="headerlink" href="#tutorial-optimizing-an-antibody-against-a-ligand" title="Link to this heading"></a></h1>
+<section id="coming-soon">
+<h2>Coming soon<a class="headerlink" href="#coming-soon" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">allowed_nonstandard_residues</span></code></p>
+<p>remember that for scoring, the target chains are named A, and the ones from the binder, B.
+write about the sanitization the protocol does with the splitted frames. All scorers but gmxmmpbsa use this PDBs.</p>
+<p><code class="docutils literal notranslate"><span class="pre">memory_positions</span></code> and <code class="docutils literal notranslate"><span class="pre">failed_memory_positions</span></code>:
+empty memory slots on input user memory are allowed.
+This allows the user to control for how many epochs will the non-empty memory be recalled.
+Place them after the desired positions:</p>
+<p><code class="docutils literal notranslate"><span class="pre">memory_positions:</span> <span class="pre">[[2,</span> <span class="pre">3,</span> <span class="pre">4,</span> <span class="pre">6,</span> <span class="pre">7,</span> <span class="pre">8],</span> <span class="pre">[],</span> <span class="pre">[],</span> <span class="pre">[]</span> <span class="pre">]</span></code></p>
+<section id="misc">
+<h3>misc<a class="headerlink" href="#misc" title="Link to this heading"></a></h3>
+<p>Add chainID with parmed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">parm</span> <span class="n">pre_nb</span><span class="o">.</span><span class="n">prmtop</span>
+<span class="n">addPDB</span> <span class="n">start</span><span class="o">.</span><span class="n">pdb</span>
+<span class="n">outparm</span> <span class="n">nb</span><span class="o">.</span><span class="n">prmtop</span>
+<span class="n">go</span>
+</pre></div>
+</div>
+<p>You can also use cpptraj to add the chainIDs to the <code class="docutils literal notranslate"><span class="pre">.rst7</span></code> and <code class="docutils literal notranslate"><span class="pre">.pdb</span></code> files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">parm</span> <span class="n">nb</span><span class="o">.</span><span class="n">prmtop</span>
+<span class="n">trajin</span> <span class="n">nb</span><span class="o">.</span><span class="n">rst7</span>
+<span class="n">trajout</span> <span class="n">nb</span><span class="o">.</span><span class="n">pdb</span>
+</pre></div>
+</div>
+<p>asa</p>
+<figure class="align-default" id="id1">
+<img alt="iterations_dag" src="_images/tleap_iterations_dag.png" />
+<figcaption>
+<p><span class="caption-text">Figure 1: snapshot of one optimized complex. <strong>p53</strong> is the yellow one on the left, with its loops colored red and
+blue, these loops have to be stabilized so it doesn’t loose its function; the zinc atom and its coordinating</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorialtleap.html" class="btn btn-neutral float-left" title="Tutorial: using Tleap topologies" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="jobsubmission.html" class="btn btn-neutral float-right" title="Job submission" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Patricio Barletta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

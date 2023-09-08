@@ -25,7 +25,7 @@ can be implemented, thus offering versatility and adaptability to diverse scient
 
 *locuaz* initiates the optimization process by generating a variety of target-binder complexes through
 random mutations in the binder sequence. Following this, the complexes undergo parallel minimization and
-equilibration before a NPT Molecular Dynamics (MD) simulation is ran.
+equilibration before a NPT Molecular Dynamics (MD) simulation is run.
 Target-binder interactions on each frame are then simultaneously assessed by a set of scorers,
 utilizing available processors to then estimate if the mutations improved affinity. If so,
 the procedure is repeated with the new complexes, continuing the exploration of new binders.

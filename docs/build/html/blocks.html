@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blocks &mdash; locuaz 0.5.3 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=2a2fe768"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tutorial: running a simple optimization" href="tutorialsimple.html" />
+    <link rel="prev" title="Platform flow" href="platformflow.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            locuaz
+          </a>
+              <div class="version">
+                0.5.3
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Learning</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="platformflow.html">Platform flow</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Blocks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mutation-generator">Mutation Generator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#spm4">SPM4</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#spm4i">SPM4i</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#spm4gmxmmpbsa">SPM4gmxmmpbsa</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#mutator">Mutator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dlp-mutator">dlp mutator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dlpr-mutator">dlpr mutator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#evoef2-mutator">evoef2 mutator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#sampler">Sampler</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gromacs-topology">GROMACS topology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#amber-topology">Amber topology</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#scorer">Scorer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pruner">Pruner</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#metropolis">metropolis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#consensus">consensus</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#summary">Summary</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorialsimple.html">Tutorial: running a simple optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorialtleap.html">Tutorial: using Tleap topologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorialligand.html">Tutorial: optimizing an antibody against a ligand</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jobsubmission.html">Job submission</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scorers.html">Scorers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mutators.html">Mutators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="statistics.html">Stats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pruners.html">Pruners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellaneous</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configurationfile.html">YAML configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="citing.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developing.html">Developing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">locuaz</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Blocks</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/blocks.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="blocks">
+<h1>Blocks<a class="headerlink" href="#blocks" title="Link to this heading"></a></h1>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h2>
+<p><em>locuaz</em> has several moving parts and each of them has its role in the optimization process.
+The optimization procedure begins with the <em>Mutation Generator</em> generating a new random mutation
+for the binder sequence, which is carried out by a <em>Mutator</em>, thus generating a new set of complexes between the binder and the target.
+Subsequently, a <em>Sampler</em> runs a minimization, NVT equilibration and a NPT simulation, so the target and binder
+interactions can be assessed with the chosen <em>Scorer*(s).
+Finally, the *Pruner</em> applies a selection criterion using the binding scores in order to accept or reject the mutation.</p>
+<p>The process is repeated iteratively to explore new sequences with potentially improved affinities
+towards their targets. This workflow is outlined in Figure 1.</p>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="_images/blocks_flow.png"><img alt="workflow" src="_images/blocks_flow.png" style="width: 317.25px; height: 537.75px;" /></a>
+<figcaption>
+<p><span class="caption-text">Figure 1: The protocol’s workflow with respect to its <strong>blocks</strong>.</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>Many complexes can be generated on each run of this workflow and each of them will have MD data, scores, etc..
+We will refer to each complex, plus its data as <strong>branch</strong>, while the set of <strong>branches</strong> from the same
+run of this workflow is called an <strong>epoch</strong>.</p>
+<p>We will now make a review of each of the <strong>blocks</strong> depicted in Figure 1.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Throughout this documentation, we will refer to the user configuration options as <code class="docutils literal notranslate"><span class="pre">config</span></code>, and its
+various options as <code class="docutils literal notranslate"><span class="pre">config[&quot;main&quot;][&quot;name&quot;]</span></code>, <code class="docutils literal notranslate"><span class="pre">config[&quot;scoring&quot;][&quot;functions&quot;]</span></code>, etc…</p>
+</div>
+<p><em>locuaz</em> has to coordinate between several external programs and be flexible enough to allow different
+protocols to be run, hence, some abstractions are needed. We will call these abstractions <em>blocks</em>.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Since there are many tools and each of them has a different naming syntax, things can get confusing at times.
+This is why <em>locuaz</em> puts a layer of abstraction over them and standardizes their names. All external programs
+and any files they depend on (like their binaries), are named in lowercase letters without any other symbols.
+So, for example, while <em>gmx-mmpbsa</em> may be named at times <em>gmx_mmpbsa</em>,  <em>gmx-MMPBSA</em>, etc., we will always refer
+to it as <a class="reference internal" href="scorers.html#gmxmmpbsa"><span class="std std-ref">gmxmmpbsa</span></a> and its input script has to be named <strong>gmxmmpbsa</strong> and be
+located inside a folder called <strong>gmxmmpbsa</strong>.</p>
+<p>Other programs like the <a class="reference internal" href="scorers.html#rosetta"><span class="std std-ref">rosetta</span></a> scorer may need additional files.
+These are listed on its dedicated section.</p>
+</div>
+</section>
+<section id="mutation-generator">
+<h2>Mutation Generator<a class="headerlink" href="#mutation-generator" title="Link to this heading"></a></h2>
+<p>These blocks are the one in charge of generating the new binders. These are the currently available generators:</p>
+<section id="spm4">
+<h3>SPM4<a class="headerlink" href="#spm4" title="Link to this heading"></a></h3>
+<p>This is a Single Point Mutation generator. This means that it chooses a single position (from the user input
+<code class="docutils literal notranslate"><span class="pre">config[&quot;binder&quot;][&quot;mutating_resSeq&quot;]</span></code>), and all the mutations will be performed there.
+To choose which amino acid will be used, it splits all amino acids (except cysteine, which is discarded) in the
+following categories: <strong>negative</strong>, <strong>positive</strong>, <strong>hydrophobic</strong> and <strong>ring-containing</strong>.
+Then, it chooses 1 from each group to generate as many mutations as the user asked for
+(<code class="docutils literal notranslate"><span class="pre">config[&quot;protocol&quot;][&quot;branches&quot;]</span></code> option).</p>
+<p>Set <code class="docutils literal notranslate"><span class="pre">config[&quot;generation&quot;][&quot;generator&quot;]</span></code> to <code class="docutils literal notranslate"><span class="pre">SPM4</span></code> use this generator.</p>
+</section>
+<section id="spm4i">
+<h3>SPM4i<a class="headerlink" href="#spm4i" title="Link to this heading"></a></h3>
+<p>SPM4i is similar to <code class="docutils literal notranslate"><span class="pre">SPM4</span></code>, but it adds an additional filter before choosing which position to mutate.</p>
+<p>Given the positions selected by the user on <code class="docutils literal notranslate"><span class="pre">config[&quot;binder&quot;][&quot;mutating_resSeq&quot;]</span></code>, <code class="docutils literal notranslate"><span class="pre">SPM4i</span></code> will
+discard those that are not part of the target/binder interface.
+To determine the interface, <em>locuaz</em> uses the <strong>freesasa</strong> library which uses a rolling-probe,
+whose radius can be set using the <code class="docutils literal notranslate"><span class="pre">config[&quot;generation&quot;][&quot;probe_radius&quot;]</span></code> to any value ranging
+from <code class="docutils literal notranslate"><span class="pre">0.1</span></code> to <code class="docutils literal notranslate"><span class="pre">4.0</span></code> (in angstrom blocks). The bigger the radius, the more residues will be classified
+as part of the interface; the default is <code class="docutils literal notranslate"><span class="pre">1.4</span></code>.</p>
+<p>Set <code class="docutils literal notranslate"><span class="pre">config[&quot;generation&quot;][&quot;generator&quot;]</span></code> to <code class="docutils literal notranslate"><span class="pre">SPM4i</span></code> to use this generator.</p>
+</section>
+<section id="spm4gmxmmpbsa">
+<h3>SPM4gmxmmpbsa<a class="headerlink" href="#spm4gmxmmpbsa" title="Link to this heading"></a></h3>
+<p>Similar to <code class="docutils literal notranslate"><span class="pre">SPM4i</span></code>, but besides <strong>freesasa</strong>, it’s based on free energy considerations.
+The generator will read the <strong>decomp_gmxmmpbsa.csv</strong> output file from <strong>gmxmmpbsa</strong> and pick the
+residue that is collaborating the least with the interaction with the target.
+At the same time, this position has to also comply with the previous prerequisites,
+that is, being part of the interface and one of the positions included in  <code class="docutils literal notranslate"><span class="pre">config[&quot;binder&quot;][&quot;mutating_resSeq&quot;]</span></code>.
+You can also set the probe radius in this mutator.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Don’t forget to include <code class="docutils literal notranslate"><span class="pre">gmxmmpbsa</span></code> alongside your other scorers (in <code class="docutils literal notranslate"><span class="pre">config[&quot;scoring&quot;][&quot;functions&quot;]</span></code>),
+and to include instructions in the <strong>gmxmmpbsa</strong> input file to perform the decompositions. The decomposition section
+should look something like this:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">/</span>
+<span class="go">&amp;decomp</span>
+<span class="go">idecomp=2, dec_verbose=0,</span>
+<span class="go">print_res=&quot;within 4&quot;</span>
+<span class="go">/</span>
+</pre></div>
+</div>
+</div>
+<p>Check Amber’s manual and <a class="reference external" href="https://valdes-tresanco-ms.github.io/gmx_MMPBSA/dev/input_file/">gmx_MMPBSA</a> docs for more info.</p>
+<p>Set <code class="docutils literal notranslate"><span class="pre">config[&quot;generation&quot;][&quot;generator&quot;]</span></code> to <code class="docutils literal notranslate"><span class="pre">SPM4gmxmmpbsa</span></code> use this generator.</p>
+</section>
+</section>
+<section id="mutator">
+<h2>Mutator<a class="headerlink" href="#mutator" title="Link to this heading"></a></h2>
+<p>The mutators are the external tools that actually take the complex and perform the mutations generated by the mutation
+generator, repack its side-chain and may repack the side-chains of neighboring residues as well.
+There’s no definitive best tool, so it’s up to the user to choose one after appropriate benchmarks are done.</p>
+<p><em>Mutators</em> based on <em>DLPacker</em> are the only ones that are built into the protocol and can be readily used, once
+its weights are downloaded. Other <em>Mutators</em> like the one based on <em>EvoEF2</em> need an external binary that has
+to be downloaded. More tools can easily be added, through the interface that the <em>Mutator</em> class offers.
+Check <a class="reference internal" href="mutators.html#mutators"><span class="std std-ref">Mutators</span></a> for a reference to the class that abstract over these programs.</p>
+<p>Whichever one you choose, set the <code class="docutils literal notranslate"><span class="pre">config[&quot;paths&quot;][&quot;mutator&quot;]</span></code> to the directory where it’ll find the necessary files.</p>
+<section id="dlp-mutator">
+<h3>dlp mutator<a class="headerlink" href="#dlp-mutator" title="Link to this heading"></a></h3>
+<p>This mutator is based on <em>DLPacker</em> which is, according to our benchmarks, one of the best side-chain packers to use
+after a mutation. It’s the default mutator and while it comes built-in with <em>locuaz</em>, it needs its weights, which
+are too heavy to be bundled alongside the installation. Check <a class="reference internal" href="mutators.html#mutators"><span class="std std-ref">Mutators</span></a> for more info about this.
+Set <code class="docutils literal notranslate"><span class="pre">config[&quot;mutation&quot;][&quot;mutator&quot;]</span></code> to <code class="docutils literal notranslate"><span class="pre">dlp</span></code> use this mutator.</p>
+</section>
+<section id="dlpr-mutator">
+<h3>dlpr mutator<a class="headerlink" href="#dlpr-mutator" title="Link to this heading"></a></h3>
+<p>Set <code class="docutils literal notranslate"><span class="pre">config[&quot;mutation&quot;][&quot;mutator&quot;]</span></code> to <code class="docutils literal notranslate"><span class="pre">dlpr</span></code> use this mutator and adjust the reconstruct radius with the
+<code class="docutils literal notranslate"><span class="pre">config['mutation']['reconstruct_radius']</span></code> option.
+Check <a class="reference internal" href="installation.html#post-installation"><span class="std std-ref">Post-installation</span></a> or <a class="reference internal" href="mutators.html#mutators"><span class="std std-ref">Mutators</span></a> for more info about this.</p>
+</section>
+<section id="evoef2-mutator">
+<h3>evoef2 mutator<a class="headerlink" href="#evoef2-mutator" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">evoef2</span></code> is one of the available scorers but, at heart, it’s a Potential Energy Function (PEF) and it can
+also replace a residue for another one, and then reorient it by minimizing its PEF. To use it, clone the <a class="reference external" href="https://github.com/xiaoqiah/EvoEF2">evoef2 repo</a>,
+rename it to <code class="docutils literal notranslate"><span class="pre">evoef2</span></code> compile it using the <code class="docutils literal notranslate"><span class="pre">build.sh</span></code> script and rename the binary to <code class="docutils literal notranslate"><span class="pre">evoef2</span></code>.</p>
+<p>Set <code class="docutils literal notranslate"><span class="pre">config[&quot;mutation&quot;][&quot;mutator&quot;]</span></code> to <code class="docutils literal notranslate"><span class="pre">evoef2</span></code> use this mutator.</p>
+</section>
+</section>
+<section id="sampler">
+<h2>Sampler<a class="headerlink" href="#sampler" title="Link to this heading"></a></h2>
+<p>Molecular Dynamics (MD) of the complexes are carried out using the <a class="reference external" href="https://manual.gromacs.org/current/index.html">GROMACS</a> simulation package,
+so some of the options associated to this block are transparent wrappers to GROMACS command line options
+like <code class="docutils literal notranslate"><span class="pre">config['md']['mpi_procs']</span></code>, <code class="docutils literal notranslate"><span class="pre">config['md']['omp_procs']</span></code> and <code class="docutils literal notranslate"><span class="pre">config['md']['pinoffsets']</span></code>,
+which map to <code class="docutils literal notranslate"><span class="pre">-ntmpi</span></code>, <code class="docutils literal notranslate"><span class="pre">-ntomp</span></code> and <code class="docutils literal notranslate"><span class="pre">-pinoffset</span></code>, respectively. Other GROMACS options are hard-coded,
+like <code class="docutils literal notranslate"><span class="pre">-pin</span> <span class="pre">on</span></code> and the use of the GPU for all interactions but the bonded ones.</p>
+<p>Naturally, the <em>mdp</em> inputs also need to be specified in <code class="docutils literal notranslate"><span class="pre">config['md']['mdp_names']['min_mdp']</span></code>,
+<code class="docutils literal notranslate"><span class="pre">config['md']['mdp_names']['nvt_mdp']</span></code> and <code class="docutils literal notranslate"><span class="pre">config['md']['mdp_names']['npt_mdp']</span></code>, which correspond to
+the minimization, NVT and NPT, respectively.</p>
+<p>Another important one is <code class="docutils literal notranslate"><span class="pre">config['md']['ngpus']</span></code>, which will determine the number of parallel runs that can be ran.
+With respect to topologies, these can be built and updated iteravely either with GROMACS or <a class="reference external" href="https://ambermd.org/Manuals.php">Amber</a>’s Tleap.</p>
+<p>Lastly <code class="docutils literal notranslate"><span class="pre">config['md']['gmx_mdrun']</span></code> allows setting the name of the binary that carries out the MD. Its default
+value is usually the right one (<code class="docutils literal notranslate"><span class="pre">gmx</span> <span class="pre">mdrun</span></code>), but users of some systems may realize that the sysadmins have
+compiled the <em>mdrun</em> command with a different name; this is why we added this option.</p>
+<section id="gromacs-topology">
+<h3>GROMACS topology<a class="headerlink" href="#gromacs-topology" title="Link to this heading"></a></h3>
+<p>When using GROMACS to build the topology, <code class="docutils literal notranslate"><span class="pre">config['md']['water_type']</span></code> and <code class="docutils literal notranslate"><span class="pre">config['md']['force_field']</span></code>
+can be configured. Noticed there are no options to set the box. locuaz does not run any <code class="docutils literal notranslate"><span class="pre">editconf</span></code> commands, it
+will always keep the box from the system.</p>
+</section>
+<section id="amber-topology">
+<h3>Amber topology<a class="headerlink" href="#amber-topology" title="Link to this heading"></a></h3>
+<p>While the engine is always GROMACS, the topology can be built through Amber as well by setting
+<code class="docutils literal notranslate"><span class="pre">config['md']['use_tleap']</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code>. <code class="docutils literal notranslate"><span class="pre">config['paths']['tleap']</span></code> also needs to be set alongside,
+so <em>locuaz</em> can copy the path with all the necessary files to rebuild the topology after each mutation.</p>
+</section>
+</section>
+<section id="scorer">
+<h2>Scorer<a class="headerlink" href="#scorer" title="Link to this heading"></a></h2>
+<p>These are abstractions over external programs that estimate the affinity between the target and the binder over
+each frame of the MD. <em>gmxmmpbsa</em> is the only one that comes built-in with <em>locuaz</em> and does not
+an external binary, but it does need an input script.
+More info on all scorers can be found at <a class="reference internal" href="scorers.html#scorers"><span class="std std-ref">Scorers</span></a>.</p>
+</section>
+<section id="pruner">
+<h2>Pruner<a class="headerlink" href="#pruner" title="Link to this heading"></a></h2>
+<p>After scoring the affinity, the chosen <em>Pruner</em> will decide if the mutation was successful or not.
+<em>Pruners</em> will take the original complex(es) and the newly mutated ones and will output the best of them
+for the next round of optimization.
+The exact criteria that will decide which complex(es) are at the top depends on the chosen <em>pruner</em>.
+More info on this at <a class="reference internal" href="pruners.html#pruners"><span class="std std-ref">Pruners</span></a>.</p>
+<section id="metropolis">
+<h3>metropolis<a class="headerlink" href="#metropolis" title="Link to this heading"></a></h3>
+<p>When using just one scorer, the <em>metropolis</em> <em>pruner</em> can be used which, as its name suggests,
+uses the metropolis acceptance ratio to decide if the mutation is accepted or not.</p>
+</section>
+<section id="consensus">
+<h3>consensus<a class="headerlink" href="#consensus" title="Link to this heading"></a></h3>
+<p>If many scorers are used, the <em>consensus</em> <em>pruner</em> checks how many of them improved their scores
+on the mutated complex with respect to the previous one, if enough of them indicate an in increase in affinity,
+then the new complex is accepted. Check <a class="reference internal" href="pruners.html#locuaz-prunerconsensus-module"><span class="std std-ref">locuaz.prunerconsensus module</span></a> for more info and
+this <a class="reference external" href="https://pubs.rsc.org/en/content/articlelanding/2019/cc/c9cc06182g">reference</a> for more details.</p>
+</section>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>All these blocks can be configured, giving rise to many different protocols.
+Refer to the Figure 2 for a graphical abstract of them and check the tutorials for some concrete examples.</p>
+<figure class="align-default" id="id2">
+<img alt="enhanced workflow" src="_images/protocol_workflow.png" />
+<figcaption>
+<p><span class="caption-text">Figure 2: the protocol’s main concepts and the stages at which they act. An <strong>branch</strong> is highlighted in green
+and the <strong>epoch</strong> in pink.</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="platformflow.html" class="btn btn-neutral float-left" title="Platform flow" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorialsimple.html" class="btn btn-neutral float-right" title="Tutorial: running a simple optimization" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Patricio Barletta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

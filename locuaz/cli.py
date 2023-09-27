@@ -117,7 +117,7 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
     ngpus = get_ngpus()
     assert numa_regions <= ngpus, f"There can't be more NUMA regions that GPUs available. {numa_regions=} -- {ngpus=}"
     all_threads = sorted(list(os.sched_getaffinity(0)))
-    assert numa_regions < len(all_threads),\
+    assert numa_regions < len(all_threads), \
         f"There can't be more NUMA regions than threads available. {numa_regions=} -- {all_threads=}"
     if config["md"]["mps"]:
         p = sp.run("nvidia-cuda-mps-control -d", stdout=sp.PIPE, stderr=sp.PIPE, shell=True, text=True)

@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Platform flow &mdash; locuaz 0.5.3 documentation</title>
+  <title>Platform flow &mdash; locuaz 0.6.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=2a2fe768"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -35,7 +36,7 @@
             locuaz
           </a>
               <div class="version">
-                0.5.3
+                0.6.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -106,9 +107,9 @@
            <div itemprop="articleBody">
              
   <section id="platform-flow">
-<h1>Platform flow<a class="headerlink" href="#platform-flow" title="Link to this heading"></a></h1>
+<h1>Platform flow<a class="headerlink" href="#platform-flow" title="Permalink to this heading"></a></h1>
 <section id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h2>
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading"></a></h2>
 <p><em>locuaz</em> takes one or more docked target-binder complexes and performs mutations on user selected binder sequences.
 These subsequent mutations are performed simultaneously to evaluate the vicinity of the solution landscape,
 and sequentially to advance in the optimization process. Simultaneous mutations give rise to <strong>branches</strong>,
@@ -135,7 +136,7 @@ Each folder corresponds to an <strong>branch</strong>. The one from <strong>epoc
 <em>branches</em> are identified by the residues that are being optimized and the chainID they correspond to.
 <em>branches</em> names are prepended by the <em>epoch</em> they belong to. So, the initial complex begins with
 <strong>0-</strong> and then 3 sequences (all belonging to chainID <strong>B</strong>) are identified by their 1-letter coded
-amino acids, these are the CDRs.</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+amino acids, these are the CDRs.</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 <p>While Figure 1 shows how the a <em>locuaz</em> project is actually laid out, we don’t think about <em>epochs</em>
@@ -149,9 +150,9 @@ its extension, a log file that <em>locuaz</em> writes out to update the user on 
 </div>
 </section>
 <section id="platform-dags">
-<h2>Platform DAGs<a class="headerlink" href="#platform-dags" title="Link to this heading"></a></h2>
+<h2>Platform DAGs<a class="headerlink" href="#platform-dags" title="Permalink to this heading"></a></h2>
 <section id="variable-width-dag">
-<h3>Variable width DAG<a class="headerlink" href="#variable-width-dag" title="Link to this heading"></a></h3>
+<h3>Variable width DAG<a class="headerlink" href="#variable-width-dag" title="Permalink to this heading"></a></h3>
 <p>Figure 2 shows how we think of a usual <em>locuaz</em> run. From a docked complex <em>locuaz</em> creates
 our first <em>branch</em> which we’ll name <strong>A0</strong>, given that’s the first <em>branch</em> from <em>epoch</em> 0.
 Then, the binder is mutated and, in this particular case, the user asked for 2 new <em>branches</em> to be
@@ -168,12 +169,12 @@ These are shown in gray given that are not yet finished.</p>
 <p><span class="caption-text">Figure 2: DAG of a hypothetical run. The current epoch is the fourth one. The current
 <strong>top branches</strong> are highlighted in green and gave origin to the current <strong>all branches</strong>
 which are being still run. <strong>Previous top branches</strong> are in pale green while the
-branches that failed to improve the affinity are noted as <strong>failed branches</strong> (pale pink).</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+branches that failed to improve the affinity are noted as <strong>failed branches</strong> (pale pink).</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 </section>
 <section id="constant-width-dag">
-<h3>Constant width DAG<a class="headerlink" href="#constant-width-dag" title="Link to this heading"></a></h3>
+<h3>Constant width DAG<a class="headerlink" href="#constant-width-dag" title="Permalink to this heading"></a></h3>
 <p>Finally, we can see how the DAG would look like if the user selects a constant width run.
 This prevents the number of simultaneous <em>branches</em> from exploding, but it does limit the number of
 potential solutions that are explored.</p>
@@ -181,13 +182,13 @@ potential solutions that are explored.</p>
 <a class="reference internal image-reference" href="_images/example_flow_constant.png"><img alt="workflow" src="_images/example_flow_constant.png" style="width: 720.0px; height: 540.0px;" /></a>
 <figcaption>
 <p><span class="caption-text">Figure 3: same system as the one from Figure 1, but this time the user selected a constant
-width, so the number of branches is the number of <em>branches</em> that are run at each <em>epoch</em>.</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+width, so the number of branches is the number of <em>branches</em> that are run at each <em>epoch</em>.</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 </section>
 </section>
 <section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading"></a></h2>
 <p><em>locuaz</em> works by extending this DAG. Its shape will be decided by the user configuration and the
 results of the optimization process. And while we skipped over several important details during
 the previous explanation, on the next section we’ll take a look at each functional block that

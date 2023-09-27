@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tutorial: optimizing an antibody against a ligand &mdash; locuaz 0.5.3 documentation</title>
+  <title>Tutorial: optimizing an antibody against a ligand &mdash; locuaz 0.6.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=2a2fe768"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -35,7 +36,7 @@
             locuaz
           </a>
               <div class="version">
-                0.5.3
+                0.6.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -103,9 +104,9 @@
            <div itemprop="articleBody">
              
   <section id="tutorial-optimizing-an-antibody-against-a-ligand">
-<h1>Tutorial: optimizing an antibody against a ligand<a class="headerlink" href="#tutorial-optimizing-an-antibody-against-a-ligand" title="Link to this heading"></a></h1>
+<h1>Tutorial: optimizing an antibody against a ligand<a class="headerlink" href="#tutorial-optimizing-an-antibody-against-a-ligand" title="Permalink to this heading"></a></h1>
 <section id="coming-soon">
-<h2>Coming soon<a class="headerlink" href="#coming-soon" title="Link to this heading"></a></h2>
+<h2>Coming soon<a class="headerlink" href="#coming-soon" title="Permalink to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">allowed_nonstandard_residues</span></code></p>
 <p>remember that for scoring, the target chains are named A, and the ones from the binder, B.
 write about the sanitization the protocol does with the splitted frames. All scorers but gmxmmpbsa use this PDBs.</p>
@@ -115,7 +116,7 @@ This allows the user to control for how many epochs will the non-empty memory be
 Place them after the desired positions:</p>
 <p><code class="docutils literal notranslate"><span class="pre">memory_positions:</span> <span class="pre">[[2,</span> <span class="pre">3,</span> <span class="pre">4,</span> <span class="pre">6,</span> <span class="pre">7,</span> <span class="pre">8],</span> <span class="pre">[],</span> <span class="pre">[],</span> <span class="pre">[]</span> <span class="pre">]</span></code></p>
 <section id="misc">
-<h3>misc<a class="headerlink" href="#misc" title="Link to this heading"></a></h3>
+<h3>misc<a class="headerlink" href="#misc" title="Permalink to this heading"></a></h3>
 <p>Add chainID with parmed:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">parm</span> <span class="n">pre_nb</span><span class="o">.</span><span class="n">prmtop</span>
 <span class="n">addPDB</span> <span class="n">start</span><span class="o">.</span><span class="n">pdb</span>
@@ -134,7 +135,7 @@ Place them after the desired positions:</p>
 <img alt="iterations_dag" src="_images/tleap_iterations_dag.png" />
 <figcaption>
 <p><span class="caption-text">Figure 1: snapshot of one optimized complex. <strong>p53</strong> is the yellow one on the left, with its loops colored red and
-blue, these loops have to be stabilized so it doesn’t loose its function; the zinc atom and its coordinating</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+blue, these loops have to be stabilized so it doesn’t loose its function; the zinc atom and its coordinating</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 </section>

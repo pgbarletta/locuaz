@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Stats &mdash; locuaz 0.5.3 documentation</title>
+  <title>Stats &mdash; locuaz 0.6.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=2a2fe768"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -35,7 +36,7 @@
             locuaz
           </a>
               <div class="version">
-                0.5.3
+                0.6.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -131,87 +132,87 @@
            <div itemprop="articleBody">
              
   <section id="stats">
-<h1>Stats<a class="headerlink" href="#stats" title="Link to this heading"></a></h1>
+<h1>Stats<a class="headerlink" href="#stats" title="Permalink to this heading"></a></h1>
 <section id="module-locuaz.statistics">
-<span id="locuaz-statistics-module"></span><h2>locuaz.statistics module<a class="headerlink" href="#module-locuaz.statistics" title="Link to this heading"></a></h2>
+<span id="locuaz-statistics-module"></span><h2>locuaz.statistics module<a class="headerlink" href="#module-locuaz.statistics" title="Permalink to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="locuaz.statistics.run_stats">
-<span class="sig-prename descclassname"><span class="pre">locuaz.statistics.</span></span><span class="sig-name descname"><span class="pre">run_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">branch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="misc.html#locuaz.projectutils.Branch" title="locuaz.projectutils.Branch"><span class="pre">Branch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/locuaz/statistics.html#run_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.statistics.run_stats" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">locuaz.statistics.</span></span><span class="sig-name descname"><span class="pre">run_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">branch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="misc.html#locuaz.projectutils.Branch" title="locuaz.projectutils.Branch"><span class="pre">Branch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Logger</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/locuaz/statistics.html#run_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.statistics.run_stats" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>
 <section id="module-locuaz.basestatistic">
-<span id="locuaz-basestatistic-module"></span><h2>locuaz.basestatistic module<a class="headerlink" href="#module-locuaz.basestatistic" title="Link to this heading"></a></h2>
+<span id="locuaz-basestatistic-module"></span><h2>locuaz.basestatistic module<a class="headerlink" href="#module-locuaz.basestatistic" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="locuaz.basestatistic.BaseStatistic">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">locuaz.basestatistic.</span></span><span class="sig-name descname"><span class="pre">BaseStatistic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">branch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="misc.html#locuaz.projectutils.Branch" title="locuaz.projectutils.Branch"><span class="pre">Branch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stats_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/locuaz/basestatistic.html#BaseStatistic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.basestatistic.BaseStatistic" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">locuaz.basestatistic.</span></span><span class="sig-name descname"><span class="pre">BaseStatistic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">branch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="misc.html#locuaz.projectutils.Branch" title="locuaz.projectutils.Branch"><span class="pre">Branch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stats_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/locuaz/basestatistic.html#BaseStatistic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.basestatistic.BaseStatistic" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="locuaz.basestatistic.BaseStatistic.available_warnings">
-<span class="sig-name descname"><span class="pre">available_warnings</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#locuaz.basestatistic.BaseStatistic.available_warnings" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">available_warnings</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#locuaz.basestatistic.BaseStatistic.available_warnings" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="locuaz.basestatistic.BaseStatistic.frames_path">
-<span class="sig-name descname"><span class="pre">frames_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span></em><a class="headerlink" href="#locuaz.basestatistic.BaseStatistic.frames_path" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">frames_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span></em><a class="headerlink" href="#locuaz.basestatistic.BaseStatistic.frames_path" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="locuaz.basestatistic.BaseStatistic.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#locuaz.basestatistic.BaseStatistic.name" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#locuaz.basestatistic.BaseStatistic.name" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="locuaz.basestatistic.BaseStatistic.result">
-<span class="sig-name descname"><span class="pre">result</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#locuaz.basestatistic.BaseStatistic.result" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">result</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#locuaz.basestatistic.BaseStatistic.result" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="locuaz.basestatistic.BaseStatistic.stats_config">
-<span class="sig-name descname"><span class="pre">stats_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#locuaz.basestatistic.BaseStatistic.stats_config" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">stats_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#locuaz.basestatistic.BaseStatistic.stats_config" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="locuaz.basestatistic.BaseStatistic.trj_suffix">
-<span class="sig-name descname"><span class="pre">trj_suffix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#locuaz.basestatistic.BaseStatistic.trj_suffix" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">trj_suffix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#locuaz.basestatistic.BaseStatistic.trj_suffix" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="locuaz.basestatistic.BaseStatistic.visitor">
-<span class="sig-name descname"><span class="pre">visitor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#locuaz.basestatistic.BaseStatistic.visitor" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">visitor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#locuaz.basestatistic.BaseStatistic.visitor" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 </section>
 <section id="module-locuaz.statisticcmdistance">
-<span id="locuaz-statisticcmdistance-module"></span><h2>locuaz.statisticcmdistance module<a class="headerlink" href="#module-locuaz.statisticcmdistance" title="Link to this heading"></a></h2>
+<span id="locuaz-statisticcmdistance-module"></span><h2>locuaz.statisticcmdistance module<a class="headerlink" href="#module-locuaz.statisticcmdistance" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="locuaz.statisticcmdistance.StatisticCMDistance">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">locuaz.statisticcmdistance.</span></span><span class="sig-name descname"><span class="pre">StatisticCMDistance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">branch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="misc.html#locuaz.projectutils.Branch" title="locuaz.projectutils.Branch"><span class="pre">Branch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stats_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/locuaz/statisticcmdistance.html#StatisticCMDistance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.statisticcmdistance.StatisticCMDistance" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">locuaz.statisticcmdistance.</span></span><span class="sig-name descname"><span class="pre">StatisticCMDistance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">branch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="misc.html#locuaz.projectutils.Branch" title="locuaz.projectutils.Branch"><span class="pre">Branch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stats_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/locuaz/statisticcmdistance.html#StatisticCMDistance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.statisticcmdistance.StatisticCMDistance" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#locuaz.basestatistic.BaseStatistic" title="locuaz.basestatistic.BaseStatistic"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseStatistic</span></code></a></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="locuaz.statisticcmdistance.StatisticCMDistance.pdb_top">
-<span class="sig-name descname"><span class="pre">pdb_top</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="misc.html#locuaz.molecules.PDBStructure" title="locuaz.molecules.PDBStructure"><span class="pre">PDBStructure</span></a></em><a class="headerlink" href="#locuaz.statisticcmdistance.StatisticCMDistance.pdb_top" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">pdb_top</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="misc.html#locuaz.molecules.PDBStructure" title="locuaz.molecules.PDBStructure"><span class="pre">PDBStructure</span></a></em><a class="headerlink" href="#locuaz.statisticcmdistance.StatisticCMDistance.pdb_top" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="locuaz.statisticcmdistance.StatisticCMDistance.trj">
-<span class="sig-name descname"><span class="pre">trj</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="misc.html#locuaz.molecules.XtcTrajectory" title="locuaz.molecules.XtcTrajectory"><span class="pre">XtcTrajectory</span></a></em><a class="headerlink" href="#locuaz.statisticcmdistance.StatisticCMDistance.trj" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">trj</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="misc.html#locuaz.molecules.XtcTrajectory" title="locuaz.molecules.XtcTrajectory"><span class="pre">XtcTrajectory</span></a></em><a class="headerlink" href="#locuaz.statisticcmdistance.StatisticCMDistance.trj" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 </section>
 <section id="module-locuaz.statisticinterface">
-<span id="locuaz-statisticinterface-module"></span><h2>locuaz.statisticinterface module<a class="headerlink" href="#module-locuaz.statisticinterface" title="Link to this heading"></a></h2>
+<span id="locuaz-statisticinterface-module"></span><h2>locuaz.statisticinterface module<a class="headerlink" href="#module-locuaz.statisticinterface" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="locuaz.statisticinterface.StatisticInterface">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">locuaz.statisticinterface.</span></span><span class="sig-name descname"><span class="pre">StatisticInterface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">branch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="misc.html#locuaz.projectutils.Branch" title="locuaz.projectutils.Branch"><span class="pre">Branch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stats_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/locuaz/statisticinterface.html#StatisticInterface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.statisticinterface.StatisticInterface" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">locuaz.statisticinterface.</span></span><span class="sig-name descname"><span class="pre">StatisticInterface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">branch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="misc.html#locuaz.projectutils.Branch" title="locuaz.projectutils.Branch"><span class="pre">Branch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stats_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/locuaz/statisticinterface.html#StatisticInterface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.statisticinterface.StatisticInterface" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#locuaz.basestatistic.BaseStatistic" title="locuaz.basestatistic.BaseStatistic"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseStatistic</span></code></a></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="locuaz.statisticinterface.StatisticInterface.TIMEOUT_PER_FRAME">
-<span class="sig-name descname"><span class="pre">TIMEOUT_PER_FRAME</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#locuaz.statisticinterface.StatisticInterface.TIMEOUT_PER_FRAME" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">TIMEOUT_PER_FRAME</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#locuaz.statisticinterface.StatisticInterface.TIMEOUT_PER_FRAME" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

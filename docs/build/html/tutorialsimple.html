@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tutorial: running a simple optimization &mdash; locuaz 0.5.3 documentation</title>
+  <title>Tutorial: running a simple optimization &mdash; locuaz 0.6.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=2a2fe768"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -35,7 +36,7 @@
             locuaz
           </a>
               <div class="version">
-                0.5.3
+                0.6.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -115,7 +116,7 @@
            <div itemprop="articleBody">
              
   <section id="tutorial-running-a-simple-optimization">
-<h1>Tutorial: running a simple optimization<a class="headerlink" href="#tutorial-running-a-simple-optimization" title="Link to this heading"></a></h1>
+<h1>Tutorial: running a simple optimization<a class="headerlink" href="#tutorial-running-a-simple-optimization" title="Permalink to this heading"></a></h1>
 <p>To recap, locuaz iteratively performs mutations on the selected residues of the binder, followed by minimization and
 MD simulation. The trajectory is then scored with various scorers, to assess whether the mutation
 results in higher or lower affinity. If the mutation results in better affinity, the mutation is accepted,
@@ -133,11 +134,11 @@ a nanobody that will compete for the binding of the <em>TWIST box</em>. For more
 <figcaption>
 <p><span class="caption-text">Figure 1: snapshot of one optimized complex. <strong>p53</strong> is the yellow one on the left. Attached to its TWIST-box
 it’s the nanobody, with a green backbone and with its CDRs 1, 2 and 3 colored magenta, orange and gray,
-respectively.</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+respectively.</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 <section id="setting-up-the-system">
-<h2>Setting up the system<a class="headerlink" href="#setting-up-the-system" title="Link to this heading"></a></h2>
+<h2>Setting up the system<a class="headerlink" href="#setting-up-the-system" title="Permalink to this heading"></a></h2>
 <p>It is advisable to use a pre-equilibrated system as the starting complex for the optimization protocol.
 In general, the following guidelines can be followed for the systems preparation:</p>
 <ol class="arabic simple">
@@ -147,7 +148,7 @@ In general, the following guidelines can be followed for the systems preparation
 </ol>
 </section>
 <section id="necessary-files">
-<h2>Necessary files<a class="headerlink" href="#necessary-files" title="Link to this heading"></a></h2>
+<h2>Necessary files<a class="headerlink" href="#necessary-files" title="Permalink to this heading"></a></h2>
 <p>This tutorial will provide a step-by-step guidance to the use of the locuaz protocol to optimize a nanobody
 (VHH) as a p53 binder (figure shown above). The bulk of it will concentrate on the writing of the
 configuration yaml file. A more detailed explanation of the available options, can be found in the
@@ -161,10 +162,10 @@ the <code class="docutils literal notranslate"><span class="pre">examples/simple
 </ol>
 </section>
 <section id="the-configuration-file">
-<h2>The configuration file<a class="headerlink" href="#the-configuration-file" title="Link to this heading"></a></h2>
+<h2>The configuration file<a class="headerlink" href="#the-configuration-file" title="Permalink to this heading"></a></h2>
 <p>Options don’t go all bunched up together, there are classified in sections. We will review each one of them.</p>
 <section id="paths">
-<h3>paths<a class="headerlink" href="#paths" title="Link to this heading"></a></h3>
+<h3>paths<a class="headerlink" href="#paths" title="Permalink to this heading"></a></h3>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">paths:</span>
 <span class="go">    gmxrc: /usr/local/gromacs/bin</span>
 <span class="go">    scorers: /home/pbarletta/labo/22/locuaz/bin</span>
@@ -191,7 +192,7 @@ so the <em>DLPacker</em> files have to be here: <strong>charges.rtp</strong>, <s
 </dl>
 </section>
 <section id="main">
-<h3>main<a class="headerlink" href="#main" title="Link to this heading"></a></h3>
+<h3>main<a class="headerlink" href="#main" title="Permalink to this heading"></a></h3>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">main:</span>
 <span class="go">    name: d11</span>
 <span class="go">    starting_epoch: 0</span>
@@ -208,7 +209,7 @@ of a previous one, you can set this value to other number in order to facilitate
 </div></blockquote>
 </section>
 <section id="protocol">
-<h3>protocol<a class="headerlink" href="#protocol" title="Link to this heading"></a></h3>
+<h3>protocol<a class="headerlink" href="#protocol" title="Permalink to this heading"></a></h3>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">protocol:</span>
 <span class="go">    epochs: 10</span>
 <span class="go">    branches: 2</span>
@@ -243,7 +244,7 @@ previous step. So if 2 complexes move on to the next epoch and <code class="docu
 branches, since 4 new complexes were obtained from each surviving complex.</p>
 </section>
 <section id="generation">
-<h3>generation<a class="headerlink" href="#generation" title="Link to this heading"></a></h3>
+<h3>generation<a class="headerlink" href="#generation" title="Permalink to this heading"></a></h3>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">generation:</span>
 <span class="go">    generator: SPM4gmxmmpbsa</span>
 <span class="go">    probe_radius: 3</span>
@@ -277,7 +278,7 @@ a radius of <code class="docutils literal notranslate"><span class="pre">3</span
 <a class="reference internal" href="configurationfile.html#yaml-configuration-file"><span class="std std-ref">YAML configuration file</span></a> page for more details.</p>
 </section>
 <section id="mutation">
-<h3>mutation<a class="headerlink" href="#mutation" title="Link to this heading"></a></h3>
+<h3>mutation<a class="headerlink" href="#mutation" title="Permalink to this heading"></a></h3>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mutation:</span>
 <span class="go">    mutator: dlpr</span>
 <span class="go">    reconstruct_radius: 5</span>
@@ -297,7 +298,7 @@ reoriented.</p></li>
 <a class="reference internal" href="configurationfile.html#yaml-configuration-file"><span class="std std-ref">YAML configuration file</span></a> for more details.</p>
 </section>
 <section id="pruning">
-<h3>pruning<a class="headerlink" href="#pruning" title="Link to this heading"></a></h3>
+<h3>pruning<a class="headerlink" href="#pruning" title="Permalink to this heading"></a></h3>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pruning:</span>
 <span class="go">    pruner: consensus</span>
 <span class="go">    threshold: 2</span>
@@ -313,7 +314,7 @@ to be considered better than its parents. Check <a class="reference internal" hr
 </div></blockquote>
 </section>
 <section id="md">
-<h3>md<a class="headerlink" href="#md" title="Link to this heading"></a></h3>
+<h3>md<a class="headerlink" href="#md" title="Permalink to this heading"></a></h3>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">md:</span>
 <span class="go">    gmx_mdrun: gmx mdrun</span>
 <span class="go">    mdp_names:</span>
@@ -349,7 +350,7 @@ does, the <em>branch</em> will be discarded by assigning <strong>+inf</strong> v
 </div></blockquote>
 </section>
 <section id="target">
-<h3>target<a class="headerlink" href="#target" title="Link to this heading"></a></h3>
+<h3>target<a class="headerlink" href="#target" title="Permalink to this heading"></a></h3>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">target:</span>
 <span class="go">    chainID: [A]</span>
 </pre></div>
@@ -362,7 +363,7 @@ does, the <em>branch</em> will be discarded by assigning <strong>+inf</strong> v
 </div></blockquote>
 </section>
 <section id="binder">
-<h3>binder<a class="headerlink" href="#binder" title="Link to this heading"></a></h3>
+<h3>binder<a class="headerlink" href="#binder" title="Permalink to this heading"></a></h3>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">binder:</span>
 <span class="go">    chainID: [B]</span>
 <span class="go">    mutating_chainID: [B, B, B]</span>
@@ -388,7 +389,7 @@ It’s only checked when the protocol runs for the first time.</p></li>
 </div></blockquote>
 </section>
 <section id="scoring">
-<h3>scoring<a class="headerlink" href="#scoring" title="Link to this heading"></a></h3>
+<h3>scoring<a class="headerlink" href="#scoring" title="Permalink to this heading"></a></h3>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scoring:</span>
 <span class="go">    functions: [evoef2, bluues, piepisa, gmxmmpbsa]</span>
 <span class="go">    nthreads: 6</span>
@@ -411,7 +412,7 @@ its MPI capabilites. Useful if you are having issues with MPI, though it will be
 </section>
 </section>
 <section id="running-the-protocol">
-<h2>Running the protocol<a class="headerlink" href="#running-the-protocol" title="Link to this heading"></a></h2>
+<h2>Running the protocol<a class="headerlink" href="#running-the-protocol" title="Permalink to this heading"></a></h2>
 <p>Once the input file has been specified, and all the files are gathered, the protocol can now be run
 by firstly activating the environment, if you haven’t already.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mamba activate locuaz</span>

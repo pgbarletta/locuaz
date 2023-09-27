@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pruners &mdash; locuaz 0.5.3 documentation</title>
+  <title>Pruners &mdash; locuaz 0.6.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=2a2fe768"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -36,7 +37,7 @@
             locuaz
           </a>
               <div class="version">
-                0.5.3
+                0.6.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -125,7 +126,7 @@
            <div itemprop="articleBody">
              
   <section id="pruners">
-<h1>Pruners<a class="headerlink" href="#pruners" title="Link to this heading"></a></h1>
+<h1>Pruners<a class="headerlink" href="#pruners" title="Permalink to this heading"></a></h1>
 <p>This block is in charge of deciding which <em>branches</em> from the last 2 <strong>epochs</strong> go through
 onto the next <strong>epoch</strong>, according to their scores. It takes the top <em>branches</em> from the previous
 <strong>epoch</strong> and the current branches from the current <strong>epoch</strong> and decides which are the top <em>branches</em>
@@ -135,7 +136,7 @@ of the current <strong>epoch</strong>.</p>
 <figcaption>
 <p><span class="caption-text">Figure 1: inputs and outputs of a <em>pruner</em> at <em>epoch</em> <strong>i</strong>. The exact process by which the
 <em>pruner</em> compares <em>branches</em> to decide which ones improve the affinity and should be used
-as a substrate for the next mutations depended on the chosen <em>pruner</em>.</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+as a substrate for the next mutations depended on the chosen <em>pruner</em>.</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 <div class="admonition warning">
@@ -144,7 +145,7 @@ as a substrate for the next mutations depended on the chosen <em>pruner</em>.</s
 a <em>branch</em> is comprised of a complex and other information, like its trajectory, its scores, etc…</p>
 </div>
 <section id="locuaz-prunerconsensus-module">
-<h2>locuaz.prunerconsensus module<a class="headerlink" href="#locuaz-prunerconsensus-module" title="Link to this heading"></a></h2>
+<h2>locuaz.prunerconsensus module<a class="headerlink" href="#locuaz-prunerconsensus-module" title="Permalink to this heading"></a></h2>
 <p>Under this <em>pruner</em>, for a new complex to pass onto the next <em>epoch</em>, it has to beat all previous complexes
 that gave rise to it.
 Using this pruner, a new complex beats a previous one when the means of its scores are lower than those
@@ -175,7 +176,7 @@ while <span class="math notranslate nohighlight">\(k\)</span> and <span class="m
 <p>If the last statement is true, then complex <span class="math notranslate nohighlight">\(i+1\)</span> beats <span class="math notranslate nohighlight">\(i\)</span> and can be considered
 for a next round of mutations.</p>
 <section id="consensus-run-example">
-<h3>consensus run example<a class="headerlink" href="#consensus-run-example" title="Link to this heading"></a></h3>
+<h3>consensus run example<a class="headerlink" href="#consensus-run-example" title="Permalink to this heading"></a></h3>
 <p>Recapping the hypothetical example from <a class="reference internal" href="platformflow.html#platform-dags"><span class="std std-ref">Platform DAGs</span></a>, we are going to focus on <em>epoch</em>
 3 to see how the pruner decides that <em>branches</em> <strong>A3</strong>, <strong>B3</strong> and <strong>C3</strong> should go through, but not <strong>D3</strong>.</p>
 <p>In this example the user selected the options <code class="docutils literal notranslate"><span class="pre">pruner:</span> <span class="pre">consensus</span></code>, <code class="docutils literal notranslate"><span class="pre">consensus_threshold:</span> <span class="pre">3</span></code>,
@@ -188,7 +189,7 @@ Figure 2 focuses on this step.</p>
 <p><span class="caption-text">Figure 2: at <em>epoch</em> 3, <em>epoch</em> 2 and 3 are considered. Since we’re going back to <em>epoch</em> 3,
 <strong>A3</strong>, <strong>B3</strong>, <strong>C3</strong> and <strong>D3</strong> show up in gray, as the <em>pruner</em> hasn’t decided yet which ones
 improve on the affinity and which ones don’t. Average scores according to each of the scoring
-functions (<strong>S1</strong>, <strong>S2</strong>, <strong>S3</strong> and <strong>S4</strong>) show up on the side.</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+functions (<strong>S1</strong>, <strong>S2</strong>, <strong>S3</strong> and <strong>S4</strong>) show up on the side.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 <p>After the MD is ran and the scoring is done, it’s time for the <em>pruner</em>.
@@ -205,29 +206,29 @@ since the user selected a <code class="docutils literal notranslate"><span class
 <p><span class="caption-text">Figure 3: each panel shows the comparisons between each of the <em>epoch</em> 3 <em>branches</em> and the
 <em>epoch</em> 2 <em>top branches</em>. Average scores highlighted in green are the ones that are better
 than their respective counterparts, while the red ones are worse. <em>Branch</em> <strong>C3</strong> “looses”
-when compared against <strong>B2</strong> and hence won’t be moving forward.</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+when compared against <strong>B2</strong> and hence won’t be moving forward.</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
-<dl class="py class" id="module-locuaz.prunerconsensus">
+<span class="target" id="module-locuaz.prunerconsensus"></span><dl class="py class">
 <dt class="sig sig-object py" id="locuaz.prunerconsensus.PrunerConsensus">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">locuaz.prunerconsensus.</span></span><span class="sig-name descname"><span class="pre">PrunerConsensus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prev_epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="misc.html#locuaz.projectutils.Epoch" title="locuaz.projectutils.Epoch"><span class="pre">Epoch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">this_epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="misc.html#locuaz.projectutils.Epoch" title="locuaz.projectutils.Epoch"><span class="pre">Epoch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/locuaz/prunerconsensus.html#PrunerConsensus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.prunerconsensus.PrunerConsensus" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">locuaz.prunerconsensus.</span></span><span class="sig-name descname"><span class="pre">PrunerConsensus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prev_epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="misc.html#locuaz.projectutils.Epoch" title="locuaz.projectutils.Epoch"><span class="pre">Epoch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">this_epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="misc.html#locuaz.projectutils.Epoch" title="locuaz.projectutils.Epoch"><span class="pre">Epoch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/locuaz/prunerconsensus.html#PrunerConsensus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.prunerconsensus.PrunerConsensus" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#locuaz.abstractpruner.AbstractPruner" title="locuaz.abstractpruner.AbstractPruner"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractPruner</span></code></a></p>
 <p>PrunerConsensus select all branches that satisfy the threshold of approved scoring functions
 (SFs), that is, if according to a SF the new Branch is better than all the previous ones, that
 SF counts as 1 approved SF for the new Branch.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="locuaz.prunerconsensus.PrunerConsensus.prune">
-<span class="sig-name descname"><span class="pre">prune</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">PriorityQueue</span></span></span><a class="reference internal" href="_modules/locuaz/prunerconsensus.html#PrunerConsensus.prune"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.prunerconsensus.PrunerConsensus.prune" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">prune</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">PriorityQueue</span></span></span><a class="reference internal" href="_modules/locuaz/prunerconsensus.html#PrunerConsensus.prune"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.prunerconsensus.PrunerConsensus.prune" title="Permalink to this definition"></a></dt>
 <dd><p>The only public method from the Pruner.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>config</strong> (<em>Dict</em>) – User input config file</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>passing_iters</strong> – ordered queue with the branches from the new epoch that are better than all the
 branches from the old epoch. It may be empty.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>PriorityQueue</p>
 </dd>
 </dl>
@@ -238,33 +239,33 @@ branches from the old epoch. It may be empty.</p>
 </section>
 </section>
 <section id="locuaz-prunermetropolis-module">
-<h2>locuaz.prunermetropolis module<a class="headerlink" href="#locuaz-prunermetropolis-module" title="Link to this heading"></a></h2>
+<h2>locuaz.prunermetropolis module<a class="headerlink" href="#locuaz-prunermetropolis-module" title="Permalink to this heading"></a></h2>
 <p>When using only 1 scorer, the well known <em>metropolis acceptance criteria</em> can be used to decide
 whether a complex passes to the next <em>epoch</em>:</p>
 <div class="math notranslate nohighlight">
 \[\text{Acceptance ratio} = \min\left(1, \exp\left(-\frac{\Delta E}{k_B T}\right)\right)\]</div>
 <p>Then a random number between <span class="math notranslate nohighlight">\(0\)</span> and <span class="math notranslate nohighlight">\(1\)</span> is generated and if the <em>Acceptance ratio</em> is above it,
 then the new complex is considered to beat the old one.</p>
-<dl class="py class" id="module-locuaz.prunermetropolis">
+<span class="target" id="module-locuaz.prunermetropolis"></span><dl class="py class">
 <dt class="sig sig-object py" id="locuaz.prunermetropolis.PrunerMetropolis">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">locuaz.prunermetropolis.</span></span><span class="sig-name descname"><span class="pre">PrunerMetropolis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prev_epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="misc.html#locuaz.projectutils.Epoch" title="locuaz.projectutils.Epoch"><span class="pre">Epoch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">this_epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="misc.html#locuaz.projectutils.Epoch" title="locuaz.projectutils.Epoch"><span class="pre">Epoch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/locuaz/prunermetropolis.html#PrunerMetropolis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.prunermetropolis.PrunerMetropolis" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">locuaz.prunermetropolis.</span></span><span class="sig-name descname"><span class="pre">PrunerMetropolis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prev_epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="misc.html#locuaz.projectutils.Epoch" title="locuaz.projectutils.Epoch"><span class="pre">Epoch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">this_epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="misc.html#locuaz.projectutils.Epoch" title="locuaz.projectutils.Epoch"><span class="pre">Epoch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/locuaz/prunermetropolis.html#PrunerMetropolis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.prunermetropolis.PrunerMetropolis" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#locuaz.abstractpruner.AbstractPruner" title="locuaz.abstractpruner.AbstractPruner"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractPruner</span></code></a></p>
 <p>PrunerMetropolis uses only 1 scoring function (SF) and approves an Branch when its score is better
 than the scores of all the previous ones, or in case it’s not, if the metropolis acceptance criteria
 approves it.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="locuaz.prunermetropolis.PrunerMetropolis.prune">
-<span class="sig-name descname"><span class="pre">prune</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">PriorityQueue</span></span></span><a class="reference internal" href="_modules/locuaz/prunermetropolis.html#PrunerMetropolis.prune"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.prunermetropolis.PrunerMetropolis.prune" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">prune</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">PriorityQueue</span></span></span><a class="reference internal" href="_modules/locuaz/prunermetropolis.html#PrunerMetropolis.prune"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.prunermetropolis.PrunerMetropolis.prune" title="Permalink to this definition"></a></dt>
 <dd><p>The only public method from the Pruner.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>config</strong> (<em>Dict</em>) – User input config file</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>passing_iters</strong> – ordered queue with the branches from the new epoch that are better than all the
 branches from the old epoch. It may be empty.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>PriorityQueue</p>
 </dd>
 </dl>
@@ -274,33 +275,33 @@ branches from the old epoch. It may be empty.</p>
 
 </section>
 <section id="module-locuaz.pruners">
-<span id="locuaz-pruners-module"></span><h2>locuaz.pruners module<a class="headerlink" href="#module-locuaz.pruners" title="Link to this heading"></a></h2>
+<span id="locuaz-pruners-module"></span><h2>locuaz.pruners module<a class="headerlink" href="#module-locuaz.pruners" title="Permalink to this heading"></a></h2>
 <dl class="py data">
 <dt class="sig sig-object py" id="locuaz.pruners.pruners">
-<span class="sig-prename descclassname"><span class="pre">locuaz.pruners.</span></span><span class="sig-name descname"><span class="pre">pruners</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#locuaz.abstractpruner.AbstractPruner" title="locuaz.abstractpruner.AbstractPruner"><span class="pre">AbstractPruner</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'consensus':</span> <span class="pre">&lt;class</span> <span class="pre">'locuaz.prunerconsensus.PrunerConsensus'&gt;,</span> <span class="pre">'metropolis':</span> <span class="pre">&lt;class</span> <span class="pre">'locuaz.prunermetropolis.PrunerMetropolis'&gt;}</span></em><a class="headerlink" href="#locuaz.pruners.pruners" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">locuaz.pruners.</span></span><span class="sig-name descname"><span class="pre">pruners</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#locuaz.abstractpruner.AbstractPruner" title="locuaz.abstractpruner.AbstractPruner"><span class="pre">AbstractPruner</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'consensus':</span> <span class="pre">&lt;class</span> <span class="pre">'locuaz.prunerconsensus.PrunerConsensus'&gt;,</span> <span class="pre">'metropolis':</span> <span class="pre">&lt;class</span> <span class="pre">'locuaz.prunermetropolis.PrunerMetropolis'&gt;}</span></em><a class="headerlink" href="#locuaz.pruners.pruners" title="Permalink to this definition"></a></dt>
 <dd><p>Dictionary of all currently available pruners.</p>
 </dd></dl>
 
 </section>
 <section id="module-locuaz.abstractpruner">
-<span id="locuaz-abstractpruner-module"></span><h2>locuaz.abstractpruner module<a class="headerlink" href="#module-locuaz.abstractpruner" title="Link to this heading"></a></h2>
+<span id="locuaz-abstractpruner-module"></span><h2>locuaz.abstractpruner module<a class="headerlink" href="#module-locuaz.abstractpruner" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="locuaz.abstractpruner.AbstractPruner">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">locuaz.abstractpruner.</span></span><span class="sig-name descname"><span class="pre">AbstractPruner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prev_epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="misc.html#locuaz.projectutils.Epoch" title="locuaz.projectutils.Epoch"><span class="pre">Epoch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">this_epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="misc.html#locuaz.projectutils.Epoch" title="locuaz.projectutils.Epoch"><span class="pre">Epoch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/locuaz/abstractpruner.html#AbstractPruner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.abstractpruner.AbstractPruner" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">locuaz.abstractpruner.</span></span><span class="sig-name descname"><span class="pre">AbstractPruner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prev_epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="misc.html#locuaz.projectutils.Epoch" title="locuaz.projectutils.Epoch"><span class="pre">Epoch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">this_epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="misc.html#locuaz.projectutils.Epoch" title="locuaz.projectutils.Epoch"><span class="pre">Epoch</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/locuaz/abstractpruner.html#AbstractPruner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.abstractpruner.AbstractPruner" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="locuaz.abstractpruner.AbstractPruner.prune">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prune</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">PriorityQueue</span></span></span><a class="reference internal" href="_modules/locuaz/abstractpruner.html#AbstractPruner.prune"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.abstractpruner.AbstractPruner.prune" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">prune</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">PriorityQueue</span></span></span><a class="reference internal" href="_modules/locuaz/abstractpruner.html#AbstractPruner.prune"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.abstractpruner.AbstractPruner.prune" title="Permalink to this definition"></a></dt>
 <dd><p>When inheriting from <code class="docutils literal notranslate"><span class="pre">AbstractPruner</span></code>, override this method to implement your pruner’s logic.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>config</strong> (<em>Dict</em>) – User input config file</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>passing_iters</strong> – ordered queue with the branches from the new epoch that are better than all the
 branches from the old epoch. It may be empty.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>PriorityQueue</p>
 </dd>
 </dl>

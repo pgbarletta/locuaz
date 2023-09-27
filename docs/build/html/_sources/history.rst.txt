@@ -2,6 +2,11 @@
 History
 =======
 
+0.6.0 (2023-09-)
+------------------
+ * Fixed bug when NPT positional restraints weren't used.
+ * Support Python version 3.11 and onwards.
+
 0.5.3 (2023-07-)
 ------------------
  * Renamed ``scoring functions`` to ``scorers``.

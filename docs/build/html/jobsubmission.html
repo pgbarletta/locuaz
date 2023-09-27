@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Job submission &mdash; locuaz 0.5.3 documentation</title>
+  <title>Job submission &mdash; locuaz 0.6.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=2a2fe768"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -35,7 +36,7 @@
             locuaz
           </a>
               <div class="version">
-                0.5.3
+                0.6.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -101,12 +102,12 @@
            <div itemprop="articleBody">
              
   <section id="job-submission">
-<h1>Job submission<a class="headerlink" href="#job-submission" title="Link to this heading"></a></h1>
+<h1>Job submission<a class="headerlink" href="#job-submission" title="Permalink to this heading"></a></h1>
 <p>While locuaz may be ran on a PC, it was developed to run on UNIX-based clusters where multiple GPUs are available,
 and since these usually also include a workload manager, here are 2 sample submission scripts for the 2 most popular
 workload managers.</p>
 <section id="running-from-slurm">
-<h2>Running from SLURM<a class="headerlink" href="#running-from-slurm" title="Link to this heading"></a></h2>
+<h2>Running from SLURM<a class="headerlink" href="#running-from-slurm" title="Permalink to this heading"></a></h2>
 <p>Here’s an example script with SLURM:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span>!/bin/bash
 <span class="gp">#</span>SBATCH<span class="w"> </span>-N1
@@ -130,7 +131,7 @@ workload managers.</p>
 </div>
 </section>
 <section id="running-from-pbs">
-<h2>Running from PBS<a class="headerlink" href="#running-from-pbs" title="Link to this heading"></a></h2>
+<h2>Running from PBS<a class="headerlink" href="#running-from-pbs" title="Permalink to this heading"></a></h2>
 <p>And another one with PBS:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span>!/bin/bash
 <span class="gp">#</span>PBS<span class="w"> </span>-N<span class="w"> </span>locuaz

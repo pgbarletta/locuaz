@@ -3,18 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.run &mdash; locuaz 0.5.3 documentation</title>
+  <title>locuaz.run &mdash; locuaz 0.6.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=2a2fe768"></script>
-        <script src="../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -32,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.5.3
+                0.6.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -104,9 +105,7 @@
 <span class="kn">from</span> <span class="nn">locuaz.runutils</span> <span class="kn">import</span> <span class="n">MDrun</span><span class="p">,</span> <span class="n">BranchMDParams</span><span class="p">,</span> <span class="n">get_md_params</span>
 
 
-<div class="viewcode-block" id="run_epoch">
-<a class="viewcode-back" href="../../misc.html#locuaz.run.run_epoch">[docs]</a>
-<span class="k">def</span> <span class="nf">run_epoch</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">:</span> <span class="n">WorkProject</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="run_epoch"><a class="viewcode-back" href="../../misc.html#locuaz.run.run_epoch">[docs]</a><span class="k">def</span> <span class="nf">run_epoch</span><span class="p">(</span><span class="n">work_pjct</span><span class="p">:</span> <span class="n">WorkProject</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">epoch</span> <span class="o">=</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">md_params</span><span class="p">,</span> <span class="n">max_parallel_workers</span> <span class="o">=</span> <span class="n">get_md_params</span><span class="p">(</span><span class="n">work_pjct</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;md&quot;</span><span class="p">],</span> <span class="n">epoch</span><span class="p">)</span>
@@ -120,10 +119,7 @@
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping NPT run of epoch </span><span class="si">{</span><span class="n">epoch</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
-
-<div class="viewcode-block" id="run_min_nvt_epoch">
-<a class="viewcode-back" href="../../misc.html#locuaz.run.run_min_nvt_epoch">[docs]</a>
-<span class="k">def</span> <span class="nf">run_min_nvt_epoch</span><span class="p">(</span><span class="n">epoch</span><span class="p">:</span> <span class="n">Epoch</span><span class="p">,</span> <span class="n">md_config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">md_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BranchMDParams</span><span class="p">],</span>
+<div class="viewcode-block" id="run_min_nvt_epoch"><a class="viewcode-back" href="../../misc.html#locuaz.run.run_min_nvt_epoch">[docs]</a><span class="k">def</span> <span class="nf">run_min_nvt_epoch</span><span class="p">(</span><span class="n">epoch</span><span class="p">:</span> <span class="n">Epoch</span><span class="p">,</span> <span class="n">md_config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">md_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BranchMDParams</span><span class="p">],</span>
                       <span class="n">max_parallel_workers</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">max_parallel_workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
         <span class="n">futuros_min</span> <span class="o">=</span> <span class="p">[]</span>
@@ -177,10 +173,7 @@
             <span class="n">epoch</span><span class="o">.</span><span class="n">nvt_done</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 
-
-<div class="viewcode-block" id="run_npt_epoch">
-<a class="viewcode-back" href="../../misc.html#locuaz.run.run_npt_epoch">[docs]</a>
-<span class="k">def</span> <span class="nf">run_npt_epoch</span><span class="p">(</span><span class="n">epoch</span><span class="p">:</span> <span class="n">Epoch</span><span class="p">,</span> <span class="n">md_config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">md_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BranchMDParams</span><span class="p">],</span>
+<div class="viewcode-block" id="run_npt_epoch"><a class="viewcode-back" href="../../misc.html#locuaz.run.run_npt_epoch">[docs]</a><span class="k">def</span> <span class="nf">run_npt_epoch</span><span class="p">(</span><span class="n">epoch</span><span class="p">:</span> <span class="n">Epoch</span><span class="p">,</span> <span class="n">md_config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">md_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BranchMDParams</span><span class="p">],</span>
                   <span class="n">max_parallel_workers</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">box_type</span> <span class="o">=</span> <span class="n">md_config</span><span class="p">[</span><span class="s2">&quot;box_type&quot;</span><span class="p">]</span>
     <span class="k">with</span> <span class="n">ProcessPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">max_parallel_workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
@@ -198,7 +191,7 @@
             <span class="n">npt</span> <span class="o">=</span> <span class="n">MDrun</span><span class="o">.</span><span class="n">npt</span><span class="p">(</span><span class="n">branch</span><span class="o">.</span><span class="n">dir_handle</span><span class="p">,</span> <span class="n">gmx_mdrun</span><span class="o">=</span><span class="n">md_config</span><span class="p">[</span><span class="s2">&quot;gmx_mdrun&quot;</span><span class="p">],</span>
                             <span class="n">npt_mdp</span><span class="o">=</span><span class="n">md_config</span><span class="p">[</span><span class="s2">&quot;mdp_paths&quot;</span><span class="p">][</span><span class="s2">&quot;npt_mdp&quot;</span><span class="p">],</span> <span class="n">gpu_id</span><span class="o">=</span><span class="n">gpu_id</span><span class="p">,</span> <span class="n">omp_threads</span><span class="o">=</span><span class="n">omp_threads</span><span class="p">,</span>
                             <span class="n">mpi_threads</span><span class="o">=</span><span class="n">mpi_threads</span><span class="p">,</span> <span class="n">pinoffset</span><span class="o">=</span><span class="n">pinoffset</span><span class="p">,</span> <span class="n">out_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;npt_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                            <span class="n">maxwarn</span><span class="o">=</span><span class="n">md_config</span><span class="p">[</span><span class="s2">&quot;maxwarn&quot;</span><span class="p">],</span> <span class="n">restraints</span><span class="o">=</span><span class="n">md_config</span><span class="p">[</span><span class="s2">&quot;npt_restraints&quot;</span><span class="p">])</span>
+                            <span class="n">maxwarn</span><span class="o">=</span><span class="n">md_config</span><span class="p">[</span><span class="s2">&quot;maxwarn&quot;</span><span class="p">],</span> <span class="n">restraints</span><span class="o">=</span><span class="n">md_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;npt_restraints&quot;</span><span class="p">))</span>
             <span class="n">futu_npt</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">npt</span><span class="p">,</span> <span class="n">branch</span><span class="o">.</span><span class="n">complex</span><span class="p">)</span>
             <span class="n">futuros_npt</span><span class="p">[</span><span class="n">futu_npt</span><span class="p">]</span> <span class="o">=</span> <span class="n">branch_name</span>
 
@@ -217,7 +210,6 @@
                 <span class="n">branch</span><span class="o">.</span><span class="n">outside_box</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="n">epoch</span><span class="o">.</span><span class="n">npt_done</span> <span class="o">=</span> <span class="kc">True</span></div>
-
 </pre></div>
 
            </div>

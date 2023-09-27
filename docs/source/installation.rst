@@ -28,9 +28,10 @@ Create a conda environment from the :download:`usr_deps.yaml<../../usr_deps.yaml
     channels:
       - conda-forge
     dependencies:
-      - conda-forge::python>=3.10,<3.11
+      - conda-forge::python>=3.11
       - conda-forge::ambertools>=22.0.0
       - conda-forge::tensorflow
+      - conda-forge::openbabel
 
 To create the environment:
 
@@ -49,15 +50,28 @@ Then, activate the environment and install the protocol through pip:
 This option takes an extra step with respect to using only conda, but the process will be faster and the
 resulting environment won't be as heavy.
 
-conda (Option 2) NOT YET AVAILABLE
+apptainer container (Option 2)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: console
 
-    mamba install locuaz
+    apptainer pull oras://ghcr.io/pgbarletta/locuaz.sif:0.6.0
 
-A drawback from the conda install is that when installing **biobb** through conda, it comes with some heavy
-dependencies, like **GROMACS** itself.
+*apptainer* containers are available for a plug-and-play approach. Just change
+the way you call *locuaz*. If you'd call the *locuaz* entry-point like this:
+
+.. code-block:: console
+
+    locuaz config.yaml
+
+this is how you'd call it when inside a container:
+
+.. code-block:: console
+
+    apptainer exec --nv locuaz.sif locuaz config.yaml
+
+Check :ref:`jobsubmission:Job submission` for more info on using *locuaz* with
+containers.
 
 From sources (Option 3, developers only)
 -----------------------------------------

@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>YAML configuration file &mdash; locuaz 0.5.3 documentation</title>
+  <title>YAML configuration file &mdash; locuaz 0.6.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=2a2fe768"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -35,7 +36,7 @@
             locuaz
           </a>
               <div class="version">
-                0.5.3
+                0.6.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -114,16 +115,16 @@
            <div itemprop="articleBody">
              
   <section id="yaml-configuration-file">
-<h1>YAML configuration file<a class="headerlink" href="#yaml-configuration-file" title="Link to this heading"></a></h1>
+<h1>YAML configuration file<a class="headerlink" href="#yaml-configuration-file" title="Permalink to this heading"></a></h1>
 <p>locuaz behaviour is highly customizable, there are a lot of moving parts and alternative ways of carrying out the
 same function. Hence this reference, in which we’ll refer to the input configuration as <code class="docutils literal notranslate"><span class="pre">config</span></code> and explain each
 of its “sections”.</p>
 <section id="config-sections">
-<h2><code class="docutils literal notranslate"><span class="pre">config</span></code> sections<a class="headerlink" href="#config-sections" title="Link to this heading"></a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">config</span></code> sections<a class="headerlink" href="#config-sections" title="Permalink to this heading"></a></h2>
 <p>Given the high number of options, <code class="docutils literal notranslate"><span class="pre">config</span></code> has a hierarchical structure, where similar options are
 grouped in sections.</p>
 <section id="config-paths">
-<h3><code class="docutils literal notranslate"><span class="pre">config['paths']</span></code><a class="headerlink" href="#config-paths" title="Link to this heading"></a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">config['paths']</span></code><a class="headerlink" href="#config-paths" title="Permalink to this heading"></a></h3>
 <p>All paths go in this section. And all of them are required, except for:</p>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">config['paths']['input']</span></code>: only used when starting a new protocol run, since during restarts the protocol
@@ -145,7 +146,7 @@ it’s restarting from a previous run, if not, it will start a new one.</p></li>
 </ol>
 </section>
 <section id="config-main">
-<h3><code class="docutils literal notranslate"><span class="pre">config['main']</span></code><a class="headerlink" href="#config-main" title="Link to this heading"></a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">config['main']</span></code><a class="headerlink" href="#config-main" title="Permalink to this heading"></a></h3>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">config['main']['name']</span></code>: system’s name.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">config['main']['mode']</span></code>: in case you want to just finish the MD run of the last epoch on your work dir, set
@@ -158,7 +159,7 @@ was already optimized by a protocol run, eg: when running an unrestrained optimi
 </ol>
 </section>
 <section id="config-protocol">
-<h3><code class="docutils literal notranslate"><span class="pre">config['protocol']</span></code><a class="headerlink" href="#config-protocol" title="Link to this heading"></a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">config['protocol']</span></code><a class="headerlink" href="#config-protocol" title="Permalink to this heading"></a></h3>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">config['protocol']['epochs']</span></code>: .</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">config['protocol']['branches']</span></code>: .</p></li>
@@ -171,7 +172,7 @@ was already optimized by a protocol run, eg: when running an unrestrained optimi
 </ol>
 </section>
 <section id="config-generation">
-<h3><code class="docutils literal notranslate"><span class="pre">config['generation']</span></code><a class="headerlink" href="#config-generation" title="Link to this heading"></a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">config['generation']</span></code><a class="headerlink" href="#config-generation" title="Permalink to this heading"></a></h3>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">config['generation']['generator']</span></code>: check the currently available generators below.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">config['generation']['probe_radius']</span></code>: some generators exclude positions that are not currently on the
@@ -181,7 +182,7 @@ will be classified as being part of the interface.</p></li>
 </ol>
 </section>
 <section id="config-mutation">
-<h3><code class="docutils literal notranslate"><span class="pre">config['mutation']</span></code><a class="headerlink" href="#config-mutation" title="Link to this heading"></a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">config['mutation']</span></code><a class="headerlink" href="#config-mutation" title="Permalink to this heading"></a></h3>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">config['mutation']['mutator']</span></code>: check the currently available mutators below.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">config['mutation']['reconstruct_radius']</span></code>: when using the <strong>dlpr</strong> mutator, residues within this radius from
@@ -189,7 +190,7 @@ the mutated residue will get their sidechains reoriented by <a class="reference 
 </ol>
 </section>
 <section id="config-pruning">
-<h3><code class="docutils literal notranslate"><span class="pre">config['pruning']</span></code><a class="headerlink" href="#config-pruning" title="Link to this heading"></a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">config['pruning']</span></code><a class="headerlink" href="#config-pruning" title="Permalink to this heading"></a></h3>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">config['pruning']['pruner']</span></code>: check the currently available pruners below.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">config['pruning']['remaining_branches']</span></code>: you can set this value when the chosen pruner leaves a fixed number
@@ -197,23 +198,23 @@ of branches after pruning.</p></li>
 </ol>
 </section>
 <section id="config-md">
-<h3><code class="docutils literal notranslate"><span class="pre">config['md']</span></code><a class="headerlink" href="#config-md" title="Link to this heading"></a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">config['md']</span></code><a class="headerlink" href="#config-md" title="Permalink to this heading"></a></h3>
 </section>
 <section id="config-target">
-<h3><code class="docutils literal notranslate"><span class="pre">config['target']</span></code><a class="headerlink" href="#config-target" title="Link to this heading"></a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">config['target']</span></code><a class="headerlink" href="#config-target" title="Permalink to this heading"></a></h3>
 </section>
 <section id="config-binder">
-<h3><code class="docutils literal notranslate"><span class="pre">config['binder']</span></code><a class="headerlink" href="#config-binder" title="Link to this heading"></a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">config['binder']</span></code><a class="headerlink" href="#config-binder" title="Permalink to this heading"></a></h3>
 </section>
 <section id="config-scoring">
-<h3><code class="docutils literal notranslate"><span class="pre">config['scoring']</span></code><a class="headerlink" href="#config-scoring" title="Link to this heading"></a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">config['scoring']</span></code><a class="headerlink" href="#config-scoring" title="Permalink to this heading"></a></h3>
 </section>
 <section id="config-statistics">
-<h3><code class="docutils literal notranslate"><span class="pre">config['statistics']</span></code><a class="headerlink" href="#config-statistics" title="Link to this heading"></a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">config['statistics']</span></code><a class="headerlink" href="#config-statistics" title="Permalink to this heading"></a></h3>
 </section>
 </section>
 <section id="schema-yaml">
-<h2>schema.yaml<a class="headerlink" href="#schema-yaml" title="Link to this heading"></a></h2>
+<h2>schema.yaml<a class="headerlink" href="#schema-yaml" title="Permalink to this heading"></a></h2>
 <p>Input configuration files are validated against the following schema, which also works as a reference you can check
 when in doubt, given its plain-english syntax. For example, you can check whether an option is mandatory or not
 (<code class="docutils literal notranslate"><span class="pre">required</span></code>), if it requires a string, a number, etc. (<code class="docutils literal notranslate"><span class="pre">type</span></code>), if it has a default value (<code class="docutils literal notranslate"><span class="pre">default</span></code>), etc.</p>

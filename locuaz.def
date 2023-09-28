@@ -6,15 +6,15 @@ From: nvcr.io/nvidia/cuda:11.7.0-runtime-ubuntu22.04
     export DEBIAN_FRONTEND=noninteractive
     apt update
     apt install -y wget libopenmpi-dev vim
-    mkdir /opt/concept
-    cd /opt/concept
+    mkdir /opt/locuaz
+    cd /opt/locuaz
     mv ../usr_deps.yaml ./
     wget https://github.com/conda-forge/miniforge/releases/download/23.3.1-0/Mambaforge-23.3.1-0-Linux-x86_64.sh
     bash Mambaforge-23.3.1-0-Linux-x86_64.sh -p /opt/mambaforge  -b 
     . /opt/mambaforge/bin/activate 
     mamba env create -f usr_deps.yaml
-    conda activate concept
-    pip install locuaz --root-user-action=ignore
+    conda activate locuaz
+    pip install locuaz==0.6.2 --root-user-action=ignore
     
 %runscript
     locuaz
@@ -22,14 +22,14 @@ From: nvcr.io/nvidia/cuda:11.7.0-runtime-ubuntu22.04
 %environment
     export LC_ALL=C
     export PATH=$PATH:/usr/local/gromacs/bin
-    source /opt/mambaforge/bin/activate /opt/mambaforge/envs/concept
+    source /opt/mambaforge/bin/activate /opt/mambaforge/envs/locuaz
 
 %files
     usr_deps.yaml opt/
 
 %labels
     Author Patricio Barletta
-    Version 0.5.3
+    Version 0.6.2
 
 %help
     Apptainer container for locuaz. Check https://locuaz.readthedocs.io/en/latest/ for more info.

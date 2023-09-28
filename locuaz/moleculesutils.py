@@ -181,8 +181,8 @@ def fix_wat_naming(
 
     return PDBStructure.from_path(pdb_out)
 
-def set_posres(in_posres: Path, out_posres: Path, restraint: float) -> None:
 
+def set_posres(in_posres: Path, out_posres: Path, restraint: float) -> None:
     with open(in_posres, "r") as file:
         txt_in_posres = file.readlines()
 

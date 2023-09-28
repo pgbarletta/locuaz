@@ -52,10 +52,15 @@ resulting environment won't be as heavy.
 
 apptainer container (Option 2)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+You can pull any version from the GitHub repository like this:
 
 .. code-block:: console
 
-    apptainer pull oras://ghcr.io/pgbarletta/locuaz.sif:0.6.0
+    apptainer pull oras://ghcr.io/pgbarletta/locuaz.sif:0.6.2
+
+These containers will be signed with a public key, so you can verify them::
+
+    apptainer verify --url https://keys.openpgp.org locuaz.sif
 
 *apptainer* containers are available for a plug-and-play approach. Just change
 the way you call *locuaz*. If you'd call the *locuaz* entry-point like this:

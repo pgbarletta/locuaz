@@ -2,6 +2,10 @@
 History
 =======
 
+0.6.2 (2023-09-)
+------------------
+ * Pin gmx-mmpbsa to 1.6.1 since 1.6.2 pins pandas to 1.2.2 which is broken.
+
 0.6.1 (2023-09-)
 ------------------
  * Support Python version 3.10 and onwards.

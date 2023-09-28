@@ -55,3 +55,42 @@ And another one with PBS:
     conda activate locuaz
 
     locuaz.py config.yaml
+
+Running from within an apptainer container
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+*locuaz* is also offered as an apptainer (formerly known as singularity)
+container. To download a specific version do::
+
+    apptainer pull oras://ghcr.io/pgbarletta/locuaz.sif:0.6.1
+
+Currently, Apptainer doesn't offer any progress bar, so just wait a while.
+The container weighs around 3Gb.
+
+Binding GROMACS paths to the container
+""""""""""""""""""""""""""""""""""""""
+The *locuaz* container doesn't come with its own version of GROMACS, since it
+assumes it'll be run in an HPC cluster with an optimized version of it. For this
+reason, *locuaz* needs to be able to find the installed GROMACS.
+
+From within the container, *locuaz* will find the ``gmx`` binary, but it won't
+find the GROMACS libraries, since apptainer only exposes (binds) a subset of
+the host directories to the container.
+
+By setting the variable ``APPTAINER_BIND`` or ``SINGULARITY_BIND`` to a comma
+separated list of the necessary paths, *locuaz* will be able to use GROMACS.
+
+Take as an example:
+
+.. code-block:: console
+
+    export APPTAINER_BIND="/usr/local/gromacs,/lib/x86_64-linux-gnu,/usr/local/cuda-12.2/lib64,/etc/alternatives/"
+
+To know which paths you need to bind in your specific platform,
+run the command::
+
+    ldd `which gmx`
+
+which will tell you the location of the libraries ``gmx`` calls. For more info,
+check `this blog post`_.
+
+.. _this blog post: https://ana.run/blog/singularity_conda#actually-running-it

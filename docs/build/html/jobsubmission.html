@@ -60,6 +60,10 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Job submission</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#running-from-slurm">Running from SLURM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#running-from-pbs">Running from PBS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-from-within-an-apptainer-container">Running from within an apptainer container</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#binding-gromacs-paths-to-the-container">Binding GROMACS paths to the container</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -149,6 +153,38 @@ workload managers.</p>
 <span class="go">locuaz.py config.yaml</span>
 </pre></div>
 </div>
+</section>
+<section id="running-from-within-an-apptainer-container">
+<h2>Running from within an apptainer container<a class="headerlink" href="#running-from-within-an-apptainer-container" title="Permalink to this heading"></a></h2>
+<p><em>locuaz</em> is also offered as an apptainer (formerly known as singularity)
+container. To download a specific version do:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apptainer</span> <span class="n">pull</span> <span class="n">oras</span><span class="p">:</span><span class="o">//</span><span class="n">ghcr</span><span class="o">.</span><span class="n">io</span><span class="o">/</span><span class="n">pgbarletta</span><span class="o">/</span><span class="n">locuaz</span><span class="o">.</span><span class="n">sif</span><span class="p">:</span><span class="mf">0.6.1</span>
+</pre></div>
+</div>
+<p>Currently, Apptainer doesn’t offer any progress bar, so just wait a while.
+The container weighs around 3Gb.</p>
+<section id="binding-gromacs-paths-to-the-container">
+<h3>Binding GROMACS paths to the container<a class="headerlink" href="#binding-gromacs-paths-to-the-container" title="Permalink to this heading"></a></h3>
+<p>The <em>locuaz</em> container doesn’t come with its own version of GROMACS, since it
+assumes it’ll be run in an HPC cluster with an optimized version of it. For this
+reason, <em>locuaz</em> needs to be able to find the installed GROMACS.</p>
+<p>From within the container, <em>locuaz</em> will find the <code class="docutils literal notranslate"><span class="pre">gmx</span></code> binary, but it won’t
+find the GROMACS libraries, since apptainer only exposes (binds) a subset of
+the host directories to the container.</p>
+<p>By setting the variable <code class="docutils literal notranslate"><span class="pre">APPTAINER_BIND</span></code> or <code class="docutils literal notranslate"><span class="pre">SINGULARITY_BIND</span></code> to a comma
+separated list of the necessary paths, <em>locuaz</em> will be able to use GROMACS.</p>
+<p>Take as an example:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">export APPTAINER_BIND=&quot;/usr/local/gromacs,/lib/x86_64-linux-gnu,/usr/local/cuda-12.2/lib64,/etc/alternatives/&quot;</span>
+</pre></div>
+</div>
+<p>To know which paths you need to bind in your specific platform,
+run the command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>ldd `which gmx`
+</pre></div>
+</div>
+<p>which will tell you the location of the libraries <code class="docutils literal notranslate"><span class="pre">gmx</span></code> calls. For more info,
+check <a class="reference external" href="https://ana.run/blog/singularity_conda#actually-running-it">this blog post</a>.</p>
+</section>
 </section>
 </section>
 

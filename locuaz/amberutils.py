@@ -314,12 +314,12 @@ def fixup_top(top_path: Path,
                 line = next(itera_file)
             except StopIteration:
                 break
-            # rewrite 'system1', 'system2', ... with the proteins chainIDs
-            # if line[:6] == "system":
             mol_name_old = line[:10].strip()
             if mol_name_old in solvent or mol_name_old in ions:
                 pass
             else:
+                # if molecule name doesn't look like water or ions, then assume
+                # it's either target or binder. Rename it to 'A', 'B', ...
                 chainID = chainIDs.popleft()
                 # chainID should be just a char, but just in case:
                 line = f"{chainID}{1: >{22 - len(chainID)}}" "\n"

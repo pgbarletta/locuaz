@@ -194,11 +194,11 @@ and stderr:
             posre_strings = set(posre_file.split('.')[0].split('_'))
 
             if len(posre_strings.intersection(set(topology.target_chains))) != 0:
-                self.__overwrite_posres_file__(Path(self.dir, posre_file), self.restraints["target"])
+                self.__overwrite_posres_file__(Path(self.dir, posre_file), self.restraints["posres"])
             elif len(posre_strings.intersection(set(topology.binder_chains))) != 0:
-                self.__overwrite_posres_file__(Path(self.dir, posre_file), self.restraints["binder"])
+                self.__overwrite_posres_file__(Path(self.dir, posre_file), self.restraints["posres"])
             else:
-                self.__overwrite_posres_file__(Path(self.dir, posre_file), self.restraints["rest"])
+                self.__overwrite_posres_file__(Path(self.dir, posre_file), self.restraints["posres_water"])
         zip_top_path = Path(self.dir, f"restrained_{self.out_name}.zip")
         with ZipFile(zip_top_path, mode="w") as zf:
             for posre_file in filelist:

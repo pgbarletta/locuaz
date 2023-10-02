@@ -264,17 +264,12 @@ md:
             type: dict
             required: false
             schema:
-                target:
+                posres:
                     type: float
                     min: 1
                     max: 10000
                     default: 1000
-                binder:
-                    type: float
-                    min: 1
-                    max: 10000
-                    default: 1000
-                rest:
+                posres_water:
                     type: float
                     min: 1
                     max: 10000

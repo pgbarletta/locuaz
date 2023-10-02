@@ -2,6 +2,11 @@
 History
 =======
 
+0.6.3 (2023-10-)
+------------------
+ * Rename positional restraints from "target", "binder" and "rest" to "posres"
+   and "posres_water".
+
 0.6.2 (2023-09-)
 ------------------
  * Pin gmx-mmpbsa to 1.6.1 since 1.6.2 pins pandas to 1.2.2 which is broken.

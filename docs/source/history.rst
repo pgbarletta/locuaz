@@ -2,6 +2,14 @@
 History
 =======
 
+0.6.4 (2023-10-)
+------------------
+ * Added warning when 'autodockvina' scorer is used what no resname was set in
+   'allowed_nonstandard_residues'. The former is usually used to score
+   interactions with small molecules that will be discarded from the PDBs used
+   for scoring, unless their resnames show up on the
+   'allowed_nonstandard_residues' list.
+
 0.6.3 (2023-10-)
 ------------------
  * Rename positional restraints from "target", "binder" and "rest" to "posres"

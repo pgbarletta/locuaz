@@ -59,6 +59,7 @@ delivers efficient *in-silico* optimization.
     tutorialtleap
     tutorialligand
     jobsubmission
+    faq
 
 .. toctree::
     :maxdepth: 1

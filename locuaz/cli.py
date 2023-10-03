@@ -111,6 +111,9 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
         assert t <= n, f"Threshold ({t}) should be equal or lower than the number of scorers ({n})"
     elif config["pruning"]["pruner"] == "metropolis":
         assert len(config["scoring"]["scorers"]) == 1, f"Can only use 1 scoring function when pruner is 'metropolis'."
+    if "autodockvina" in config["scoring"]["scorers"] and len(config["scoring"]["allowed_nonstandard_residues"]) == 0:
+        warn("Selected 'autodockvina', but 'allowed_nonstandard_residues' is empty. "
+             "Make sure no residue is removed from the PDB files used for scoring.")
 
     # Check MD related options
     numa_regions = config["md"]["numa_regions"]

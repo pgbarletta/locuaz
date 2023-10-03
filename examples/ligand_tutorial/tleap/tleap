@@ -1,0 +1,15 @@
+source oldff/leaprc.ff99SBildn
+source leaprc.water.tip3p
+source leaprc.gaff
+
+loadamberparams lig.frcmod
+loadoff lig.lib
+
+mol = loadpdb init.pdb
+
+bond mol.23.SG mol.98.SG
+
+addions mol CL 0
+addions mol NA 0
+saveamberparm mol tir.prmtop tir.rst7
+quit

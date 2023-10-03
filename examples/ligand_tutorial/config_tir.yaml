@@ -1,0 +1,63 @@
+paths:
+    gmxrc: /usr/local/gromacs/bin
+    scorers: /home/pbarletta/labo/22/locuaz/rebin
+    mutator: /home/pbarletta/labo/22/locuaz/rebin/dlpacker
+    mdp: /home/pbarletta/labo/22/locuaz/daux/mdp
+    input: [ /home/pbarletta/labo/22/locuaz/daux/tirosol ]
+    tleap: /home/pbarletta/labo/22/locuaz/daux/tirosol/tleap
+    work: /home/pbarletta/labo/22/locuaz/daux/monsa
+
+main:
+    name: tir
+
+protocol:
+    epochs: 10
+    new_branches: 2
+    constant_width: false
+    memory_size: 4
+    failed_memory_size: 6
+
+generation:
+    generator: SPM4i
+    probe_radius: 3
+
+mutation:
+    mutator: dlpr
+
+pruning:
+    pruner: metropolis
+    kT: 0.593
+
+md:
+    gmx_mdrun: "gmx mdrun"
+    mdp_names:
+        min_mdp: min.mdp
+        nvt_mdp: short_nvt.mdp
+        npt_mdp: short_npt_posres.mdp
+#     ngpus: 1
+#     mpi_procs: 1
+#     omp_procs: 4
+#     pinoffsets: [0]
+    mps: true
+    numa_regions: 1
+    use_tleap: true
+    maxwarn: 2
+    box_type: octahedron
+    npt_restraints:
+        posres: 50
+        posres_water: 50
+
+target:
+    chainID: [A]
+
+binder:
+    chainID: [B]
+    mutating_chainID: [B, B]
+    mutating_resSeq: [[25, 26, 27, 28, 29, 30, 31, 32], [101, 102, 103, 104, 105, 106]]
+    mutating_resname: [[A, S, G, F, D, F, S, D], [A, G, A, A, G, A]]
+
+scoring:
+    scorers: [autodockvina]
+    allowed_nonstandard_residues: [UNL]
+    nthreads: 6
+    mpi_procs: 1

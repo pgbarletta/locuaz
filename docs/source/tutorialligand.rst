@@ -17,19 +17,19 @@ Figure 1.
         Figure 1: our starting complex, a tirosol molecule docked to a nanobody.
 
 
-As usual, activate your locuaz environment and get the `necessary files`_
+As usual, activate your locuaz environment and get the `necessary files`_.
 
 .. _necessary files: https://github.com/pgbarletta/locuaz/tree/main/examples/ligand_tutorial
 
 Necessary files
 ----------------
 As always we're going to need a starting PDB and as in
-:ref:`tutorialtleap:Tutorial: running a simple optimization`, we'll also need
+:ref:`tutorialtleap:Tutorial: using Tleap topologies`, we'll also need
 a set of tleap related files in order to rebuild the topology of our system after
 each mutation.
 
 1. ``tir.pdb``: the PDB file of the pre-equilibrated complex. As usual, target chains go first, also,
-   remember that since we are using *Tleap* residues should be numbered on a continuous progression.
+   remember that since we are using *Tleap*, residues should be numbered on a continuous progression.
 2. ``tleap``: *Tleap* dir with the script to build the topology of the system each time a mutation is performed.
    Remember to avoid solvating and creating a box in this file, since the solvent
    will already be present. Another thing to notice is the usage of ``addions``.
@@ -59,6 +59,9 @@ protocol
         memory_size: 4
         failed_memory_size: 6
 
+* ``constant_width``: when this value is set to ``false``, ``new_branches`` means
+  the number of branches (new mutations) that are obtained from **each** previous branch.
+  Check :ref:`platformflow:Platform DAGs` for more info.
 
 pruning
 ^^^^^^^^
@@ -68,6 +71,10 @@ pruning
         pruner: metropolis
         kT: 0.593
 
+* ``pruner: metropolis``: uses the Metropolis-Hastings criteria to decide if a
+  new branch passes to the next epoch. Does not work with multiple scorers.
+* ``kT``: product between the boltzmann constant and a temperature. The current
+  value corresponds to a temperature of 300K.
 
 md
 ^^
@@ -88,7 +95,21 @@ md
             posres: 50
             posres_water: 50
 
-s
+* ``mps``: when set to ``true``, *locuaz* will use the NVIDIA Multi-Process Server (MPS),
+  to run multiple MD simulations per GPU. This usually decreases the speed of each
+  run, but considerably increases the total throughput. Useful when using a variable
+  width DAG protocol which may make the number of branches explode.
+  Check this `blog post`_ for more info.
+* ``numa_regions``: when using MPS, *locuaz* will automatically set these options:
+  ``ngpus``, ``mpi_procs``, ``omp_procs`` and ``pinoffsets``. To be able to do this
+  effectively, it needs to know CPU affinity of each GPU, which should follow the
+  NUMA layout.
+  Check the :ref:`FAQ<faq3>` if you don't know how many regions you have.
+* ``npt_restraints``: This is where we set the value for our positional restraints.
+  Remember also to define the ``-DPOSRES`` and ``-DPOSRES_WATER`` flags in your
+  NPT mdp file so these take effect.
+
+.. _blog post: https://developer.nvidia.com/blog/maximizing-gromacs-throughput-with-multiple-simulations-per-gpu-using-mps-and-mig/
 
 scoring
 ^^^^^^^
@@ -100,24 +121,29 @@ scoring
         nthreads: 6
         mpi_procs: 1
 
+* ``allowed_nonstandard_residues``: when scoring, the NPT trajectory is split
+  in "sanitized" PDB frames. That is, they receive a treatment to make sure the
+  scorers don't error out when meeting unexpected artifacts, like non-standard
+  residues. All scorers but gmxmmpbsa use this PDBs. Since we want to score the
+  interaction between our nanobody and a tirosol molecule, we need to add it
+  to this list of residue names, so *locuaz* doesn't remove it from the PDB frames.
 
-``allowed_nonstandard_residues``
+Running the protocol
+---------------------
+Nothing new here, we just run the protocol with our config file::
 
-remember that for scoring, all target chains are renamed A, and all the ones from the binder are renamed B.
-write about the sanitization the protocol does with the splitted frames. All scorers but gmxmmpbsa use this PDBs.
+    mamba activate locuaz
+    python /home/user/locuaz/locuaz/protocol.py config_tleap.yaml
 
-
-``memory_positions`` and ``failed_memory_positions``:
-empty memory slots on input user memory are allowed.
-This allows the user to control for how many epochs will the non-empty memory be recalled.
-Place them after the desired positions:
-
-``memory_positions: [[2, 3, 4, 6, 7, 8], [], [], [] ]``
-
-
+It's educational to look at the DAG with the branch names that *locuaz* draws.
+See Figure 2
 
 .. figure:: ./resources/ligand_iterations_dag.png
         :alt: iterations_dag
 
-        Figure 1: snapshot of one optimized complex. **p53** is the yellow one on the left, with its loops colored red and
-        blue, these loops have to be stabilized so it doesn't loose its function; the zinc atom and its coordinating
+        Figure 2: Directed Acyclic Graph (DAG) of a sample optimization against
+        the tirosol molecule. Notice that 2 branches are generated from each
+        previous top branch which makes the number of branches increase up to 8
+        before it gets lowered to 6 because only 3 of those 8 passed onto the
+        next epoch.
+

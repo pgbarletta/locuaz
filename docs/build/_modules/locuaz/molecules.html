@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>locuaz.molecules &mdash; locuaz 0.6.3 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            locuaz
+          </a>
+              <div class="version">
+                0.6.3
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../platformflow.html">Platform flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorialsimple.html">Tutorial: running a simple optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorialtleap.html">Tutorial: using Tleap topologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorialligand.html">Tutorial: optimizing an antibody against a ligand</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../jobsubmission.html">Job submission</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../scorers.html">Scorers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mutators.html">Mutators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../statistics.html">Stats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pruners.html">Pruners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../misc.html">Miscellaneous</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../configurationfile.html">YAML configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../citing.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developing.html">Developing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">locuaz</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">locuaz.molecules</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for locuaz.molecules</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">singledispatch</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">MDAnalysis</span> <span class="k">as</span> <span class="nn">mda</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">attrs</span> <span class="kn">import</span> <span class="n">define</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">biobb_analysis.gromacs.gmx_trjconv_str</span> <span class="kn">import</span> <span class="n">GMXTrjConvStr</span>
+<span class="kn">from</span> <span class="nn">biobb_gromacs.gromacs.gmxselect</span> <span class="kn">import</span> <span class="n">Gmxselect</span>
+<span class="kn">from</span> <span class="nn">biobb_gromacs.gromacs.grompp</span> <span class="kn">import</span> <span class="n">Grompp</span>
+<span class="kn">from</span> <span class="nn">biobb_gromacs.gromacs.pdb2gmx</span> <span class="kn">import</span> <span class="n">Pdb2gmx</span>
+
+<span class="kn">from</span> <span class="nn">locuaz.fileutils</span> <span class="kn">import</span> <span class="n">FileHandle</span><span class="p">,</span> <span class="n">DirHandle</span><span class="p">,</span> <span class="n">copy_to</span><span class="p">,</span> <span class="n">update_header</span>
+<span class="kn">from</span> <span class="nn">locuaz.primitives</span> <span class="kn">import</span> <span class="n">launch_biobb</span>
+
+
+<div class="viewcode-block" id="AbstractFileObject"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.AbstractFileObject">[docs]</a><span class="nd">@define</span>
+<span class="k">class</span> <span class="nc">AbstractFileObject</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
+    <span class="n">file</span><span class="p">:</span> <span class="n">FileHandle</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="n">FileHandle</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">ext</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__attrs_post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="AbstractFileObject.unlink"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.AbstractFileObject.unlink">[docs]</a>    <span class="k">def</span> <span class="nf">unlink</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__fspath__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="AbstractFileObject.from_path"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.AbstractFileObject.from_path">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_path</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+        <span class="n">file</span> <span class="o">=</span> <span class="n">FileHandle</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">file</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TPRFile"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.TPRFile">[docs]</a><span class="nd">@define</span>
+<span class="k">class</span> <span class="nc">TPRFile</span><span class="p">(</span><span class="n">AbstractFileObject</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Structure"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.Structure">[docs]</a><span class="nd">@define</span>
+<span class="k">class</span> <span class="nc">Structure</span><span class="p">(</span><span class="n">AbstractFileObject</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Trajectory"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.Trajectory">[docs]</a><span class="nd">@define</span>
+<span class="k">class</span> <span class="nc">Trajectory</span><span class="p">(</span><span class="n">AbstractFileObject</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="PDBStructure"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.PDBStructure">[docs]</a><span class="nd">@define</span>
+<span class="k">class</span> <span class="nc">PDBStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;PDBStructure</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        file (FileHandle): path to the file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># TODO: turn __init__ to __attrs_post_init__</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">FileHandle</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">!=</span> <span class="s2">&quot;pdb&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input file&#39;s extension for PDBStructure should be .pdb&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PDBStructure.get_cryst1_record"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.PDBStructure.get_cryst1_record">[docs]</a>    <span class="k">def</span> <span class="nf">get_cryst1_record</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">linea</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">linea</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;CRYST1&quot;</span><span class="p">:</span>
+                    <span class="n">cryst1_record</span> <span class="o">=</span> <span class="n">linea</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> has no CRYST1 record.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cryst1_record</span></div>
+
+<div class="viewcode-block" id="PDBStructure.set_cryst1_record"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.PDBStructure.set_cryst1_record">[docs]</a>    <span class="k">def</span> <span class="nf">set_cryst1_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cryst1_record</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">texto</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">linea</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">linea</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;CRYST1&quot;</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">texto</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">linea</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cryst1_record</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">:</span>
+                <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">cryst1_record</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">cryst1_record</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="p">[</span><span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">linea</span><span class="p">)</span> <span class="k">for</span> <span class="n">linea</span> <span class="ow">in</span> <span class="n">texto</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="GROStructure"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.GROStructure">[docs]</a><span class="nd">@define</span>
+<span class="k">class</span> <span class="nc">GROStructure</span><span class="p">(</span><span class="n">Structure</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;GROStructure</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        file (FileHandle): path to the file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># TODO: turn into __attrs_post_init__</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">FileHandle</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ext</span> <span class="o">!=</span> <span class="s2">&quot;gro&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input file&#39;s extension for PDBStructure should be .gro&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Topology"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.Topology">[docs]</a><span class="nd">@define</span>
+<span class="k">class</span> <span class="nc">Topology</span><span class="p">(</span><span class="n">AbstractFileObject</span><span class="p">):</span>
+    <span class="n">target_chains</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">binder_chains</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">selection_target</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">selection_binder</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">selection_complex</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">selection_not_complex</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">selection_water</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Topology.from_path_with_chains"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.Topology.from_path_with_chains">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_path_with_chains</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">target_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">binder_chains</span><span class="p">:</span> <span class="n">Iterable</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Topology&quot;</span><span class="p">:</span>
+        <span class="bp">self</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_chains</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">target_chains</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">binder_chains</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">binder_chains</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">selection_target</span> <span class="o">=</span> <span class="s2">&quot; or &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;segid </span><span class="si">{</span><span class="n">chainID</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">chainID</span> <span class="ow">in</span> <span class="n">target_chains</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selection_binder</span> <span class="o">=</span> <span class="s2">&quot; or &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;segid </span><span class="si">{</span><span class="n">chainID</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">chainID</span> <span class="ow">in</span> <span class="n">binder_chains</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selection_complex</span> <span class="o">=</span> <span class="s2">&quot; or &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">selection_target</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">selection_binder</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selection_not_complex</span> <span class="o">=</span> <span class="s2">&quot; and not &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">&quot;not protein&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">selection_target</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">selection_binder</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selection_water</span> <span class="o">=</span> <span class="s2">&quot;resname WAT or resname SOL&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div></div>
+
+
+<div class="viewcode-block" id="AmberTopology"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.AmberTopology">[docs]</a><span class="nd">@define</span>
+<span class="k">class</span> <span class="nc">AmberTopology</span><span class="p">(</span><span class="n">Topology</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="ZipTopology"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.ZipTopology">[docs]</a><span class="nd">@define</span>
+<span class="k">class</span> <span class="nc">ZipTopology</span><span class="p">(</span><span class="n">Topology</span><span class="p">):</span>
+<div class="viewcode-block" id="ZipTopology.from_path_with_chains"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.ZipTopology.from_path_with_chains">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_path_with_chains</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">target_chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">binder_chains</span><span class="p">:</span> <span class="n">Iterable</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ZipTopology&quot;</span><span class="p">:</span>
+        <span class="bp">self</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_chains</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">target_chains</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">binder_chains</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">binder_chains</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">selection_target</span> <span class="o">=</span> <span class="s2">&quot; or &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;segid </span><span class="si">{</span><span class="n">chainID</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">chainID</span> <span class="ow">in</span> <span class="n">target_chains</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selection_binder</span> <span class="o">=</span> <span class="s2">&quot; or &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;segid </span><span class="si">{</span><span class="n">chainID</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">chainID</span> <span class="ow">in</span> <span class="n">binder_chains</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selection_complex</span> <span class="o">=</span> <span class="s2">&quot; or &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">&quot;protein&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">selection_target</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">selection_binder</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selection_not_complex</span> <span class="o">=</span> <span class="s2">&quot; and not &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">&quot;not protein&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">selection_target</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">selection_binder</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selection_water</span> <span class="o">=</span> <span class="s2">&quot;resname WAT or resname SOL&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div></div>
+
+
+<div class="viewcode-block" id="TrrTrajectory"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.TrrTrajectory">[docs]</a><span class="nd">@define</span>
+<span class="k">class</span> <span class="nc">TrrTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="XtcTrajectory"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.XtcTrajectory">[docs]</a><span class="nd">@define</span>
+<span class="k">class</span> <span class="nc">XtcTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="get_tpr"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.get_tpr">[docs]</a><span class="k">def</span> <span class="nf">get_tpr</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">gro</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">GROStructure</span><span class="p">],</span>
+    <span class="n">top</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">ZipTopology</span><span class="p">],</span>
+    <span class="n">gmx_bin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gmx&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TPRFile</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    get_tpr(): build a quick tpr, useful for simple runs asa call to genion and not for MD.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        gro:</span>
+<span class="sd">        top:</span>
+<span class="sd">        gmx_bin:</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TPRFile</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gro_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">gro</span><span class="p">)</span>
+    <span class="n">tpr_fn</span> <span class="o">=</span> <span class="n">gro_fn</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="p">(</span><span class="n">gro_fn</span><span class="o">.</span><span class="n">stem</span> <span class="o">+</span> <span class="s2">&quot;.tpr&quot;</span><span class="p">)</span>
+    <span class="n">grompepe</span> <span class="o">=</span> <span class="n">Grompp</span><span class="p">(</span>
+        <span class="n">input_gro_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">gro_fn</span><span class="p">),</span>
+        <span class="n">input_top_zip_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">top</span><span class="p">),</span>
+        <span class="n">output_tpr_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tpr_fn</span><span class="p">),</span>
+        <span class="n">properties</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;binary_path&quot;</span><span class="p">:</span> <span class="n">gmx_bin</span><span class="p">,</span> <span class="s2">&quot;simulation_type&quot;</span><span class="p">:</span> <span class="s2">&quot;index&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">launch_biobb</span><span class="p">(</span><span class="n">grompepe</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">TPRFile</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">tpr_fn</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_pdb_tpr"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.get_pdb_tpr">[docs]</a><span class="k">def</span> <span class="nf">get_pdb_tpr</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">gro</span><span class="p">:</span> <span class="n">GROStructure</span><span class="p">,</span>
+    <span class="n">top</span><span class="p">:</span> <span class="n">ZipTopology</span><span class="p">,</span>
+    <span class="n">gmx_bin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gmx&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">PDBStructure</span><span class="p">,</span> <span class="n">TPRFile</span><span class="p">]:</span>
+
+    <span class="n">tpr</span> <span class="o">=</span> <span class="n">get_tpr</span><span class="p">(</span><span class="n">gro</span><span class="o">=</span><span class="n">gro</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="n">top</span><span class="p">,</span> <span class="n">gmx_bin</span><span class="o">=</span><span class="n">gmx_bin</span><span class="p">)</span>
+
+    <span class="n">pdb_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">gro</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">gro</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.pdb&quot;</span><span class="p">)</span>
+    <span class="n">trjconv</span> <span class="o">=</span> <span class="n">GMXTrjConvStr</span><span class="p">(</span>
+        <span class="n">input_structure_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">gro</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="p">),</span>
+        <span class="n">input_top_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tpr</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="p">),</span>
+        <span class="n">output_str_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">pdb_fn</span><span class="p">),</span>
+        <span class="n">properties</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;binary_path&quot;</span><span class="p">:</span> <span class="n">gmx_bin</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">launch_biobb</span><span class="p">(</span><span class="n">trjconv</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">PDBStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">pdb_fn</span><span class="p">),</span> <span class="n">tpr</span></div>
+
+
+<div class="viewcode-block" id="fix_pdb_gro"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.fix_pdb_gro">[docs]</a><span class="k">def</span> <span class="nf">fix_pdb_gro</span><span class="p">(</span>
+    <span class="n">pdb_in</span><span class="p">:</span> <span class="n">PDBStructure</span><span class="p">,</span> <span class="n">pdb_out_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">gmx_bin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gmx&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PDBStructure</span><span class="p">:</span>
+    <span class="c1"># This is quite cumbersome.</span>
+    <span class="n">wrk_dir</span> <span class="o">=</span> <span class="n">pdb_in</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">parent</span>
+
+    <span class="c1"># First, use pdb2gmx to fix the PDB file. There&#39;s no way of ignoring</span>
+    <span class="c1"># Hydrogens and getting a good output PDB, so the output has to be</span>
+    <span class="c1"># a .gro file</span>
+    <span class="n">props</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;binary_path&quot;</span><span class="p">:</span> <span class="n">gmx_bin</span><span class="p">,</span>
+        <span class="s2">&quot;water_type&quot;</span><span class="p">:</span> <span class="s2">&quot;tip3p&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;force_field&quot;</span><span class="p">:</span> <span class="s2">&quot;amber99sb-ildn&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ignh&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">temp_gro</span> <span class="o">=</span> <span class="n">wrk_dir</span> <span class="o">/</span> <span class="s2">&quot;temp.gro&quot;</span>
+    <span class="n">temp_zip</span> <span class="o">=</span> <span class="n">wrk_dir</span> <span class="o">/</span> <span class="s2">&quot;temp.zip&quot;</span>
+    <span class="n">pdb_fix</span> <span class="o">=</span> <span class="n">Pdb2gmx</span><span class="p">(</span>
+        <span class="n">input_pdb_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">pdb_in</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="p">),</span>
+        <span class="n">output_gro_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">temp_gro</span><span class="p">),</span>
+        <span class="n">output_top_zip_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">temp_zip</span><span class="p">),</span>
+        <span class="n">properties</span><span class="o">=</span><span class="n">props</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">launch_biobb</span><span class="p">(</span><span class="n">pdb_fix</span><span class="p">)</span>
+
+    <span class="c1"># Now, get a tpr file from the new GRO and zip files</span>
+    <span class="n">temp_tpr</span> <span class="o">=</span> <span class="n">wrk_dir</span> <span class="o">/</span> <span class="s2">&quot;temp.tpr&quot;</span>
+    <span class="n">grompepe</span> <span class="o">=</span> <span class="n">Grompp</span><span class="p">(</span>
+        <span class="n">input_gro_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">temp_gro</span><span class="p">),</span>
+        <span class="n">input_top_zip_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">temp_zip</span><span class="p">),</span>
+        <span class="n">output_tpr_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">temp_tpr</span><span class="p">),</span>
+        <span class="n">properties</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;binary_path&quot;</span><span class="p">:</span> <span class="n">gmx_bin</span><span class="p">,</span> <span class="s2">&quot;maxwarn&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">launch_biobb</span><span class="p">(</span><span class="n">grompepe</span><span class="p">)</span>
+
+    <span class="c1"># Finally, get a PDB file from the GRO file</span>
+    <span class="n">trjconv</span> <span class="o">=</span> <span class="n">GMXTrjConvStr</span><span class="p">(</span>
+        <span class="n">input_structure_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">temp_gro</span><span class="p">),</span>
+        <span class="n">input_top_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">temp_tpr</span><span class="p">),</span>
+        <span class="n">output_str_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">pdb_out_path</span><span class="p">),</span>
+        <span class="n">properties</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;binary_path&quot;</span><span class="p">:</span> <span class="n">gmx_bin</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">launch_biobb</span><span class="p">(</span><span class="n">trjconv</span><span class="p">)</span>
+
+    <span class="n">temp_gro</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+    <span class="n">temp_zip</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+    <span class="n">temp_tpr</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">PDBStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">pdb_out_path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="catenate_pdbs"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.catenate_pdbs">[docs]</a><span class="k">def</span> <span class="nf">catenate_pdbs</span><span class="p">(</span>
+    <span class="o">*</span><span class="n">pdbs</span><span class="p">:</span> <span class="n">PDBStructure</span><span class="p">,</span> <span class="n">pdb_out_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">gmx_bin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gmx&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PDBStructure</span><span class="p">:</span>
+    <span class="n">lineas</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">pdb</span> <span class="ow">in</span> <span class="n">pdbs</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pdb</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">linea</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">linea</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;ATOM&quot;</span>
+                    <span class="ow">or</span> <span class="n">linea</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;TER&quot;</span>
+                    <span class="ow">or</span> <span class="n">linea</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;HETATM&quot;</span>
+                <span class="p">):</span>
+                    <span class="n">lineas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">linea</span><span class="p">)</span>
+
+    <span class="n">texto</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">lineas</span><span class="p">)</span>
+    <span class="n">temp_pdb</span> <span class="o">=</span> <span class="n">pdb_out_path</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;temp.pdb&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">temp_pdb</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="p">[</span><span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">linea</span><span class="p">)</span> <span class="k">for</span> <span class="n">linea</span> <span class="ow">in</span> <span class="n">texto</span><span class="p">]</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;END&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Now, use gromacs to fix the PDB.</span>
+    <span class="n">out_pdb</span> <span class="o">=</span> <span class="n">fix_pdb_gro</span><span class="p">(</span><span class="n">PDBStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">temp_pdb</span><span class="p">),</span> <span class="n">pdb_out_path</span><span class="p">,</span> <span class="n">gmx_bin</span><span class="p">)</span>
+    <span class="n">temp_pdb</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">out_pdb</span></div>
+
+
+<div class="viewcode-block" id="write_chain_ndx"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.write_chain_ndx">[docs]</a><span class="k">def</span> <span class="nf">write_chain_ndx</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">,</span> <span class="n">pdb</span><span class="p">:</span> <span class="n">PDBStructure</span><span class="p">,</span> <span class="n">chains</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">selname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">gmx_bin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gmx&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FileHandle</span><span class="p">:</span>
+    <span class="n">selection</span> <span class="o">=</span> <span class="s2">&quot; or &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;chain </span><span class="si">{</span><span class="n">chainID</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">chainID</span> <span class="ow">in</span> <span class="n">chains</span><span class="p">])</span>
+
+    <span class="n">wrk_dir</span> <span class="o">=</span> <span class="n">pdb</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">parent</span>
+    <span class="n">ndx_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">wrk_dir</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">selname</span><span class="si">}</span><span class="s2">.ndx&quot;</span>
+    <span class="n">selector</span> <span class="o">=</span> <span class="n">Gmxselect</span><span class="p">(</span>
+        <span class="n">input_structure_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">pdb</span><span class="p">),</span>
+        <span class="n">output_ndx_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">ndx_fn</span><span class="p">),</span>
+        <span class="n">properties</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;selection&quot;</span><span class="p">:</span> <span class="n">selection</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">launch_biobb</span><span class="p">(</span><span class="n">selector</span><span class="p">)</span>
+
+    <span class="n">ndx</span> <span class="o">=</span> <span class="n">FileHandle</span><span class="p">(</span><span class="n">ndx_fn</span><span class="p">)</span>
+    <span class="n">update_header</span><span class="p">(</span><span class="n">ndx</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;[ </span><span class="si">{</span><span class="n">selname</span><span class="si">}</span><span class="s2"> ]</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ndx</span></div>
+
+
+<div class="viewcode-block" id="generate_ndx"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.generate_ndx">[docs]</a><span class="k">def</span> <span class="nf">generate_ndx</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">pdb</span><span class="p">:</span> <span class="n">PDBStructure</span><span class="p">,</span>
+    <span class="n">top</span><span class="p">:</span> <span class="n">Topology</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FileHandle</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">uni_pdb</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pdb</span><span class="p">))</span>
+        <span class="n">ndx_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">pdb</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.ndx&quot;</span><span class="p">)</span>
+
+        <span class="c1"># sel_target = &quot; or &quot;.join([f&quot;segid {chainID}&quot; for chainID in target_chains])</span>
+        <span class="n">uni_pdb</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="n">top</span><span class="o">.</span><span class="n">selection_target</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+            <span class="n">ndx_file</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># sel_binder = &quot; or &quot;.join([f&quot;segid {chainID}&quot; for chainID in binder_chains])</span>
+        <span class="n">uni_pdb</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="n">top</span><span class="o">.</span><span class="n">selection_binder</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+            <span class="n">ndx_file</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;binder&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;a&quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># TODO: this won&#39;t work with glyco mods and stuff</span>
+        <span class="c1"># sel_protein = &quot; or &quot;.join([&quot;protein&quot;, sel_target, sel_binder])</span>
+        <span class="n">uni_pdb</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="n">top</span><span class="o">.</span><span class="n">selection_complex</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+            <span class="n">ndx_file</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Protein&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;a&quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># sel_not_target = &quot; and &quot;.join([f&quot;segid {chainID}&quot; for chainID in target_chains])</span>
+        <span class="c1"># sel_not_binder = &quot; and &quot;.join([f&quot;segid {chainID}&quot; for chainID in binder_chains])</span>
+        <span class="c1"># sel_not_protein = &quot; and not &quot;.join(</span>
+        <span class="c1">#     [&quot;not protein&quot;, sel_not_target, sel_not_binder]</span>
+        <span class="c1"># )</span>
+        <span class="n">uni_pdb</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="n">top</span><span class="o">.</span><span class="n">selection_not_complex</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+            <span class="n">ndx_file</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Non-Protein&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;a&quot;</span>
+        <span class="p">)</span>
+        <span class="n">uni_pdb</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ndx_file</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;sistema&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">FileHandle</span><span class="p">(</span><span class="n">ndx_file</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">e</span></div>
+
+
+<div class="viewcode-block" id="read_ndx"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.read_ndx">[docs]</a><span class="k">def</span> <span class="nf">read_ndx</span><span class="p">(</span><span class="n">ndx_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    read_ndx(): reads GROMACS .ndx file. Watch out, it also performs 0-index</span>
+<span class="sd">    correction. That is, it substracts 1 from the atom indices.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        ndx_path(Path):</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dict: 0-indexed selections from the .ndx file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">indices</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">group_name</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">grupos</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ndx_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ndx_file</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">ndx_file</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">group_name</span><span class="p">:</span>
+                    <span class="n">grupos</span><span class="p">[</span><span class="n">group_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="n">group_name</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">indices</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">indices</span> <span class="o">+=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">grupos</span></div>
+
+
+<div class="viewcode-block" id="copy_mol_to"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.copy_mol_to">[docs]</a><span class="nd">@singledispatch</span>
+<span class="k">def</span> <span class="nf">copy_mol_to</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">DirHandle</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+<span class="nd">@copy_mol_to</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">_</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">DirHandle</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">new_file</span> <span class="o">=</span> <span class="n">copy_to</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">file</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Structure</span><span class="p">(</span><span class="n">new_file</span><span class="p">)</span>
+
+
+<span class="nd">@copy_mol_to</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">_</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">ZipTopology</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">DirHandle</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">new_file</span> <span class="o">=</span> <span class="n">copy_to</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">file</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">ZipTopology</span><span class="o">.</span><span class="n">from_path_with_chains</span><span class="p">(</span>
+        <span class="n">new_file</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">target_chains</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">target_chains</span><span class="p">,</span> <span class="n">binder_chains</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">binder_chains</span>
+    <span class="p">)</span>
+
+
+<span class="nd">@copy_mol_to</span><span class="o">.</span><span class="n">register</span>
+<span class="k">def</span> <span class="nf">_</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Trajectory</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">DirHandle</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">new_file</span> <span class="o">=</span> <span class="n">copy_to</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">file</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Trajectory</span><span class="p">(</span><span class="n">new_file</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="try_copy_to"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.try_copy_to">[docs]</a><span class="k">def</span> <span class="nf">try_copy_to</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">DirHandle</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">new_obj</span> <span class="o">=</span> <span class="n">copy_to</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">new_obj</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">new_obj</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Patricio Barletta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

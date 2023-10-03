@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frequently Asked Questions &mdash; locuaz 0.6.3 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Mutation Generators" href="mutationgenerators.html" />
+    <link rel="prev" title="Job submission" href="jobsubmission.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            locuaz
+          </a>
+              <div class="version">
+                0.6.3
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Learning</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="platformflow.html">Platform flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorialsimple.html">Tutorial: running a simple optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorialtleap.html">Tutorial: using Tleap topologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorialligand.html">Tutorial: optimizing an antibody against a ligand</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jobsubmission.html">Job submission</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Frequently Asked Questions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#q1">1_ I used tleap to build my initial system
+but now my starting PDB has no chainID information and locuaz won’t take it.
+What can I do about it?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#my-complex-is-spreading-apart-can-i-use-gromacs-pulling-to-keep-them-together">2_ My complex is spreading apart. Can I use GROMACS pulling to keep them together?</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scorers.html">Scorers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mutators.html">Mutators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="statistics.html">Stats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pruners.html">Pruners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellaneous</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configurationfile.html">YAML configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="citing.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developing.html">Developing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">locuaz</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Frequently Asked Questions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/faq.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="frequently-asked-questions">
+<h1>Frequently Asked Questions<a class="headerlink" href="#frequently-asked-questions" title="Permalink to this heading"></a></h1>
+<section id="q1">
+<span id="faq1"></span><h2>1_ I used tleap to build my initial system
+but now my starting PDB has no chainID information and locuaz won’t take it.
+What can I do about it?<a class="headerlink" href="#q1" title="Permalink to this heading"></a></h2>
+<p><em>tleap</em> is a bit of an old piece of software and it seems that back then chainID
+info wasn’t very important. If you write out a PDB file along with your <em>prmtop</em>
+and <em>rst7</em> files when building your topology, you’ll see that the PDB has no
+chainID info and neither does the topology.</p>
+<p>Fortunately, <em>parmed</em> —which will be included with your locuaz installation—,
+added some new flags to the <code class="docutils literal notranslate"><span class="pre">.prmtop</span></code> format, including <code class="docutils literal notranslate"><span class="pre">RESIDUE_CHAINID</span></code>,
+which will hold the information we want. In order to add it, along with some other
+extra info, we will ask parmed to get it from our initial PDB, which should have
+chainID info</p>
+<p>This short parmed script will do it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">parm</span> <span class="n">no_chainid_top</span><span class="o">.</span><span class="n">prmtop</span>
+<span class="n">addPDB</span> <span class="n">start</span><span class="o">.</span><span class="n">pdb</span>
+<span class="n">outparm</span> <span class="n">top</span><span class="o">.</span><span class="n">prmtop</span>
+<span class="n">go</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">no_chainid_top.prmtop</span></code> is the topology we got out from tleap, with water, ions
+and all that. <code class="docutils literal notranslate"><span class="pre">start.pdb</span></code> is the PDB tleap started out from, without water, box
+or anything, but with the chainID information.</p>
+<p>We then run this script:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">parmed</span> <span class="o">-</span><span class="n">i</span> <span class="n">add_chainID</span><span class="o">.</span><span class="n">parmed</span>
+</pre></div>
+</div>
+<p>You can now check <code class="docutils literal notranslate"><span class="pre">top.prmtop</span></code> for parmed additions:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="n">FLAG</span> <span class="n">RESIDUE_CHAINID</span>
+<span class="o">%</span><span class="n">COMMENT</span> <span class="n">Residue</span> <span class="n">chain</span> <span class="n">ID</span> <span class="p">(</span><span class="n">chainId</span><span class="p">)</span> <span class="n">read</span> <span class="kn">from</span> <span class="nn">PDB</span> <span class="n">file</span><span class="p">;</span> <span class="n">DIMENSION</span><span class="p">(</span><span class="n">NRES</span><span class="p">)</span>
+<span class="o">%</span><span class="n">FORMAT</span><span class="p">(</span><span class="mi">20</span><span class="n">a4</span><span class="p">)</span>
+<span class="n">A</span>   <span class="n">A</span>   <span class="n">A</span>   <span class="n">A</span>   <span class="n">A</span>   <span class="n">A</span>   <span class="n">A</span>   <span class="n">A</span>   <span class="n">A</span>   <span class="n">A</span>   <span class="n">A</span>   <span class="n">A</span>   <span class="n">A</span>   <span class="n">A</span>   <span class="n">B</span>   <span class="n">B</span>   <span class="n">B</span>   <span class="n">B</span>   <span class="n">B</span>   <span class="n">B</span>
+</pre></div>
+</div>
+<p>The final step is to get a PDB out of this topology and the <em>rst7</em> tleap gave us.
+We can, again, write a parmed script for this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">parm</span> <span class="n">top</span><span class="o">.</span><span class="n">prmtop</span>
+<span class="n">trajin</span> <span class="n">rst7_from_tleap</span><span class="o">.</span><span class="n">rst7</span>
+<span class="n">trajout</span> <span class="n">pdb_with_chainID</span><span class="o">.</span><span class="n">pdb</span>
+</pre></div>
+</div>
+<p>Or, we can use another program that comes with <em>ambertools</em>, which was made for
+this specific purpose:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ambpdb</span> <span class="o">-</span><span class="n">p</span> <span class="n">top</span><span class="o">.</span><span class="n">prmtop</span> <span class="o">-</span><span class="n">c</span> <span class="n">rst7_from_tleap</span><span class="o">.</span><span class="n">rst7</span> <span class="o">&gt;</span> <span class="n">pdb_with_chainID</span><span class="o">.</span><span class="n">pdb</span>
+</pre></div>
+</div>
+<p>Now we can use <code class="docutils literal notranslate"><span class="pre">pdb_with_chainID.pdb</span></code> to start out our optimization, probably
+after giving it a better name.</p>
+</section>
+<section id="my-complex-is-spreading-apart-can-i-use-gromacs-pulling-to-keep-them-together">
+<span id="faq2"></span><h2>2_ My complex is spreading apart. Can I use GROMACS pulling to keep them together?<a class="headerlink" href="#my-complex-is-spreading-apart-can-i-use-gromacs-pulling-to-keep-them-together" title="Permalink to this heading"></a></h2>
+<p>Of course! This GROMACS feature is orthogonal to the optimization so <em>locuaz</em>
+doesn’t concern itself with it.
+What it will do is give GROMACS an index selection
+file (<code class="docutils literal notranslate"><span class="pre">.ndx</span></code>) with selections for the target and the binder. You can then
+reference <strong>target</strong> and <strong>binder</strong> as the pull groups in the pull code.
+This pull code goes in the mdp file you’ll use for the NPT run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">;</span> <span class="n">Pull</span> <span class="n">code</span>
+<span class="n">pull</span>                        <span class="o">=</span> <span class="n">yes</span>
+<span class="n">pull</span><span class="o">-</span><span class="n">pbc</span><span class="o">-</span><span class="n">ref</span><span class="o">-</span><span class="n">prev</span><span class="o">-</span><span class="n">step</span><span class="o">-</span><span class="n">com</span>  <span class="o">=</span> <span class="n">yes</span>       <span class="p">;</span>
+<span class="n">pull</span><span class="o">-</span><span class="n">ncoords</span>                <span class="o">=</span> <span class="mi">1</span>         <span class="p">;</span> <span class="n">only</span> <span class="n">one</span> <span class="n">reaction</span> <span class="n">coordinate</span>
+<span class="n">pull</span><span class="o">-</span><span class="n">ngroups</span>                <span class="o">=</span> <span class="mi">2</span>         <span class="p">;</span> <span class="n">two</span> <span class="n">groups</span> <span class="n">defining</span> <span class="n">one</span> <span class="n">reaction</span> <span class="n">coordinate</span>
+<span class="n">pull</span><span class="o">-</span><span class="n">group1</span><span class="o">-</span><span class="n">name</span>            <span class="o">=</span> <span class="n">target</span>
+<span class="n">pull</span><span class="o">-</span><span class="n">group1</span><span class="o">-</span><span class="n">pbcatom</span>         <span class="o">=</span> <span class="mi">4075</span>      <span class="p">;</span> <span class="n">atom</span> <span class="n">close</span> <span class="n">to</span> <span class="n">the</span> <span class="n">center</span>
+<span class="n">pull</span><span class="o">-</span><span class="n">group2</span><span class="o">-</span><span class="n">name</span>            <span class="o">=</span> <span class="n">binder</span>
+<span class="n">pull</span><span class="o">-</span><span class="n">group2</span><span class="o">-</span><span class="n">pbcatom</span>         <span class="o">=</span> <span class="mi">7251</span>      <span class="p">;</span> <span class="n">atom</span> <span class="n">close</span> <span class="n">to</span> <span class="n">the</span> <span class="n">center</span>
+<span class="n">pull</span><span class="o">-</span><span class="n">coord1</span><span class="o">-</span><span class="n">groups</span>          <span class="o">=</span> <span class="mi">1</span> <span class="mi">2</span>       <span class="p">;</span> <span class="n">target</span> <span class="ow">and</span> <span class="n">binder</span> <span class="n">define</span> <span class="n">the</span> <span class="n">reaction</span> <span class="n">coordinate</span>
+<span class="n">pull</span><span class="o">-</span><span class="n">coord1</span><span class="o">-</span><span class="nb">type</span>            <span class="o">=</span> <span class="n">umbrella</span>  <span class="p">;</span> <span class="n">harmonic</span> <span class="n">potential</span>
+<span class="n">pull</span><span class="o">-</span><span class="n">coord1</span><span class="o">-</span><span class="n">geometry</span>        <span class="o">=</span> <span class="n">distance</span>  <span class="p">;</span>
+<span class="n">pull</span><span class="o">-</span><span class="n">coord1</span><span class="o">-</span><span class="n">dim</span>             <span class="o">=</span> <span class="n">Y</span> <span class="n">Y</span> <span class="n">Y</span>     <span class="p">;</span> <span class="n">pull</span> <span class="n">along</span> <span class="nb">all</span> <span class="n">cordinates</span>
+<span class="n">pull</span><span class="o">-</span><span class="n">coord1</span><span class="o">-</span><span class="n">start</span>           <span class="o">=</span> <span class="n">yes</span>       <span class="p">;</span> <span class="n">define</span> <span class="n">initial</span> <span class="n">COM</span> <span class="n">distance</span> <span class="o">&gt;</span> <span class="mi">0</span>
+<span class="n">pull</span><span class="o">-</span><span class="n">coord1</span><span class="o">-</span><span class="n">rate</span>            <span class="o">=</span> <span class="mf">0.00</span>      <span class="p">;</span> <span class="n">keep</span> <span class="n">it</span> <span class="n">fixed</span>
+<span class="n">pull</span><span class="o">-</span><span class="n">coord1</span><span class="o">-</span><span class="n">k</span>               <span class="o">=</span> <span class="mi">1</span>         <span class="p">;</span> <span class="n">kJ</span> <span class="n">mol</span><span class="o">^-</span><span class="mi">1</span> <span class="n">nm</span><span class="o">^-</span><span class="mi">2</span>
+</pre></div>
+</div>
+<p>Notice the <strong>target</strong> and <strong>binder</strong> as the pull groups 1 and 2, respectively.
+You can probably use this same sample file and just modify the atoms at
+<code class="docutils literal notranslate"><span class="pre">pull-group1-pbcatom</span></code> and <code class="docutils literal notranslate"><span class="pre">pull-group2-pbcatom</span></code>, and if necessary, the
+<code class="docutils literal notranslate"><span class="pre">pull-coord1-k</span></code>.</p>
+<p>But do remember to lift this pulling and optimize your binder using free MD
+once you have a somewhat better binder than can stay with its target without any
+restraints. Try optimizing for 5 epochs and then lift the restrictions to keep
+optimizing without pulling.</p>
+<p id="faq3">3_ What is NUMA? How can I know the number of NUMA regions my machine has?</p>
+<p>NUMA (Non-Unified Memory Access) it’s a design idea to deal with multiple CPU
+processors and their access to memory, and GPUs as well.</p>
+<p>For us users, it’s important to be NUMA-aware, that is, understand that some
+cores have faster access to certain regions and slower access to other ones.
+The same applies to the relationship between CPUs and GPUs.</p>
+<p>To know your NUMA layout, just run this command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ numactl  --hardware
+available: 2 nodes (0-1)
+node 0 cpus: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+node 0 size: 256924 MB
+node 0 free: 249438 MB
+node 1 cpus: 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
+node 1 size: 257999 MB
+node 1 free: 256694 MB
+node distances:
+node   0   1
+  0:  10  11
+  1:  11  10
+</pre></div>
+</div>
+<p>On this cluster node, there are 2 NUMA regions (nodes), with 16 cores (32 threads)
+each. I’ll add that these nodes correspond to each of the physical CPU sockets.
+By the distances, you can see that it’s more convenient for the threads of each
+socket to access the memory that belongs to that same node.</p>
+<p>But for our purpose, GPU-accelerated MD, we don’t care much about RAM memory,
+but about GPU-CPU affinity, that is, to which threads the GPUs are closer.
+Let’s look at the next command to answer this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ nvidia-smi topo -m
+        GPU0    GPU1    GPU2    GPU3    mlx5_0  mlx5_1  mlx5_2  mlx5_3  CPU Affinity    NUMA Affinity
+GPU0     X      NV4     NV4     NV4     PXB     NODE    NODE    NODE    0-15    0
+GPU1    NV4      X      NV4     NV4     NODE    PXB     NODE    NODE    0-15    0
+GPU2    NV4     NV4      X      NV4     NODE    NODE    PXB     NODE    0-15    0
+GPU3    NV4     NV4     NV4      X      NODE    NODE    NODE    PXB     0-15    0
+mlx5_0  PXB     NODE    NODE    NODE     X      NODE    NODE    NODE
+mlx5_1  NODE    PXB     NODE    NODE    NODE     X      NODE    NODE
+mlx5_2  NODE    NODE    PXB     NODE    NODE    NODE     X      NODE
+mlx5_3  NODE    NODE    NODE    PXB     NODE    NODE    NODE     X
+
+Legend:
+
+  X    = Self
+  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)
+  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node
+  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)
+  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)
+  PIX  = Connection traversing at most a single PCIe bridge
+  NV#  = Connection traversing a bonded set of # NVLinks
+</pre></div>
+</div>
+<p>There is a lot of information on the output, but we only care about the <code class="docutils literal notranslate"><span class="pre">CPU</span> <span class="pre">Affinity</span></code> column.
+This tells us that all 4 GPUs have a direct link to threads 0-15, which means
+threads 16-31 will take longer to communicate with the GPUs.</p>
+<p>This is actually quite unexpected. I’d expect GPUs 0 and 1 to be closer to threads
+0-15 and GPUs 2 and 3 to be closer to threads 16-31. I’ll contact the sysadmins
+and hopefully I’ll remember to update this site.</p>
+<p id="faq4">4_ Why use both <code class="docutils literal notranslate"><span class="pre">memory_positions</span></code> and <code class="docutils literal notranslate"><span class="pre">failed_memory_positions</span></code> at the same time?</p>
+<p id="faq5">5_ What are the empty brackets in the <code class="docutils literal notranslate"><span class="pre">memory_positions</span></code> list?</p>
+<p>empty memory slots on input user memory are allowed.
+This allows the user to control for how many epochs will the non-empty memory be recalled.
+Place them after the desired positions:</p>
+<p><code class="docutils literal notranslate"><span class="pre">memory_positions:</span> <span class="pre">[[2,</span> <span class="pre">3,</span> <span class="pre">4,</span> <span class="pre">6,</span> <span class="pre">7,</span> <span class="pre">8],</span> <span class="pre">[],</span> <span class="pre">[],</span> <span class="pre">[]</span> <span class="pre">]</span></code></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="jobsubmission.html" class="btn btn-neutral float-left" title="Job submission" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mutationgenerators.html" class="btn btn-neutral float-right" title="Mutation Generators" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Patricio Barletta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

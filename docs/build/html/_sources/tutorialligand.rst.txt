@@ -2,14 +2,27 @@
 Tutorial: optimizing an antibody against a ligand
 ===================================================
 
-Coming soon
-=============
+Sometimes our starting docked structure is not very good, and the binder may loose
+the target after some nanoseconds. This is more frequent when simulating docked
+ligands.
+
+In this tutorial we will use what we learn in previous tutorials, plus some other
+new tricks, to optimize a nanobody against a tirosol molecule, like the one on
+Figure 1.
+
+
+
+.. figure:: ./resources/ligand_complex.png
+        :alt: p53-nanobody complex
+
+        Figure 1: our starting complex, a tirosol molecule docked to a nanobody.
+
 
 
 
 ``allowed_nonstandard_residues``
 
-remember that for scoring, the target chains are named A, and the ones from the binder, B.
+remember that for scoring, all target chains are renamed A, and all the ones from the binder are renamed B.
 write about the sanitization the protocol does with the splitted frames. All scorers but gmxmmpbsa use this PDBs.
 
 
@@ -40,7 +53,7 @@ You can also use cpptraj to add the chainIDs to the ``.rst7`` and ``.pdb`` files
 
 asa
 
-.. figure:: ./resources/tleap_iterations_dag.png
+.. figure:: ./resources/ligand_iterations_dag.png
         :alt: iterations_dag
 
         Figure 1: snapshot of one optimized complex. **p53** is the yellow one on the left, with its loops colored red and

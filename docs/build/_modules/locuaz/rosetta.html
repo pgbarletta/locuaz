@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>locuaz.rosetta &mdash; locuaz 0.6.3 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            locuaz
+          </a>
+              <div class="version">
+                0.6.3
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../platformflow.html">Platform flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorialsimple.html">Tutorial: running a simple optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorialtleap.html">Tutorial: using Tleap topologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorialligand.html">Tutorial: optimizing an antibody against a ligand</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../jobsubmission.html">Job submission</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../scorers.html">Scorers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mutators.html">Mutators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../statistics.html">Stats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pruners.html">Pruners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../misc.html">Miscellaneous</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../configurationfile.html">YAML configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../citing.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developing.html">Developing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">locuaz</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">locuaz.rosetta</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for locuaz.rosetta</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">concurrent.futures</span> <span class="k">as</span> <span class="nn">cf</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">subprocess</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">locuaz.abstractscorer</span> <span class="kn">import</span> <span class="n">AbstractScorer</span>
+<span class="kn">from</span> <span class="nn">locuaz.complex</span> <span class="kn">import</span> <span class="n">GROComplex</span>
+<span class="kn">from</span> <span class="nn">locuaz.fileutils</span> <span class="kn">import</span> <span class="n">DirHandle</span><span class="p">,</span> <span class="n">FileHandle</span>
+
+
+<div class="viewcode-block" id="Rosetta"><a class="viewcode-back" href="../../scorers.html#locuaz.rosetta.Rosetta">[docs]</a><span class="k">class</span> <span class="nc">Rosetta</span><span class="p">(</span><span class="n">AbstractScorer</span><span class="p">):</span>
+    <span class="n">TIMEOUT_PER_FRAME</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sf_dir</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">nthreads</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">mpi_procs</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sf_dir</span><span class="p">,</span> <span class="n">nthreads</span><span class="o">=</span><span class="n">nthreads</span><span class="p">,</span> <span class="n">mpi_procs</span><span class="o">=</span><span class="n">mpi_procs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">executable</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_path</span><span class="si">}</span><span class="s1"> -database </span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_dir</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;rosetta_database&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="p">)</span>
+        <span class="n">parameters_dir</span> <span class="o">=</span> <span class="n">DirHandle</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_dir</span><span class="p">,</span> <span class="s2">&quot;parameters&quot;</span><span class="p">),</span> <span class="n">make</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">parameters_external_dir</span> <span class="o">=</span> <span class="n">DirHandle</span><span class="p">(</span>
+            <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_dir</span><span class="p">,</span> <span class="s2">&quot;external_parameters&quot;</span><span class="p">),</span> <span class="n">make</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+
+        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;LD_LIBRARY_PATH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;LD_LIBRARY_PATH&quot;</span><span class="p">]</span>
+                <span class="o">+</span> <span class="s2">&quot;:&quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">parameters_dir</span><span class="p">)</span>
+                <span class="o">+</span> <span class="s2">&quot;:&quot;</span>
+                <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">parameters_external_dir</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__parse_outfile_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">FileHandle</span><span class="p">],</span> <span class="n">original_command</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">score_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;This shouldn&#39;t happen. </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> couldn&#39;t parse </span><span class="si">{</span><span class="n">score_file</span><span class="si">}</span><span class="se">\n</span><span class="s2">from: </span><span class="se">\n</span><span class="si">{</span><span class="n">original_command</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">score_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">lineas</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="n">score_rosetta</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">lineas</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">3</span><span class="p">])</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> couldn&#39;t parse </span><span class="si">{</span><span class="n">score_file</span><span class="si">}</span><span class="se">\n</span><span class="s2">from: </span><span class="se">\n</span><span class="si">{</span><span class="n">original_command</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+        <span class="k">return</span> <span class="n">score_rosetta</span>
+
+    <span class="k">def</span> <span class="nf">__rosetta_worker__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frames_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="n">pdb_frame</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;complex-</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.pdb&quot;</span>
+        <span class="n">out_rosetta</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;output_rosetta_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.out&quot;</span>
+        <span class="n">out_rosetta_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">results_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;output_rosetta_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.out&quot;</span><span class="p">)</span>
+
+        <span class="n">comando_rosetta</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">executable</span><span class="si">}</span><span class="s2"> --in:file:s </span><span class="si">{</span><span class="n">pdb_frame</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;-out:file:score_only </span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">out_rosetta</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="s2">&quot;-add_regular_scores_to_scorefile true &quot;</span>
+            <span class="s2">&quot;-overwrite -pack_input true -pack_separated true&quot;</span>
+        <span class="p">)</span>
+
+        <span class="n">sp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="n">comando_rosetta</span><span class="p">,</span>
+            <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+            <span class="n">cwd</span><span class="o">=</span><span class="n">frames_path</span><span class="p">,</span>
+            <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+            <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">score_rosetta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parse_outfile_</span><span class="p">(</span>
+            <span class="n">score_file</span><span class="o">=</span><span class="n">out_rosetta_fn</span><span class="p">,</span> <span class="n">original_command</span><span class="o">=</span><span class="n">comando_rosetta</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">i</span><span class="p">,</span> <span class="n">score_rosetta</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="o">*</span><span class="p">,</span>
+            <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">frames_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+            <span class="n">cpx</span><span class="p">:</span> <span class="n">GROComplex</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">results_dir</span> <span class="o">=</span> <span class="n">DirHandle</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">frames_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="n">make</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">nframes</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span>
+        <span class="c1"># The first unused frames will be discarded later</span>
+        <span class="n">scores</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">end</span>
+
+        <span class="k">with</span> <span class="n">cf</span><span class="o">.</span><span class="n">ProcessPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nthreads</span><span class="p">)</span> <span class="k">as</span> <span class="n">exe</span><span class="p">:</span>
+            <span class="n">futuros</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">cf</span><span class="o">.</span><span class="n">Future</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+                <span class="n">futuros</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">exe</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__rosetta_worker__</span><span class="p">,</span> <span class="n">frames_path</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span>
+
+            <span class="n">timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">TIMEOUT_PER_FRAME</span> <span class="o">*</span> <span class="n">nframes</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">futu</span> <span class="ow">in</span> <span class="n">cf</span><span class="o">.</span><span class="n">as_completed</span><span class="p">(</span><span class="n">futuros</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">futu</span><span class="o">.</span><span class="n">exception</span><span class="p">():</span>
+                        <span class="nb">print</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Exception while running </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">futu</span><span class="o">.</span><span class="n">exception</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="p">)</span>
+                        <span class="k">raise</span> <span class="n">futu</span><span class="o">.</span><span class="n">exception</span><span class="p">()</span>  <span class="c1"># type: ignore</span>
+                    <span class="n">j</span><span class="p">,</span> <span class="n">score</span> <span class="o">=</span> <span class="n">futu</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+                    <span class="n">scores</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">score</span>
+            <span class="k">except</span> <span class="n">cf</span><span class="o">.</span><span class="n">TimeoutError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> subprocess timed out.&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">e</span>
+        <span class="c1"># Discard the first 0 frames</span>
+        <span class="k">return</span> <span class="n">scores</span><span class="p">[</span><span class="n">start</span><span class="p">:]</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Patricio Barletta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

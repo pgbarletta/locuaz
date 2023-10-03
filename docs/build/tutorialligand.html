@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tutorial: optimizing an antibody against a ligand &mdash; locuaz 0.6.3 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Job submission" href="jobsubmission.html" />
+    <link rel="prev" title="Tutorial: using Tleap topologies" href="tutorialtleap.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            locuaz
+          </a>
+              <div class="version">
+                0.6.3
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Learning</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="platformflow.html">Platform flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorialsimple.html">Tutorial: running a simple optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorialtleap.html">Tutorial: using Tleap topologies</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial: optimizing an antibody against a ligand</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">Necessary files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-configuration-file">The configuration file</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#protocol">protocol</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pruning">pruning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#md">md</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scoring">scoring</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#running-the-protocol">Running the protocol</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="jobsubmission.html">Job submission</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scorers.html">Scorers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mutators.html">Mutators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="statistics.html">Stats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pruners.html">Pruners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellaneous</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configurationfile.html">YAML configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="citing.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developing.html">Developing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">locuaz</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Tutorial: optimizing an antibody against a ligand</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/tutorialligand.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tutorial-optimizing-an-antibody-against-a-ligand">
+<h1>Tutorial: optimizing an antibody against a ligand<a class="headerlink" href="#tutorial-optimizing-an-antibody-against-a-ligand" title="Permalink to this heading"></a></h1>
+<p>Sometimes our starting docked structure is not very good, and the binder may loose
+the target after some nanoseconds. This is more frequent when simulating docked
+ligands. <em>locuaz</em> supports the addition of positional restraints so users can get
+started with their optimizations, until a better binder is found.</p>
+<p>In this tutorial we will use what we learnt in previous tutorials, plus some other
+new tricks, to optimize a nanobody against a tirosol molecule, like the one on
+Figure 1.</p>
+<figure class="align-default" id="id2">
+<img alt="p53-nanobody complex" src="_images/ligand_complex.png" />
+<figcaption>
+<p><span class="caption-text">Figure 1: our starting complex, a tirosol molecule docked to a nanobody.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>As usual, activate your locuaz environment and get the <a class="reference external" href="https://github.com/pgbarletta/locuaz/tree/main/examples/ligand_tutorial">necessary files</a>.</p>
+<section id="id1">
+<h2>Necessary files<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
+<p>As always we’re going to need a starting PDB and as in
+<a class="reference internal" href="tutorialtleap.html#tutorial-using-tleap-topologies"><span class="std std-ref">Tutorial: using Tleap topologies</span></a>, we’ll also need
+a set of tleap related files in order to rebuild the topology of our system after
+each mutation.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tir.pdb</span></code>: the PDB file of the pre-equilibrated complex. As usual, target chains go first, also,
+remember that since we are using <em>Tleap</em>, residues should be numbered on a continuous progression.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tleap</span></code>: <em>Tleap</em> dir with the script to build the topology of the system each time a mutation is performed.
+Remember to avoid solvating and creating a box in this file, since the solvent
+will already be present. Another thing to notice is the usage of <code class="docutils literal notranslate"><span class="pre">addions</span></code>.
+We keep this commands since <em>Tleap</em> will be responsible of keeping neutrality
+of the system. Avoid using <code class="docutils literal notranslate"><span class="pre">addions2</span></code> since we need it to replace water molecules
+each time it ads ions, to keep the <em>N</em> of the system constant.
+You’ll also find <code class="docutils literal notranslate"><span class="pre">lig.frcmod</span></code> and <code class="docutils literal notranslate"><span class="pre">lig.prep</span></code>, the auxiliary tirosol parameters.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config_ligand.yaml</span></code>: the input file to run the protocol.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mdp</span></code> directory: minimization, NVT and NPT <em>GROMACS</em> input files.</p></li>
+</ol>
+<p>If you are finding it hard to get a PDB of your system with chainID information,
+check the <a class="reference internal" href="faq.html#faq1"><span class="std std-ref">FAQ</span></a>.</p>
+</section>
+<section id="the-configuration-file">
+<h2>The configuration file<a class="headerlink" href="#the-configuration-file" title="Permalink to this heading"></a></h2>
+<p>We will focus on the new options that didn’t show up on the previous tutorials.</p>
+<section id="protocol">
+<h3>protocol<a class="headerlink" href="#protocol" title="Permalink to this heading"></a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">paths:</span>
+<span class="go">    epochs: 10</span>
+<span class="go">    new_branches: 2</span>
+<span class="go">    constant_width: false</span>
+<span class="go">    memory_size: 4</span>
+<span class="go">    failed_memory_size: 6</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">constant_width</span></code>: when this value is set to <code class="docutils literal notranslate"><span class="pre">false</span></code>, <code class="docutils literal notranslate"><span class="pre">new_branches</span></code> means
+the number of branches (new mutations) that are obtained from <strong>each</strong> previous branch.
+Check <a class="reference internal" href="platformflow.html#platform-dags"><span class="std std-ref">Platform DAGs</span></a> for more info.</p></li>
+</ul>
+</section>
+<section id="pruning">
+<h3>pruning<a class="headerlink" href="#pruning" title="Permalink to this heading"></a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pruning:</span>
+<span class="go">    pruner: metropolis</span>
+<span class="go">    kT: 0.593</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pruner:</span> <span class="pre">metropolis</span></code>: uses the Metropolis-Hastings criteria to decide if a
+new branch passes to the next epoch. Does not work with multiple scorers.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kT</span></code>: product between the boltzmann constant and a temperature. The current
+value corresponds to a temperature of 300K.</p></li>
+</ul>
+</section>
+<section id="md">
+<h3>md<a class="headerlink" href="#md" title="Permalink to this heading"></a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">md:</span>
+<span class="go">    gmx_mdrun: &quot;gmx mdrun&quot;</span>
+<span class="go">    mdp_names:</span>
+<span class="go">        min_mdp: min.mdp</span>
+<span class="go">        nvt_mdp: short_nvt.mdp</span>
+<span class="go">        npt_mdp: short_npt_posres.mdp</span>
+<span class="go">    mps: true</span>
+<span class="go">    numa_regions: 1</span>
+<span class="go">    use_tleap: true</span>
+<span class="go">    maxwarn: 2</span>
+<span class="go">    box_type: octahedron</span>
+<span class="go">    npt_restraints:</span>
+<span class="go">        posres: 50</span>
+<span class="go">        posres_water: 50</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mps</span></code>: when set to <code class="docutils literal notranslate"><span class="pre">true</span></code>, <em>locuaz</em> will use the NVIDIA Multi-Process Server (MPS),
+to run multiple MD simulations per GPU. This usually decreases the speed of each
+run, but considerably increases the total throughput. Useful when using a variable
+width DAG protocol which may make the number of branches explode.
+Check this <a class="reference external" href="https://developer.nvidia.com/blog/maximizing-gromacs-throughput-with-multiple-simulations-per-gpu-using-mps-and-mig/">blog post</a> for more info.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">numa_regions</span></code>: when using MPS, <em>locuaz</em> will automatically set these options:
+<code class="docutils literal notranslate"><span class="pre">ngpus</span></code>, <code class="docutils literal notranslate"><span class="pre">mpi_procs</span></code>, <code class="docutils literal notranslate"><span class="pre">omp_procs</span></code> and <code class="docutils literal notranslate"><span class="pre">pinoffsets</span></code>. To be able to do this
+effectively, it needs to know CPU affinity of each GPU, which should follow the
+NUMA layout.
+Check the <a class="reference internal" href="faq.html#faq3"><span class="std std-ref">FAQ</span></a> if you don’t know how many regions you have.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">npt_restraints</span></code>: This is where we set the value for our positional restraints.
+Remember also to define the <code class="docutils literal notranslate"><span class="pre">-DPOSRES</span></code> and <code class="docutils literal notranslate"><span class="pre">-DPOSRES_WATER</span></code> flags in your
+NPT mdp file so these take effect.</p></li>
+</ul>
+</section>
+<section id="scoring">
+<h3>scoring<a class="headerlink" href="#scoring" title="Permalink to this heading"></a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scoring:</span>
+<span class="go">    scorers: [autodockvina]</span>
+<span class="go">    allowed_nonstandard_residues: [UNL]</span>
+<span class="go">    nthreads: 6</span>
+<span class="go">    mpi_procs: 1</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">allowed_nonstandard_residues</span></code>: when scoring, the NPT trajectory is split
+in “sanitized” PDB frames. That is, they receive a treatment to make sure the
+scorers don’t error out when meeting unexpected artifacts, like non-standard
+residues. All scorers but gmxmmpbsa use this PDBs. Since we want to score the
+interaction between our nanobody and a tirosol molecule, we need to add it
+to this list of residue names, so <em>locuaz</em> doesn’t remove it from the PDB frames.</p></li>
+</ul>
+</section>
+</section>
+<section id="running-the-protocol">
+<h2>Running the protocol<a class="headerlink" href="#running-the-protocol" title="Permalink to this heading"></a></h2>
+<p>Nothing new here, we just run the protocol with our config file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mamba</span> <span class="n">activate</span> <span class="n">locuaz</span>
+<span class="n">python</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">user</span><span class="o">/</span><span class="n">locuaz</span><span class="o">/</span><span class="n">locuaz</span><span class="o">/</span><span class="n">protocol</span><span class="o">.</span><span class="n">py</span> <span class="n">config_tleap</span><span class="o">.</span><span class="n">yaml</span>
+</pre></div>
+</div>
+<p>It’s educational to look at the DAG with the branch names that <em>locuaz</em> draws.
+See Figure 2</p>
+<figure class="align-default" id="id3">
+<img alt="iterations_dag" src="_images/ligand_iterations_dag.png" />
+<figcaption>
+<p><span class="caption-text">Figure 2: Directed Acyclic Graph (DAG) of a sample optimization against
+the tirosol molecule. Notice that 2 branches are generated from each
+previous top branch which makes the number of branches increase up to 8
+before it gets lowered to 6 because only 3 of those 8 passed onto the
+next epoch.</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorialtleap.html" class="btn btn-neutral float-left" title="Tutorial: using Tleap topologies" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="jobsubmission.html" class="btn btn-neutral float-right" title="Job submission" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Patricio Barletta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

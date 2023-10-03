@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>locuaz.interface &mdash; locuaz 0.6.3 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            locuaz
+          </a>
+              <div class="version">
+                0.6.3
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../platformflow.html">Platform flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorialsimple.html">Tutorial: running a simple optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorialtleap.html">Tutorial: using Tleap topologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorialligand.html">Tutorial: optimizing an antibody against a ligand</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../jobsubmission.html">Job submission</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../scorers.html">Scorers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mutators.html">Mutators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../statistics.html">Stats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pruners.html">Pruners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../misc.html">Miscellaneous</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../configurationfile.html">YAML configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../citing.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developing.html">Developing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">locuaz</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">locuaz.interface</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for locuaz.interface</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span> <span class="nn">py</span>
+
+<span class="kn">import</span> <span class="nn">freesasa</span>
+<span class="kn">import</span> <span class="nn">MDAnalysis</span> <span class="k">as</span> <span class="nn">mda</span>
+<span class="kn">from</span> <span class="nn">Bio.SeqUtils</span> <span class="kn">import</span> <span class="n">seq1</span>
+
+<span class="kn">from</span> <span class="nn">locuaz.molecules</span> <span class="kn">import</span> <span class="n">PDBStructure</span>
+<span class="kn">from</span> <span class="nn">locuaz.fileutils</span> <span class="kn">import</span> <span class="n">FileHandle</span>
+
+
+<div class="viewcode-block" id="get_interfacing_residues"><a class="viewcode-back" href="../../misc.html#locuaz.interface.get_interfacing_residues">[docs]</a><span class="k">def</span> <span class="nf">get_interfacing_residues</span><span class="p">(</span><span class="n">pdb_input</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PDBStructure</span><span class="p">,</span> <span class="n">FileHandle</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">chainIDs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                             <span class="n">probe_radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.4</span><span class="p">,</span> <span class="n">use_tleap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    get_interfacing_residues(): use freesasa to get the resSeq of the binder residues that are in contact with</span>
+<span class="sd">    the target. These can be used to guide the 2choice of the next mutated position.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        pdb_input (Union[PDBStructure, FileHandle, Path]): input PDB.</span>
+<span class="sd">        chainIDs (List[str]): only residues belonging to these chains will be reported.</span>
+<span class="sd">        probe_radius: probe_radius for freesasa</span>
+<span class="sd">        use_tleap (bool): if True, it will renumber the resSeqs of the input PDB (on another temporary PDB)</span>
+<span class="sd">        as per Amber numbering scheme, that is, continuous resSeq numbers as opposed to GROMACS numbering</span>
+<span class="sd">        which starts at 1 on each chain.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Set[int]: set of resSeqs from the binder that lie on the interface</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Remove solvent</span>
+    <span class="n">pdb_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pdb_input</span><span class="p">)</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pdb_path</span><span class="p">))</span>
+    <span class="n">temp_pdb</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pdb_path</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;temp.pdb&quot;</span><span class="p">)</span>
+    <span class="nb">complex</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="s2">&quot;not (resname SOL or resname WAT or resname CL or resname NA or resname Cl or resname Na)&quot;</span><span class="p">)</span>
+    <span class="c1"># Renumber resSeq when using Amber numbering since GROMACS will have renumbered the PDB</span>
+    <span class="c1"># to start at 1 on each chain</span>
+    <span class="k">if</span> <span class="n">use_tleap</span><span class="p">:</span>
+        <span class="nb">complex</span><span class="o">.</span><span class="n">residues</span><span class="o">.</span><span class="n">resids</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nb">complex</span><span class="o">.</span><span class="n">residues</span><span class="o">.</span><span class="n">resnums</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+        <span class="nb">complex</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">temp_pdb</span><span class="p">))</span>
+
+    <span class="c1"># Silence warnings from freesasa</span>
+    <span class="n">capture_warnings</span> <span class="o">=</span> <span class="n">py</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">StdCaptureFD</span><span class="p">(</span><span class="n">out</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">in_</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">structs</span> <span class="o">=</span> <span class="n">freesasa</span><span class="o">.</span><span class="n">structureArray</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">temp_pdb</span><span class="p">),</span>
+                                      <span class="p">{</span><span class="s2">&quot;separate-chains&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                                       <span class="s2">&quot;hetatm&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                                       <span class="s2">&quot;chain-groups&quot;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">chainIDs</span><span class="p">))})</span>
+    <span class="n">capture_warnings</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+    <span class="n">parameters</span> <span class="o">=</span> <span class="n">freesasa</span><span class="o">.</span><span class="n">Parameters</span><span class="p">({</span>
+        <span class="s1">&#39;algorithm&#39;</span><span class="p">:</span> <span class="s2">&quot;LeeRichards&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;probe-radius&#39;</span><span class="p">:</span> <span class="n">probe_radius</span><span class="p">,</span>
+        <span class="s1">&#39;n-points&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="s1">&#39;n-slices&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="s1">&#39;n-threads&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+    <span class="n">sasa_whole</span> <span class="o">=</span> <span class="n">freesasa</span><span class="o">.</span><span class="n">calc</span><span class="p">(</span><span class="n">structs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">parameters</span><span class="p">)</span>
+    <span class="n">sasa_binder</span> <span class="o">=</span> <span class="n">freesasa</span><span class="o">.</span><span class="n">calc</span><span class="p">(</span><span class="n">structs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">parameters</span><span class="p">)</span>
+
+    <span class="n">residuos_whole</span> <span class="o">=</span> <span class="n">sasa_whole</span><span class="o">.</span><span class="n">residueAreas</span><span class="p">()</span>
+    <span class="n">residuos_binder</span> <span class="o">=</span> <span class="n">sasa_binder</span><span class="o">.</span><span class="n">residueAreas</span><span class="p">()</span>
+    <span class="n">interfacing_resis</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">chainID</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">chainIDs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">resnum</span><span class="p">,</span> <span class="n">sasa_whole</span><span class="p">),</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">sasa_binder</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">residuos_whole</span><span class="p">[</span><span class="n">chainID</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>
+                                                          <span class="n">residuos_binder</span><span class="p">[</span><span class="n">chainID</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="n">sasa_diff</span> <span class="o">=</span> <span class="n">sasa_binder</span><span class="o">.</span><span class="n">total</span> <span class="o">-</span> <span class="n">sasa_whole</span><span class="o">.</span><span class="n">total</span>
+            <span class="k">if</span> <span class="n">sasa_diff</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">:</span>
+                <span class="n">interfacing_resis</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">resnum</span><span class="p">))</span>
+
+    <span class="c1"># Remove temporaries</span>
+    <span class="n">temp_pdb</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">interfacing_resis</span></div>
+
+
+<div class="viewcode-block" id="get_freesasa_residues"><a class="viewcode-back" href="../../misc.html#locuaz.interface.get_freesasa_residues">[docs]</a><span class="k">def</span> <span class="nf">get_freesasa_residues</span><span class="p">(</span><span class="n">pdb_input</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PDBStructure</span><span class="p">,</span> <span class="n">FileHandle</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">chainIDs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="n">pdb_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pdb_input</span><span class="p">)</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pdb_path</span><span class="p">))</span>
+    <span class="n">temp_pdb</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pdb_path</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;temp.pdb&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+        <span class="n">u</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="s2">&quot;not resname SOL and not resname WAT&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">temp_pdb</span><span class="p">))</span>
+
+    <span class="c1"># Silence warnings from freesasa</span>
+    <span class="n">capture_warnings</span> <span class="o">=</span> <span class="n">py</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">StdCaptureFD</span><span class="p">(</span><span class="n">out</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">in_</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">structs</span> <span class="o">=</span> <span class="n">freesasa</span><span class="o">.</span><span class="n">structureArray</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">temp_pdb</span><span class="p">),</span>
+                                      <span class="p">{</span><span class="s2">&quot;separate-chains&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                                       <span class="s2">&quot;hetatm&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                                       <span class="s2">&quot;chain-groups&quot;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">chainIDs</span><span class="p">))})</span>
+    <span class="n">capture_warnings</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+    <span class="n">freesasa_resis</span> <span class="o">=</span> <span class="p">{(</span><span class="nb">int</span><span class="p">(</span><span class="n">structs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">residueNumber</span><span class="p">(</span><span class="n">i</span><span class="p">)),</span> <span class="n">seq1</span><span class="p">(</span><span class="n">structs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">residueName</span><span class="p">(</span><span class="n">i</span><span class="p">)))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>
+                      <span class="nb">range</span><span class="p">(</span><span class="n">structs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">nAtoms</span><span class="p">())}</span>
+    <span class="n">temp_pdb</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">freesasa_resis</span></div>
+
+
+<div class="viewcode-block" id="get_interface_surface"><a class="viewcode-back" href="../../misc.html#locuaz.interface.get_interface_surface">[docs]</a><span class="k">def</span> <span class="nf">get_interface_surface</span><span class="p">(</span><span class="n">pdb_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    get_interface_surface(): `i` could be the index of the input PBD, in case the function is called</span>
+<span class="sd">    on a concurrent manner and order is needed when populating an array</span>
+<span class="sd">    Args:</span>
+<span class="sd">        pdb_path: input PDB</span>
+<span class="sd">        i: optional index of the input PBD, it&#39;ll be returned as is. Useful in case the function is called on a concurrent manner and order is needed when populating an array</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Tuple[int, float] = i, surface in A^2</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Silence warnings from freesasa</span>
+    <span class="n">capture_warnings</span> <span class="o">=</span> <span class="n">py</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">StdCaptureFD</span><span class="p">(</span><span class="n">out</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">in_</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># Assume A=target, B=binder convention</span>
+    <span class="n">structs</span> <span class="o">=</span> <span class="n">freesasa</span><span class="o">.</span><span class="n">structureArray</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pdb_path</span><span class="p">),</span>
+                                      <span class="p">{</span><span class="s2">&quot;separate-chains&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                                       <span class="s2">&quot;hetatm&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                                       <span class="s2">&quot;chain-groups&quot;</span><span class="p">:</span> <span class="s2">&quot;A+B&quot;</span><span class="p">})</span>
+    <span class="n">capture_warnings</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+    <span class="n">parameters</span> <span class="o">=</span> <span class="n">freesasa</span><span class="o">.</span><span class="n">Parameters</span><span class="p">({</span>
+        <span class="s1">&#39;algorithm&#39;</span><span class="p">:</span> <span class="s2">&quot;LeeRichards&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;probe-radius&#39;</span><span class="p">:</span> <span class="mf">1.4</span><span class="p">,</span>
+        <span class="s1">&#39;n-points&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="s1">&#39;n-slices&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="s1">&#39;n-threads&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+    <span class="n">sasa_whole</span> <span class="o">=</span> <span class="n">freesasa</span><span class="o">.</span><span class="n">calc</span><span class="p">(</span><span class="n">structs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">parameters</span><span class="p">)</span>
+    <span class="n">sasa_a</span> <span class="o">=</span> <span class="n">freesasa</span><span class="o">.</span><span class="n">calc</span><span class="p">(</span><span class="n">structs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">parameters</span><span class="p">)</span>
+    <span class="n">sasa_b</span> <span class="o">=</span> <span class="n">freesasa</span><span class="o">.</span><span class="n">calc</span><span class="p">(</span><span class="n">structs</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">parameters</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">sasa_a</span><span class="o">.</span><span class="n">totalArea</span><span class="p">()</span> <span class="o">+</span> <span class="n">sasa_b</span><span class="o">.</span><span class="n">totalArea</span><span class="p">()</span> <span class="o">-</span> <span class="n">sasa_whole</span><span class="o">.</span><span class="n">totalArea</span><span class="p">())</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Patricio Barletta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

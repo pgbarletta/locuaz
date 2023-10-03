@@ -133,7 +133,7 @@ Running the protocol
 Nothing new here, we just run the protocol with our config file::
 
     mamba activate locuaz
-    python /home/user/locuaz/locuaz/protocol.py config_tleap.yaml
+    python /home/user/locuaz/locuaz/protocol.py config_ligand.yaml
 
 It's educational to look at the DAG with the branch names that *locuaz* draws.
 See Figure 2

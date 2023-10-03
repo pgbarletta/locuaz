@@ -1,0 +1,59 @@
+===================================================
+Frequently Asked Questions
+===================================================
+
+.. _faq1:
+
+1\_ |q1|
+--------
+*tleap* is a bit of an old piece of software and it seems that back then chainID
+info wasn't very important. If you write out a PDB file along with your *prmtop*
+and *rst7* files when building your topology, you'll see that the PDB has no
+chainID info and neither does the topology.
+
+Fortunately, *parmed* ---which will be included with your locuaz installation---,
+added some new flags to the ``.prmtop`` format, including ``RESIDUE_CHAINID``,
+which will hold the information we want. In order to add it, along with some other
+extra info, we will ask parmed to get it from our initial PDB, which should have
+chainID info
+
+This short parmed script will do it::
+
+        parm no_chainid_top.prmtop
+        addPDB start.pdb
+        outparm top.prmtop
+        go
+
+``no_chainid_top.prmtop`` is the topology we got out from tleap, with water, ions
+and all that. ``start.pdb`` is the PDB tleap started out from, without water, box
+or anything, but with the chainID information.
+
+We then run this script::
+
+    parmed -i add_chainID.parmed
+
+You can now check ``top.prmtop`` for parmed additions::
+
+    %FLAG RESIDUE_CHAINID
+    %COMMENT Residue chain ID (chainId) read from PDB file; DIMENSION(NRES)
+    %FORMAT(20a4)
+    A   A   A   A   A   A   A   A   A   A   A   A   A   A   B   B   B   B   B   B
+
+The final step is to get a PDB out of this topology and the *rst7* tleap gave us.
+We can, again, write a parmed script for this::
+
+    parm top.prmtop
+    trajin rst7_from_tleap.rst7
+    trajout pdb_with_chainID.pdb
+
+Or, we can use another program that comes with *ambertools*, which was made for
+this specific purpose::
+
+    ambpdb -p top.prmtop -c rst7_from_tleap.rst7 > pdb_with_chainID.pdb
+
+Now we can use ``pdb_with_chainID.pdb`` to start out our optimization, probably
+after giving it a better name.
+
+.. |q1| replace:: I used tleap to build my initial system
+    but now my starting PDB has no chainID information and locuaz won't take it.
+    What can I do about it?

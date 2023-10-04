@@ -86,7 +86,7 @@ of the YAML config file. A more detailed explanation of the available options, c
 the ``examples/tleap_tutorial`` `folder`_:
 
 1. ``nb.pdb``: the PDB file of the pre-equilibrated complex. As usual, target chains go first, also,
-   remember that since we are using *Tleap* residues should be numbered on a continuous progression.
+   remember that since we are using *Tleap*, residues should be numbered on a continuous progression.
 2. ``tleap``: *Tleap* dir with the script to build the topology of the system each time a mutation is performed.
    This script will be identical to the one above, with the exception of the ``solvatebox`` line, since the
    solvent is already there. Another thing to notice is the usage of ``addions``. We keep this commands
@@ -253,7 +253,9 @@ each *branch*:
         are highlighted.
 
 
+In the previous tutorials, this value was always ``true`` (it's default value)
+which meant that at each *epoch* will use a variable width DAG. This will make the number
+
 .. _HADDOCK: https://wenmr.science.uu.nl/haddock2.4/
 .. _ParmEd: https://github.com/ParmEd/ParmEd
 .. _acpype: https://github.com/alanwilter/acpype
-

@@ -58,6 +58,7 @@
 <li class="toctree-l1"><a class="reference internal" href="tutorialtleap.html">Tutorial: using Tleap topologies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorialligand.html">Tutorial: optimizing an antibody against a ligand</a></li>
 <li class="toctree-l1"><a class="reference internal" href="jobsubmission.html">Job submission</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul class="current">
@@ -391,12 +392,17 @@ when in doubt, given its plain-english syntax. For example, you can check whethe
 <span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
 <span class="w">            </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;consensus&quot;</span>
 <span class="w">            </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
-<span class="w">            </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;consensus&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;metropolis&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">            </span><span class="nt">allowed</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;consensus&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;metropolis&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;roundrobin&quot;</span><span class="p p-Indicator">]</span>
 <span class="w">        </span><span class="nt">consensus_threshold</span><span class="p">:</span>
 <span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
 <span class="w">            </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
 <span class="w">            </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
 <span class="w">            </span><span class="nt">dependencies</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">pruner</span><span class="p">:</span><span class="w"> </span><span class="nv">consensus</span><span class="p p-Indicator">}</span>
+<span class="w">        </span><span class="nt">roundrobin_threshold</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">integer</span>
+<span class="w">            </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">            </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="w">            </span><span class="nt">dependencies</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">pruner</span><span class="p">:</span><span class="w"> </span><span class="nv">roundrobin</span><span class="p p-Indicator">}</span>
 <span class="w">        </span><span class="nt">kT</span><span class="p">:</span>
 <span class="w">            </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">float</span>
 <span class="w">            </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>

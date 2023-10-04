@@ -77,6 +77,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tutorialligand.html">Tutorial: optimizing an antibody against a ligand</a></li>
 <li class="toctree-l1"><a class="reference internal" href="jobsubmission.html">Job submission</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
@@ -193,7 +194,7 @@ of the YAML config file. A more detailed explanation of the available options, c
 the <code class="docutils literal notranslate"><span class="pre">examples/tleap_tutorial</span></code> <a class="reference external" href="https://istitutoitalianotecnologia-my.sharepoint.com/personal/walter_rocchia_iit_it/_layouts/15/onedrive.aspx?ga=1&amp;id=%2Fpersonal%2Fwalter%5Frocchia%5Fiit%5Fit%2FDocuments%2FExamples%2Ftleap%5Ftutorial&amp;view=0">folder</a>:</p>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">nb.pdb</span></code>: the PDB file of the pre-equilibrated complex. As usual, target chains go first, also,
-remember that since we are using <em>Tleap</em> residues should be numbered on a continuous progression.</p></li>
+remember that since we are using <em>Tleap</em>, residues should be numbered on a continuous progression.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tleap</span></code>: <em>Tleap</em> dir with the script to build the topology of the system each time a mutation is performed.
 This script will be identical to the one above, with the exception of the <code class="docutils literal notranslate"><span class="pre">solvatebox</span></code> line, since the
 solvent is already there. Another thing to notice is the usage of <code class="docutils literal notranslate"><span class="pre">addions</span></code>. We keep this commands
@@ -353,6 +354,8 @@ each <em>branch</em>:</p>
 are highlighted.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
+<p>In the previous tutorials, this value was always <code class="docutils literal notranslate"><span class="pre">true</span></code> (it’s default value)
+which meant that at each <em>epoch</em> will use a variable width DAG. This will make the number</p>
 </section>
 </section>
 

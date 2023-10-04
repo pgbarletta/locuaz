@@ -136,7 +136,7 @@ Nothing new here, we just run the protocol with our config file::
     python /home/user/locuaz/locuaz/protocol.py config_ligand.yaml
 
 It's educational to look at the DAG with the branch names that *locuaz* draws.
-See Figure 2
+See Figure 2.
 
 .. figure:: ./resources/ligand_iterations_dag.png
         :alt: iterations_dag

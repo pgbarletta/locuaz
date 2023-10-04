@@ -104,7 +104,7 @@ optimizing without pulling.
 3\_ What is NUMA? How can I know the number of NUMA regions my machine has?
 
 NUMA (Non-Unified Memory Access) it's a design idea to deal with multiple CPU
-processors and their access to memory, and GPUs as well.
+cores and their access to memory.
 
 For us users, it's important to be NUMA-aware, that is, understand that some
 cores have faster access to certain regions and slower access to other ones.
@@ -125,56 +125,33 @@ To know your NUMA layout, just run this command::
       0:  10  11
       1:  11  10
 
-On this cluster node, there are 2 NUMA regions (nodes), with 16 cores (32 threads)
-each. I'll add that these nodes correspond to each of the physical CPU sockets.
-By the distances, you can see that it's more convenient for the threads of each
-socket to access the memory that belongs to that same node.
+This means we have 2 NUMA regions and when using MPS, we should set
+``numa_regions: 2``.
 
-But for our purpose, GPU-accelerated MD, we don't care much about RAM memory,
-but about GPU-CPU affinity, that is, to which threads the GPUs are closer.
-Let's look at the next command to answer this::
+For more info, check `this related blogpost`_.
 
-    $ nvidia-smi topo -m
-            GPU0    GPU1    GPU2    GPU3    mlx5_0  mlx5_1  mlx5_2  mlx5_3  CPU Affinity    NUMA Affinity
-    GPU0     X      NV4     NV4     NV4     PXB     NODE    NODE    NODE    0-15    0
-    GPU1    NV4      X      NV4     NV4     NODE    PXB     NODE    NODE    0-15    0
-    GPU2    NV4     NV4      X      NV4     NODE    NODE    PXB     NODE    0-15    0
-    GPU3    NV4     NV4     NV4      X      NODE    NODE    NODE    PXB     0-15    0
-    mlx5_0  PXB     NODE    NODE    NODE     X      NODE    NODE    NODE
-    mlx5_1  NODE    PXB     NODE    NODE    NODE     X      NODE    NODE
-    mlx5_2  NODE    NODE    PXB     NODE    NODE    NODE     X      NODE
-    mlx5_3  NODE    NODE    NODE    PXB     NODE    NODE    NODE     X
-
-    Legend:
-
-      X    = Self
-      SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)
-      NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node
-      PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)
-      PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)
-      PIX  = Connection traversing at most a single PCIe bridge
-      NV#  = Connection traversing a bonded set of # NVLinks
-
-There is a lot of information on the output, but we only care about the ``CPU Affinity`` column.
-This tells us that all 4 GPUs have a direct link to threads 0-15, which means
-threads 16-31 will take longer to communicate with the GPUs.
-
-This is actually quite unexpected. I'd expect GPUs 0 and 1 to be closer to threads
-0-15 and GPUs 2 and 3 to be closer to threads 16-31. I'll contact the sysadmins
-and hopefully I'll remember to update this site.
-
+.. _this related blogpost: https://ana.run/blog/subnuma-leonardo
 
 .. _faq4:
 
 4\_ Why use both ``memory_positions`` and ``failed_memory_positions`` at the same time?
+---------------------------------------------------------------------------------------
+
+Because sometimes you want to avoid mutating back a position that failed to improve
+binding but don't want to set a too big of a memory. In those cases, you can set
+a large ``failed_memory_size`` and a lower ``memory_size``.
 
 .. _faq5:
 
 5\_ What are the empty brackets in the ``memory_positions`` list?
+-----------------------------------------------------------------
 
-empty memory slots on input user memory are allowed.
+Empty memory slots on input user memory are allowed.
 This allows the user to control for how many epochs will the non-empty memory be recalled.
-Place them after the desired positions:
+Place them after the desired positions::
 
-``memory_positions: [[2, 3, 4, 6, 7, 8], [], [], [] ]``
+    memory_positions: [[2, 3, 4, 6, 7, 8], [], [], [] ]
+    memory_size: 4
 
+This means that positions 2, 3, 4, 6, 7 and 8 won't be mutated on the first epoch,
+but will be eligible for mutation right after.

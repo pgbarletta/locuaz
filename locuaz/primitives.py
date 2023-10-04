@@ -1,7 +1,12 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, Generic, TypeVar, Tuple, List, Iterator
+from collections.abc import Sequence, Iterable
 from pathlib import Path
+import bisect
 import shutil as sh
 from warnings import warn
+
+import numpy as np
+from numpy.typing import NDArray
 
 from Bio.SeqUtils import seq1
 
@@ -35,12 +40,47 @@ AA_MAP: Dict[str, str] = {
     "VAL": "VAL",
 }
 
+T = TypeVar("T")
+
+
+class PriorityDeque(Generic[T], Sequence, Iterable):
+    def __init__(self, maxsize: int):
+        self.maxsize: int = maxsize
+        self.priorities: List[int] = []
+        self.elements: List[T] = []
+
+    def put(self, pair: Tuple[int, T]) -> None:
+        assert isinstance(pair[0], int)
+        idx = bisect.bisect(self.priorities, pair[0])
+        self.priorities.insert(idx, pair[0])
+        self.elements.insert(idx, pair[1])
+        if len(self.elements) > self.maxsize:
+            self.priorities.pop()
+            self.elements.pop()
+
+    def get(self) -> Tuple[int, T]:
+        return (self.priorities.pop(0), self.elements.pop(0))
+
+    def __getitem__(self, item):
+        return self.elements[item]
+
+    def __iter__(self) -> Iterator:
+        return iter(self.elements)
+
+    def __len__(self):
+        return len(self.elements)
+
+    def __str__(self) -> str:
+        return str(self.elements)
+
 
 class GromacsError(Exception):
     pass
 
+
 class UserInputError(Exception):
     pass
+
 
 def launch_biobb(biobb_obj, *, can_write_console_log: bool = False, backup_dict: Optional[Path] = None) -> None:
     """
@@ -93,6 +133,7 @@ def ext(name: str, suffix: str) -> str:
         str: filename with the extension.
     """
     return f"{name.split('.')[0]}.{suffix}"
+
 
 def my_seq1(resn_3: str) -> str:
     resn_1 = seq1(resn_3)

@@ -96,7 +96,7 @@ class SPM4(AbstractMutationGenerator):
 
     def __generate_position__(self, epoch: Epoch, use_tleap: bool = False,
                               logger: Logger = None) -> Tuple[int, str, int, int]:
-        # Get an branch to read the chainIDs and the resSeqs.
+        # Get a branch to read the chainIDs and the resSeqs.
         try:
             any_branch = next(iter(epoch.top_branches.values()))
         except Exception:

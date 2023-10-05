@@ -52,31 +52,31 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
             probe_radius=work_pjct.config["generation"]["probe_radius"])
 
         for old_branch_name, mutations in mutation_generator.items():
-            old_iter = old_epoch.top_branches[old_branch_name]
+            old_branch = old_epoch.top_branches[old_branch_name]
 
             if work_pjct.config["md"]["use_tleap"]:
                 # GROMACS renumbers resSeqs to strided numbering. If using Amber's continuous
                 # numbering, this will result in the wrong mutating_resSeq.
                 # Backup the PDB before running pdb4amber
-                pdb_path = Path(old_iter.complex.pdb)
-                pre_fix_pdb = Path(old_iter.dir_handle, f"preAmberPDBFixer_{pdb_path.stem}.pdb")
+                pdb_path = Path(old_branch.complex.pdb)
+                pre_fix_pdb = Path(old_branch.dir_handle, f"preAmberPDBFixer_{pdb_path.stem}.pdb")
                 sh.move(pdb_path, pre_fix_pdb)
 
                 old_pdb = fix_pdb(pre_fix_pdb, pdb_path)
             else:
-                old_pdb = old_iter.complex.pdb
+                old_pdb = old_branch.complex.pdb
 
             for mutation in mutations:
-                branch_name, branch_resnames = old_iter.generate_name_resname(mutation)
+                branch_name, branch_resnames = old_branch.generate_name_resname(mutation)
                 branch_path = Path(work_pjct.dir_handle, f"{epoch_id}-{branch_name}")
 
                 this_iter = Branch(
                     DirHandle(branch_path, make=True),
                     branch_name=branch_name,
-                    chainIDs=old_iter.chainIDs,
+                    chainIDs=old_branch.chainIDs,
                     resnames=branch_resnames,
-                    resSeqs=old_iter.resSeqs,
-                    parent=old_iter,
+                    resSeqs=old_branch.resSeqs,
+                    parent=old_branch,
                     mutation=mutation)
 
                 init_wt = Path(branch_path, "init_wt.pdb")
@@ -91,8 +91,8 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
                             PDBStructure.from_path(init_wt),
                             branch_path,
                             mutation=mutation,
-                            selection_complex=old_iter.complex.top.selection_complex,
-                            selection_wations=old_iter.complex.top.selection_not_complex)
+                            selection_complex=old_branch.complex.top.selection_complex,
+                            selection_wations=old_branch.complex.top.selection_not_complex)
                     except AssertionError as e:
                         # Mutator failed. This position will still be memorized.
                         log.info(f"Mutation of {branch_name} failed. Will try with another one. Backing-up {branch_path} .")

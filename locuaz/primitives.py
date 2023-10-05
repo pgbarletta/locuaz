@@ -44,13 +44,21 @@ T = TypeVar("T")
 
 
 class PriorityDeque(Generic[T], Sequence, Iterable):
+    """
+    PriorityDeque is a fixed-size Priority queue, unless the input maxsize is negative
+    in which case it has not size limit.
+    I tried to implement it using heappush, heappop and heappushpop, but it uses
+    a weird ordering, and it forces the element type to be comparable as well,
+    to decide between pairs that have the same priorities. In this class, that's
+    left to bisect, since we don't care about sorting stability.
+    """
     def __init__(self, maxsize: int):
         self.maxsize: int = maxsize
         self.priorities: List[int] = []
         self.elements: List[T] = []
 
     def put(self, pair: Tuple[int, T]) -> None:
-        assert isinstance(pair[0], int)
+        assert isinstance(pair[0], int), "Input must be a tuple with an int as first element."
         idx = bisect.bisect(self.priorities, pair[0])
         self.priorities.insert(idx, pair[0])
         self.elements.insert(idx, pair[1])
@@ -61,17 +69,17 @@ class PriorityDeque(Generic[T], Sequence, Iterable):
     def get(self) -> Tuple[int, T]:
         return (self.priorities.pop(0), self.elements.pop(0))
 
-    def __getitem__(self, item):
-        return self.elements[item]
+    def __getitem__(self, item) -> Tuple[int, T]:
+        return (self.priorities[item], self.elements[item])
 
     def __iter__(self) -> Iterator:
-        return iter(self.elements)
+        return zip(self.priorities, self.elements)
 
     def __len__(self):
         return len(self.elements)
 
     def __str__(self) -> str:
-        return str(self.elements)
+        return str(list(zip(self.priorities, self.elements)))
 
 
 class GromacsError(Exception):

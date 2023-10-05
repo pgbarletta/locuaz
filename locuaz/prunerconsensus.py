@@ -28,50 +28,50 @@ class PrunerConsensus(AbstractPruner):
 
         Returns
         -------
-        passing_iters: PriorityQueue
+        passing_branches: PriorityQueue
             ordered queue with the branches from the new epoch that are better than all the
             branches from the old epoch. It may be empty.
         """
-        return self.__get_passing_iters__(config["pruning"]["consensus_threshold"])
+        return self.__get_passing_branches__(config["pruning"]["consensus_threshold"])
 
-    def __get_passing_iters__(self, threshold: int) -> PriorityQueue:
+    def __get_passing_branches__(self, threshold: int) -> PriorityQueue:
         """
 
         Parameters
         ----------
         threshold : int
-            number of scorers that have to improve for an branch to be
+            number of scorers that have to improve for a branch to be
             considered better than another one.
 
         Returns
         -------
-        passing_iters: PriorityQueue
+        passing_branches: PriorityQueue
             ordered queue with the branches from the new epoch that are better than all the
             branches from the old epoch. It may be empty.
         """
-        better_iters: PriorityQueue = PriorityQueue()
+        better_branches: PriorityQueue = PriorityQueue()
 
         for branch in self.this_epoch.values():
             better_overall: bool = True
             rank_overall: int = 0
-            for prev_iter in self.prev_epoch.top_branches.values():
-                better, rank = self.__beats_old_branch__(prev_iter, branch, threshold)
+            for prev_branch in self.prev_epoch.top_branches.values():
+                better, rank = self.__beats_old_branch__(prev_branch, branch, threshold)
                 better_overall &= better
                 rank_overall += rank
             if better_overall:
-                better_iters.put((-rank_overall, branch))
+                better_branches.put((-rank_overall, branch))
 
-        return better_iters
+        return better_branches
 
-    def __beats_old_branch__(self, old_iter: Branch, new_iter: Branch, threshold: int) -> Tuple[bool, int]:
+    def __beats_old_branch__(self, old_branch: Branch, new_branch: Branch, threshold: int) -> Tuple[bool, int]:
         """
         Parameters
         ----------
-        old_iter: Branch
-        new_iter : Branch
+        old_branch: Branch
+        new_branch : Branch
         threshold : int
-            number of scores that have to improve for the new_iter to be
-            considered better than the old_iter.
+            number of scores that have to improve for the new_branch to be
+            considered better than the old_branch.
 
         Returns
         -------
@@ -80,16 +80,16 @@ class PrunerConsensus(AbstractPruner):
         """
         # Allow the user to change scorers mid-run and only use
         # the subset present in both branches.
-        old_SFs = set(old_iter.scores.keys())
-        new_SFs = set(new_iter.scores.keys())
+        old_SFs = set(old_branch.scores.keys())
+        new_SFs = set(new_branch.scores.keys())
         scorers = old_SFs & new_SFs
         if len(scorers) == 0:
             raise RuntimeError(f"No common scorers between the ones from the old branch ({old_SFs}) "
                                f"and those from the new one ({new_SFs}). Cannot prune.")
         self.log.info(f"Scorers {scorers}")
-        count = sum([old_iter.mean_scores[SF] >= new_iter.mean_scores[SF]
+        count = sum([old_branch.mean_scores[SF] >= new_branch.mean_scores[SF]
                      for SF in scorers])
-        self.log.info(f"{new_iter.epoch_id}-{new_iter.branch_name} vs. {old_iter.epoch_id}-{old_iter.branch_name} "
+        self.log.info(f"{new_branch.epoch_id}-{new_branch.branch_name} vs. {old_branch.epoch_id}-{old_branch.branch_name} "
                       f"improves on {count} of {len(scorers)} scorers.")
 
         return count >= threshold, count

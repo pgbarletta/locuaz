@@ -17,10 +17,10 @@ def prune(work_pjct: WorkProject) -> None:
     log = logging.getLogger(work_pjct.name)
     # Use chosen pruner to prune.
     pruner_func = pruners[work_pjct.config["pruning"]["pruner"]](prev_epoch, this_epoch, log)
-    better_iters_queue = pruner_func.prune(work_pjct.config)
+    better_branches_queue = pruner_func.prune(work_pjct.config)
 
     failed_pos: Set[int] = set()
-    if better_iters_queue.empty():
+    if better_branches_queue.empty():
         # All new branches are worse than the old ones, or they all failed during MD.
         log.info(f"Unsuccessful epoch after mutating resSeqs: {this_epoch.mutated_positions}. "
                  f"Backing up epoch {this_epoch.id}.")
@@ -30,8 +30,8 @@ def prune(work_pjct: WorkProject) -> None:
     else:
         log.info(f"Successful epoch after mutating resSeqs: {this_epoch.mutated_positions} .")
         this_epoch.top_branches: Dict[str, Branch] = {}
-        while not better_iters_queue.empty():
-            _, branch = better_iters_queue.get()
+        while not better_branches_queue.empty():
+            _, branch = better_branches_queue.get()
             this_epoch.top_branches[branch.branch_name] = branch
 
     if work_pjct.has_failed_memory:

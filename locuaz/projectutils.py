@@ -218,7 +218,7 @@ class Epoch(MutableMapping):
                     ) from e
             return
 
-        better_iters: PriorityQueue[Tuple[int, Branch]] = PriorityQueue()
+        better_branches: PriorityQueue[Tuple[int, Branch]] = PriorityQueue()
 
         for it in self.branches.values():
             count = 0
@@ -234,12 +234,12 @@ class Epoch(MutableMapping):
                         for SF in scorers
                     ]
                 )
-            better_iters.put((-count, it))
+            better_branches.put((-count, it))
 
         prev_count = 1
-        while not better_iters.empty():
+        while not better_branches.empty():
             # Remember, `count`, the priority, is negative.
-            count, branch = better_iters.get()
+            count, branch = better_branches.get()
             if count > prev_count:
                 assert (
                         len(self.top_branches) > 0

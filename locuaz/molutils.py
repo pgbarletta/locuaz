@@ -11,7 +11,7 @@ from locuaz.primitives import launch_biobb
 def split_solute_and_solvent_old(
         cpx: GROComplex, gmx_bin: str
 ) -> Tuple[PDBStructure, PDBStructure]:
-    """prepare_old_iter extract 2 PDBs from an input pdb, one with the protein
+    """prepare_old_branch extract 2 PDBs from an input pdb, one with the protein
     and the other with the water and ions.
 
     Args:

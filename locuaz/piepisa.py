@@ -115,5 +115,8 @@ class PiePisa(AbstractScorer):
             except cf.TimeoutError as e:
                 print(f"{self.name} subprocess timed out.", flush=True)
                 raise e
+            except Exception as e:
+                print(f"{self.name} asfdasdfsa.", flush=True)
+                raise e
         # Discard the first 0 frames
         return scores[start:]

@@ -276,6 +276,12 @@ class Epoch(MutableMapping):
     def __len__(self) -> int:
         return len(self.branches)
 
+    def __or__(self, other: Union ["Epoch", Dict[str, Branch]]) -> Dict[str, Branch]:
+        return self.branches | other
+
+    def __ror__(self, other: Union ["Epoch", Dict[str, Branch]]) -> Dict[str, Branch]:
+        return self.__or__(other)
+
 
 class WorkProject:
     config: Dict

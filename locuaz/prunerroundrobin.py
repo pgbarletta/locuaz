@@ -4,7 +4,7 @@ import logging
 
 from locuaz.abstractpruner import AbstractPruner
 from locuaz.projectutils import Epoch, Branch
-from primitives import PriorityDeque
+from locuaz.primitives import PriorityDeque
 
 
 class PrunerRoundRobin(AbstractPruner):
@@ -34,7 +34,7 @@ class PrunerRoundRobin(AbstractPruner):
             ordered queue with the top branches from the new and the previous
             epochs. It may not be empty.
         """
-        return self.__get_passing_branches__(config["pruning"]["consensus_threshold"])
+        return self.__get_passing_branches__(config["pruning"]["roundrobin_threshold"])
 
     def __get_passing_branches__(self, roundrobin_threshold: int) -> PriorityQueue:
         """
@@ -52,12 +52,12 @@ class PrunerRoundRobin(AbstractPruner):
         """
         better_branches: PriorityDeque = PriorityDeque(roundrobin_threshold)
         all_branches: Dict[str, Branch] = self.prev_epoch.top_branches | self.this_epoch
-        for left_name, left_branch in all_branches.keys():
+        for left_name, left_branch in all_branches.items():
             rank_overall: int = 0
-            for right_name, right_branch in all_branches.keys():
+            for right_name, right_branch in all_branches.items():
                 if left_name == right_name:
                     continue
-                _, rank = self.__beats_old_branch__(left_branch, right_branch)
+                rank = self.__beats_old_branch__(right_branch, left_branch)
                 rank_overall += rank
             better_branches.put((-rank_overall, left_branch))
 

@@ -5,9 +5,6 @@ import bisect
 import shutil as sh
 from warnings import warn
 
-import numpy as np
-from numpy.typing import NDArray
-
 from Bio.SeqUtils import seq1
 
 # This will be used to map non-conventional AAs to conventional ones, so the
@@ -58,8 +55,11 @@ class PriorityDeque(Generic[T], Sequence, Iterable):
         self.elements: List[T] = []
 
     def put(self, pair: Tuple[int, T]) -> None:
-        assert isinstance(pair[0], int), "Input must be a tuple with an int as first element."
-        idx = bisect.bisect(self.priorities, pair[0])
+        try:
+            idx = bisect.bisect(self.priorities, int(pair[0]))
+        except ValueError:
+            raise(f"{pair[0]} is a {type(pair[0])}. Input must be a tuple with"
+                  "an int as first element.")
         self.priorities.insert(idx, pair[0])
         self.elements.insert(idx, pair[1])
         if len(self.elements) > self.maxsize:

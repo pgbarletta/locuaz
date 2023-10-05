@@ -171,12 +171,17 @@ pruning:
             type: string
             default: "consensus"
             required: true
-            allowed: ["consensus", "metropolis"]
+            allowed: ["consensus", "metropolis", "roundrobin"]
         consensus_threshold:
             type: integer
             min: 1
             max: 20
             dependencies: {pruner: consensus}
+        roundrobin_threshold:
+            type: integer
+            min: 1
+            max: 20
+            dependencies: {pruner: roundrobin}
         kT:
             type: float
             min: 0.1

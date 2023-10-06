@@ -98,10 +98,8 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
                                               f"different lengths: {len(resnames)} and {len(resSeqs)}, respectively."
 
     # Check creation and check gmxmmpbsa options
-    check_gmxmmpbsa(config)
-    config["creation"]["aa_bins"] = check_set_bins(config["creation"]["aa_bins_set"],
-                                                   config["creation"].get("aa_bins"))
-    # Check generation and gmxmmpbsa options
+    check_mutation_generation(config)
+    # Check legacy generation and gmxmmpbsa options
     check_gmxmmpbsa_legacy(config)
 
     # Check consensus threshold and scorers
@@ -377,7 +375,8 @@ def check_gmxmmpbsa_legacy(config: Dict) -> None:
             raise UserInputError
 
 
-def check_gmxmmpbsa(config: Dict[str, Any]) -> None:
+def check_mutation_generation(config: Dict[str, Any]) -> None:
+    # First, check the site probability.
     if config["creation"]["sites_probability"] == "gmxmmpbsa":
         if config["generation"]["generator"] == "SPM4gmxmmpbsa":
             if "gmxmmpbsa" not in config["scoring"]["scorers"]:
@@ -394,25 +393,25 @@ def check_gmxmmpbsa(config: Dict[str, Any]) -> None:
                       "decomposition. This is a prerequisite for the gmxmmpbsa "
                       "probability distribution.", flush=True, file=sys.stderr)
                 raise UserInputError
-
-def check_set_bins(use_bins: bool, bins: Optional[List[List[str]]]) -> Optional[List[List[str]]]:
-    if use_bins:
-        if bins:
+    # Then, check the bins.
+    if config["creation"]["aa_bins_set"]:
+        if config["creation"].get("aa_bins"):
             aas_wo_cys = {'D', 'E', 'S', 'T', 'R', 'N', 'Q', 'H', 'K', 'A', 'G',
                           'I', 'M', 'L', 'V', 'P', 'F', 'W', 'Y'}
             missing_aas = aas_wo_cys.symmetric_difference(
-                set(chain.from_iterable(bins)))
+                set(chain.from_iterable(config["creation"]["aa_bins"])))
             if len(missing_aas) != 0 and missing_aas != {'C'}:
                 raise ValueError(
-                    f'Invalid input "aa_bins": {bins}\n'
-                    f'Missing or extra letters: {missing_aas}\n'
+                    f'Invalid input "aa_bins": {config["creation"]["aa_bins"]}\n'
+                    f'Missing amino acids: {missing_aas}\n'
                     f'Enter all amino acids. Only "C" can be missing.')
         else:
             # Cysteine is not included.
-            bins = [['D', 'E', 'S', 'T'], ['R', 'N', 'Q', 'H', 'K'],
-                    ['A', 'G', 'I', 'M', 'L', 'V'], ['P', 'F', 'W', 'Y']]
-            warn(f'Using default "aa_bins": {bins}')
-    return bins
+            config["creation"]["aa_bins"] = [['D', 'E', 'S', 'T'],
+                                             ['R', 'N', 'Q', 'H', 'K'],
+                                             ['A', 'G', 'I', 'M', 'L', 'V'],
+                                             ['P', 'F', 'W', 'Y']]
+            warn(f'Using default "aa_bins": {config["creation"]["aa_bins"]}')
 
 def set_statistics(config: Dict) -> None:
     """

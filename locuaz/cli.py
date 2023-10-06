@@ -6,10 +6,10 @@ import shutil as sh
 import sys
 from warnings import warn, simplefilter
 from collections import defaultdict
-from itertools import product
+from itertools import product, chain
 from pathlib import Path
 from queue import PriorityQueue
-from typing import Dict, List, Final, Set, Tuple, Union, Any
+from typing import Dict, List, Final, Set, Tuple, Union, Any, Optional
 import subprocess as sp
 
 import yaml
@@ -97,11 +97,12 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
         assert len(resnames) == len(resSeqs), f"mutating_resname({resnames}) and mutating_resSeq ({resSeqs}) have " \
                                               f"different lengths: {len(resnames)} and {len(resSeqs)}, respectively."
 
-    # Check 'branches' and 'generator'
-    if ("SPM4" in config["generation"]["generator"]) and (config["protocol"]["new_branches"] > 19):
-        raise UserInputError(f"SPM4 mutation generators cannot generate more than 19 branches")
-
+    # Check creation and check gmxmmpbsa options
     check_gmxmmpbsa(config)
+    config["creation"]["aa_bins"] = check_set_bins(config["creation"]["aa_bins_set"],
+                                                   config["creation"].get("aa_bins"))
+    # Check generation and gmxmmpbsa options
+    check_gmxmmpbsa_legacy(config)
 
     # Check consensus threshold and scorers
     if config["pruning"]["pruner"] == "consensus":
@@ -261,8 +262,8 @@ def lacks_branches(current_branches: Union[List[str], List[Path]],
                 assert pdb_file.is_file() and gro_file.is_file() and zip_file.is_file() and tpr_file.is_file()
             except AssertionError:
                 warn(f"Branch {branch_fn} is incomplete. Will back up the whole epoch and generate it again.")
-                for branch_fn in current_branches:
-                    backup_branch(Path(config["paths"]["work"], branch_fn))
+                for branch_fn2 in current_branches:
+                    backup_branch(Path(config["paths"]["work"], branch_fn2))
 
                 return True
 
@@ -357,24 +358,61 @@ def set_branches(config: Dict) -> Dict:
     raise ValueError("No valid branches in work_dir. Aborting.")
 
 
-def check_gmxmmpbsa(config: Dict) -> None:
+def check_gmxmmpbsa_legacy(config: Dict) -> None:
     if config["generation"]["generator"] == "SPM4gmxmmpbsa":
         if "gmxmmpbsa" not in config["scoring"]["scorers"]:
             print(f"'gmxmmbpsa' function is necessary to use the 'SPM4mmpbsa' mutator",
                   flush=True, file=sys.stderr)
             raise UserInputError
-        else:
+
+        with open(Path(config["paths"]["scorers"], "gmxmmpbsa", "gmxmmpbsa"), 'r') as file:
+            for line in file:
+                if "idecomp" in line:
+                    return
+                else:
+                    continue
+            print(f"Input 'gmxmmbpsa' is not performing 'idecomp' residue decomposition. "
+                  "This is a prerequisite for the SPM4gmxmmpbsa Mutation Generator.",
+                  flush=True, file=sys.stderr)
+            raise UserInputError
+
+
+def check_gmxmmpbsa(config: Dict[str, Any]) -> None:
+    if config["creation"]["sites_probability"] == "gmxmmpbsa":
+        if config["generation"]["generator"] == "SPM4gmxmmpbsa":
+            if "gmxmmpbsa" not in config["scoring"]["scorers"]:
+                print(f"'gmxmmbpsa' function is necessary to use the gmxmmpbsa "
+                      "probability distribution.", flush=True, file=sys.stderr)
+                raise UserInputError
             with open(Path(config["paths"]["scorers"], "gmxmmpbsa", "gmxmmpbsa"), 'r') as file:
                 for line in file:
                     if "idecomp" in line:
                         return
                     else:
                         continue
-                print(f"Input 'gmxmmbpsa' is not performing 'idecomp' residue decomposition. "
-                      "This is a prerequisite for the SPM4gmxmmpbsa Mutation Generator.",
-                      flush=True, file=sys.stderr)
+                print(f"Input 'gmxmmbpsa' is not performing 'idecomp' residue "
+                      "decomposition. This is a prerequisite for the gmxmmpbsa "
+                      "probability distribution.", flush=True, file=sys.stderr)
                 raise UserInputError
 
+def check_set_bins(use_bins: bool, bins: Optional[List[List[str]]]) -> Optional[List[List[str]]]:
+    if use_bins:
+        if bins:
+            aas_wo_cys = {'D', 'E', 'S', 'T', 'R', 'N', 'Q', 'H', 'K', 'A', 'G',
+                          'I', 'M', 'L', 'V', 'P', 'F', 'W', 'Y'}
+            missing_aas = aas_wo_cys.symmetric_difference(
+                set(chain.from_iterable(bins)))
+            if len(missing_aas) != 0 and missing_aas != {'C'}:
+                raise ValueError(
+                    f'Invalid input "aa_bins": {bins}\n'
+                    f'Missing or extra letters: {missing_aas}\n'
+                    f'Enter all amino acids. Only "C" can be missing.')
+        else:
+            # Cysteine is not included.
+            bins = [['D', 'E', 'S', 'T'], ['R', 'N', 'Q', 'H', 'K'],
+                    ['A', 'G', 'I', 'M', 'L', 'V'], ['P', 'F', 'W', 'Y']]
+            warn(f'Using default "aa_bins": {bins}')
+    return bins
 
 def set_statistics(config: Dict) -> None:
     """
@@ -506,6 +544,7 @@ def main() -> Tuple[Dict, bool]:
 
     raw_config = get_raw_config(args.config_file)
     config, starts = validate_input(raw_config, args.mode, args.debug)
+
     set_statistics(config)
     config["misc"] = {}
     if starts:

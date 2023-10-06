@@ -1,462 +1,614 @@
 paths:
-    type: dict
-    required: true
-    contains_any_of: [input, work]
-    schema:
-        gmxrc:
-            type: string
-            required: true
-            is_directory: true
-        scorers:
-            type: string
-            required: true
-            is_directory: true
-        mutator:
-            type: string
-            required: true
-            is_directory: true
-        mdp:
-            type: string
-            required: true
-            is_directory: true
-        input:
-            type: list
-            minlength: 1
-            maxlength: 12
-            schema:
-                type: string
-                is_directory: true
-            required: false
-        work:
-            type: string
-            required: true
-        tleap:
-            type: string
-            required: false
-            is_directory: true
+  type: dict
+  required: true
+  contains_any_of: [ input, work ]
+  schema:
+    gmxrc:
+      type: string
+      required: true
+      is_directory: true
+    scorers:
+      type: string
+      required: true
+      is_directory: true
+    mutator:
+      type: string
+      required: true
+      is_directory: true
+    mdp:
+      type: string
+      required: true
+      is_directory: true
+    input:
+      type: list
+      minlength: 1
+      maxlength: 12
+      schema:
+        type: string
+        is_directory: true
+      required: false
+    work:
+      type: string
+      required: true
+    tleap:
+      type: string
+      required: false
+      is_directory: true
 
 main:
-    type: dict
-    required: true
-    schema:
-        name:
-            type: string
-            required: true
-        mode:
-            type: string
-            required: true
-            default: "evolve"
-            allowed: ["evolve", "run", "score"]
-        starting_epoch:
-            type: integer
-            default: 0
+  type: dict
+  required: true
+  schema:
+    name:
+      type: string
+      required: true
+    mode:
+      type: string
+      required: true
+      default: "evolve"
+      allowed: [ "evolve", "run", "score" ]
+    starting_epoch:
+      type: integer
+      default: 0
 
 protocol:
-    type: dict
-    required: false
-    schema:
-        epochs:
-            type: integer
-            default: 0
-            min: 0
-            max: 48
-        new_branches:
-            type: integer
-            default: 1
-            min: 1
-            max: 24
-        constant_width:
-            type: boolean
-            default: true
-        prevent_fewer_branches:
-            type: boolean
-            default: true
-        memory_size:
-            type: integer
-            required: false
-            min: 0
-            max: 12
-            higher_than_length_of: memory_positions
-        memory_positions:
-            type: list
-            required: false
-            dependencies: memory_size
-            minlength: 1
-            maxlength: 12
-            schema:
-                type: list
-                minlength: 0
-                maxlength: 36
-                schema:
-                    type: integer
-                    min: 1
-                    max: 99999
-        failed_memory_size:
-            type: integer
-            required: false
-            min: 0
-            max: 12
-            higher_than_length_of: failed_memory_positions
-        failed_memory_positions:
-            type: list
-            required: false
-            dependencies: memory_size
-            minlength: 1
-            maxlength: 12
-            schema:
-                type: list
-                minlength: 0
-                maxlength: 36
-                schema:
-                    type: integer
-                    min: 1
-                    max: 99999
+  type: dict
+  required: false
+  schema:
+    epochs:
+      type: integer
+      default: 0
+      min: 0
+      max: 48
+    new_branches:
+      type: integer
+      default: 1
+      min: 1
+      max: 19
+    constant_width:
+      type: boolean
+      default: true
+    prevent_fewer_branches:
+      type: boolean
+      default: true
+    memory_size:
+      type: integer
+      required: false
+      min: 0
+      max: 12
+      higher_than_length_of: memory_positions
+    memory_positions:
+      type: list
+      required: false
+      dependencies: memory_size
+      minlength: 1
+      maxlength: 12
+      schema:
+        type: list
+        minlength: 0
+        maxlength: 36
+        schema:
+          type: integer
+          min: 1
+          max: 99999
+    failed_memory_size:
+      type: integer
+      required: false
+      min: 0
+      max: 12
+      higher_than_length_of: failed_memory_positions
+    failed_memory_positions:
+      type: list
+      required: false
+      dependencies: memory_size
+      minlength: 1
+      maxlength: 12
+      schema:
+        type: list
+        minlength: 0
+        maxlength: 36
+        schema:
+          type: integer
+          min: 1
+          max: 99999
 
-        memory_aminoacids:
-            type: list
-            required: false
-            minlength: 1
-            maxlength: 12
-            schema:
-                type: list
-                minlength: 1
-                maxlength: 19
-                schema:
-                    type: string
-                    allowed: ['A', 'R', 'N', 'D', 'C', 'E', 'Q', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V']
-                    minlength: 1
-                    maxlength: 1
+    memory_aminoacids:
+      type: list
+      required: false
+      minlength: 1
+      maxlength: 12
+      schema:
+        type: list
+        minlength: 1
+        maxlength: 19
+        schema:
+          type: string
+          allowed: [ 'A', 'R', 'N', 'D', 'C', 'E', 'Q', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V' ]
+          minlength: 1
+          maxlength: 1
 
 generation:
-    type: dict
-    required: true
-    schema:
-        generator:
+  type: dict
+  required: false
+  excludes: creation
+  schema:
+    generator:
+      type: string
+      default: SPM4i
+      required: True
+      allowed: [ SPM4, SPM4i, SPM4gmxmmpbsa ]
+    probe_radius:
+      type: float
+      min: 0.1
+      max: 4.0
+      default: 1.4
+
+creation:
+  type: dict
+  required: false
+  excludes: generation
+  schema:
+    sites:
+      type: integer
+      min: 1
+      max: 1
+      default: 1
+      required: True
+    sites_probability:
+      type: string
+      default: uniform
+      required: True
+      allowed: [ uniform, gmxmmpbsa ]
+    aa_bins_set:
+      type: boolean
+      default: True
+    aa_bins:
+      type: list
+      minlength: 2
+      maxlength: 20
+      required: False
+      dependencies: { aa_bins_set: True }
+      schema:
+          type: list
+          minlength: 1
+          maxlength: 20
+          schema:
             type: string
-            default: SPM4i
-            required: True
-            allowed: [SPM4, SPM4i, SPM4gmxmmpbsa]
-        probe_radius:
-            type: float
-            min: 0.1
-            max: 4.0
-            default: 1.4
+            allowed: [ "C", "D", "E", "S", "T", "R", "N", "Q", "H", "K", "A", "G",
+                   "I", "M", "L", "V", "P", "F", "W", "Y" ]
+    aa_bins_criteria:
+      type: string
+      default: exclusive
+      required: False
+      dependencies: { aa_bins_set: True }
+      allowed: [ exclusive, within ]
+    aa_probability:
+      type: string
+      default: uniform
+      required: False
+      dependencies: { aa_bins_set: True }
+      allowed: [ uniform, ReisBarletta, custom ]
+    aa_probability_custom:
+      type: dict
+      required: false
+      dependencies: { aa_bins_set: True, aa_probability: custom }
+      schema:
+        C:
+          type: float
+          required: True
+          min: 0
+          max: 1
+        D:
+          type: float
+          required: True
+          min: 0
+          max: 1
+        E:
+          type: float
+          required: True
+          min: 0
+          max: 1
+        S:
+          type: float
+          required: True
+          min: 0
+          max: 1
+        T:
+          type: float
+          required: True
+          min: 0
+          max: 1
+        R:
+          type: float
+          required: True
+          min: 0
+          max: 1
+        N:
+          type: float
+          required: True
+          min: 0
+          max: 1
+        Q:
+          type: float
+          required: True
+          min: 0
+          max: 1
+        H:
+          type: float
+          required: True
+          min: 0
+          max: 1
+        K:
+          type: float
+          required: True
+          min: 0
+          max: 1
+        A:
+          type: float
+          required: True
+          min: 0
+          max: 1
+        G:
+          type: float
+          required: True
+          min: 0
+          max: 1
+        I:
+          type: float
+          required: True
+          min: 0
+          max: 1
+        M:
+          type: float
+          required: True
+          min: 0
+          max: 1
+        L:
+          type: float
+          required: True
+          min: 0
+          max: 1
+        V:
+          type: float
+          required: True
+          min: 0
+          max: 1
+        P:
+          type: float
+          required: True
+          min: 0
+          max: 1
+        F:
+          type: float
+          required: True
+          min: 0
+          max: 1
+        W:
+          type: float
+          required: True
+          min: 0
+          max: 1
+        Y:
+          type: float
+          required: True
+          min: 0
+          max: 1
 
 mutation:
-    type: dict
-    required: true
-    schema:
-        mutator:
-            type: string
-            default: dlp
-            required: True
-            allowed: [ evoef2, dlp, dlpr ]
-            crosscheck_radius: true
-        reconstruct_radius:
-            type: float
-            min: 1.0
-            max: 20.0
-            default: 5.0
+  type: dict
+  required: true
+  schema:
+    mutator:
+      type: string
+      default: dlp
+      required: True
+      allowed: [ evoef2, dlp, dlpr ]
+      crosscheck_radius: true
+    reconstruct_radius:
+      type: float
+      min: 1.0
+      max: 20.0
+      default: 5.0
 
 pruning:
-    type: dict
-    required: true
-    schema:
-        prune:
-            type: integer
-            required: false
-            min: 1
-            max: 4
-        pruner:
-            type: string
-            default: "consensus"
-            required: true
-            allowed: ["consensus", "metropolis", "roundrobin"]
-        consensus_threshold:
-            type: integer
-            min: 1
-            max: 20
-            dependencies: {pruner: consensus}
-        roundrobin_threshold:
-            type: integer
-            min: 1
-            max: 20
-            dependencies: {pruner: roundrobin}
-        kT:
-            type: float
-            min: 0.1
-            max: 5.0
-            default: 0.593
+  type: dict
+  required: true
+  schema:
+    prune:
+      type: integer
+      required: false
+      min: 1
+      max: 4
+    pruner:
+      type: string
+      default: "consensus"
+      required: true
+      allowed: [ "consensus", "metropolis", "roundrobin" ]
+    consensus_threshold:
+      type: integer
+      min: 1
+      max: 20
+      dependencies: { pruner: consensus }
+    roundrobin_threshold:
+      type: integer
+      min: 1
+      max: 20
+      dependencies: { pruner: roundrobin }
+    kT:
+      type: float
+      min: 0.1
+      max: 5.0
+      default: 0.593
 
 md:
-    type: dict
-    required: true
-    schema:
-        gmx_mdrun:
-            type: string
-            required: false
-            default: "gmx mdrun"
-        mdp_names:
-            type: dict
-            required: true
-            schema:
-                min_mdp:
-                    type: string
-                    default: "min.mdp"
-                nvt_mdp:
-                    type: string
-                    default: "nvt.mdp"
-                npt_mdp:
-                    type: string
-                    default: "npt.mdp"
-        mps:
-            type: boolean
-            default: false
-            forbidden_if_true_mandatory_if_false: [ngpus, mpi_procs, omp_procs, pinoffsets]
-        numa_regions:
-            type: integer
-            allowed: [1, 2, 4, 8]
-            default: 4
-        ngpus:
-            type: integer
-            min: 1
-            max: 12
-            required: false
-            same_as_length_of: pinoffsets
-        mpi_procs:
-            type: integer
-            min: 1
-            max: 48
-            required: false
-        omp_procs:
-            type: integer
-            min: 1
-            max: 48
-            required: false
-        pinoffsets:
-            type: list
-            minlength: 1
-            maxlength: 12
-            required: false
-            schema:
-                type: integer
-        use_tleap:
-            type: boolean
-            default: false
-        force_field:
-            type: string
-            allowed: ["amber03", "amber94", "amber96", "amber99", "amber99sb-ildn",
-                        "amber99sb", "amberGS", "charmm27", "gromos43a1", "gromos43a2",
-                        "gromos45a3", "gromos53a5", "gromos53a6", "gromos54a7", "oplsaa"]
-            default: "amber99sb-ildn"
-            required: false
-        water_type:
-            type: string
-            default: "tip3p"
-            required: false
-            allowed: ["tip3p", "tip4p", "tip4pew", "tip5p", "spc", "spce"]
-        box_type:
-            type: string
-            required: true
-            default: "triclinic"
-            allowed: ["triclinic", "dodecahedron", "octahedron"]
-        maxwarn:
-            type: integer
-            min: 0
-            max: 20
-            default: 0
-        npt_restraints:
-            type: dict
-            required: false
-            schema:
-                posres:
-                    type: float
-                    min: 1
-                    max: 10000
-                    default: 1000
-                posres_water:
-                    type: float
-                    min: 1
-                    max: 10000
-                    default: 1000
+  type: dict
+  required: true
+  schema:
+    gmx_mdrun:
+      type: string
+      required: false
+      default: "gmx mdrun"
+    mdp_names:
+      type: dict
+      required: true
+      schema:
+        min_mdp:
+          type: string
+          default: "min.mdp"
+        nvt_mdp:
+          type: string
+          default: "nvt.mdp"
+        npt_mdp:
+          type: string
+          default: "npt.mdp"
+    mps:
+      type: boolean
+      default: false
+      forbidden_if_true_mandatory_if_false: [ ngpus, mpi_procs, omp_procs, pinoffsets ]
+    numa_regions:
+      type: integer
+      allowed: [ 1, 2, 4, 8 ]
+      default: 4
+    ngpus:
+      type: integer
+      min: 1
+      max: 12
+      required: false
+      same_as_length_of: pinoffsets
+    mpi_procs:
+      type: integer
+      min: 1
+      max: 48
+      required: false
+    omp_procs:
+      type: integer
+      min: 1
+      max: 48
+      required: false
+    pinoffsets:
+      type: list
+      minlength: 1
+      maxlength: 12
+      required: false
+      schema:
+        type: integer
+    use_tleap:
+      type: boolean
+      default: false
+    force_field:
+      type: string
+      allowed: [ "amber03", "amber94", "amber96", "amber99", "amber99sb-ildn",
+                 "amber99sb", "amberGS", "charmm27", "gromos43a1", "gromos43a2",
+                 "gromos45a3", "gromos53a5", "gromos53a6", "gromos54a7", "oplsaa" ]
+      default: "amber99sb-ildn"
+      required: false
+    water_type:
+      type: string
+      default: "tip3p"
+      required: false
+      allowed: [ "tip3p", "tip4p", "tip4pew", "tip5p", "spc", "spce" ]
+    box_type:
+      type: string
+      required: true
+      default: "triclinic"
+      allowed: [ "triclinic", "dodecahedron", "octahedron" ]
+    maxwarn:
+      type: integer
+      min: 0
+      max: 20
+      default: 0
+    npt_restraints:
+      type: dict
+      required: false
+      schema:
+        posres:
+          type: float
+          min: 1
+          max: 10000
+          default: 1000
+        posres_water:
+          type: float
+          min: 1
+          max: 10000
+          default: 1000
 
 target:
-    type: dict
-    required: true
-    schema:
-        chainID:
-            type: list
-            minlength: 1
-            maxlength: 10
-            required: true
-            schema:
-                type: string
-                maxlength: 1
+  type: dict
+  required: true
+  schema:
+    chainID:
+      type: list
+      minlength: 1
+      maxlength: 10
+      required: true
+      schema:
+        type: string
+        maxlength: 1
 
 binder:
-    type: dict
-    required: true
-    schema:
-        chainID:
-            type: list
-            minlength: 1
-            maxlength: 10
-            required: true
-            schema:
-                type: string
-                allowed: [A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z]
-                required: true
-        mutating_chainID:
-            type: list
-            minlength: 1
-            maxlength: 10
-            required: true
-            schema:
-                type: string
-                allowed: [A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z]
-                required: true
-        mutating_resSeq:
-            type: list
-            minlength: 1
-            maxlength: 10
-            required: true
-            same_length: mutating_chainID
-            schema:
-                type: list
-                minlength: 1
-                maxlength: 20
-                required: true
-                sorted: true
-                unique: true
-                schema:
-                    type: integer
-                    min: 1
-                    max: 99999
-                    required: true
-        mutating_resname:
-            type: list
-            minlength: 1
-            maxlength: 10
-            required: true
-            same_length: mutating_chainID
-            schema:
-                type: list
-                minlength: 1
-                maxlength: 20
-                required: true
-                schema:
-                    type: string
-                    allowed: [A,C,D,E,F,G,H,I,K,L,M,N,P,Q,R,S,T,V,W,Y]
-                    required: true
+  type: dict
+  required: true
+  schema:
+    chainID:
+      type: list
+      minlength: 1
+      maxlength: 10
+      required: true
+      schema:
+        type: string
+        allowed: [ A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z ]
+        required: true
+    mutating_chainID:
+      type: list
+      minlength: 1
+      maxlength: 10
+      required: true
+      schema:
+        type: string
+        allowed: [ A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z ]
+        required: true
+    mutating_resSeq:
+      type: list
+      minlength: 1
+      maxlength: 10
+      required: true
+      same_length: mutating_chainID
+      schema:
+        type: list
+        minlength: 1
+        maxlength: 20
+        required: true
+        sorted: true
+        unique: true
+        schema:
+          type: integer
+          min: 1
+          max: 99999
+          required: true
+    mutating_resname:
+      type: list
+      minlength: 1
+      maxlength: 10
+      required: true
+      same_length: mutating_chainID
+      schema:
+        type: list
+        minlength: 1
+        maxlength: 20
+        required: true
+        schema:
+          type: string
+          allowed: [ A,C,D,E,F,G,H,I,K,L,M,N,P,Q,R,S,T,V,W,Y ]
+          required: true
 
 scoring:
-    type: dict
-    required: true
-    schema:
-        scorers:
-            type: list
-            minlength: 1
-            maxlength: 20
-            required: true
-            unique_values: true
-            schema:
-                type: string
-                allowed: ["bach", "bluues", "bluuesbmf", "evoef2", "haddock", "piepisa", "pisa", "rosetta", "gmxmmpbsa", "autodockvina"]
-        nthreads:
-            type: integer
-            min: 1
-            max: 256
-            required: true
-        mpi_procs:
-            type: integer
-            min: 1
-            max: 256
-            required: true
-        start:
-            type: integer
-            default: 0
-            min: 0
-            max: 999999
-            required: false
-        end:
-            type: integer
-            default: -1
-            min: -1
-            max: 999999
-            required: false
-            scoring_end: true
-        allowed_nonstandard_residues:
-            type: list
-            minlength: 0
-            maxlength: 12
-            schema:
-                type: string
-                minlength: 3
-                maxlength: 4
-            default: []
+  type: dict
+  required: true
+  schema:
+    scorers:
+      type: list
+      minlength: 1
+      maxlength: 20
+      required: true
+      unique_values: true
+      schema:
+        type: string
+        allowed: [ "bach", "bluues", "bluuesbmf", "evoef2", "haddock", "piepisa", "pisa", "rosetta", "gmxmmpbsa", "autodockvina" ]
+    nthreads:
+      type: integer
+      min: 1
+      max: 256
+      required: true
+    mpi_procs:
+      type: integer
+      min: 1
+      max: 256
+      required: true
+    start:
+      type: integer
+      default: 0
+      min: 0
+      max: 999999
+      required: false
+    end:
+      type: integer
+      default: -1
+      min: -1
+      max: 999999
+      required: false
+      scoring_end: true
+    allowed_nonstandard_residues:
+      type: list
+      minlength: 0
+      maxlength: 12
+      schema:
+        type: string
+        minlength: 3
+        maxlength: 4
+      default: [ ]
 statistics:
-    type: dict
-    required: false
-    schema:
-        interface:
-            type: dict
-            schema:
-                run:
-                    type: boolean
-                warn_above:
-                    type: float
-                    min: 0.0
-                    max: 999.0
-                    higher_than: warn_below
-                warn_below:
-                    type: float
-                    min: 0.0
-                    max: 999.0
-                warn_above_relative:
-                    type: float
-                    min: 1.0
-                    max: 10.0
-                warn_below_relative:
-                    type: float
-                    min: 0.0
-                    max: 1.0
-                warn_variance:
-                    type: float
-                    min: 0.0
-                    max: 99999.0
-                warn_variance_relative:
-                    type: float
-                    min: 0.0
-                    max: 5.0
-                nthreads:
-                    type: integer
-                    min: 1
-                    max: 24
-                    default: 1
-        cmdistance:
-            type: dict
-            schema:
-                run:
-                    type: boolean
-                warn_above:
-                    type: float
-                    min: 0.0
-                    max: 999.0
-                    higher_than: warn_below
-                warn_below:
-                    type: float
-                    min: 0.0
-                    max: 999.0
-                warn_above_relative:
-                    type: float
-                    min: 1.0
-                    max: 10.0
-                warn_below_relative:
-                    type: float
-                    min: 0.0
-                    max: 1.0
-                warn_variance:
-                    type: float
-                    min: 0.0
-                    max: 99999.0
+  type: dict
+  required: false
+  schema:
+    interface:
+      type: dict
+      schema:
+        run:
+          type: boolean
+        warn_above:
+          type: float
+          min: 0.0
+          max: 999.0
+          higher_than: warn_below
+        warn_below:
+          type: float
+          min: 0.0
+          max: 999.0
+        warn_above_relative:
+          type: float
+          min: 1.0
+          max: 10.0
+        warn_below_relative:
+          type: float
+          min: 0.0
+          max: 1.0
+        warn_variance:
+          type: float
+          min: 0.0
+          max: 99999.0
+        warn_variance_relative:
+          type: float
+          min: 0.0
+          max: 5.0
+        nthreads:
+          type: integer
+          min: 1
+          max: 24
+          default: 1
+    cmdistance:
+      type: dict
+      schema:
+        run:
+          type: boolean
+        warn_above:
+          type: float
+          min: 0.0
+          max: 999.0
+          higher_than: warn_below
+        warn_below:
+          type: float
+          min: 0.0
+          max: 999.0
+        warn_above_relative:
+          type: float
+          min: 1.0
+          max: 10.0
+        warn_below_relative:
+          type: float
+          min: 0.0
+          max: 1.0
+        warn_variance:
+          type: float
+          min: 0.0
+          max: 99999.0
 

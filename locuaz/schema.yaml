@@ -154,6 +154,9 @@ creation:
       max: 1
       default: 1
       required: True
+    sites_interfacing:
+      type: boolean
+      default: True
     sites_probability:
       type: string
       default: uniform

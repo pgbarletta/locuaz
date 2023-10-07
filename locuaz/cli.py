@@ -9,7 +9,7 @@ from collections import defaultdict
 from itertools import product, chain
 from pathlib import Path
 from queue import PriorityQueue
-from typing import Dict, List, Final, Set, Tuple, Union, Any, Optional
+from typing import Dict, List, Final, Set, Tuple, Union, Any
 import subprocess as sp
 
 import yaml
@@ -412,6 +412,7 @@ def check_mutation_generation(config: Dict[str, Any]) -> None:
                                              ['A', 'G', 'I', 'M', 'L', 'V'],
                                              ['P', 'F', 'W', 'Y']]
             warn(f'Using default "aa_bins": {config["creation"]["aa_bins"]}')
+
 
 def set_statistics(config: Dict) -> None:
     """

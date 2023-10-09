@@ -287,3 +287,13 @@ class Validatore(Validator):
                     self._error(field, f" is set. The following options cannot be also set: {others}.")
             elif not forbidden_opts.issubset(specified_opts):
                 self._error(field, f" is not set. The following options must be set: {others}.")
+
+    def _validate_enforce_true(self, relationship, field, value):
+        """_validate_enforce_true
+
+        The rule's arguments are validated against this schema:
+        {'type': 'dict'}
+        """
+        for key, other_opt in relationship.items():
+            if key == value and not self.document[other_opt]:
+                self._error(field, f" is set to {key}. {other_opt} must be true.")

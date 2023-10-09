@@ -168,6 +168,7 @@ creation:
       default: uniform
       required: True
       allowed: [ uniform, gmxmmpbsa ]
+      enforce_true: {gmxmmpbsa: "sites_interfacing"}
     aa_bins_set:
       type: boolean
       default: True

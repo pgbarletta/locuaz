@@ -11,6 +11,7 @@ from pathlib import Path
 from queue import PriorityQueue
 from typing import Dict, List, Final, Set, Tuple, Union, Any
 import subprocess as sp
+from numpy.testing import assert_almost_equal
 
 import yaml
 import networkx as nx
@@ -412,6 +413,14 @@ def check_mutation_generation(config: Dict[str, Any]) -> None:
                                              ['A', 'G', 'I', 'M', 'L', 'V'],
                                              ['P', 'F', 'W', 'Y']]
             warn(f'Using default "aa_bins": {config["creation"]["aa_bins"]}')
+
+    if config["creation"]["aa_probability"] == "custom":
+        pbbty = sum(config["creation"]["aa_probability_custom"].values())
+        try:
+            assert_almost_equal(1.0, pbbty, decimal=2)
+        except AssertionError as e:
+            raise UserInputError("Probabilites from 'aa_probability_custom' "
+                                 f'must add up to 1. It adds up to: {pbbty}.') from e
 
 
 def set_statistics(config: Dict) -> None:

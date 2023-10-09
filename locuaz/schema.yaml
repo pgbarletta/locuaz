@@ -167,8 +167,8 @@ creation:
       type: string
       default: uniform
       required: True
-      allowed: [ uniform, gmxmmpbsa ]
-      enforce_true: {gmxmmpbsa: "sites_interfacing"}
+      allowed: [ uniform, mmpbsa ]
+      enforce_true: {mmpbsa: "sites_interfacing"}
     aa_bins_set:
       type: boolean
       default: True

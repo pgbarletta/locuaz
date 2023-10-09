@@ -377,24 +377,30 @@ def check_gmxmmpbsa_legacy(config: Dict) -> None:
 
 
 def check_mutation_generation(config: Dict[str, Any]) -> None:
-    # First, check the site probability.
-    if config["creation"]["sites_probability"] == "gmxmmpbsa":
-        if config["generation"]["generator"] == "SPM4gmxmmpbsa":
-            if "gmxmmpbsa" not in config["scoring"]["scorers"]:
-                print(f"'gmxmmbpsa' function is necessary to use the gmxmmpbsa "
-                      "probability distribution.", flush=True, file=sys.stderr)
-                raise UserInputError
-            with open(Path(config["paths"]["scorers"], "gmxmmpbsa", "gmxmmpbsa"), 'r') as file:
-                for line in file:
-                    if "idecomp" in line:
-                        return
-                    else:
-                        continue
-                print(f"Input 'gmxmmbpsa' is not performing 'idecomp' residue "
-                      "decomposition. This is a prerequisite for the gmxmmpbsa "
-                      "probability distribution.", flush=True, file=sys.stderr)
-                raise UserInputError
-    # Then, check the bins.
+    check_sites_mmpbsa(config)
+    check_bins(config)
+    check_custom_probability(config)
+
+
+def check_sites_mmpbsa(config: Dict) -> None:
+    if config["creation"]["sites_probability"] == "mmpbsa":
+        if "gmxmmpbsa" not in config["scoring"]["scorers"]:
+            print(f"'gmxmmbpsa' function is necessary to use the mmpbsa "
+                  "probability distribution.", flush=True, file=sys.stderr)
+            raise UserInputError
+        with open(Path(config["paths"]["scorers"], "gmxmmpbsa", "gmxmmpbsa"), 'r') as file:
+            for line in file:
+                if "idecomp" in line:
+                    return
+                else:
+                    continue
+            print(f"Input 'gmxmmbpsa' is not performing 'idecomp' residue "
+                  "decomposition. This is a prerequisite for the gmxmmpbsa "
+                  "probability distribution.", flush=True, file=sys.stderr)
+            raise UserInputError
+
+
+def check_bins(config: Dict) -> None:
     if config["creation"]["aa_bins_set"]:
         if config["creation"].get("aa_bins"):
             aas_wo_cys = {'D', 'E', 'S', 'T', 'R', 'N', 'Q', 'H', 'K', 'A', 'G',
@@ -414,6 +420,8 @@ def check_mutation_generation(config: Dict[str, Any]) -> None:
                                              ['P', 'F', 'W', 'Y']]
             warn(f'Using default "aa_bins": {config["creation"]["aa_bins"]}')
 
+
+def check_custom_probability(config: Dict) -> None:
     if config["creation"]["aa_probability"] == "custom":
         pbbty = sum(config["creation"]["aa_probability_custom"].values())
         try:

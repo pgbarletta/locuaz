@@ -10,6 +10,7 @@ from locuaz.fileutils import DirHandle
 from locuaz.gromacsutils import remove_overlapping_solvent
 from locuaz.molecules import PDBStructure
 from locuaz.mutationgenerators import mutation_generators
+from mutationcreation import MutationCreator
 from locuaz.basemutator import memorize_mutations
 from locuaz.mutators import mutators
 from locuaz.projectutils import WorkProject, Epoch, Branch
@@ -22,39 +23,50 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
         work_pjct (WorkProject):
         log (Logger):
     """
-    name = work_pjct.config["main"]["name"]
+    config = work_pjct.config
+    name = config["main"]["name"]
     old_epoch = work_pjct.epochs[-1]
     epoch_id = old_epoch.id + 1
     current_epoch = Epoch(epoch_id, branches={}, nvt_done=False, npt_done=False)
 
-    # Create required mutator
-    mutator = mutators[work_pjct.config["mutation"]["mutator"]](
-        work_pjct.config["paths"]["mutator"], work_pjct.config["mutation"]["reconstruct_radius"]
+    mutator = mutators[config["mutation"]["mutator"]](
+        config["paths"]["mutator"], config["mutation"]["reconstruct_radius"]
     )
-    # Create required mutation generator and generate mutation.
-    generator = mutation_generators[work_pjct.config["generation"]["generator"]]
+    # TODO: Deprecate
+    if config.get("generation"):
+        generator = mutation_generators[config["generation"]["generator"]]
     successful_mutations = 0
 
-    if work_pjct.config["protocol"]["constant_width"]:
-        branches = work_pjct.config["protocol"]["new_branches"]
+    if config["protocol"]["constant_width"]:
+        branches = config["protocol"]["new_branches"]
     else:
-        branches = work_pjct.config["protocol"]["new_branches"] * len(old_epoch.top_branches)
+        branches = config["protocol"]["new_branches"] * len(old_epoch.top_branches)
 
     # Usually, this `while` would only be executed once, unless the Mutator program fails to perform a mutation.
     while successful_mutations < branches:
-        mutation_generator = generator(
-            old_epoch,
-            branches - successful_mutations,
-            excluded_aas=work_pjct.get_mem_aminoacids(),
-            excluded_pos=work_pjct.get_mem_positions(),
-            use_tleap=work_pjct.config["md"]["use_tleap"],
-            logger=log,
-            probe_radius=work_pjct.config["generation"]["probe_radius"])
+        # TODO: Deprecate
+        if config.get("creation"):
+            mutation_generator_creator = MutationCreator(old_epoch,
+                                                         branches - successful_mutations,
+                                                         config["creation"],
+                                                         excluded_aas=work_pjct.get_mem_aminoacids(),
+                                                         excluded_pos=work_pjct.get_mem_positions(),
+                                                         use_tleap=config["md"]["use_tleap"])
+        else:
+            # TODO: Deprecate
+            mutation_generator_creator = generator(
+                old_epoch,
+                branches - successful_mutations,
+                excluded_aas=work_pjct.get_mem_aminoacids(),
+                excluded_pos=work_pjct.get_mem_positions(),
+                use_tleap=config["md"]["use_tleap"],
+                logger=log,
+                probe_radius=config["generation"]["probe_radius"])
 
-        for old_branch_name, mutations in mutation_generator.items():
+        for old_branch_name, mutations in mutation_generator_creator.items():
             old_branch = old_epoch.top_branches[old_branch_name]
 
-            if work_pjct.config["md"]["use_tleap"]:
+            if config["md"]["use_tleap"]:
                 # GROMACS renumbers resSeqs to strided numbering. If using Amber's continuous
                 # numbering, this will result in the wrong mutating_resSeq.
                 # Backup the PDB before running pdb4amber
@@ -95,7 +107,8 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
                             selection_wations=old_branch.complex.top.selection_not_complex)
                     except AssertionError as e:
                         # Mutator failed. This position will still be memorized.
-                        log.info(f"Mutation of {branch_name} failed. Will try with another one. Backing-up {branch_path} .")
+                        log.info(
+                            f"Mutation of {branch_name} failed. Will try with another one. Backing-up {branch_path} .")
                         print(e, file=sys.stderr)
                         failed_branch_path = Path(work_pjct.dir_handle, f"failed_{epoch_id}-{branch_name}")
                         sh.move(branch_path, failed_branch_path)
@@ -105,7 +118,7 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
                     mutation.resSeq,
                     Path(branch_path, f"{name}.pdb"),
                     log,
-                    use_tleap=work_pjct.config["md"]["use_tleap"],
+                    use_tleap=config["md"]["use_tleap"],
                 )
 
                 # Copy tleap files, if necessary
@@ -114,9 +127,9 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
                 this_iter.complex = GROComplex.from_pdb(
                     name=name,
                     input_dir=branch_path,
-                    target_chains=work_pjct.config["target"]["chainID"],
-                    binder_chains=work_pjct.config["binder"]["chainID"],
-                    md_config=work_pjct.config["md"],
+                    target_chains=config["target"]["chainID"],
+                    binder_chains=config["binder"]["chainID"],
+                    md_config=config["md"],
                     add_ions=True,
                 )
                 current_epoch[branch_name] = this_iter

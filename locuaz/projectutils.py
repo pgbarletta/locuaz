@@ -7,7 +7,7 @@ from collections import deque, Counter
 from collections.abc import MutableMapping
 # TODO: replace own pairwise with itertools' on 3.10
 # from itertools import pairwise
-from itertools import tee, zip_longest
+from itertools import zip_longest, pairwise
 from pathlib import Path
 from queue import PriorityQueue
 from typing import (
@@ -41,11 +41,11 @@ from locuaz.mutation import Mutation
 
 
 # TODO: replace own pairwise with itertools' on 3.10
-def pairwise(iterable):
-    # pairwise('ABCDEFG') --> AB BC CD DE EF FG
-    a, b = tee(iterable)
-    next(b, None)
-    return zip(a, b)
+# def pairwise(iterable):
+#     # pairwise('ABCDEFG') --> AB BC CD DE EF FG
+#     a, b = tee(iterable)
+#     next(b, None)
+#     return zip(a, b)
 
 
 @define
@@ -786,17 +786,17 @@ class WorkProject:
             mutations: Dict[str, str] = {}
             for branch_name, branch in self.epochs[-2].items():
                 previous_branches.append(Path(branch.dir_handle).name)
-                mutations[branch_name] = branch.mutation
+                mutations[branch_name] = str(branch.mutation)
 
             current_branches: List[str] = []
             for branch_name, branch in self.epochs[-1].items():
                 current_branches.append(Path(branch.dir_handle).name)
-                mutations[branch_name] = branch.mutation
+                mutations[branch_name] = str(branch.mutation)
 
             top_branches: List[str] = []
             for branch_name, branch in self.epochs[-2].top_branches.items():
                 top_branches.append(Path(branch.dir_handle).name)
-                mutations[branch_name] = branch.mutation
+                mutations[branch_name] = str(branch.mutation)
 
             tracking = {
                 "previous_branches": previous_branches,

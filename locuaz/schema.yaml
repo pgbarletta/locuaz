@@ -130,7 +130,6 @@ protocol:
 generation:
   type: dict
   required: false
-  excludes: creation
   schema:
     generator:
       type: string
@@ -146,7 +145,7 @@ generation:
 creation:
   type: dict
   required: false
-  excludes: generation
+  default: {'sites': 1}
   schema:
     sites:
       type: integer
@@ -169,39 +168,30 @@ creation:
       required: True
       allowed: [ uniform, mmpbsa ]
       enforce_true: {mmpbsa: "sites_interfacing"}
-    aa_bins_set:
-      type: boolean
-      default: True
     aa_bins:
       type: list
-      minlength: 2
+      minlength: 1
       maxlength: 20
-      required: False
-      dependencies: { aa_bins_set: True }
+      required: True
+      default: ["DEST", "AGIMLV", "PFWY", "RNQHK"]
       schema:
-          type: list
+          type: string
           minlength: 1
           maxlength: 20
-          schema:
-            type: string
-            allowed: [ "C", "D", "E", "S", "T", "R", "N", "Q", "H", "K", "A", "G",
-                   "I", "M", "L", "V", "P", "F", "W", "Y" ]
     aa_bins_criteria:
       type: string
       default: exclusive
-      required: False
-      dependencies: { aa_bins_set: True }
+      required: True
       allowed: [ exclusive, within ]
     aa_probability:
       type: string
       default: uniform
-      required: False
-      dependencies: { aa_bins_set: True }
+      required: True
       allowed: [ uniform, ReisBarletta, custom ]
     aa_probability_custom:
       type: dict
-      required: false
-      dependencies: { aa_bins_set: True, aa_probability: custom }
+      required: False
+      dependencies: { aa_probability: custom }
       schema:
         C:
           type: float

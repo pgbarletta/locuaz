@@ -99,9 +99,15 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
                                               f"different lengths: {len(resnames)} and {len(resSeqs)}, respectively."
 
     # Check creation and check gmxmmpbsa options
-    check_mutation_generation(config)
-    # Check legacy generation and gmxmmpbsa options
-    check_gmxmmpbsa_legacy(config)
+    # TODO: deprecate
+    if config.get("creation"):
+        assert not config.get("generation"), "Cannot set 'generation' and 'creation' at the same time."
+        check_mutation_generation(config)
+    else:
+        warn("Mutation Generator will be deprecated in 0.8.0. "
+             "Use Mutation Creator instead.")
+        # Check legacy generation and gmxmmpbsa options
+        check_gmxmmpbsa_legacy(config)
 
     # Check consensus threshold and scorers
     if config["pruning"]["pruner"] == "consensus":
@@ -356,30 +362,32 @@ def set_branches(config: Dict) -> Dict:
         return config
     raise ValueError("No valid branches in work_dir. Aborting.")
 
-
+# TODO: deprecate
 def check_gmxmmpbsa_legacy(config: Dict) -> None:
-    if config["generation"]["generator"] == "SPM4gmxmmpbsa":
-        if "gmxmmpbsa" not in config["scoring"]["scorers"]:
-            print(f"'gmxmmbpsa' function is necessary to use the 'SPM4mmpbsa' mutator",
-                  flush=True, file=sys.stderr)
-            raise UserInputError
+    if generation_config := config.get("generation"):
+        if generation_config["generator"] == "SPM4gmxmmpbsa":
+            if "gmxmmpbsa" not in config["scoring"]["scorers"]:
+                print(f"'gmxmmbpsa' function is necessary to use the 'SPM4mmpbsa' mutator",
+                      flush=True, file=sys.stderr)
+                raise UserInputError
 
-        with open(Path(config["paths"]["scorers"], "gmxmmpbsa", "gmxmmpbsa"), 'r') as file:
-            for line in file:
-                if "idecomp" in line:
-                    return
-                else:
-                    continue
-            print(f"Input 'gmxmmbpsa' is not performing 'idecomp' residue decomposition. "
-                  "This is a prerequisite for the SPM4gmxmmpbsa Mutation Generator.",
-                  flush=True, file=sys.stderr)
-            raise UserInputError
+            with open(Path(config["paths"]["scorers"], "gmxmmpbsa", "gmxmmpbsa"), 'r') as file:
+                for line in file:
+                    if "idecomp" in line:
+                        return
+                    else:
+                        continue
+                print(f"Input 'gmxmmbpsa' is not performing 'idecomp' residue decomposition. "
+                      "This is a prerequisite for the SPM4gmxmmpbsa Mutation Generator.",
+                      flush=True, file=sys.stderr)
+                raise UserInputError
 
 
 def check_mutation_generation(config: Dict[str, Any]) -> None:
-    check_sites_mmpbsa(config)
-    check_bins(config)
-    check_custom_probability(config)
+    if config.get("creation"):
+        check_sites_mmpbsa(config)
+        check_bins(config)
+        check_custom_probability(config)
 
 
 def check_sites_mmpbsa(config: Dict) -> None:
@@ -401,24 +409,28 @@ def check_sites_mmpbsa(config: Dict) -> None:
 
 
 def check_bins(config: Dict) -> None:
-    if config["creation"]["aa_bins_set"]:
-        if config["creation"].get("aa_bins"):
-            aas_wo_cys = {'D', 'E', 'S', 'T', 'R', 'N', 'Q', 'H', 'K', 'A', 'G',
-                          'I', 'M', 'L', 'V', 'P', 'F', 'W', 'Y'}
-            missing_aas = aas_wo_cys.symmetric_difference(
-                set(chain.from_iterable(config["creation"]["aa_bins"])))
-            if len(missing_aas) != 0 and missing_aas != {'C'}:
-                raise ValueError(
-                    f'Invalid input "aa_bins": {config["creation"]["aa_bins"]}\n'
-                    f'Missing amino acids: {missing_aas}\n'
-                    f'Enter all amino acids. Only "C" can be missing.')
-        else:
-            # Cysteine is not included.
-            config["creation"]["aa_bins"] = [['D', 'E', 'S', 'T'],
-                                             ['R', 'N', 'Q', 'H', 'K'],
-                                             ['A', 'G', 'I', 'M', 'L', 'V'],
-                                             ['P', 'F', 'W', 'Y']]
-            warn(f'Using default "aa_bins": {config["creation"]["aa_bins"]}')
+    if bins := config["creation"].get("aa_bins"):
+        bins = [ list(bin) for bin in bins ]
+        aas_wo_cys = {'D', 'E', 'S', 'T', 'R', 'N', 'Q', 'H', 'K', 'A', 'G',
+                      'I', 'M', 'L', 'V', 'P', 'F', 'W', 'Y'}
+        missing_aas = aas_wo_cys.symmetric_difference(
+            set(chain.from_iterable(bins)))
+        if len(missing_aas) != 0 and missing_aas != {'C'}:
+            raise ValueError(
+                f'Invalid input "aa_bins": {bins}\n'
+                f'Missing amino acids: {missing_aas}\n'
+                f'Enter all amino acids. Only "C" can be missing.')
+        if len(bins) < 2 and config["creation"]["aa_bins_criteria"] == "exclusive":
+            raise UserInputError(f"Cannot set 'aa_bins_criteria' to exclusive "
+                                 "with just 1 bin.")
+        config["creation"]["aa_bins"] = bins
+    else:
+        # Cysteine is not included.
+        config["creation"]["aa_bins"] = [['D', 'E', 'S', 'T'],
+                                         ['R', 'N', 'Q', 'H', 'K'],
+                                         ['A', 'G', 'I', 'M', 'L', 'V'],
+                                         ['P', 'F', 'W', 'Y']]
+        warn(f'Using default "aa_bins": {config["creation"]["aa_bins"]}')
 
 
 def check_custom_probability(config: Dict) -> None:

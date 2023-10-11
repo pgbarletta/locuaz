@@ -9,6 +9,15 @@ History
    interactions with small molecules that will be discarded from the PDBs used
    for scoring, unless their resnames show up on the
    'allowed_nonstandard_residues' list.
+ * Added RoundRobin pruner. It'll take the current branches and the top branches
+   from the previous epoch and select ``N`` branches as the new top branches.
+   As a consequence, failed epochs won't be branded as such and branches from an
+   epoch ``i`` may come from a mix of branches from the epochs ``i-1`` and
+   ``i-2``.
+ * Added MutationCreator as a future replacement of MutationGenerator. Favouring
+   composition over inheritance, MutationCreator is fully user-customizable
+   instead of offering a set of fixed options as MutationGenerator.
+   MutationCreator offers all the possibilities from MutationGenerator and more.
 
 0.6.3 (2023-10-)
 ------------------

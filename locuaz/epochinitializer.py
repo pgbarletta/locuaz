@@ -10,18 +10,24 @@ from locuaz.fileutils import DirHandle
 from locuaz.gromacsutils import remove_overlapping_solvent
 from locuaz.molecules import PDBStructure
 from locuaz.mutationgenerators import mutation_generators
-from mutationcreation import MutationCreator
+from locuaz.mutationcreation import MutationCreator
 from locuaz.basemutator import memorize_mutations
 from locuaz.mutators import mutators
 from locuaz.projectutils import WorkProject, Epoch, Branch
 
 
 def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
-    """initialize_new_epoch(): This is a specific protocol, others will be added
+    """
 
-    Args:
-        work_pjct (WorkProject):
-        log (Logger):
+    Parameters
+    ----------
+    work_pjct : WorkProject
+        Work Project
+    log : Logger
+        Logger
+    Returns
+    -------
+    None
     """
     config = work_pjct.config
     name = config["main"]["name"]
@@ -35,23 +41,21 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
     # TODO: Deprecate
     if config.get("generation"):
         generator = mutation_generators[config["generation"]["generator"]]
+
+    branches = config["protocol"]["new_branches"]
+    if not config["protocol"]["constant_width"]:
+        branches *= len(old_epoch.top_branches)
     successful_mutations = 0
-
-    if config["protocol"]["constant_width"]:
-        branches = config["protocol"]["new_branches"]
-    else:
-        branches = config["protocol"]["new_branches"] * len(old_epoch.top_branches)
-
     # Usually, this `while` would only be executed once, unless the Mutator program fails to perform a mutation.
-    while successful_mutations < branches:
+    while True:
         # TODO: Deprecate
         if config.get("creation"):
-            mutation_generator_creator = MutationCreator(old_epoch,
+            mutation_generator_creator = MutationCreator(old_epoch.top_branches,
                                                          branches - successful_mutations,
                                                          config["creation"],
                                                          excluded_aas=work_pjct.get_mem_aminoacids(),
-                                                         excluded_pos=work_pjct.get_mem_positions(),
-                                                         use_tleap=config["md"]["use_tleap"])
+                                                         excluded_sites=work_pjct.get_mem_positions(),
+                                                         amber_numbering=config["md"]["use_tleap"])
         else:
             # TODO: Deprecate
             mutation_generator_creator = generator(
@@ -63,6 +67,13 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
                 logger=log,
                 probe_radius=config["generation"]["probe_radius"])
 
+        # It may be that the number of branches that were asked is higher that
+        # the nbr of mutations that can be done. Eg: Mutation Creator aa_criteria
+        # is set to 'within' and
+        # In this case, the MG will output a warning and give back a reduced
+        # number of mutations. That's why we will compare `successful_mutations`
+        # with `actual_mutations`.
+        actual_mutations = len(mutation_generator_creator)
         for old_branch_name, mutations in mutation_generator_creator.items():
             old_branch = old_epoch.top_branches[old_branch_name]
 
@@ -137,4 +148,6 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
 
             # TODO: check if this works with mutations on different positions
             memorize_mutations(work_pjct, current_epoch, mutations)
+        if actual_mutations == successful_mutations:
+            break
     work_pjct.new_epoch(current_epoch)

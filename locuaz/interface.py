@@ -11,8 +11,10 @@ from locuaz.molecules import PDBStructure
 from locuaz.fileutils import FileHandle
 
 
-def get_interfacing_residues(pdb_input: Union[PDBStructure, FileHandle, Path], chainIDs: List[str],
-                             probe_radius: float = 1.4, use_tleap: bool = False) -> Set[int]:
+def get_interfacing_residues(pdb_input: Union[PDBStructure, FileHandle, Path],
+                             chainIDs: List[str],
+                             probe_radius: float = 1.4,
+                             amber_numbering: bool = False) -> Set[int]:
     """
     get_interfacing_residues(): use freesasa to get the resSeq of the binder residues that are in contact with
     the target. These can be used to guide the 2choice of the next mutated position.
@@ -20,7 +22,7 @@ def get_interfacing_residues(pdb_input: Union[PDBStructure, FileHandle, Path], c
         pdb_input (Union[PDBStructure, FileHandle, Path]): input PDB.
         chainIDs (List[str]): only residues belonging to these chains will be reported.
         probe_radius: probe_radius for freesasa
-        use_tleap (bool): if True, it will renumber the resSeqs of the input PDB (on another temporary PDB)
+        amber_numbering (bool): if True, it will renumber the resSeqs of the input PDB (on another temporary PDB)
         as per Amber numbering scheme, that is, continuous resSeq numbers as opposed to GROMACS numbering
         which starts at 1 on each chain.
 
@@ -34,7 +36,7 @@ def get_interfacing_residues(pdb_input: Union[PDBStructure, FileHandle, Path], c
     complex = u.select_atoms("not (resname SOL or resname WAT or resname CL or resname NA or resname Cl or resname Na)")
     # Renumber resSeq when using Amber numbering since GROMACS will have renumbered the PDB
     # to start at 1 on each chain
-    if use_tleap:
+    if amber_numbering:
         complex.residues.resids = range(1, len(complex.residues.resnums) + 1)
 
     with warnings.catch_warnings():

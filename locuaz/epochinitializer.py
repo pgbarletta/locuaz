@@ -38,13 +38,18 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
     mutator = mutators[config["mutation"]["mutator"]](
         config["paths"]["mutator"], config["mutation"]["reconstruct_radius"]
     )
-    # TODO: Deprecate
+
     if config.get("generation"):
         generator = mutation_generators[config["generation"]["generator"]]
+        branches = config["protocol"]["new_branches"] * config["generation"]["sites"]
 
-    branches = config["protocol"]["new_branches"]
+    else:
+        # TODO: Deprecate
+        branches = config["protocol"]["new_branches"]
+
     if not config["protocol"]["constant_width"]:
         branches *= len(old_epoch.top_branches)
+
     successful_mutations = 0
     # Usually, this `while` would only be executed once, unless the Mutator program fails to perform a mutation.
     while True:
@@ -53,7 +58,6 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
             mutation_generator_creator = MutationCreator(old_epoch.top_branches,
                                                          branches - successful_mutations,
                                                          config["creation"],
-                                                         excluded_aas=work_pjct.get_mem_aminoacids(),
                                                          excluded_sites=work_pjct.get_mem_positions(),
                                                          amber_numbering=config["md"]["use_tleap"])
         else:

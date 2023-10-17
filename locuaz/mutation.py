@@ -2,9 +2,6 @@ from typing import Final
 
 from attrs import define, field
 
-
-# from siteselector import Site
-
 @define(frozen=True)
 class Site:
     idx_chain: Final[int] = field(converter=int, kw_only=True)

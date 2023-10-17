@@ -112,7 +112,6 @@ class GROComplex(AbstractComplex):
                     pdb=temp_pdb,
                     target_chains=target_chains,
                     binder_chains=binder_chains,
-                    md_config=md_config,
                 )
             else:
                 # The PDB should have box info in it, so it'll be pasted onto the GRO. Else,

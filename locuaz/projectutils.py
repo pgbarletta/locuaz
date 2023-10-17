@@ -60,7 +60,7 @@ class Branch:
     parent: Optional["Branch"] = field(kw_only=True, default=None)
     mutation: Optional[Mutation] = field(kw_only=True, default=None)
     epoch_id: int = field(converter=int, init=False)
-    complex: Union[AbstractComplex, GROComplex] = field(init=False)
+    complex: GROComplex = field(init=False)
     score_dir: DirHandle = field(converter=DirHandle, init=False)  # type: ignore
     scores: Dict[str, tuple] = field(init=False)
     mean_scores: Dict[str, float] = field(init=False)
@@ -352,7 +352,7 @@ class WorkProject:
             copy_to(pdb_handle, Path(this_iter.dir_handle))
 
             # Copy tleap files, if necessary
-            self.get_tleap_into_iter(Path(this_iter.dir_handle))
+            self.get_tleap_into_branch(Path(this_iter.dir_handle))
 
             # set up complex
             try:
@@ -716,10 +716,10 @@ class WorkProject:
         if self.config["md"]["use_tleap"]:
             self.tleap_dir = DirHandle(Path(self.config["paths"]["tleap"]))
 
-    def get_tleap_into_iter(self, branch_dir: Path) -> None:
+    def get_tleap_into_branch(self, branch_dir: Path) -> None:
         if self.config["md"]["use_tleap"]:
-            for file in os.listdir(Path(self.tleap_dir)):  # type: ignore
-                sh.copy(Path(self.tleap_dir, file), Path(branch_dir))  # type: ignore
+            for file in os.listdir(Path(self.tleap_dir)):
+                sh.copy(Path(self.tleap_dir, file), Path(branch_dir))
 
     def get_mem_aminoacids(self) -> Set[str]:
         set_of_aas: Set[str] = set()

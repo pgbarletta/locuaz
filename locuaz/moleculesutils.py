@@ -23,21 +23,29 @@ def get_gro_ziptop_from_pdb(
         md_config: Dict,
         add_ions: bool = False,
 ) -> Tuple[PDBStructure, GROStructure, ZipTopology]:
-    """get_gro_ziptop_from_pdb does a pdb2gmx from the PDB and tries to keep the system neutral,
+    """
+    Does a pdb2gmx from the PDB and tries to keep the system neutral,
     which may alter the topology so a new PDB will be written with the same name as the original,
     which will be backed up by GROMACS. No 'editconf' or 'solvate' is run.
     The system is assumed to have solvent and a CRYST1 record with box info.
 
-    Args:
-        pdb (PDBStructure): input PDB
-        target_chains (Iterable): these will be used to construct the ZipTopology
-        binder_chains (Iterable): these will be used to construct the ZipTopology
-        md_config (Dict): user's config input
-        add_ions (bool): wether to neutralize with genion or not. Useful after a mutation was done on the
-        input PDB.
-
-    Returns:
-        Tuple[PDBStructure, GROStructure, ZipTopology]: Proper, nice, system.
+    Parameters
+    ----------
+    pdb : PDBStructure
+        input PDB
+    target_chains : Iterable
+        target chainIDs. Will be used to construct the ZipTopology
+    binder_chains : Iterable
+        binder chainIDs. Will be used to construct the ZipTopology
+    md_config : Dict
+        user's config input for MD
+    add_ions
+        whether to neutralize with genion or not. Useful after a mutation was
+        done on the input PDB.
+    Returns
+    -------
+    pdb, gro, ziptop : Tuple[PDBStructure, GROStructure, ZipTopology]
+        Proper, nice, system.
     """
     gmx_bin: str = "gmx"
     water_type: str = md_config.get("water_type", "tip3p")
@@ -114,17 +122,22 @@ def get_gro_ziptop_from_pdb_tleap(
         pdb: PDBStructure,
         target_chains: Iterable,
         binder_chains: Iterable,
-        md_config: Dict,
 ) -> Tuple[PDBStructure, GROStructure, ZipTopology]:
-    """get_gro_ziptop_from_pdb_tleap runs .
+    """
 
-    Args:
-        pdb (PDBStructure): input PDB
-        target_chains (Iterable): these will be used to construct the ZipTopology
-        binder_chains (Iterable): these will be used to construct the ZipTopology
+    Parameters
+    ----------
+    pdb : PDBStructure
+        input PDB
+    target_chains : Iterable
+        target chainIDs. Will be used to construct the ZipTopology
+    binder_chains : Iterable
+        binder chainIDs. Will be used to construct the ZipTopology
 
-    Returns:
-        Tuple[PDBStructure, GROStructure, ZipTopology]: Proper, nice, system.
+    Returns
+    -------
+    pdb, gro, ziptop : Tuple[PDBStructure, GROStructure, ZipTopology]
+        Proper, nice, system.
     """
     pdb_path = Path(pdb)
     local_dir = pdb_path.parent

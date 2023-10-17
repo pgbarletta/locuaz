@@ -85,6 +85,8 @@ class PriorityDeque(Generic[T], Sequence, Iterable):
 class GromacsError(Exception):
     pass
 
+class MutationError(Exception):
+    pass
 
 class UserInputError(Exception):
     pass

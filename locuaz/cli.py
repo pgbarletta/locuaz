@@ -411,15 +411,15 @@ def check_sites_mmpbsa(config: Dict) -> None:
 def check_bins(config: Dict) -> None:
     if bins := config["creation"].get("aa_bins"):
         bins = [ list(bin) for bin in bins ]
-        aas_wo_cys = {'D', 'E', 'S', 'T', 'R', 'N', 'Q', 'H', 'K', 'A', 'G',
-                      'I', 'M', 'L', 'V', 'P', 'F', 'W', 'Y'}
-        missing_aas = aas_wo_cys.symmetric_difference(
+        aas = {'D', 'E', 'S', 'T', 'R', 'N', 'Q', 'H', 'K', 'A', 'G',
+                      'I', 'M', 'L', 'V', 'P', 'F', 'W', 'Y', 'C'}
+        missing_aas = aas.symmetric_difference(
             set(chain.from_iterable(bins)))
         if len(missing_aas) != 0 and missing_aas != {'C'}:
             raise ValueError(
                 f'Invalid input "aa_bins": {bins}\n'
                 f'Missing amino acids: {missing_aas}\n'
-                f'Enter all amino acids. Only "C" can be missing.')
+                f'Enter all amino acids.')
         if len(bins) < 2 and config["creation"]["aa_bins_criteria"] == "exclusive":
             raise UserInputError(f"Cannot set 'aa_bins_criteria' to exclusive "
                                  "with just 1 bin.")
@@ -429,7 +429,7 @@ def check_bins(config: Dict) -> None:
         config["creation"]["aa_bins"] = [['D', 'E', 'S', 'T'],
                                          ['R', 'N', 'Q', 'H', 'K'],
                                          ['A', 'G', 'I', 'M', 'L', 'V'],
-                                         ['P', 'F', 'W', 'Y']]
+                                         ['P', 'F', 'W', 'Y', 'C']]
         warn(f'Using default "aa_bins": {config["creation"]["aa_bins"]}')
 
 

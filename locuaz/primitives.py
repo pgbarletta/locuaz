@@ -88,6 +88,9 @@ class GromacsError(Exception):
 class MutationError(Exception):
     pass
 
+class GenerationError(Exception):
+    pass
+
 class UserInputError(Exception):
     pass
 

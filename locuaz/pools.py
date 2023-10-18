@@ -48,6 +48,9 @@ class InfinitePool(Generic[T]):
     def __str__(self) -> str:
         return self.pool.__str__()
 
+    def force_reset(self) -> None:
+        self.pool = set(self.reservoir)
+
     def discard(self, item) -> None:
         self.__reset__()
         return self.pool.discard(item)
@@ -61,6 +64,10 @@ class InfinitePool(Generic[T]):
         item = self.pick()
         self.discard(item)
         return item
+
+    def difference_update(self, other: Set) -> None:
+        self.__reset__()
+        self.pool.difference_update(other)
 
 
 class BinPool(InfinitePool):

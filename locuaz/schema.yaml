@@ -180,9 +180,9 @@ creation:
           maxlength: 20
     aa_bins_criteria:
       type: string
-      default: exclude
+      default: without
       required: True
-      allowed: [ exclude, within ]
+      allowed: [ without, within ]
     aa_probability:
       type: string
       default: uniform

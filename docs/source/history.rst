@@ -2,7 +2,7 @@
 History
 =======
 
-0.6.4 (2023-10-)
+0.7.0 (2023-10-)
 ------------------
  * Added warning when 'autodockvina' scorer is used what no resname was set in
    'allowed_nonstandard_residues'. The former is usually used to score

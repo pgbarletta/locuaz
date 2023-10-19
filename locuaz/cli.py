@@ -420,8 +420,8 @@ def check_bins(config: Dict) -> None:
                 f'Invalid input "aa_bins": {bins}\n'
                 f'Missing amino acids: {missing_aas}\n'
                 f'Enter all amino acids.')
-        if len(bins) < 2 and config["creation"]["aa_bins_criteria"] == "exclusive":
-            raise UserInputError(f"Cannot set 'aa_bins_criteria' to exclusive "
+        if len(bins) < 2 and config["creation"]["aa_bins_criteria"] == "exclude":
+            raise UserInputError(f"Cannot set 'aa_bins_criteria' to exclude "
                                  "with just 1 bin.")
         config["creation"]["aa_bins"] = bins
     else:

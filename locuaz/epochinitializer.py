@@ -20,7 +20,7 @@ from mutation import Mutation
 from primitives import MutationError
 
 
-def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
+def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
     """
 
     Parameters
@@ -98,7 +98,7 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> None:
         if actual_new_branches == successful_mutations:
             log.info(f"{actual_new_branches} out of {new_branches} branches created.")
             break
-    work_pjct.new_epoch(new_epoch)
+    return new_epoch
 
 
 def create_branch(old_branch: Branch,

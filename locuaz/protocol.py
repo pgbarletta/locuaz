@@ -61,7 +61,7 @@ def main() -> int:
             break
 
         log.info(f"Initializing new epoch {new_id} ({cnt} on this run).")
-        initialize_new_epoch(work_pjct, log)
+        work_pjct.new_epoch(initialize_new_epoch(work_pjct, log))
     print("Done with protocol")
     return 0
 

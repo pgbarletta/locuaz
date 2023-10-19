@@ -1,12 +1,98 @@
 from collections import defaultdict
+from copy import deepcopy
 from logging import Logger
-from warnings import warn
-from random import choice, choices
-from typing import List, Dict, Set, Any, Final, Tuple, Union, Optional
+from random import choices
+from typing import List, Dict, Set, Any, Final, Tuple, Union
 
 from locuaz.mutation import Mutation
 from locuaz.projectutils import Branch
 from locuaz.siteselector import Site
+from pools import BinPool, InfinitePool
+from primitives import GenerationError
+
+
+class AminoAcidMemory:
+    # Branch names + site are the keys in these 2 dicts.
+    # We use them to better decide the next mutation on each branch.
+    branch_bins: Dict[Tuple[str, Site], Dict[int, Set[str]]]
+    branch_bins_indices: Dict[Tuple[str, Site], BinPool]
+    epoch_bins_indices: BinPool
+
+    def __init__(self, top_branches: Dict[str, Branch],
+                 bins: Dict[int, Set[str]],
+                 sites: List[Site]) -> None:
+
+        self.nbins = len(bins)
+        self.epoch_bins_indices = BinPool.from_size(self.nbins)
+
+        self.branch_bins = {}
+        self.branch_bins_indices = {}
+        for site in sites:
+            for branch_name in top_branches.keys():
+                self.branch_bins[(branch_name, site)] = deepcopy(bins)
+                self.branch_bins_indices[(branch_name, site)] = BinPool.from_size(self.nbins)
+
+    def remove_from_memory(self, branch_name: str, site: Site, bin_idx: int, aa: str) -> None:
+        self.branch_bins_indices[(branch_name, site)].discard(bin_idx)
+        self.epoch_bins_indices.discard(bin_idx)
+        self.branch_bins[(branch_name, site)][bin_idx].discard(aa)
+
+    def get_bin(self, branch_name: str, site: Site,
+                old_aa: str, excluded_bins: Set[int]) -> int:
+
+        while True:
+            bin_idx = self.__attempt_novel_bin_idx__(branch_name, site, excluded_bins)
+            bin_aas = self.branch_bins[(branch_name, site)][bin_idx]
+            bin_aas.discard(old_aa)
+            if len(bin_aas) > 0:
+                return bin_idx
+            excluded_bins.add(bin_idx)
+            if len(excluded_bins) == self.nbins:
+                raise GenerationError(f"Cannot mutate branch {branch_name}. "
+                                      "All bins have been excluded.")
+
+    def __attempt_novel_bin_idx__(self,
+                                  branch_name: str,
+                                  site: Site,
+                                  excluded_bins: Set[int]) -> int:
+        """
+        Tries to pick a random bin number that's available both in the branch
+        and the epoch bin pools and isn't excluded.
+        The pools are never empty, so if it can't find one, it's just that they
+        have no common element that hasn't been excluded. In that case, it
+        returns a bin index from the branch's bin pool.
+
+        Parameters
+        ----------
+        branch_name : str
+            branch that's being mutated
+        site : Site
+            mutation site
+        excluded_bins : Set[int]
+
+
+        Returns
+        -------
+        int
+            index of a bin that's both available for the branch and for the
+            epoch.
+        Raises
+        ------
+        RunTimeError
+
+        """
+        common_bins: Set[int]
+        branch_pool = self.branch_bins_indices[(branch_name, site)]
+        branch_pool.difference_update(excluded_bins)
+        self.epoch_bins_indices.difference_update(excluded_bins)
+
+        common_bins = set(branch_pool & self.epoch_bins_indices)
+        if len(common_bins) == 0:
+            # `branch_name`'s bin pool and the epoch's bin pool have no common
+            # elements that haven't been excluded.
+            return branch_pool.pick()
+        else:
+            return BinPool(common_bins).pick()
 
 
 class AminoAcidSelector:
@@ -16,6 +102,7 @@ class AminoAcidSelector:
     N_BINS: int
     N_SITES: int
     bins_criteria: str
+
     uniform: Dict[str, float] = {
         'A': 0.05263, 'R': 0.05263, 'N': 0.05263, 'D': 0.05263, 'E': 0.05263,
         'Q': 0.05263, 'G': 0.05263, 'H': 0.05263, 'I': 0.05263, 'L': 0.05263,
@@ -32,14 +119,15 @@ class AminoAcidSelector:
         'Q': 0.01268, 'G': 0.09396, 'H': 0.02256, 'I': 0.02952, 'L': 0.0387,
         'K': 0.01514, 'M': 0.0076, 'F': 0.05339, 'P': 0.02284, 'S': 0.12746,
         'T': 0.06049, 'W': 0.0493, 'Y': 0.19701, 'V': 0.02678, 'C': 0.00000}
-    aa_distribution: Dict[str, float] = uniform
-
-    excluded_aas: Set[str]
     full_bin: Final[Tuple[str]] = ('A', 'R', 'N', 'D', 'E', 'Q', 'G', 'H', 'I',
                                    'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y',
-                                   'V')
+                                   'V', 'C')
 
-    def __init__(self, excluded_aas: Set[str], creation_config: Dict[str, Any]) -> None:
+    aa_distribution: Dict[str, float] = uniform
+
+    memory: AminoAcidMemory
+
+    def __init__(self, creation_config: Dict[str, Any]) -> None:
         self.bins = {}
         for i, each_bin in enumerate(creation_config["aa_bins"]):
             # Store bins
@@ -59,13 +147,11 @@ class AminoAcidSelector:
             # It's uniform
             pass
 
-        self.excluded_aas = excluded_aas
-
     def __call__(self,
                  top_branches: Dict[str, Branch],
                  branches: int,
                  sites: List[Site],
-                 log: Optional[Logger]) -> Dict[str, List[Mutation]]:
+                 logger: Logger) -> Dict[str, List[Mutation]]:
         """
         Generate mutations according to user input (bins, probability of
         choosing each amino acid, etc...).
@@ -85,93 +171,41 @@ class AminoAcidSelector:
         """
         mutations = defaultdict(list)
         new_branches = branches
-        remaining_branches = set(top_branches.keys())
-        remaining_bins = set()
+        old_branches_pool = InfinitePool(top_branches.keys())
+        self.memory = AminoAcidMemory(top_branches, self.bins, sites)
 
         while new_branches != 0:
-            # prevent nbr of sites being higher than nbr of new branches
-            # And probably larger that nbr of new branches * nbr of bins.
+            branch = top_branches[old_branches_pool.pop()]
             for site in sites:
-                branch = top_branches[remaining_branches.pop()]
                 old_aa = branch.resnames[site.idx_chain][site.idx_residue]
                 try:
-                    new_aa = self.__select_aa__(old_aa, remaining_bins)
-                except AssertionError as e:
-                    log.warning(f"{e}.\nGenerated {branches-new_branches} branches.")
-                    break
-                # Add this mutation to this branch.
-                mutations[branch.branch_name].append(Mutation.from_site(
-                    site, old_aa=old_aa, new_aa=new_aa)
-                )
-                if len(remaining_branches) == 0:
-                    # If all branches have been mutated at least once, and we still
-                    # have branches to generate, restart `remaining_branches`.
-                    remaining_branches = set(top_branches.keys())
+                    new_aa = self.__select_aa__(branch.branch_name, site, old_aa)
+                    # Add this mutation to this branch.
+                    mutations[branch.branch_name].append(Mutation.from_site(
+                        site, old_aa=old_aa, new_aa=new_aa)
+                    )
+                except GenerationError as e:
+                    logger.warning(f"{e}")
+
                 new_branches -= 1
         return mutations
 
-    def __select_aa__(self, old_aa: str, remaining_bins: Set[int]) -> str:
-        self.excluded_aas.add(old_aa)
+    def __select_aa__(self, branch_name: str, site: Site, old_aa: str) -> str:
 
-        if len(remaining_bins) == 0:
-            remaining_bins = self.__reset_bins__(old_aa)
-        # Choose bin
-        bin_idx = choice(tuple(remaining_bins))
-        remaining_bins.difference_update([bin_idx])
-
-        # Get a new amino acid.
-        try:
-            aa = self.__pop_random_aa__(bin_idx)
-            return aa
-        except AssertionError as e:
-            raise e
-
-    def __reset_bins__(self, old_aa: str) -> Set[int]:
-        """
-        If the bins_criteria is set to "exclusive":
-            when all bins (amino acid categories) have already been chosen from,
-            allow all of them again for the next branches.
-            If all the amino acids form a certain bin have been chosen already,
-            then that bin will not be reset. Also discard the bin corresponding
-            to the ``old_aa``.
-        If the bins_criteria is set to "within":
-            Just return the bin corresponding to ``old_aa``.
-        Parameters
-        ----------
-        old_aa : str
-            Current AA in the chosen position.
-        Returns
-        -------
-        remaining_bins: Set[int]
-            reset bins
-        """
-        if self.bins_criteria == "exclusive":
-            remaining_bins = set(range(0, self.N_BINS))
-            remaining_bins.difference_update(self.aa_to_bin[old_aa])
-            for i in range(self.N_BINS):
-                if self.bins[i].issubset(self.excluded_aas):
-                    # All AAs from this category have already been chosen
-                    remaining_bins.difference_update({i})
-        elif self.bins_criteria == "within":
-            # Make sure to deep copy the set that's inside the dict
-            remaining_bins = set(self.aa_to_bin[old_aa])
+        if self.bins_criteria == "exclude":
+            excluded_bins: Set[int] = set(self.aa_to_bin[old_aa])
         else:
-            raise ValueError(f"This shouldn't happen. {self.bins_criteria=}")
-        return remaining_bins
+            # 'within'. All bins but the one that corresponds to the aa are excluded.
+            excluded_bins: Set[int] = set(range(0, len(self.bins))) - self.aa_to_bin[old_aa]
 
-    def __pop_random_aa__(self, bin_idx: int) -> str:
-        current_bin = self.bins[bin_idx]
-        while True:
-            norm_bin = self.__get_norm_bin__(self.aa_distribution, current_bin)
-            new_aa = choices(list(norm_bin.keys()), list(norm_bin.values()))[0]
-            if new_aa not in self.excluded_aas:
-                self.excluded_aas.add(new_aa)
-                return new_aa
-            else:
-                current_bin.difference_update(set(new_aa))
-                assert len(current_bin) > 0, "Could not choose aa from " \
-                                             f"{self.bins[bin_idx]}. All AAs  " \
-                                             f"are excluded. {self.excluded_aas=}"
+        bin_idx = self.memory.get_bin(branch_name, site, old_aa, excluded_bins)
+        # Normalize the probabilities of the AAs in the bin, so they add up to 1
+        bin_aas = self.__get_norm_bin__(self.aa_distribution,
+                                        self.memory.branch_bins[(branch_name, site)][bin_idx])
+        new_aa = choices(list(bin_aas.keys()), list(bin_aas.values()))[0]
+        self.memory.remove_from_memory(branch_name, site, bin_idx, new_aa)
+
+        return new_aa
 
     def __get_norm_bin__(self,
                          distro: Dict[Union[str, int], float],

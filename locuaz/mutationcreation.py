@@ -34,10 +34,9 @@ class MutationCreator(Mapping):
             branches: int,
             creation_config: Dict[str, Any],
             *,
-            excluded_aas: Set[str],
             excluded_sites: Set[int],
             amber_numbering: bool = False,
-            logger: Optional[Logger] = None
+            logger: Logger
     ) -> None:
         any_branch = next(iter(top_branches.values()))
 
@@ -46,10 +45,10 @@ class MutationCreator(Mapping):
                                           excluded_sites,
                                           creation_config,
                                           amber_numbering=amber_numbering)
-        self.aa_selector = AminoAcidSelector(excluded_aas, creation_config)
+        self.aa_selector = AminoAcidSelector(creation_config)
 
         sites = self.site_selector(top_branches, logger)
-        self.mutations = self.aa_selector(top_branches, branches, sites)
+        self.mutations = self.aa_selector(top_branches, branches, sites, logger)
 
     def __getitem__(self, key: str) -> Iterable[Mutation]:
         return self.mutations[key]

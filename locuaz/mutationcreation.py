@@ -10,19 +10,19 @@ from locuaz.siteselector import SiteSelector
 
 class MutationCreator(Mapping):
     """
-    MutationCreator creates mutations by
+    MutationCreator creates mutations by:
         * choosing 1 or more positions after discarding the excluded ones and
-        optionally discarding those that are not interfacing with the target.
+          optionally discarding those that are not interfacing with the target.
         * optionally splits amino acids into user-defined bins. Then chooses the
-        bin of the current residue ('within') or any of the other ones ('exclude').
+          bin of the current residue ('within') or any of the other ones ('exclude').
         * within the potential amino acids, it chooses one of them following a
-        uniform distribution ('uniform'), Reis&Barletta distribution ('ReisBarletta')
-        or a custom user-defined probability ('custom')
+          uniform distribution ('uniform'), Reis&Barletta distribution ('ReisBarletta')
+          or a custom user-defined probability ('custom')
 
-        For each position, the chosen amino acid will be discarded from future
-        consideration. This also applies to bins. If all bins were discarded and
-        more mutations were asked for, the bins are reset but not the potential
-        amino acids.
+    For each position, the chosen amino acid will be discarded from future
+    consideration. This also applies to bins. If all bins were discarded and
+    more mutations were asked for, the bins are reset but not the potential
+    amino acids.
     """
     mutations: Dict[str, List[Mutation]]
     site_selector: SiteSelector

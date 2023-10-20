@@ -2,11 +2,14 @@ from abc import ABC, abstractmethod
 from typing import Set, Iterator
 from collections.abc import Mapping
 from logging import Logger
+from deprecated.sphinx import deprecated
 
 from locuaz.projectutils import Branch, Epoch
 from locuaz.mutation import Mutation
 
 
+@deprecated(version="0.7.0",
+            reason="Mutation Generators are replaced by Mutation Creators.")
 class AbstractMutationGenerator(ABC, Mapping):
     @abstractmethod
     def __init__(

@@ -3,12 +3,14 @@ from typing import List, Tuple, Dict, Set, Iterator
 from random import choice, sample
 from collections import defaultdict
 from logging import Logger
+from deprecated.sphinx import deprecated
 
 from locuaz.projectutils import Branch, Epoch
 from locuaz.mutation import Mutation
 from locuaz.abstractmutationgenerator import AbstractMutationGenerator
 
-
+@deprecated(version="0.7.0",
+            reason="Mutation Generators are replaced by Mutation Creators.")
 class SPM4(AbstractMutationGenerator):
     """
     SPM4 generates mutations by splitting all amino acids (except CYS) in the following categories:

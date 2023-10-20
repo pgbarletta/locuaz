@@ -3,13 +3,15 @@ from typing import List, Tuple, Set, Iterator
 from random import choice
 from collections import defaultdict
 from logging import Logger
+from deprecated.sphinx import deprecated
 
 from locuaz.projectutils import Branch, Epoch
 from locuaz.mutation import Mutation
 from locuaz.interface import get_interfacing_residues
 from locuaz.spm4 import SPM4
 
-
+@deprecated(version="0.7.0",
+            reason="Mutation Generators are replaced by Mutation Creators.")
 class SPM4i(SPM4):
     """
     overrides ``__generate_position__()``. It uses freesasa to get the interface to prevent mutations on positions

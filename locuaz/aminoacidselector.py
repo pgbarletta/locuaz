@@ -49,7 +49,8 @@ class AminoAcidMemory:
             excluded_bins.add(bin_idx)
             if len(excluded_bins) == self.nbins:
                 raise GenerationError(f"Cannot mutate branch {branch_name}. "
-                                      "All bins have been excluded.")
+                                      "All amino acids from the available bins "
+                                      "have already been used.")
 
     def __attempt_novel_bin_idx__(self,
                                   branch_name: str,
@@ -134,7 +135,7 @@ class AminoAcidSelector:
             self.bins[i] = set(each_bin)
             # Store in which bin is each amino acid
             for aa in each_bin:
-                self.aa_to_bin[aa] = set([i])
+                self.aa_to_bin[aa] = {i}
         self.N_BINS = len(self.bins)
 
         self.bins_criteria = creation_config["aa_bins_criteria"]

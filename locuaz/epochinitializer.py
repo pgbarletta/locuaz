@@ -75,12 +75,14 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
                 logger=log,
                 probe_radius=config["generation"]["probe_radius"])
 
-        actual_new_branches = len(mutation_generator_creator)
+        actual_new_branches = sum(
+            [len(muts) for muts in mutation_generator_creator.values()])
         for old_branch_name, mutations in mutation_generator_creator.items():
             old_branch = old_epoch.top_branches[old_branch_name]
             for mutation in mutations:
                 try:
-                    branch = create_branch(old_branch,
+                    branch = create_branch(work_pjct.name,
+                                           old_branch,
                                            mutator=mutator,
                                            mutation=mutation,
                                            md_config=config["md"],
@@ -98,10 +100,15 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
         if actual_new_branches == successful_mutations:
             log.info(f"{actual_new_branches} out of {new_branches} branches created.")
             break
+        else:
+            log.info(f"Tried to generate {actual_new_branches} new branches, "
+                     f"but only generated {successful_mutations} because of a "
+                     "Mutator error. Will try again.")
     return new_epoch
 
 
-def create_branch(old_branch: Branch,
+def create_branch(name: str,
+                  old_branch: Branch,
                   *,
                   mutator: BaseMutator,
                   mutation: Mutation,
@@ -153,7 +160,7 @@ def create_branch(old_branch: Branch,
     remove_overlapping_solvent(
         overlapped_pdb,
         mutation.resSeq,
-        Path(branch_path, f"{old_branch.complex.name}.pdb"),
+        Path(branch_path, f"{name}.pdb"),
         log,
         use_tleap=md_config["use_tleap"],
     )
@@ -164,7 +171,7 @@ def create_branch(old_branch: Branch,
             sh.copy(Path(tleap_dir, file), Path(new_branch.dir_handle))
 
     new_branch.complex = GROComplex.from_pdb(
-        name=old_branch.complex.name,
+        name=name,
         input_dir=branch_path,
         target_chains=old_branch.complex.top.target_chains,
         binder_chains=old_branch.complex.top.binder_chains,

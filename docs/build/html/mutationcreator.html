@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mutation Creator &mdash; locuaz 0.6.3 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Scorers" href="scorers.html" />
+    <link rel="prev" title="Mutation Generators" href="mutationgenerators.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            locuaz
+          </a>
+              <div class="version">
+                0.6.3
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="platformflow.html">Platform flow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorialsimple.html">Tutorial: running a simple optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorialtleap.html">Tutorial: using Tleap topologies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorialligand.html">Tutorial: optimizing an antibody against a ligand</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jobsubmission.html">Job submission</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Mutation Creator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-locuaz.mutationcreation">locuaz.mutationcreation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#locuaz.mutationcreation.MutationCreator"><code class="docutils literal notranslate"><span class="pre">MutationCreator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.mutationcreation.MutationCreator.aa_selector"><code class="docutils literal notranslate"><span class="pre">MutationCreator.aa_selector</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.mutationcreation.MutationCreator.mutations"><code class="docutils literal notranslate"><span class="pre">MutationCreator.mutations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.mutationcreation.MutationCreator.site_selector"><code class="docutils literal notranslate"><span class="pre">MutationCreator.site_selector</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-locuaz.aminoacidselector">mmpbsa</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidMemory"><code class="docutils literal notranslate"><span class="pre">AminoAcidMemory</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidMemory.branch_bins"><code class="docutils literal notranslate"><span class="pre">AminoAcidMemory.branch_bins</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidMemory.branch_bins_indices"><code class="docutils literal notranslate"><span class="pre">AminoAcidMemory.branch_bins_indices</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidMemory.epoch_bins_indices"><code class="docutils literal notranslate"><span class="pre">AminoAcidMemory.epoch_bins_indices</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidMemory.get_bin"><code class="docutils literal notranslate"><span class="pre">AminoAcidMemory.get_bin()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidMemory.remove_from_memory"><code class="docutils literal notranslate"><span class="pre">AminoAcidMemory.remove_from_memory()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidSelector"><code class="docutils literal notranslate"><span class="pre">AminoAcidSelector</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidSelector.N_BINS"><code class="docutils literal notranslate"><span class="pre">AminoAcidSelector.N_BINS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidSelector.N_SITES"><code class="docutils literal notranslate"><span class="pre">AminoAcidSelector.N_SITES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidSelector.aa_distribution"><code class="docutils literal notranslate"><span class="pre">AminoAcidSelector.aa_distribution</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidSelector.aa_to_bin"><code class="docutils literal notranslate"><span class="pre">AminoAcidSelector.aa_to_bin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidSelector.bins"><code class="docutils literal notranslate"><span class="pre">AminoAcidSelector.bins</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidSelector.bins_criteria"><code class="docutils literal notranslate"><span class="pre">AminoAcidSelector.bins_criteria</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidSelector.full_bin"><code class="docutils literal notranslate"><span class="pre">AminoAcidSelector.full_bin</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidSelector.memory"><code class="docutils literal notranslate"><span class="pre">AminoAcidSelector.memory</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidSelector.reis_barletta_cdr"><code class="docutils literal notranslate"><span class="pre">AminoAcidSelector.reis_barletta_cdr</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidSelector.reis_barletta_full"><code class="docutils literal notranslate"><span class="pre">AminoAcidSelector.reis_barletta_full</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidSelector.uniform"><code class="docutils literal notranslate"><span class="pre">AminoAcidSelector.uniform</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidSelector.use_bins"><code class="docutils literal notranslate"><span class="pre">AminoAcidSelector.use_bins</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#locuaz.siteselector.SiteSelector"><code class="docutils literal notranslate"><span class="pre">SiteSelector</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.siteselector.SiteSelector.N_SITES"><code class="docutils literal notranslate"><span class="pre">SiteSelector.N_SITES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.siteselector.SiteSelector.all_resSeqs"><code class="docutils literal notranslate"><span class="pre">SiteSelector.all_resSeqs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.siteselector.SiteSelector.amber_numbering"><code class="docutils literal notranslate"><span class="pre">SiteSelector.amber_numbering</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.siteselector.SiteSelector.chainIDs"><code class="docutils literal notranslate"><span class="pre">SiteSelector.chainIDs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.siteselector.SiteSelector.excluded_resSeqs"><code class="docutils literal notranslate"><span class="pre">SiteSelector.excluded_resSeqs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.siteselector.SiteSelector.idx_chain"><code class="docutils literal notranslate"><span class="pre">SiteSelector.idx_chain</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.siteselector.SiteSelector.idx_residue"><code class="docutils literal notranslate"><span class="pre">SiteSelector.idx_residue</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.siteselector.SiteSelector.probability"><code class="docutils literal notranslate"><span class="pre">SiteSelector.probability</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.siteselector.SiteSelector.probe_radius"><code class="docutils literal notranslate"><span class="pre">SiteSelector.probe_radius</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.siteselector.SiteSelector.use_interface"><code class="docutils literal notranslate"><span class="pre">SiteSelector.use_interface</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#locuaz.pools.BinPool"><code class="docutils literal notranslate"><span class="pre">BinPool</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.pools.BinPool.from_size"><code class="docutils literal notranslate"><span class="pre">BinPool.from_size()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#locuaz.pools.InfinitePool"><code class="docutils literal notranslate"><span class="pre">InfinitePool</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.pools.InfinitePool.difference_update"><code class="docutils literal notranslate"><span class="pre">InfinitePool.difference_update()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.pools.InfinitePool.discard"><code class="docutils literal notranslate"><span class="pre">InfinitePool.discard()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.pools.InfinitePool.force_reset"><code class="docutils literal notranslate"><span class="pre">InfinitePool.force_reset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.pools.InfinitePool.pick"><code class="docutils literal notranslate"><span class="pre">InfinitePool.pick()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.pools.InfinitePool.pool"><code class="docutils literal notranslate"><span class="pre">InfinitePool.pool</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.pools.InfinitePool.pop"><code class="docutils literal notranslate"><span class="pre">InfinitePool.pop()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#locuaz.pools.InfinitePool.reservoir"><code class="docutils literal notranslate"><span class="pre">InfinitePool.reservoir</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="scorers.html">Scorers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mutators.html">Mutators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="statistics.html">Stats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pruners.html">Pruners</a></li>
+<li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellaneous</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configurationfile.html">YAML configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="citing.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="history.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developing.html">Developing</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">locuaz</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Mutation Creator</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/mutationcreator.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mutation-creator">
+<h1>Mutation Creator<a class="headerlink" href="#mutation-creator" title="Permalink to this heading"></a></h1>
+<section id="module-locuaz.mutationcreation">
+<span id="locuaz-mutationcreation"></span><h2>locuaz.mutationcreation<a class="headerlink" href="#module-locuaz.mutationcreation" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="locuaz.mutationcreation.MutationCreator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">locuaz.mutationcreation.</span></span><span class="sig-name descname"><span class="pre">MutationCreator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_branches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="misc.html#locuaz.projectutils.Branch" title="locuaz.projectutils.Branch"><span class="pre">Branch</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">branches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creation_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excluded_sites</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amber_numbering</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/locuaz/mutationcreation.html#MutationCreator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.mutationcreation.MutationCreator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></p>
+<dl class="simple">
+<dt>MutationCreator creates mutations by</dt><dd><ul class="simple">
+<li><p>choosing 1 or more positions after discarding the excluded ones and
+optionally discarding those that are not interfacing with the target.</p></li>
+<li><p>optionally splits amino acids into user-defined bins. Then chooses the
+bin of the current residue (‘within’) or any of the other ones (‘exclude’).</p></li>
+<li><p>within the potential amino acids, it chooses one of them following a
+uniform distribution (‘uniform’), Reis&amp;Barletta distribution (‘ReisBarletta’)
+or a custom user-defined probability (‘custom’)</p></li>
+</ul>
+</dd>
+</dl>
+<p>For each position, the chosen amino acid will be discarded from future
+consideration. This also applies to bins. If all bins were discarded and
+more mutations were asked for, the bins are reset but not the potential
+amino acids.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.mutationcreation.MutationCreator.aa_selector">
+<span class="sig-name descname"><span class="pre">aa_selector</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidSelector" title="locuaz.aminoacidselector.AminoAcidSelector"><span class="pre">AminoAcidSelector</span></a></em><a class="headerlink" href="#locuaz.mutationcreation.MutationCreator.aa_selector" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.mutationcreation.MutationCreator.mutations">
+<span class="sig-name descname"><span class="pre">mutations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="mutators.html#locuaz.mutation.Mutation" title="locuaz.mutation.Mutation"><span class="pre">Mutation</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#locuaz.mutationcreation.MutationCreator.mutations" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.mutationcreation.MutationCreator.site_selector">
+<span class="sig-name descname"><span class="pre">site_selector</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#locuaz.siteselector.SiteSelector" title="locuaz.siteselector.SiteSelector"><span class="pre">SiteSelector</span></a></em><a class="headerlink" href="#locuaz.mutationcreation.MutationCreator.site_selector" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-locuaz.aminoacidselector">
+<span id="mmpbsa"></span><h2>mmpbsa<a class="headerlink" href="#module-locuaz.aminoacidselector" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidMemory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">locuaz.aminoacidselector.</span></span><span class="sig-name descname"><span class="pre">AminoAcidMemory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_branches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="misc.html#locuaz.projectutils.Branch" title="locuaz.projectutils.Branch"><span class="pre">Branch</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sites</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="mutators.html#locuaz.mutation.Site" title="locuaz.mutation.Site"><span class="pre">Site</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/locuaz/aminoacidselector.html#AminoAcidMemory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidMemory" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidMemory.branch_bins">
+<span class="sig-name descname"><span class="pre">branch_bins</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="mutators.html#locuaz.mutation.Site" title="locuaz.mutation.Site"><span class="pre">Site</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidMemory.branch_bins" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidMemory.branch_bins_indices">
+<span class="sig-name descname"><span class="pre">branch_bins_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="mutators.html#locuaz.mutation.Site" title="locuaz.mutation.Site"><span class="pre">Site</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#locuaz.pools.BinPool" title="locuaz.pools.BinPool"><span class="pre">BinPool</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidMemory.branch_bins_indices" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidMemory.epoch_bins_indices">
+<span class="sig-name descname"><span class="pre">epoch_bins_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#locuaz.pools.BinPool" title="locuaz.pools.BinPool"><span class="pre">BinPool</span></a></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidMemory.epoch_bins_indices" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidMemory.get_bin">
+<span class="sig-name descname"><span class="pre">get_bin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">branch_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">site</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mutators.html#locuaz.mutation.Site" title="locuaz.mutation.Site"><span class="pre">Site</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_aa</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excluded_bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/locuaz/aminoacidselector.html#AminoAcidMemory.get_bin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidMemory.get_bin" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidMemory.remove_from_memory">
+<span class="sig-name descname"><span class="pre">remove_from_memory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">branch_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">site</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mutators.html#locuaz.mutation.Site" title="locuaz.mutation.Site"><span class="pre">Site</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aa</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/locuaz/aminoacidselector.html#AminoAcidMemory.remove_from_memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidMemory.remove_from_memory" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidSelector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">locuaz.aminoacidselector.</span></span><span class="sig-name descname"><span class="pre">AminoAcidSelector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">creation_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/locuaz/aminoacidselector.html#AminoAcidSelector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidSelector" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidSelector.N_BINS">
+<span class="sig-name descname"><span class="pre">N_BINS</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidSelector.N_BINS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidSelector.N_SITES">
+<span class="sig-name descname"><span class="pre">N_SITES</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidSelector.N_SITES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidSelector.aa_distribution">
+<span class="sig-name descname"><span class="pre">aa_distribution</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'A':</span> <span class="pre">0.05263,</span> <span class="pre">'C':</span> <span class="pre">0.0,</span> <span class="pre">'D':</span> <span class="pre">0.05263,</span> <span class="pre">'E':</span> <span class="pre">0.05263,</span> <span class="pre">'F':</span> <span class="pre">0.05263,</span> <span class="pre">'G':</span> <span class="pre">0.05263,</span> <span class="pre">'H':</span> <span class="pre">0.05263,</span> <span class="pre">'I':</span> <span class="pre">0.05263,</span> <span class="pre">'K':</span> <span class="pre">0.05263,</span> <span class="pre">'L':</span> <span class="pre">0.05263,</span> <span class="pre">'M':</span> <span class="pre">0.05263,</span> <span class="pre">'N':</span> <span class="pre">0.05263,</span> <span class="pre">'P':</span> <span class="pre">0.05263,</span> <span class="pre">'Q':</span> <span class="pre">0.05263,</span> <span class="pre">'R':</span> <span class="pre">0.05263,</span> <span class="pre">'S':</span> <span class="pre">0.05263,</span> <span class="pre">'T':</span> <span class="pre">0.05263,</span> <span class="pre">'V':</span> <span class="pre">0.05263,</span> <span class="pre">'W':</span> <span class="pre">0.05263,</span> <span class="pre">'Y':</span> <span class="pre">0.05263}</span></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidSelector.aa_distribution" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidSelector.aa_to_bin">
+<span class="sig-name descname"><span class="pre">aa_to_bin</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'':</span> <span class="pre">{}}</span></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidSelector.aa_to_bin" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidSelector.bins">
+<span class="sig-name descname"><span class="pre">bins</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidSelector.bins" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidSelector.bins_criteria">
+<span class="sig-name descname"><span class="pre">bins_criteria</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidSelector.bins_criteria" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidSelector.full_bin">
+<span class="sig-name descname"><span class="pre">full_bin</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Final</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('A',</span> <span class="pre">'R',</span> <span class="pre">'N',</span> <span class="pre">'D',</span> <span class="pre">'E',</span> <span class="pre">'Q',</span> <span class="pre">'G',</span> <span class="pre">'H',</span> <span class="pre">'I',</span> <span class="pre">'L',</span> <span class="pre">'K',</span> <span class="pre">'M',</span> <span class="pre">'F',</span> <span class="pre">'P',</span> <span class="pre">'S',</span> <span class="pre">'T',</span> <span class="pre">'W',</span> <span class="pre">'Y',</span> <span class="pre">'V',</span> <span class="pre">'C')</span></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidSelector.full_bin" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidSelector.memory">
+<span class="sig-name descname"><span class="pre">memory</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidMemory" title="locuaz.aminoacidselector.AminoAcidMemory"><span class="pre">AminoAcidMemory</span></a></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidSelector.memory" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidSelector.reis_barletta_cdr">
+<span class="sig-name descname"><span class="pre">reis_barletta_cdr</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Final</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'A':</span> <span class="pre">0.03579,</span> <span class="pre">'C':</span> <span class="pre">0.0,</span> <span class="pre">'D':</span> <span class="pre">0.06806,</span> <span class="pre">'E':</span> <span class="pre">0.02621,</span> <span class="pre">'F':</span> <span class="pre">0.05339,</span> <span class="pre">'G':</span> <span class="pre">0.09396,</span> <span class="pre">'H':</span> <span class="pre">0.02256,</span> <span class="pre">'I':</span> <span class="pre">0.02952,</span> <span class="pre">'K':</span> <span class="pre">0.01514,</span> <span class="pre">'L':</span> <span class="pre">0.0387,</span> <span class="pre">'M':</span> <span class="pre">0.0076,</span> <span class="pre">'N':</span> <span class="pre">0.06788,</span> <span class="pre">'P':</span> <span class="pre">0.02284,</span> <span class="pre">'Q':</span> <span class="pre">0.01268,</span> <span class="pre">'R':</span> <span class="pre">0.04462,</span> <span class="pre">'S':</span> <span class="pre">0.12746,</span> <span class="pre">'T':</span> <span class="pre">0.06049,</span> <span class="pre">'V':</span> <span class="pre">0.02678,</span> <span class="pre">'W':</span> <span class="pre">0.0493,</span> <span class="pre">'Y':</span> <span class="pre">0.19701}</span></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidSelector.reis_barletta_cdr" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidSelector.reis_barletta_full">
+<span class="sig-name descname"><span class="pre">reis_barletta_full</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Final</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'A':</span> <span class="pre">0.03353,</span> <span class="pre">'C':</span> <span class="pre">0.0,</span> <span class="pre">'D':</span> <span class="pre">0.06073,</span> <span class="pre">'E':</span> <span class="pre">0.02587,</span> <span class="pre">'F':</span> <span class="pre">0.04677,</span> <span class="pre">'G':</span> <span class="pre">0.07939,</span> <span class="pre">'H':</span> <span class="pre">0.0219,</span> <span class="pre">'I':</span> <span class="pre">0.03489,</span> <span class="pre">'K':</span> <span class="pre">0.0185,</span> <span class="pre">'L':</span> <span class="pre">0.0385,</span> <span class="pre">'M':</span> <span class="pre">0.00678,</span> <span class="pre">'N':</span> <span class="pre">0.06358,</span> <span class="pre">'P':</span> <span class="pre">0.0234,</span> <span class="pre">'Q':</span> <span class="pre">0.01545,</span> <span class="pre">'R':</span> <span class="pre">0.05076,</span> <span class="pre">'S':</span> <span class="pre">0.12669,</span> <span class="pre">'T':</span> <span class="pre">0.06186,</span> <span class="pre">'V':</span> <span class="pre">0.0312,</span> <span class="pre">'W':</span> <span class="pre">0.05624,</span> <span class="pre">'Y':</span> <span class="pre">0.20396}</span></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidSelector.reis_barletta_full" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidSelector.uniform">
+<span class="sig-name descname"><span class="pre">uniform</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'A':</span> <span class="pre">0.05263,</span> <span class="pre">'C':</span> <span class="pre">0.0,</span> <span class="pre">'D':</span> <span class="pre">0.05263,</span> <span class="pre">'E':</span> <span class="pre">0.05263,</span> <span class="pre">'F':</span> <span class="pre">0.05263,</span> <span class="pre">'G':</span> <span class="pre">0.05263,</span> <span class="pre">'H':</span> <span class="pre">0.05263,</span> <span class="pre">'I':</span> <span class="pre">0.05263,</span> <span class="pre">'K':</span> <span class="pre">0.05263,</span> <span class="pre">'L':</span> <span class="pre">0.05263,</span> <span class="pre">'M':</span> <span class="pre">0.05263,</span> <span class="pre">'N':</span> <span class="pre">0.05263,</span> <span class="pre">'P':</span> <span class="pre">0.05263,</span> <span class="pre">'Q':</span> <span class="pre">0.05263,</span> <span class="pre">'R':</span> <span class="pre">0.05263,</span> <span class="pre">'S':</span> <span class="pre">0.05263,</span> <span class="pre">'T':</span> <span class="pre">0.05263,</span> <span class="pre">'V':</span> <span class="pre">0.05263,</span> <span class="pre">'W':</span> <span class="pre">0.05263,</span> <span class="pre">'Y':</span> <span class="pre">0.05263}</span></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidSelector.uniform" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidSelector.use_bins">
+<span class="sig-name descname"><span class="pre">use_bins</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidSelector.use_bins" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-locuaz.siteselector"></span><dl class="py class">
+<dt class="sig sig-object py" id="locuaz.siteselector.SiteSelector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">locuaz.siteselector.</span></span><span class="sig-name descname"><span class="pre">SiteSelector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">all_resSeqs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chainIDs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excluded_resSeqs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creation_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amber_numbering</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/locuaz/siteselector.html#SiteSelector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.siteselector.SiteSelector" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.siteselector.SiteSelector.N_SITES">
+<span class="sig-name descname"><span class="pre">N_SITES</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#locuaz.siteselector.SiteSelector.N_SITES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.siteselector.SiteSelector.all_resSeqs">
+<span class="sig-name descname"><span class="pre">all_resSeqs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#locuaz.siteselector.SiteSelector.all_resSeqs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.siteselector.SiteSelector.amber_numbering">
+<span class="sig-name descname"><span class="pre">amber_numbering</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#locuaz.siteselector.SiteSelector.amber_numbering" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.siteselector.SiteSelector.chainIDs">
+<span class="sig-name descname"><span class="pre">chainIDs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#locuaz.siteselector.SiteSelector.chainIDs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.siteselector.SiteSelector.excluded_resSeqs">
+<span class="sig-name descname"><span class="pre">excluded_resSeqs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#locuaz.siteselector.SiteSelector.excluded_resSeqs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.siteselector.SiteSelector.idx_chain">
+<span class="sig-name descname"><span class="pre">idx_chain</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#locuaz.siteselector.SiteSelector.idx_chain" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.siteselector.SiteSelector.idx_residue">
+<span class="sig-name descname"><span class="pre">idx_residue</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#locuaz.siteselector.SiteSelector.idx_residue" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.siteselector.SiteSelector.probability">
+<span class="sig-name descname"><span class="pre">probability</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#locuaz.siteselector.SiteSelector.probability" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.siteselector.SiteSelector.probe_radius">
+<span class="sig-name descname"><span class="pre">probe_radius</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#locuaz.siteselector.SiteSelector.probe_radius" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.siteselector.SiteSelector.use_interface">
+<span class="sig-name descname"><span class="pre">use_interface</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#locuaz.siteselector.SiteSelector.use_interface" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-locuaz.pools"></span><dl class="py class">
+<dt class="sig sig-object py" id="locuaz.pools.BinPool">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">locuaz.pools.</span></span><span class="sig-name descname"><span class="pre">BinPool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_set</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/locuaz/pools.html#BinPool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.pools.BinPool" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#locuaz.pools.InfinitePool" title="locuaz.pools.InfinitePool"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfinitePool</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="locuaz.pools.BinPool.from_size">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#locuaz.pools.BinPool" title="locuaz.pools.BinPool"><span class="pre">BinPool</span></a></span></span><a class="reference internal" href="_modules/locuaz/pools.html#BinPool.from_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.pools.BinPool.from_size" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="locuaz.pools.InfinitePool">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">locuaz.pools.</span></span><span class="sig-name descname"><span class="pre">InfinitePool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_set</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/locuaz/pools.html#InfinitePool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.pools.InfinitePool" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="locuaz.pools.InfinitePool.difference_update">
+<span class="sig-name descname"><span class="pre">difference_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Set</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/locuaz/pools.html#InfinitePool.difference_update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.pools.InfinitePool.difference_update" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="locuaz.pools.InfinitePool.discard">
+<span class="sig-name descname"><span class="pre">discard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/locuaz/pools.html#InfinitePool.discard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.pools.InfinitePool.discard" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="locuaz.pools.InfinitePool.force_reset">
+<span class="sig-name descname"><span class="pre">force_reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/locuaz/pools.html#InfinitePool.force_reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.pools.InfinitePool.force_reset" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="locuaz.pools.InfinitePool.pick">
+<span class="sig-name descname"><span class="pre">pick</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="reference internal" href="_modules/locuaz/pools.html#InfinitePool.pick"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.pools.InfinitePool.pick" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.pools.InfinitePool.pool">
+<span class="sig-name descname"><span class="pre">pool</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#locuaz.pools.InfinitePool.pool" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="locuaz.pools.InfinitePool.pop">
+<span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">T</span></span></span><a class="reference internal" href="_modules/locuaz/pools.html#InfinitePool.pop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.pools.InfinitePool.pop" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="locuaz.pools.InfinitePool.reservoir">
+<span class="sig-name descname"><span class="pre">reservoir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#locuaz.pools.InfinitePool.reservoir" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mutationgenerators.html" class="btn btn-neutral float-left" title="Mutation Generators" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="scorers.html" class="btn btn-neutral float-right" title="Scorers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Patricio Barletta.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

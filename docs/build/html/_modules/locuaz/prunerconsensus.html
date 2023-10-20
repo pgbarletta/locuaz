@@ -60,6 +60,7 @@
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mutationcreator.html">Mutation Creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../scorers.html">Scorers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../mutators.html">Mutators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../statistics.html">Stats</a></li>
@@ -126,7 +127,7 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        passing_iters: PriorityQueue</span>
+<span class="sd">        passing_branches: PriorityQueue</span>
 <span class="sd">            ordered queue with the branches from the new epoch that are better than all the</span>
 <span class="sd">            branches from the old epoch. It may be empty.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -138,38 +139,38 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        threshold : int</span>
-<span class="sd">            number of scorers that have to improve for an branch to be</span>
+<span class="sd">            number of scorers that have to improve for a branch to be</span>
 <span class="sd">            considered better than another one.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        passing_iters: PriorityQueue</span>
+<span class="sd">        passing_branches: PriorityQueue</span>
 <span class="sd">            ordered queue with the branches from the new epoch that are better than all the</span>
 <span class="sd">            branches from the old epoch. It may be empty.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">better_iters</span><span class="p">:</span> <span class="n">PriorityQueue</span> <span class="o">=</span> <span class="n">PriorityQueue</span><span class="p">()</span>
+        <span class="n">better_branches</span><span class="p">:</span> <span class="n">PriorityQueue</span> <span class="o">=</span> <span class="n">PriorityQueue</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">this_epoch</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">better_overall</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">rank_overall</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">for</span> <span class="n">prev_iter</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prev_epoch</span><span class="o">.</span><span class="n">top_branches</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                <span class="n">better</span><span class="p">,</span> <span class="n">rank</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__beats_old_branch__</span><span class="p">(</span><span class="n">prev_iter</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">prev_branch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prev_epoch</span><span class="o">.</span><span class="n">top_branches</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">better</span><span class="p">,</span> <span class="n">rank</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__beats_old_branch__</span><span class="p">(</span><span class="n">prev_branch</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
                 <span class="n">better_overall</span> <span class="o">&amp;=</span> <span class="n">better</span>
                 <span class="n">rank_overall</span> <span class="o">+=</span> <span class="n">rank</span>
             <span class="k">if</span> <span class="n">better_overall</span><span class="p">:</span>
-                <span class="n">better_iters</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="o">-</span><span class="n">rank_overall</span><span class="p">,</span> <span class="n">branch</span><span class="p">))</span>
+                <span class="n">better_branches</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="o">-</span><span class="n">rank_overall</span><span class="p">,</span> <span class="n">branch</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="n">better_iters</span>
+        <span class="k">return</span> <span class="n">better_branches</span>
 
-    <span class="k">def</span> <span class="nf">__beats_old_branch__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old_iter</span><span class="p">:</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">new_iter</span><span class="p">:</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">__beats_old_branch__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old_branch</span><span class="p">:</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">new_branch</span><span class="p">:</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        old_iter: Branch</span>
-<span class="sd">        new_iter : Branch</span>
+<span class="sd">        old_branch: Branch</span>
+<span class="sd">        new_branch : Branch</span>
 <span class="sd">        threshold : int</span>
-<span class="sd">            number of scores that have to improve for the new_iter to be</span>
-<span class="sd">            considered better than the old_iter.</span>
+<span class="sd">            number of scores that have to improve for the new_branch to be</span>
+<span class="sd">            considered better than the old_branch.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -178,16 +179,16 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Allow the user to change scorers mid-run and only use</span>
         <span class="c1"># the subset present in both branches.</span>
-        <span class="n">old_SFs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">old_iter</span><span class="o">.</span><span class="n">scores</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-        <span class="n">new_SFs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">new_iter</span><span class="o">.</span><span class="n">scores</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">old_SFs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">old_branch</span><span class="o">.</span><span class="n">scores</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">new_SFs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">new_branch</span><span class="o">.</span><span class="n">scores</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="n">scorers</span> <span class="o">=</span> <span class="n">old_SFs</span> <span class="o">&amp;</span> <span class="n">new_SFs</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scorers</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No common scorers between the ones from the old branch (</span><span class="si">{</span><span class="n">old_SFs</span><span class="si">}</span><span class="s2">) &quot;</span>
                                <span class="sa">f</span><span class="s2">&quot;and those from the new one (</span><span class="si">{</span><span class="n">new_SFs</span><span class="si">}</span><span class="s2">). Cannot prune.&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scorers </span><span class="si">{</span><span class="n">scorers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">old_iter</span><span class="o">.</span><span class="n">mean_scores</span><span class="p">[</span><span class="n">SF</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">new_iter</span><span class="o">.</span><span class="n">mean_scores</span><span class="p">[</span><span class="n">SF</span><span class="p">]</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">old_branch</span><span class="o">.</span><span class="n">mean_scores</span><span class="p">[</span><span class="n">SF</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">new_branch</span><span class="o">.</span><span class="n">mean_scores</span><span class="p">[</span><span class="n">SF</span><span class="p">]</span>
                      <span class="k">for</span> <span class="n">SF</span> <span class="ow">in</span> <span class="n">scorers</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">new_iter</span><span class="o">.</span><span class="n">epoch_id</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">new_iter</span><span class="o">.</span><span class="n">branch_name</span><span class="si">}</span><span class="s2"> vs. </span><span class="si">{</span><span class="n">old_iter</span><span class="o">.</span><span class="n">epoch_id</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">old_iter</span><span class="o">.</span><span class="n">branch_name</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">new_branch</span><span class="o">.</span><span class="n">epoch_id</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">new_branch</span><span class="o">.</span><span class="n">branch_name</span><span class="si">}</span><span class="s2"> vs. </span><span class="si">{</span><span class="n">old_branch</span><span class="o">.</span><span class="n">epoch_id</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">old_branch</span><span class="o">.</span><span class="n">branch_name</span><span class="si">}</span><span class="s2"> &quot;</span>
                       <span class="sa">f</span><span class="s2">&quot;improves on </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">scorers</span><span class="p">)</span><span class="si">}</span><span class="s2"> scorers.&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">count</span> <span class="o">&gt;=</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">count</span></div>

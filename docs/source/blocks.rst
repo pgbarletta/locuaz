@@ -50,7 +50,7 @@ protocols to be run, hence, some abstractions are needed. We will call these abs
     These are listed on its dedicated section.
 
 Mutation Generator
-------------------------
+-------------------
 These blocks are the one in charge of generating the new binders. These are the currently available generators:
 
 SPM4
@@ -103,6 +103,11 @@ You can also set the probe radius in this mutator.
 Check Amber's manual and `gmx_MMPBSA`_ docs for more info.
 
 Set ``config["generation"]["generator"]`` to ``SPM4gmxmmpbsa`` use this generator.
+
+Mutation Creator
+----------------
+
+
 
 Mutator
 --------

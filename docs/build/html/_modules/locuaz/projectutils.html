@@ -3,18 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.projectutils &mdash; locuaz 0.5.3 documentation</title>
+  <title>locuaz.projectutils &mdash; locuaz 0.6.3 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=2a2fe768"></script>
-        <script src="../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -32,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.5.3
+                0.6.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -54,10 +55,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../../tutorialtleap.html">Tutorial: using Tleap topologies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorialligand.html">Tutorial: optimizing an antibody against a ligand</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../jobsubmission.html">Job submission</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mutationcreator.html">Mutation Creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../scorers.html">Scorers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../mutators.html">Mutators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../statistics.html">Stats</a></li>
@@ -103,7 +106,7 @@
 <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">MutableMapping</span>
 <span class="c1"># TODO: replace own pairwise with itertools&#39; on 3.10</span>
 <span class="c1"># from itertools import pairwise</span>
-<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">tee</span><span class="p">,</span> <span class="n">zip_longest</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">zip_longest</span><span class="p">,</span> <span class="n">pairwise</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">PriorityQueue</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
@@ -137,19 +140,14 @@
 
 
 <span class="c1"># TODO: replace own pairwise with itertools&#39; on 3.10</span>
-<div class="viewcode-block" id="pairwise">
-<a class="viewcode-back" href="../../misc.html#locuaz.projectutils.pairwise">[docs]</a>
-<span class="k">def</span> <span class="nf">pairwise</span><span class="p">(</span><span class="n">iterable</span><span class="p">):</span>
-    <span class="c1"># pairwise(&#39;ABCDEFG&#39;) --&gt; AB BC CD DE EF FG</span>
-    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">tee</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
-    <span class="nb">next</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="k">return</span> <span class="nb">zip</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span></div>
+<span class="c1"># def pairwise(iterable):</span>
+<span class="c1">#     # pairwise(&#39;ABCDEFG&#39;) --&gt; AB BC CD DE EF FG</span>
+<span class="c1">#     a, b = tee(iterable)</span>
+<span class="c1">#     next(b, None)</span>
+<span class="c1">#     return zip(a, b)</span>
 
 
-
-<div class="viewcode-block" id="Branch">
-<a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Branch">[docs]</a>
-<span class="nd">@define</span>
+<div class="viewcode-block" id="Branch"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Branch">[docs]</a><span class="nd">@define</span>
 <span class="k">class</span> <span class="nc">Branch</span><span class="p">:</span>
     <span class="n">dir_handle</span><span class="p">:</span> <span class="n">DirHandle</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="n">DirHandle</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
     <span class="n">branch_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -161,7 +159,7 @@
     <span class="n">parent</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Branch&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="n">mutation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mutation</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="n">epoch_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="nb">complex</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">AbstractComplex</span><span class="p">,</span> <span class="n">GROComplex</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="nb">complex</span><span class="p">:</span> <span class="n">GROComplex</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">score_dir</span><span class="p">:</span> <span class="n">DirHandle</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="n">DirHandle</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
     <span class="n">scores</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">mean_scores</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -177,9 +175,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">mean_scores</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stats</span> <span class="o">=</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="Branch.set_score">
-<a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Branch.set_score">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_score</span><span class="p">(</span>
+<div class="viewcode-block" id="Branch.set_score"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Branch.set_score">[docs]</a>    <span class="k">def</span> <span class="nf">set_score</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">sf_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">scores</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">log</span><span class="p">:</span>
@@ -196,10 +192,7 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_scores</span><span class="p">[</span><span class="n">sf_name</span><span class="p">]</span></div>
 
-
-<div class="viewcode-block" id="Branch.set_stat">
-<a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Branch.set_stat">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_stat</span><span class="p">(</span>
+<div class="viewcode-block" id="Branch.set_stat"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Branch.set_stat">[docs]</a>    <span class="k">def</span> <span class="nf">set_stat</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">stat_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stat</span><span class="p">:</span> <span class="n">NDArray</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">log</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="n">stat_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">stat</span>
@@ -208,28 +201,19 @@
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">stat_name</span><span class="si">}</span><span class="s2">&#39;: </span><span class="si">{</span><span class="n">avg_stat</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> +/- </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">stat</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">avg_stat</span></div>
 
-
-<div class="viewcode-block" id="Branch.write_down_scores">
-<a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Branch.write_down_scores">[docs]</a>
-    <span class="k">def</span> <span class="nf">write_down_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Branch.write_down_scores"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Branch.write_down_scores">[docs]</a>    <span class="k">def</span> <span class="nf">write_down_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">sf_name</span><span class="p">,</span> <span class="n">score</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scores</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">score_dir</span><span class="p">,</span> <span class="s2">&quot;scores_&quot;</span> <span class="o">+</span> <span class="n">sf_name</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">score</span><span class="p">:</span>
                     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="Branch.write_down_stats">
-<a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Branch.write_down_stats">[docs]</a>
-    <span class="k">def</span> <span class="nf">write_down_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Branch.write_down_stats"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Branch.write_down_stats">[docs]</a>    <span class="k">def</span> <span class="nf">write_down_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">stat_name</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">score_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;stat_</span><span class="si">{</span><span class="n">stat_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
                     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="Branch.read_scores">
-<a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Branch.read_scores">[docs]</a>
-    <span class="k">def</span> <span class="nf">read_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scorers</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="Branch.read_scores"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Branch.read_scores">[docs]</a>    <span class="k">def</span> <span class="nf">read_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scorers</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">log</span><span class="p">:</span>
             <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;root&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;score_dir&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
@@ -251,21 +235,14 @@
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-
-<div class="viewcode-block" id="Branch.mutation_str">
-<a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Branch.mutation_str">[docs]</a>
-    <span class="k">def</span> <span class="nf">mutation_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<div class="viewcode-block" id="Branch.mutation_str"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Branch.mutation_str">[docs]</a>    <span class="k">def</span> <span class="nf">mutation_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutation</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutation</span><span class="o">.</span><span class="n">to_str</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
-
-<div class="viewcode-block" id="Branch.full_name">
-<a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Branch.full_name">[docs]</a>
-    <span class="k">def</span> <span class="nf">full_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="Branch.full_name"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Branch.full_name">[docs]</a>    <span class="k">def</span> <span class="nf">full_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">epoch_id</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">branch_name</span><span class="si">}</span><span class="s2">&quot;</span></div>
-
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dir_handle</span><span class="p">)</span>
@@ -289,9 +266,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">branch_name</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">branch_name</span>
 
-<div class="viewcode-block" id="Branch.generate_name_resname">
-<a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Branch.generate_name_resname">[docs]</a>
-    <span class="k">def</span> <span class="nf">generate_name_resname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mutation</span><span class="p">:</span> <span class="n">Mutation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<div class="viewcode-block" id="Branch.generate_name_resname"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Branch.generate_name_resname">[docs]</a>    <span class="k">def</span> <span class="nf">generate_name_resname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mutation</span><span class="p">:</span> <span class="n">Mutation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        returns the name of the branch that would be generated by the input mutation.</span>
 <span class="sd">        It also returns a list with the resnames (1-letter names) of each mutated sequence (CDR),</span>
@@ -317,14 +292,10 @@
             <span class="n">new_branch_resnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_resname</span><span class="p">)</span>
 
         <span class="c1"># Drop the leading &#39;-&#39;</span>
-        <span class="k">return</span> <span class="n">branch_name</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">new_branch_resnames</span></div>
-</div>
+        <span class="k">return</span> <span class="n">branch_name</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">new_branch_resnames</span></div></div>
 
 
-
-<div class="viewcode-block" id="Epoch">
-<a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Epoch">[docs]</a>
-<span class="nd">@define</span>
+<div class="viewcode-block" id="Epoch"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Epoch">[docs]</a><span class="nd">@define</span>
 <span class="k">class</span> <span class="nc">Epoch</span><span class="p">(</span><span class="n">MutableMapping</span><span class="p">):</span>
     <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
     <span class="n">branches</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Branch</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -333,9 +304,7 @@
     <span class="n">top_branches</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Branch</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">mutated_positions</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Epoch.set_top_iter">
-<a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Epoch.set_top_iter">[docs]</a>
-    <span class="k">def</span> <span class="nf">set_top_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_paths</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Epoch.set_top_iter"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Epoch.set_top_iter">[docs]</a>    <span class="k">def</span> <span class="nf">set_top_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_paths</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># First, check if a &quot;top_branches&quot; was set from a pickle tracking file.</span>
         <span class="k">if</span> <span class="s2">&quot;top_branches&quot;</span> <span class="ow">in</span> <span class="n">config_paths</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">top_branch_str_with_epoch_nbr</span> <span class="ow">in</span> <span class="n">config_paths</span><span class="p">[</span><span class="s2">&quot;top_branches&quot;</span><span class="p">]:</span>
@@ -348,7 +317,7 @@
                     <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
             <span class="k">return</span>
 
-        <span class="n">better_iters</span><span class="p">:</span> <span class="n">PriorityQueue</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Branch</span><span class="p">]]</span> <span class="o">=</span> <span class="n">PriorityQueue</span><span class="p">()</span>
+        <span class="n">better_branches</span><span class="p">:</span> <span class="n">PriorityQueue</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Branch</span><span class="p">]]</span> <span class="o">=</span> <span class="n">PriorityQueue</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
@@ -364,12 +333,12 @@
                         <span class="k">for</span> <span class="n">SF</span> <span class="ow">in</span> <span class="n">scorers</span>
                     <span class="p">]</span>
                 <span class="p">)</span>
-            <span class="n">better_iters</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="o">-</span><span class="n">count</span><span class="p">,</span> <span class="n">it</span><span class="p">))</span>
+            <span class="n">better_branches</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="o">-</span><span class="n">count</span><span class="p">,</span> <span class="n">it</span><span class="p">))</span>
 
         <span class="n">prev_count</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="k">while</span> <span class="ow">not</span> <span class="n">better_iters</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">better_branches</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
             <span class="c1"># Remember, `count`, the priority, is negative.</span>
-            <span class="n">count</span><span class="p">,</span> <span class="n">branch</span> <span class="o">=</span> <span class="n">better_iters</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="n">count</span><span class="p">,</span> <span class="n">branch</span> <span class="o">=</span> <span class="n">better_branches</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="n">prev_count</span><span class="p">:</span>
                 <span class="k">assert</span> <span class="p">(</span>
                         <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top_branches</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
@@ -378,10 +347,7 @@
             <span class="n">prev_count</span> <span class="o">=</span> <span class="n">count</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">top_branches</span><span class="p">[</span><span class="n">branch</span><span class="o">.</span><span class="n">branch_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">branch</span></div>
 
-
-<div class="viewcode-block" id="Epoch.backup">
-<a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Epoch.backup">[docs]</a>
-    <span class="k">def</span> <span class="nf">backup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Epoch.backup"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.Epoch.backup">[docs]</a>    <span class="k">def</span> <span class="nf">backup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">orig</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="n">dir_handle</span><span class="o">.</span><span class="n">dir_path</span>
             <span class="n">dest</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">orig</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;bu_&quot;</span> <span class="o">+</span> <span class="n">orig</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
@@ -390,7 +356,6 @@
                 <span class="n">dest</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">orig</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;bu_</span><span class="si">{</span><span class="n">unique_str</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">orig</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="c1"># TODO: won&#39;t be necessary to cast after 3.9 upgrade</span>
             <span class="n">sh</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">orig</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span></div>
-
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Branch</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
@@ -408,13 +373,16 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="o">.</span><span class="fm">__contains__</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">branches</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__or__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;Epoch&quot;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Branch</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Branch</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">branches</span> <span class="o">|</span> <span class="n">other</span>
+
+    <span class="k">def</span> <span class="fm">__ror__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;Epoch&quot;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Branch</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Branch</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__or__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
 
 
-
-<div class="viewcode-block" id="WorkProject">
-<a class="viewcode-back" href="../../misc.html#locuaz.projectutils.WorkProject">[docs]</a>
-<span class="k">class</span> <span class="nc">WorkProject</span><span class="p">:</span>
+<div class="viewcode-block" id="WorkProject"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.WorkProject">[docs]</a><span class="k">class</span> <span class="nc">WorkProject</span><span class="p">:</span>
     <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">dir_handle</span><span class="p">:</span> <span class="n">DirHandle</span>
@@ -483,7 +451,7 @@
             <span class="n">copy_to</span><span class="p">(</span><span class="n">pdb_handle</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="n">this_iter</span><span class="o">.</span><span class="n">dir_handle</span><span class="p">))</span>
 
             <span class="c1"># Copy tleap files, if necessary</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">get_tleap_into_iter</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">this_iter</span><span class="o">.</span><span class="n">dir_handle</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_tleap_into_branch</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">this_iter</span><span class="o">.</span><span class="n">dir_handle</span><span class="p">))</span>
 
             <span class="c1"># set up complex</span>
             <span class="k">try</span><span class="p">:</span>
@@ -624,9 +592,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">project_dag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;project_dag&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project_mut_dag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;project_mut_dag&quot;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="WorkProject.branch_from_str">
-<a class="viewcode-back" href="../../misc.html#locuaz.projectutils.WorkProject.branch_from_str">[docs]</a>
-    <span class="k">def</span> <span class="nf">branch_from_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branch_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">Branch</span><span class="p">]:</span>
+<div class="viewcode-block" id="WorkProject.branch_from_str"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.WorkProject.branch_from_str">[docs]</a>    <span class="k">def</span> <span class="nf">branch_from_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branch_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">Branch</span><span class="p">]:</span>
         <span class="n">branch_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">branch_str</span><span class="p">)</span>
         <span class="n">_</span><span class="p">,</span> <span class="o">*</span><span class="n">name_by_chain</span> <span class="o">=</span> <span class="n">branch_path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
         <span class="n">branch_name</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">name_by_chain</span><span class="p">)</span>
@@ -643,10 +609,7 @@
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">branch_name</span><span class="p">,</span> <span class="n">branch_path</span><span class="p">,</span> <span class="n">this_iter</span></div>
 
-
-<div class="viewcode-block" id="WorkProject.branch_from_path">
-<a class="viewcode-back" href="../../misc.html#locuaz.projectutils.WorkProject.branch_from_path">[docs]</a>
-    <span class="k">def</span> <span class="nf">branch_from_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branch_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">Branch</span><span class="p">]:</span>
+<div class="viewcode-block" id="WorkProject.branch_from_path"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.WorkProject.branch_from_path">[docs]</a>    <span class="k">def</span> <span class="nf">branch_from_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branch_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">Branch</span><span class="p">]:</span>
         <span class="n">_</span><span class="p">,</span> <span class="o">*</span><span class="n">name_by_chain</span> <span class="o">=</span> <span class="n">branch_path</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span>
         <span class="n">branch_name</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">name_by_chain</span><span class="p">)</span>
         <span class="c1"># `branch_name` comes from the input branch.</span>
@@ -661,7 +624,6 @@
             <span class="n">resSeqs</span><span class="o">=</span><span class="n">resSeqs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">branch_name</span><span class="p">,</span> <span class="n">branch_path</span><span class="p">,</span> <span class="n">this_iter</span></div>
-
 
     <span class="k">def</span> <span class="nf">__add_scorers__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">sf</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;scoring&quot;</span><span class="p">][</span><span class="s2">&quot;scorers&quot;</span><span class="p">]:</span>
@@ -853,17 +815,12 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;md&quot;</span><span class="p">][</span><span class="s2">&quot;use_tleap&quot;</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tleap_dir</span> <span class="o">=</span> <span class="n">DirHandle</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;tleap&quot;</span><span class="p">]))</span>
 
-<div class="viewcode-block" id="WorkProject.get_tleap_into_iter">
-<a class="viewcode-back" href="../../misc.html#locuaz.projectutils.WorkProject.get_tleap_into_iter">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_tleap_into_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branch_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="WorkProject.get_tleap_into_branch"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.WorkProject.get_tleap_into_branch">[docs]</a>    <span class="k">def</span> <span class="nf">get_tleap_into_branch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branch_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;md&quot;</span><span class="p">][</span><span class="s2">&quot;use_tleap&quot;</span><span class="p">]:</span>
-            <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tleap_dir</span><span class="p">)):</span>  <span class="c1"># type: ignore</span>
-                <span class="n">sh</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tleap_dir</span><span class="p">,</span> <span class="n">file</span><span class="p">),</span> <span class="n">Path</span><span class="p">(</span><span class="n">branch_dir</span><span class="p">))</span>  <span class="c1"># type: ignore</span></div>
+            <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tleap_dir</span><span class="p">)):</span>
+                <span class="n">sh</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tleap_dir</span><span class="p">,</span> <span class="n">file</span><span class="p">),</span> <span class="n">Path</span><span class="p">(</span><span class="n">branch_dir</span><span class="p">))</span></div>
 
-
-<div class="viewcode-block" id="WorkProject.get_mem_aminoacids">
-<a class="viewcode-back" href="../../misc.html#locuaz.projectutils.WorkProject.get_mem_aminoacids">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_mem_aminoacids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<div class="viewcode-block" id="WorkProject.get_mem_aminoacids"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.WorkProject.get_mem_aminoacids">[docs]</a>    <span class="k">def</span> <span class="nf">get_mem_aminoacids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="n">set_of_aas</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_memory</span><span class="p">:</span>
@@ -873,10 +830,7 @@
             <span class="n">set_of_aas</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">mem</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">set_of_aas</span></div>
 
-
-<div class="viewcode-block" id="WorkProject.get_mem_positions">
-<a class="viewcode-back" href="../../misc.html#locuaz.projectutils.WorkProject.get_mem_positions">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_mem_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<div class="viewcode-block" id="WorkProject.get_mem_positions"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.WorkProject.get_mem_positions">[docs]</a>    <span class="k">def</span> <span class="nf">get_mem_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
         <span class="n">set_of_pos</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_memory</span><span class="p">:</span>
@@ -887,10 +841,7 @@
                 <span class="n">set_of_pos</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">mem</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">set_of_pos</span></div>
 
-
-<div class="viewcode-block" id="WorkProject.get_mdps">
-<a class="viewcode-back" href="../../misc.html#locuaz.projectutils.WorkProject.get_mdps">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_mdps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">mdp_names</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="WorkProject.get_mdps"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.WorkProject.get_mdps">[docs]</a>    <span class="k">def</span> <span class="nf">get_mdps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">mdp_names</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mdps</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;md&quot;</span><span class="p">][</span><span class="s2">&quot;mdp_paths&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">mdp_name</span><span class="p">,</span> <span class="n">mdp_filename</span> <span class="ow">in</span> <span class="n">mdp_names</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -903,18 +854,12 @@
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not get mdp file from: </span><span class="si">{</span><span class="n">mdp_path</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="n">e</span></div>
 
-
-<div class="viewcode-block" id="WorkProject.new_epoch">
-<a class="viewcode-back" href="../../misc.html#locuaz.projectutils.WorkProject.new_epoch">[docs]</a>
-    <span class="k">def</span> <span class="nf">new_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch</span><span class="p">:</span> <span class="n">Epoch</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="WorkProject.new_epoch"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.WorkProject.new_epoch">[docs]</a>    <span class="k">def</span> <span class="nf">new_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch</span><span class="p">:</span> <span class="n">Epoch</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_dags</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__track_project__</span><span class="p">(</span><span class="n">log</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="WorkProject.update_dags">
-<a class="viewcode-back" href="../../misc.html#locuaz.projectutils.WorkProject.update_dags">[docs]</a>
-    <span class="k">def</span> <span class="nf">update_dags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="WorkProject.update_dags"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.WorkProject.update_dags">[docs]</a>    <span class="k">def</span> <span class="nf">update_dags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
         <span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="c1"># Branch DAG:</span>
@@ -934,24 +879,23 @@
                 <span class="c1"># This branch is on the 0 epoch, it has no parent and no mutation.</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">project_mut_dag</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;None&quot;</span><span class="p">)</span></div>
 
-
     <span class="k">def</span> <span class="nf">__track_project__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">previous_branches</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">mutations</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="k">for</span> <span class="n">branch_name</span><span class="p">,</span> <span class="n">branch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">previous_branches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">branch</span><span class="o">.</span><span class="n">dir_handle</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-                <span class="n">mutations</span><span class="p">[</span><span class="n">branch_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">branch</span><span class="o">.</span><span class="n">mutation</span>
+                <span class="n">mutations</span><span class="p">[</span><span class="n">branch_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">branch</span><span class="o">.</span><span class="n">mutation</span><span class="p">)</span>
 
             <span class="n">current_branches</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">branch_name</span><span class="p">,</span> <span class="n">branch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">current_branches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">branch</span><span class="o">.</span><span class="n">dir_handle</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-                <span class="n">mutations</span><span class="p">[</span><span class="n">branch_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">branch</span><span class="o">.</span><span class="n">mutation</span>
+                <span class="n">mutations</span><span class="p">[</span><span class="n">branch_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">branch</span><span class="o">.</span><span class="n">mutation</span><span class="p">)</span>
 
             <span class="n">top_branches</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">branch_name</span><span class="p">,</span> <span class="n">branch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">top_branches</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">top_branches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">branch</span><span class="o">.</span><span class="n">dir_handle</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-                <span class="n">mutations</span><span class="p">[</span><span class="n">branch_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">branch</span><span class="o">.</span><span class="n">mutation</span>
+                <span class="n">mutations</span><span class="p">[</span><span class="n">branch_name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">branch</span><span class="o">.</span><span class="n">mutation</span><span class="p">)</span>
 
             <span class="n">tracking</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="s2">&quot;previous_branches&quot;</span><span class="p">:</span> <span class="n">previous_branches</span><span class="p">,</span>
@@ -982,11 +926,8 @@
             <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Not a full WorkProject yet, could not track it.&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="WorkProject.get_first_iter">
-<a class="viewcode-back" href="../../misc.html#locuaz.projectutils.WorkProject.get_first_iter">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_first_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Branch</span><span class="p">]:</span>
+<div class="viewcode-block" id="WorkProject.get_first_iter"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.WorkProject.get_first_iter">[docs]</a>    <span class="k">def</span> <span class="nf">get_first_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Branch</span><span class="p">]:</span>
         <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span></div>
-
 
     <span class="k">def</span> <span class="nf">__draw_dags__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Try to set a nice plot size. The necessary width may still be underestimated, since the nodes may be</span>
@@ -1021,10 +962,7 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">out_path</span><span class="p">)</span></div>
 
 
-
-<div class="viewcode-block" id="set_logger">
-<a class="viewcode-back" href="../../misc.html#locuaz.projectutils.set_logger">[docs]</a>
-<span class="k">def</span> <span class="nf">set_logger</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">:</span>
+<div class="viewcode-block" id="set_logger"><a class="viewcode-back" href="../../misc.html#locuaz.projectutils.set_logger">[docs]</a><span class="k">def</span> <span class="nf">set_logger</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">:</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
 
@@ -1047,7 +985,6 @@
     <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">file_handler</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">logger</span></div>
-
 </pre></div>
 
            </div>

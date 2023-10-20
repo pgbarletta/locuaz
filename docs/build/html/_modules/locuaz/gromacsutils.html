@@ -3,18 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.gromacsutils &mdash; locuaz 0.5.3 documentation</title>
+  <title>locuaz.gromacsutils &mdash; locuaz 0.6.3 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=2a2fe768"></script>
-        <script src="../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -32,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.5.3
+                0.6.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -54,10 +55,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../../tutorialtleap.html">Tutorial: using Tleap topologies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorialligand.html">Tutorial: optimizing an antibody against a ligand</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../jobsubmission.html">Job submission</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mutationcreator.html">Mutation Creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../scorers.html">Scorers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../mutators.html">Mutators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../statistics.html">Stats</a></li>
@@ -123,9 +126,7 @@
 <span class="kn">from</span> <span class="nn">locuaz.primitives</span> <span class="kn">import</span> <span class="n">launch_biobb</span>
 
 
-<div class="viewcode-block" id="image_traj">
-<a class="viewcode-back" href="../../misc.html#locuaz.gromacsutils.image_traj">[docs]</a>
-<span class="k">def</span> <span class="nf">image_traj</span><span class="p">(</span><span class="n">cpx</span><span class="p">:</span> <span class="n">GROComplex</span><span class="p">,</span> <span class="n">out_trj_fn</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">use_tleap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">gmx_bin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gmx&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">XtcTrajectory</span><span class="p">:</span>
+<div class="viewcode-block" id="image_traj"><a class="viewcode-back" href="../../misc.html#locuaz.gromacsutils.image_traj">[docs]</a><span class="k">def</span> <span class="nf">image_traj</span><span class="p">(</span><span class="n">cpx</span><span class="p">:</span> <span class="n">GROComplex</span><span class="p">,</span> <span class="n">out_trj_fn</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">use_tleap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">gmx_bin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gmx&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">XtcTrajectory</span><span class="p">:</span>
     <span class="n">wrk_dir</span> <span class="o">=</span> <span class="n">out_trj_fn</span><span class="o">.</span><span class="n">parent</span>
 
     <span class="c1"># I have to specify `fit_selection` and `center_selection` even though I&#39;m not</span>
@@ -245,10 +246,7 @@
     <span class="k">return</span> <span class="n">XtcTrajectory</span><span class="p">(</span><span class="n">FileHandle</span><span class="p">(</span><span class="n">out_trj_fn</span><span class="p">))</span></div>
 
 
-
-<div class="viewcode-block" id="write_non_overlapping_ndx">
-<a class="viewcode-back" href="../../misc.html#locuaz.gromacsutils.write_non_overlapping_ndx">[docs]</a>
-<span class="k">def</span> <span class="nf">write_non_overlapping_ndx</span><span class="p">(</span>
+<div class="viewcode-block" id="write_non_overlapping_ndx"><a class="viewcode-back" href="../../misc.html#locuaz.gromacsutils.write_non_overlapping_ndx">[docs]</a><span class="k">def</span> <span class="nf">write_non_overlapping_ndx</span><span class="p">(</span>
         <span class="n">pdb_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
         <span class="n">ndx_fn_in</span><span class="p">:</span> <span class="n">FileHandle</span><span class="p">,</span>
         <span class="n">resSeq</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -311,10 +309,7 @@
     <span class="k">return</span> <span class="n">ndx</span><span class="p">,</span> <span class="n">wat_count</span></div>
 
 
-
-<div class="viewcode-block" id="remove_overlapping_waters">
-<a class="viewcode-back" href="../../misc.html#locuaz.gromacsutils.remove_overlapping_waters">[docs]</a>
-<span class="k">def</span> <span class="nf">remove_overlapping_waters</span><span class="p">(</span><span class="nb">complex</span><span class="p">:</span> <span class="n">GROComplex</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">overlapped_resSeq</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GROComplex</span><span class="p">:</span>
+<div class="viewcode-block" id="remove_overlapping_waters"><a class="viewcode-back" href="../../misc.html#locuaz.gromacsutils.remove_overlapping_waters">[docs]</a><span class="k">def</span> <span class="nf">remove_overlapping_waters</span><span class="p">(</span><span class="nb">complex</span><span class="p">:</span> <span class="n">GROComplex</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">overlapped_resSeq</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GROComplex</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;DEPRECATED remove_overlapping_waters takes a complex and removes all the waters that</span>
 <span class="sd">    are within a certain cutoff from `overlapped_resSeq`. Then it replaces them.</span>
 <span class="sd">    It does a lot of gymnastics to deal with Gromacs weirdness.</span>
@@ -430,10 +425,7 @@
     <span class="k">return</span> <span class="n">new_complex</span></div>
 
 
-
-<div class="viewcode-block" id="fix_gromacs_pdb">
-<a class="viewcode-back" href="../../misc.html#locuaz.gromacsutils.fix_gromacs_pdb">[docs]</a>
-<span class="k">def</span> <span class="nf">fix_gromacs_pdb</span><span class="p">(</span>
+<div class="viewcode-block" id="fix_gromacs_pdb"><a class="viewcode-back" href="../../misc.html#locuaz.gromacsutils.fix_gromacs_pdb">[docs]</a><span class="k">def</span> <span class="nf">fix_gromacs_pdb</span><span class="p">(</span>
         <span class="n">pdb_in_fn</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">pdb_out_fn</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">new_chainID</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">allowed_nonstandard_residues</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
@@ -489,10 +481,7 @@
     <span class="k">return</span> <span class="n">pdb_in_fn</span></div>
 
 
-
-<div class="viewcode-block" id="remove_overlapping_solvent">
-<a class="viewcode-back" href="../../misc.html#locuaz.gromacsutils.remove_overlapping_solvent">[docs]</a>
-<span class="k">def</span> <span class="nf">remove_overlapping_solvent</span><span class="p">(</span>
+<div class="viewcode-block" id="remove_overlapping_solvent"><a class="viewcode-back" href="../../misc.html#locuaz.gromacsutils.remove_overlapping_solvent">[docs]</a><span class="k">def</span> <span class="nf">remove_overlapping_solvent</span><span class="p">(</span>
         <span class="n">overlapped_pdb</span><span class="p">:</span> <span class="n">PDBStructure</span><span class="p">,</span>
         <span class="n">overlapped_resSeq</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">nonoverlapped_out_pdb</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
@@ -565,7 +554,6 @@
             <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
 
     <span class="k">return</span> <span class="n">PDBStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">nonoverlapped_fn</span><span class="p">)</span></div>
-
 </pre></div>
 
            </div>

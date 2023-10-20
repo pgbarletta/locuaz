@@ -60,6 +60,7 @@
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mutationcreator.html">Mutation Creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="scorers.html">Scorers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mutators.html">Mutators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="statistics.html">Stats</a></li>
@@ -126,6 +127,12 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mutationcreator.html#locuaz.aminoacidselector.AminoAcidSelector.aa_distribution">aa_distribution (locuaz.aminoacidselector.AminoAcidSelector attribute)</a>
+</li>
+      <li><a href="mutationcreator.html#locuaz.mutationcreation.MutationCreator.aa_selector">aa_selector (locuaz.mutationcreation.MutationCreator attribute)</a>
+</li>
+      <li><a href="mutationcreator.html#locuaz.aminoacidselector.AminoAcidSelector.aa_to_bin">aa_to_bin (locuaz.aminoacidselector.AminoAcidSelector attribute)</a>
+</li>
       <li><a href="misc.html#locuaz.complex.AbstractComplex">AbstractComplex (class in locuaz.complex)</a>
 </li>
       <li><a href="misc.html#locuaz.molecules.AbstractFileObject">AbstractFileObject (class in locuaz.molecules)</a>
@@ -138,11 +145,19 @@
 </li>
       <li><a href="mutators.html#locuaz.basemutator.BaseMutator.add_water">add_water() (locuaz.basemutator.BaseMutator static method)</a>
 </li>
+      <li><a href="mutationcreator.html#locuaz.siteselector.SiteSelector.all_resSeqs">all_resSeqs (locuaz.siteselector.SiteSelector attribute)</a>
+</li>
       <li><a href="misc.html#locuaz.amberutils.amb_to_gmx">amb_to_gmx() (in module locuaz.amberutils)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mutationcreator.html#locuaz.siteselector.SiteSelector.amber_numbering">amber_numbering (locuaz.siteselector.SiteSelector attribute)</a>
+</li>
       <li><a href="misc.html#locuaz.molecules.AmberTopology">AmberTopology (class in locuaz.molecules)</a>
+</li>
+      <li><a href="mutationcreator.html#locuaz.aminoacidselector.AminoAcidMemory">AminoAcidMemory (class in locuaz.aminoacidselector)</a>
+</li>
+      <li><a href="mutationcreator.html#locuaz.aminoacidselector.AminoAcidSelector">AminoAcidSelector (class in locuaz.aminoacidselector)</a>
 </li>
       <li><a href="misc.html#locuaz.cli.append_branches">append_branches() (in module locuaz.cli)</a>
 </li>
@@ -188,8 +203,14 @@
 </li>
       <li><a href="misc.html#locuaz.molecules.Topology.binder_chains">binder_chains (locuaz.molecules.Topology attribute)</a>
 </li>
+      <li><a href="mutationcreator.html#locuaz.pools.BinPool">BinPool (class in locuaz.pools)</a>
+</li>
+      <li><a href="mutationcreator.html#locuaz.aminoacidselector.AminoAcidSelector.bins">bins (locuaz.aminoacidselector.AminoAcidSelector attribute)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mutationcreator.html#locuaz.aminoacidselector.AminoAcidSelector.bins_criteria">bins_criteria (locuaz.aminoacidselector.AminoAcidSelector attribute)</a>
+</li>
       <li><a href="scorers.html#locuaz.bluues.Bluues">Bluues (class in locuaz.bluues)</a>
 </li>
       <li><a href="scorers.html#locuaz.bluuesbmf.BluuesBmf">BluuesBmf (class in locuaz.bluuesbmf)</a>
@@ -201,6 +222,10 @@
 </li>
       </ul></li>
       <li><a href="misc.html#locuaz.projectutils.Branch">Branch (class in locuaz.projectutils)</a>
+</li>
+      <li><a href="mutationcreator.html#locuaz.aminoacidselector.AminoAcidMemory.branch_bins">branch_bins (locuaz.aminoacidselector.AminoAcidMemory attribute)</a>
+</li>
+      <li><a href="mutationcreator.html#locuaz.aminoacidselector.AminoAcidMemory.branch_bins_indices">branch_bins_indices (locuaz.aminoacidselector.AminoAcidMemory attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.projectutils.WorkProject.branch_from_path">branch_from_path() (locuaz.projectutils.WorkProject method)</a>
 </li>
@@ -229,19 +254,35 @@
 </li>
       </ul></li>
       <li><a href="mutators.html#locuaz.mutation.Mutation.chainID">chainID (locuaz.mutation.Mutation attribute)</a>
+
+      <ul>
+        <li><a href="mutators.html#locuaz.mutation.Site.chainID">(locuaz.mutation.Site attribute)</a>
 </li>
+      </ul></li>
       <li><a href="mutators.html#locuaz.mutation.Mutation.chainID_idx">chainID_idx (locuaz.mutation.Mutation attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.projectutils.Branch.chainIDs">chainIDs (locuaz.projectutils.Branch attribute)</a>
+
+      <ul>
+        <li><a href="mutationcreator.html#locuaz.siteselector.SiteSelector.chainIDs">(locuaz.siteselector.SiteSelector attribute)</a>
 </li>
+      </ul></li>
       <li><a href="mutators.html#locuaz.mutatordlp.MutatorDLPacker.charges_path">charges_path (locuaz.mutatordlp.MutatorDLPacker attribute)</a>
 </li>
-      <li><a href="misc.html#locuaz.cli.check_gmxmmpbsa">check_gmxmmpbsa() (in module locuaz.cli)</a>
+      <li><a href="misc.html#locuaz.cli.check_bins">check_bins() (in module locuaz.cli)</a>
 </li>
-      <li><a href="misc.html#locuaz.validatore.Validatore.checkers">checkers (locuaz.validatore.Validatore attribute)</a>
+      <li><a href="misc.html#locuaz.cli.check_custom_probability">check_custom_probability() (in module locuaz.cli)</a>
+</li>
+      <li><a href="misc.html#locuaz.cli.check_gmxmmpbsa_legacy">check_gmxmmpbsa_legacy() (in module locuaz.cli)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="misc.html#locuaz.cli.check_mutation_generation">check_mutation_generation() (in module locuaz.cli)</a>
+</li>
+      <li><a href="misc.html#locuaz.cli.check_sites_mmpbsa">check_sites_mmpbsa() (in module locuaz.cli)</a>
+</li>
+      <li><a href="misc.html#locuaz.validatore.Validatore.checkers">checkers (locuaz.validatore.Validatore attribute)</a>
+</li>
       <li><a href="misc.html#locuaz.amberutils.chunk">chunk() (in module locuaz.amberutils)</a>
 </li>
       <li><a href="misc.html#locuaz.validatore.Validatore.coercers">coercers (locuaz.validatore.Validatore attribute)</a>
@@ -274,6 +315,8 @@
 </li>
       <li><a href="misc.html#locuaz.runutils.MDrun.dev">dev (locuaz.runutils.MDrun attribute)</a>
 </li>
+      <li><a href="mutationcreator.html#locuaz.pools.InfinitePool.difference_update">difference_update() (locuaz.pools.InfinitePool method)</a>
+</li>
       <li><a href="misc.html#locuaz.complex.AbstractComplex.dir">dir (locuaz.complex.AbstractComplex attribute)</a>
 
       <ul>
@@ -292,6 +335,8 @@
 </li>
       <li><a href="misc.html#locuaz.fileutils.DirHandle">DirHandle (class in locuaz.fileutils)</a>
 </li>
+      <li><a href="mutationcreator.html#locuaz.pools.InfinitePool.discard">discard() (locuaz.pools.InfinitePool method)</a>
+</li>
       <li><a href="scorers.html#locuaz.scoring.discard_branch">discard_branch() (in module locuaz.scoring)</a>
 </li>
   </ul></td>
@@ -301,6 +346,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="misc.html#locuaz.projectutils.Epoch">Epoch (class in locuaz.projectutils)</a>
+</li>
+      <li><a href="mutationcreator.html#locuaz.aminoacidselector.AminoAcidMemory.epoch_bins_indices">epoch_bins_indices (locuaz.aminoacidselector.AminoAcidMemory attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.projectutils.Branch.epoch_id">epoch_id (locuaz.projectutils.Branch attribute)</a>
 </li>
@@ -313,6 +360,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="mutationgenerators.html#locuaz.spm4.SPM4.excluded_pos">excluded_pos (locuaz.spm4.SPM4 attribute)</a>
+</li>
+      <li><a href="mutationcreator.html#locuaz.siteselector.SiteSelector.excluded_resSeqs">excluded_resSeqs (locuaz.siteselector.SiteSelector attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.molecules.AbstractFileObject.ext">ext (locuaz.molecules.AbstractFileObject attribute)</a>
 </li>
@@ -358,10 +407,12 @@
 </li>
       <li><a href="misc.html#locuaz.amberutils.fixup_top">fixup_top() (in module locuaz.amberutils)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="misc.html#locuaz.fileutils.DirHandle.force">force (locuaz.fileutils.DirHandle attribute)</a>
 </li>
+      <li><a href="mutationcreator.html#locuaz.pools.InfinitePool.force_reset">force_reset() (locuaz.pools.InfinitePool method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="statistics.html#locuaz.basestatistic.BaseStatistic.frames_path">frames_path (locuaz.basestatistic.BaseStatistic attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.complex.AbstractComplex.from_complex">from_complex() (locuaz.complex.AbstractComplex class method)</a>
@@ -392,6 +443,12 @@
         <li><a href="misc.html#locuaz.complex.GROComplex.from_pdb">(locuaz.complex.GROComplex class method)</a>
 </li>
       </ul></li>
+      <li><a href="mutators.html#locuaz.mutation.Mutation.from_site">from_site() (locuaz.mutation.Mutation class method)</a>
+</li>
+      <li><a href="mutationcreator.html#locuaz.pools.BinPool.from_size">from_size() (locuaz.pools.BinPool class method)</a>
+</li>
+      <li><a href="mutationcreator.html#locuaz.aminoacidselector.AminoAcidSelector.full_bin">full_bin (locuaz.aminoacidselector.AminoAcidSelector attribute)</a>
+</li>
       <li><a href="misc.html#locuaz.projectutils.Branch.full_name">full_name() (locuaz.projectutils.Branch method)</a>
 </li>
   </ul></td>
@@ -403,6 +460,12 @@
       <li><a href="misc.html#locuaz.projectutils.Branch.generate_name_resname">generate_name_resname() (locuaz.projectutils.Branch method)</a>
 </li>
       <li><a href="misc.html#locuaz.molecules.generate_ndx">generate_ndx() (in module locuaz.molecules)</a>
+</li>
+      <li><a href="misc.html#locuaz.primitives.GenerationError">GenerationError</a>
+</li>
+      <li><a href="misc.html#locuaz.primitives.PriorityDeque.get">get() (locuaz.primitives.PriorityDeque method)</a>
+</li>
+      <li><a href="mutationcreator.html#locuaz.aminoacidselector.AminoAcidMemory.get_bin">get_bin() (locuaz.aminoacidselector.AminoAcidMemory method)</a>
 </li>
       <li><a href="misc.html#locuaz.complex.AbstractComplex.get_cryst1_record">get_cryst1_record() (locuaz.complex.AbstractComplex method)</a>
 
@@ -432,12 +495,12 @@
 </li>
       <li><a href="misc.html#locuaz.projectutils.WorkProject.get_mdps">get_mdps() (locuaz.projectutils.WorkProject method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="misc.html#locuaz.projectutils.WorkProject.get_mem_aminoacids">get_mem_aminoacids() (locuaz.projectutils.WorkProject method)</a>
 </li>
       <li><a href="misc.html#locuaz.projectutils.WorkProject.get_mem_positions">get_mem_positions() (locuaz.projectutils.WorkProject method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="misc.html#locuaz.cli.get_memory">get_memory() (in module locuaz.cli)</a>
 </li>
       <li><a href="misc.html#locuaz.cli.get_ngpus">get_ngpus() (in module locuaz.cli)</a>
@@ -452,7 +515,7 @@
 </li>
       <li><a href="misc.html#locuaz.cli.get_raw_config">get_raw_config() (in module locuaz.cli)</a>
 </li>
-      <li><a href="misc.html#locuaz.projectutils.WorkProject.get_tleap_into_iter">get_tleap_into_iter() (locuaz.projectutils.WorkProject method)</a>
+      <li><a href="misc.html#locuaz.projectutils.WorkProject.get_tleap_into_branch">get_tleap_into_branch() (locuaz.projectutils.WorkProject method)</a>
 </li>
       <li><a href="misc.html#locuaz.molecules.get_tpr">get_tpr() (in module locuaz.molecules)</a>
 </li>
@@ -502,15 +565,29 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="misc.html#locuaz.projectutils.Epoch.id">id (locuaz.projectutils.Epoch attribute)</a>
 </li>
-      <li><a href="mutationgenerators.html#locuaz.spm4.SPM4.idx_chain">idx_chain (locuaz.spm4.SPM4 attribute)</a>
+      <li><a href="mutators.html#locuaz.mutation.Site.idx_chain">idx_chain (locuaz.mutation.Site attribute)</a>
+
+      <ul>
+        <li><a href="mutationcreator.html#locuaz.siteselector.SiteSelector.idx_chain">(locuaz.siteselector.SiteSelector attribute)</a>
 </li>
-      <li><a href="mutationgenerators.html#locuaz.spm4.SPM4.idx_residue">idx_residue (locuaz.spm4.SPM4 attribute)</a>
+        <li><a href="mutationgenerators.html#locuaz.spm4.SPM4.idx_chain">(locuaz.spm4.SPM4 attribute)</a>
 </li>
+      </ul></li>
+      <li><a href="mutators.html#locuaz.mutation.Site.idx_residue">idx_residue (locuaz.mutation.Site attribute)</a>
+
+      <ul>
+        <li><a href="mutationcreator.html#locuaz.siteselector.SiteSelector.idx_residue">(locuaz.siteselector.SiteSelector attribute)</a>
+</li>
+        <li><a href="mutationgenerators.html#locuaz.spm4.SPM4.idx_residue">(locuaz.spm4.SPM4 attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="misc.html#locuaz.runutils.MDrun.image_after">image_after (locuaz.runutils.MDrun attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.gromacsutils.image_traj">image_traj() (in module locuaz.gromacsutils)</a>
+</li>
+      <li><a href="mutationcreator.html#locuaz.pools.InfinitePool">InfinitePool (class in locuaz.pools)</a>
 </li>
       <li><a href="scorers.html#locuaz.scoring.initialize_scoring_folder">initialize_scoring_folder() (in module locuaz.scoring)</a>
 </li>
@@ -562,6 +639,13 @@
 
       <ul>
         <li><a href="misc.html#module-locuaz.amberutils">module</a>
+</li>
+      </ul></li>
+      <li>
+    locuaz.aminoacidselector
+
+      <ul>
+        <li><a href="mutationcreator.html#module-locuaz.aminoacidselector">module</a>
 </li>
       </ul></li>
       <li>
@@ -697,6 +781,13 @@
         <li><a href="mutators.html#module-locuaz.mutation">module</a>
 </li>
       </ul></li>
+      <li>
+    locuaz.mutationcreation
+
+      <ul>
+        <li><a href="mutationcreator.html#module-locuaz.mutationcreation">module</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
@@ -739,6 +830,13 @@
 
       <ul>
         <li><a href="scorers.html#module-locuaz.pisa">module</a>
+</li>
+      </ul></li>
+      <li>
+    locuaz.pools
+
+      <ul>
+        <li><a href="mutationcreator.html#module-locuaz.pools">module</a>
 </li>
       </ul></li>
       <li>
@@ -816,6 +914,13 @@
 
       <ul>
         <li><a href="scorers.html#module-locuaz.scoring">module</a>
+</li>
+      </ul></li>
+      <li>
+    locuaz.siteselector
+
+      <ul>
+        <li><a href="mutationcreator.html#module-locuaz.siteselector">module</a>
 </li>
       </ul></li>
       <li>
@@ -900,6 +1005,8 @@
 </li>
       <li><a href="mutators.html#locuaz.basemutator.memorize_mutations">memorize_mutations() (in module locuaz.basemutator)</a>
 </li>
+      <li><a href="mutationcreator.html#locuaz.aminoacidselector.AminoAcidSelector.memory">memory (locuaz.aminoacidselector.AminoAcidSelector attribute)</a>
+</li>
       <li><a href="misc.html#locuaz.runutils.MDrun.min">min() (locuaz.runutils.MDrun class method)</a>
 </li>
       <li>
@@ -913,6 +1020,8 @@
         <li><a href="scorers.html#module-locuaz.abstractscorer">locuaz.abstractscorer</a>
 </li>
         <li><a href="misc.html#module-locuaz.amberutils">locuaz.amberutils</a>
+</li>
+        <li><a href="mutationcreator.html#module-locuaz.aminoacidselector">locuaz.aminoacidselector</a>
 </li>
         <li><a href="scorers.html#module-locuaz.autodockvina">locuaz.autodockvina</a>
 </li>
@@ -952,6 +1061,8 @@
 </li>
         <li><a href="mutators.html#module-locuaz.mutation">locuaz.mutation</a>
 </li>
+        <li><a href="mutationcreator.html#module-locuaz.mutationcreation">locuaz.mutationcreation</a>
+</li>
         <li><a href="mutators.html#module-locuaz.mutatordlp">locuaz.mutatordlp</a>
 </li>
         <li><a href="mutators.html#module-locuaz.mutatordlpr">locuaz.mutatordlpr</a>
@@ -963,6 +1074,8 @@
         <li><a href="scorers.html#module-locuaz.piepisa">locuaz.piepisa</a>
 </li>
         <li><a href="scorers.html#module-locuaz.pisa">locuaz.pisa</a>
+</li>
+        <li><a href="mutationcreator.html#module-locuaz.pools">locuaz.pools</a>
 </li>
         <li><a href="misc.html#module-locuaz.primitives">locuaz.primitives</a>
 </li>
@@ -985,6 +1098,8 @@
         <li><a href="scorers.html#module-locuaz.scorers">locuaz.scorers</a>
 </li>
         <li><a href="scorers.html#module-locuaz.scoring">locuaz.scoring</a>
+</li>
+        <li><a href="mutationcreator.html#module-locuaz.siteselector">locuaz.siteselector</a>
 </li>
         <li><a href="mutationgenerators.html#module-locuaz.spm4">locuaz.spm4</a>
 </li>
@@ -1023,8 +1138,16 @@
 </li>
       <li><a href="misc.html#locuaz.projectutils.Branch.mutation_str">mutation_str() (locuaz.projectutils.Branch method)</a>
 </li>
-      <li><a href="mutationgenerators.html#locuaz.spm4.SPM4.mutations">mutations (locuaz.spm4.SPM4 attribute)</a>
+      <li><a href="mutationcreator.html#locuaz.mutationcreation.MutationCreator">MutationCreator (class in locuaz.mutationcreation)</a>
 </li>
+      <li><a href="misc.html#locuaz.primitives.MutationError">MutationError</a>
+</li>
+      <li><a href="mutationcreator.html#locuaz.mutationcreation.MutationCreator.mutations">mutations (locuaz.mutationcreation.MutationCreator attribute)</a>
+
+      <ul>
+        <li><a href="mutationgenerators.html#locuaz.spm4.SPM4.mutations">(locuaz.spm4.SPM4 attribute)</a>
+</li>
+      </ul></li>
       <li><a href="mutators.html#locuaz.mutatordlp.MutatorDLPacker">MutatorDLPacker (class in locuaz.mutatordlp)</a>
 </li>
       <li><a href="mutators.html#locuaz.mutatordlpr.MutatorDLPackerReconstruct">MutatorDLPackerReconstruct (class in locuaz.mutatordlpr)</a>
@@ -1041,8 +1164,16 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mutationcreator.html#locuaz.aminoacidselector.AminoAcidSelector.N_BINS">N_BINS (locuaz.aminoacidselector.AminoAcidSelector attribute)</a>
+</li>
       <li><a href="mutationgenerators.html#locuaz.spm4.SPM4.N_CAT">N_CAT (locuaz.spm4.SPM4 attribute)</a>
 </li>
+      <li><a href="mutationcreator.html#locuaz.aminoacidselector.AminoAcidSelector.N_SITES">N_SITES (locuaz.aminoacidselector.AminoAcidSelector attribute)</a>
+
+      <ul>
+        <li><a href="mutationcreator.html#locuaz.siteselector.SiteSelector.N_SITES">(locuaz.siteselector.SiteSelector attribute)</a>
+</li>
+      </ul></li>
       <li><a href="scorers.html#locuaz.abstractscorer.AbstractScorer.name">name (locuaz.abstractscorer.AbstractScorer attribute)</a>
 
       <ul>
@@ -1061,12 +1192,12 @@
       </ul></li>
       <li><a href="misc.html#locuaz.fileutils.FileHandle.name_ext">name_ext() (locuaz.fileutils.FileHandle method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="misc.html#locuaz.complex.GROComplex.ndx">ndx (locuaz.complex.GROComplex attribute)</a>
 </li>
       <li><a href="mutationgenerators.html#locuaz.spm4.SPM4.NEG_AAS">NEG_AAS (locuaz.spm4.SPM4 attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="mutators.html#locuaz.mutation.Mutation.new_aa">new_aa (locuaz.mutation.Mutation attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.projectutils.WorkProject.new_epoch">new_epoch() (locuaz.projectutils.WorkProject method)</a>
@@ -1121,8 +1252,6 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="misc.html#locuaz.projectutils.pairwise">pairwise() (in module locuaz.projectutils)</a>
-</li>
       <li><a href="scorers.html#locuaz.bach.Bach.parameters_handle">parameters_handle (locuaz.bach.Bach attribute)</a>
 
       <ul>
@@ -1149,10 +1278,10 @@
 </li>
       <li><a href="mutationgenerators.html#locuaz.spm4.SPM4.PHO_AAS">PHO_AAS (locuaz.spm4.SPM4 attribute)</a>
 </li>
+      <li><a href="mutationcreator.html#locuaz.pools.InfinitePool.pick">pick() (locuaz.pools.InfinitePool method)</a>
+</li>
       <li><a href="scorers.html#locuaz.piepisa.PiePisa">PiePisa (class in locuaz.piepisa)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="misc.html#locuaz.runutils.BranchMDParams.pinoffset">pinoffset (locuaz.runutils.BranchMDParams attribute)</a>
 
       <ul>
@@ -1161,9 +1290,21 @@
       </ul></li>
       <li><a href="scorers.html#locuaz.pisa.Pisa">Pisa (class in locuaz.pisa)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mutationcreator.html#locuaz.pools.InfinitePool.pool">pool (locuaz.pools.InfinitePool attribute)</a>
+</li>
+      <li><a href="mutationcreator.html#locuaz.pools.InfinitePool.pop">pop() (locuaz.pools.InfinitePool method)</a>
+</li>
       <li><a href="mutators.html#locuaz.basemutator.BaseMutator.port_mutation">port_mutation() (locuaz.basemutator.BaseMutator static method)</a>
 </li>
       <li><a href="mutationgenerators.html#locuaz.spm4.SPM4.POS_AAS">POS_AAS (locuaz.spm4.SPM4 attribute)</a>
+</li>
+      <li><a href="misc.html#locuaz.primitives.PriorityDeque">PriorityDeque (class in locuaz.primitives)</a>
+</li>
+      <li><a href="mutationcreator.html#locuaz.siteselector.SiteSelector.probability">probability (locuaz.siteselector.SiteSelector attribute)</a>
+</li>
+      <li><a href="mutationcreator.html#locuaz.siteselector.SiteSelector.probe_radius">probe_radius (locuaz.siteselector.SiteSelector attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.projectutils.WorkProject.project_dag">project_dag (locuaz.projectutils.WorkProject attribute)</a>
 </li>
@@ -1183,6 +1324,8 @@
 </li>
       <li><a href="pruners.html#locuaz.pruners.pruners">pruners (in module locuaz.pruners)</a>
 </li>
+      <li><a href="misc.html#locuaz.primitives.PriorityDeque.put">put() (locuaz.primitives.PriorityDeque method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -1197,7 +1340,13 @@
 </li>
       <li><a href="misc.html#locuaz.projectutils.Branch.read_scores">read_scores() (locuaz.projectutils.Branch method)</a>
 </li>
+      <li><a href="mutationcreator.html#locuaz.aminoacidselector.AminoAcidSelector.reis_barletta_cdr">reis_barletta_cdr (locuaz.aminoacidselector.AminoAcidSelector attribute)</a>
+</li>
+      <li><a href="mutationcreator.html#locuaz.aminoacidselector.AminoAcidSelector.reis_barletta_full">reis_barletta_full (locuaz.aminoacidselector.AminoAcidSelector attribute)</a>
+</li>
       <li><a href="mutationgenerators.html#locuaz.spm4.SPM4.remaining_categories">remaining_categories (locuaz.spm4.SPM4 attribute)</a>
+</li>
+      <li><a href="mutationcreator.html#locuaz.aminoacidselector.AminoAcidMemory.remove_from_memory">remove_from_memory() (locuaz.aminoacidselector.AminoAcidMemory method)</a>
 </li>
       <li><a href="misc.html#locuaz.gromacsutils.remove_overlapping_solvent">remove_overlapping_solvent() (in module locuaz.gromacsutils)</a>
 </li>
@@ -1209,16 +1358,22 @@
 </li>
       <li><a href="scorers.html#locuaz.haddock.Haddock.rescoring_scripts_dir">rescoring_scripts_dir (locuaz.haddock.Haddock attribute)</a>
 </li>
+      <li><a href="mutationcreator.html#locuaz.pools.InfinitePool.reservoir">reservoir (locuaz.pools.InfinitePool attribute)</a>
+</li>
       <li><a href="misc.html#locuaz.projectutils.Branch.resnames">resnames (locuaz.projectutils.Branch attribute)</a>
 </li>
       <li><a href="mutators.html#locuaz.mutation.Mutation.resSeq">resSeq (locuaz.mutation.Mutation attribute)</a>
+
+      <ul>
+        <li><a href="mutators.html#locuaz.mutation.Site.resSeq">(locuaz.mutation.Site attribute)</a>
 </li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="mutators.html#locuaz.mutation.Mutation.resSeq_idx">resSeq_idx (locuaz.mutation.Mutation attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.projectutils.Branch.resSeqs">resSeqs (locuaz.projectutils.Branch attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="misc.html#locuaz.runutils.MDrun.restraints">restraints (locuaz.runutils.MDrun attribute)</a>
 </li>
       <li><a href="statistics.html#locuaz.basestatistic.BaseStatistic.result">result (locuaz.basestatistic.BaseStatistic attribute)</a>
@@ -1287,10 +1442,10 @@
 </li>
       <li><a href="misc.html#locuaz.projectutils.set_logger">set_logger() (in module locuaz.projectutils)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="misc.html#locuaz.moleculesutils.set_posres">set_posres() (in module locuaz.moleculesutils)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="misc.html#locuaz.projectutils.Branch.set_score">set_score() (locuaz.projectutils.Branch method)</a>
 </li>
       <li><a href="misc.html#locuaz.projectutils.Branch.set_stat">set_stat() (locuaz.projectutils.Branch method)</a>
@@ -1298,6 +1453,12 @@
       <li><a href="misc.html#locuaz.cli.set_statistics">set_statistics() (in module locuaz.cli)</a>
 </li>
       <li><a href="misc.html#locuaz.projectutils.Epoch.set_top_iter">set_top_iter() (locuaz.projectutils.Epoch method)</a>
+</li>
+      <li><a href="mutators.html#locuaz.mutation.Site">Site (class in locuaz.mutation)</a>
+</li>
+      <li><a href="mutationcreator.html#locuaz.mutationcreation.MutationCreator.site_selector">site_selector (locuaz.mutationcreation.MutationCreator attribute)</a>
+</li>
+      <li><a href="mutationcreator.html#locuaz.siteselector.SiteSelector">SiteSelector (class in locuaz.siteselector)</a>
 </li>
       <li><a href="misc.html#locuaz.molutils.split_solute_and_solvent_old">split_solute_and_solvent_old() (in module locuaz.molutils)</a>
 </li>
@@ -1389,17 +1550,23 @@
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="mutationcreator.html#locuaz.aminoacidselector.AminoAcidSelector.uniform">uniform (locuaz.aminoacidselector.AminoAcidSelector attribute)</a>
+</li>
       <li><a href="misc.html#locuaz.fileutils.FileHandle.unlink">unlink() (locuaz.fileutils.FileHandle method)</a>
 
       <ul>
         <li><a href="misc.html#locuaz.molecules.AbstractFileObject.unlink">(locuaz.molecules.AbstractFileObject method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="misc.html#locuaz.projectutils.WorkProject.update_dags">update_dags() (locuaz.projectutils.WorkProject method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="misc.html#locuaz.fileutils.update_header">update_header() (in module locuaz.fileutils)</a>
+</li>
+      <li><a href="mutationcreator.html#locuaz.aminoacidselector.AminoAcidSelector.use_bins">use_bins (locuaz.aminoacidselector.AminoAcidSelector attribute)</a>
+</li>
+      <li><a href="mutationcreator.html#locuaz.siteselector.SiteSelector.use_interface">use_interface (locuaz.siteselector.SiteSelector attribute)</a>
 </li>
       <li><a href="misc.html#locuaz.primitives.UserInputError">UserInputError</a>
 </li>

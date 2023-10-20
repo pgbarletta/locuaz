@@ -66,6 +66,7 @@ delivers efficient *in-silico* optimization.
     :caption: Reference
 
     mutationgenerators
+    mutationcreator
     scorers
     mutators
     statistics

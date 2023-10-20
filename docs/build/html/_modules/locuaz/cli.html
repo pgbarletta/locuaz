@@ -55,10 +55,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../../tutorialtleap.html">Tutorial: using Tleap topologies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorialligand.html">Tutorial: optimizing an antibody against a ligand</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../jobsubmission.html">Job submission</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mutationcreator.html">Mutation Creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../scorers.html">Scorers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../mutators.html">Mutators</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../statistics.html">Stats</a></li>
@@ -103,11 +105,12 @@
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span><span class="p">,</span> <span class="n">simplefilter</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">product</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">product</span><span class="p">,</span> <span class="n">chain</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">queue</span> <span class="kn">import</span> <span class="n">PriorityQueue</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Final</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span>
 <span class="kn">import</span> <span class="nn">subprocess</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">from</span> <span class="nn">numpy.testing</span> <span class="kn">import</span> <span class="n">assert_almost_equal</span>
 
 <span class="kn">import</span> <span class="nn">yaml</span>
 <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
@@ -194,11 +197,16 @@
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">resnames</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">resSeqs</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;mutating_resname(</span><span class="si">{</span><span class="n">resnames</span><span class="si">}</span><span class="s2">) and mutating_resSeq (</span><span class="si">{</span><span class="n">resSeqs</span><span class="si">}</span><span class="s2">) have &quot;</span> \
                                               <span class="sa">f</span><span class="s2">&quot;different lengths: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">resnames</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">resSeqs</span><span class="p">)</span><span class="si">}</span><span class="s2">, respectively.&quot;</span>
 
-    <span class="c1"># Check &#39;branches&#39; and &#39;generator&#39;</span>
-    <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;SPM4&quot;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;generation&quot;</span><span class="p">][</span><span class="s2">&quot;generator&quot;</span><span class="p">])</span> <span class="ow">and</span> <span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;new_branches&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">19</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="n">UserInputError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SPM4 mutation generators cannot generate more than 19 branches&quot;</span><span class="p">)</span>
-
-    <span class="n">check_gmxmmpbsa</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="c1"># Check creation and check gmxmmpbsa options</span>
+    <span class="c1"># TODO: deprecate</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;creation&quot;</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;generation&quot;</span><span class="p">),</span> <span class="s2">&quot;Cannot set &#39;generation&#39; and &#39;creation&#39; at the same time.&quot;</span>
+        <span class="n">check_mutation_generation</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Mutation Generator will be deprecated in 0.8.0. &quot;</span>
+             <span class="s2">&quot;Use Mutation Creator instead.&quot;</span><span class="p">)</span>
+        <span class="c1"># Check legacy generation and gmxmmpbsa options</span>
+        <span class="n">check_gmxmmpbsa_legacy</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 
     <span class="c1"># Check consensus threshold and scorers</span>
     <span class="k">if</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;pruning&quot;</span><span class="p">][</span><span class="s2">&quot;pruner&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;consensus&quot;</span><span class="p">:</span>
@@ -358,8 +366,8 @@
                 <span class="k">assert</span> <span class="n">pdb_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">gro_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">zip_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">tpr_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
                 <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Branch </span><span class="si">{</span><span class="n">branch_fn</span><span class="si">}</span><span class="s2"> is incomplete. Will back up the whole epoch and generate it again.&quot;</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">branch_fn</span> <span class="ow">in</span> <span class="n">current_branches</span><span class="p">:</span>
-                    <span class="n">backup_branch</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;work&quot;</span><span class="p">],</span> <span class="n">branch_fn</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">branch_fn2</span> <span class="ow">in</span> <span class="n">current_branches</span><span class="p">:</span>
+                    <span class="n">backup_branch</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;work&quot;</span><span class="p">],</span> <span class="n">branch_fn2</span><span class="p">))</span>
 
                 <span class="k">return</span> <span class="kc">True</span>
 
@@ -453,14 +461,15 @@
         <span class="k">return</span> <span class="n">config</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No valid branches in work_dir. Aborting.&quot;</span><span class="p">)</span></div>
 
+<span class="c1"># TODO: deprecate</span>
+<div class="viewcode-block" id="check_gmxmmpbsa_legacy"><a class="viewcode-back" href="../../misc.html#locuaz.cli.check_gmxmmpbsa_legacy">[docs]</a><span class="k">def</span> <span class="nf">check_gmxmmpbsa_legacy</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">generation_config</span> <span class="o">:=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;generation&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">generation_config</span><span class="p">[</span><span class="s2">&quot;generator&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;SPM4gmxmmpbsa&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;gmxmmpbsa&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;scoring&quot;</span><span class="p">][</span><span class="s2">&quot;scorers&quot;</span><span class="p">]:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;gmxmmbpsa&#39; function is necessary to use the &#39;SPM4mmpbsa&#39; mutator&quot;</span><span class="p">,</span>
+                      <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">UserInputError</span>
 
-<div class="viewcode-block" id="check_gmxmmpbsa"><a class="viewcode-back" href="../../misc.html#locuaz.cli.check_gmxmmpbsa">[docs]</a><span class="k">def</span> <span class="nf">check_gmxmmpbsa</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;generation&quot;</span><span class="p">][</span><span class="s2">&quot;generator&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;SPM4gmxmmpbsa&quot;</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s2">&quot;gmxmmpbsa&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;scoring&quot;</span><span class="p">][</span><span class="s2">&quot;scorers&quot;</span><span class="p">]:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;gmxmmbpsa&#39; function is necessary to use the &#39;SPM4mmpbsa&#39; mutator&quot;</span><span class="p">,</span>
-                  <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="n">UserInputError</span>
-        <span class="k">else</span><span class="p">:</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;scorers&quot;</span><span class="p">],</span> <span class="s2">&quot;gmxmmpbsa&quot;</span><span class="p">,</span> <span class="s2">&quot;gmxmmpbsa&quot;</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
                     <span class="k">if</span> <span class="s2">&quot;idecomp&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
@@ -471,6 +480,66 @@
                       <span class="s2">&quot;This is a prerequisite for the SPM4gmxmmpbsa Mutation Generator.&quot;</span><span class="p">,</span>
                       <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="n">UserInputError</span></div>
+
+
+<div class="viewcode-block" id="check_mutation_generation"><a class="viewcode-back" href="../../misc.html#locuaz.cli.check_mutation_generation">[docs]</a><span class="k">def</span> <span class="nf">check_mutation_generation</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;creation&quot;</span><span class="p">):</span>
+        <span class="n">check_sites_mmpbsa</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="n">check_bins</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="n">check_custom_probability</span><span class="p">(</span><span class="n">config</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="check_sites_mmpbsa"><a class="viewcode-back" href="../../misc.html#locuaz.cli.check_sites_mmpbsa">[docs]</a><span class="k">def</span> <span class="nf">check_sites_mmpbsa</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;creation&quot;</span><span class="p">][</span><span class="s2">&quot;sites_probability&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;mmpbsa&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;gmxmmpbsa&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;scoring&quot;</span><span class="p">][</span><span class="s2">&quot;scorers&quot;</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;gmxmmbpsa&#39; function is necessary to use the mmpbsa &quot;</span>
+                  <span class="s2">&quot;probability distribution.&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">UserInputError</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;scorers&quot;</span><span class="p">],</span> <span class="s2">&quot;gmxmmpbsa&quot;</span><span class="p">,</span> <span class="s2">&quot;gmxmmpbsa&quot;</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;idecomp&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                    <span class="k">return</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">continue</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Input &#39;gmxmmbpsa&#39; is not performing &#39;idecomp&#39; residue &quot;</span>
+                  <span class="s2">&quot;decomposition. This is a prerequisite for the gmxmmpbsa &quot;</span>
+                  <span class="s2">&quot;probability distribution.&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">UserInputError</span></div>
+
+
+<div class="viewcode-block" id="check_bins"><a class="viewcode-back" href="../../misc.html#locuaz.cli.check_bins">[docs]</a><span class="k">def</span> <span class="nf">check_bins</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">bins</span> <span class="o">:=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;creation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;aa_bins&quot;</span><span class="p">):</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="p">[</span> <span class="nb">list</span><span class="p">(</span><span class="nb">bin</span><span class="p">)</span> <span class="k">for</span> <span class="nb">bin</span> <span class="ow">in</span> <span class="n">bins</span> <span class="p">]</span>
+        <span class="n">aas</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="s1">&#39;Q&#39;</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;I&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;V&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;W&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">}</span>
+        <span class="n">missing_aas</span> <span class="o">=</span> <span class="n">aas</span><span class="o">.</span><span class="n">symmetric_difference</span><span class="p">(</span>
+            <span class="nb">set</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">bins</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">missing_aas</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">missing_aas</span> <span class="o">!=</span> <span class="p">{</span><span class="s1">&#39;C&#39;</span><span class="p">}:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Invalid input &quot;aa_bins&quot;: </span><span class="si">{</span><span class="n">bins</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;Missing amino acids: </span><span class="si">{</span><span class="n">missing_aas</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;Enter all amino acids.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;creation&quot;</span><span class="p">][</span><span class="s2">&quot;aa_bins_criteria&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;without&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UserInputError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot set &#39;aa_bins_criteria&#39; to exclude &quot;</span>
+                                 <span class="s2">&quot;with just 1 bin.&quot;</span><span class="p">)</span>
+        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;creation&quot;</span><span class="p">][</span><span class="s2">&quot;aa_bins&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bins</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Cysteine is not included.</span>
+        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;creation&quot;</span><span class="p">][</span><span class="s2">&quot;aa_bins&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">],</span>
+                                         <span class="p">[</span><span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="s1">&#39;Q&#39;</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">],</span>
+                                         <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">,</span> <span class="s1">&#39;I&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;V&#39;</span><span class="p">],</span>
+                                         <span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;W&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">]]</span>
+        <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Using default &quot;aa_bins&quot;: </span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;creation&quot;</span><span class="p">][</span><span class="s2">&quot;aa_bins&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="check_custom_probability"><a class="viewcode-back" href="../../misc.html#locuaz.cli.check_custom_probability">[docs]</a><span class="k">def</span> <span class="nf">check_custom_probability</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;creation&quot;</span><span class="p">][</span><span class="s2">&quot;aa_probability&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;custom&quot;</span><span class="p">:</span>
+        <span class="n">pbbty</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;creation&quot;</span><span class="p">][</span><span class="s2">&quot;aa_probability_custom&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">assert_almost_equal</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">pbbty</span><span class="p">,</span> <span class="n">decimal</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UserInputError</span><span class="p">(</span><span class="s2">&quot;Probabilites from &#39;aa_probability_custom&#39; &quot;</span>
+                                 <span class="sa">f</span><span class="s1">&#39;must add up to 1. It adds up to: </span><span class="si">{</span><span class="n">pbbty</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span></div>
 
 
 <div class="viewcode-block" id="set_statistics"><a class="viewcode-back" href="../../misc.html#locuaz.cli.set_statistics">[docs]</a><span class="k">def</span> <span class="nf">set_statistics</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -603,6 +672,7 @@
 
     <span class="n">raw_config</span> <span class="o">=</span> <span class="n">get_raw_config</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">config_file</span><span class="p">)</span>
     <span class="n">config</span><span class="p">,</span> <span class="n">starts</span> <span class="o">=</span> <span class="n">validate_input</span><span class="p">(</span><span class="n">raw_config</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">debug</span><span class="p">)</span>
+
     <span class="n">set_statistics</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
     <span class="n">config</span><span class="p">[</span><span class="s2">&quot;misc&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="n">starts</span><span class="p">:</span>

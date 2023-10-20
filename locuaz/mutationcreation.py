@@ -1,10 +1,10 @@
 from collections.abc import Iterable, ItemsView
 from logging import Logger
-from typing import List, Dict, Set, Iterator, Mapping, Any, Optional
+from typing import List, Dict, Set, Iterator, Mapping, Any
 
 from locuaz.aminoacidselector import AminoAcidSelector
 from locuaz.mutation import Mutation
-from locuaz.projectutils import Branch, Epoch
+from locuaz.projectutils import Branch
 from locuaz.siteselector import SiteSelector
 
 

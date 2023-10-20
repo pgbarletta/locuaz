@@ -16,8 +16,8 @@ from locuaz.mutationcreation import MutationCreator
 from locuaz.basemutator import memorize_mutations, BaseMutator
 from locuaz.mutators import mutators
 from locuaz.projectutils import WorkProject, Epoch, Branch
-from mutation import Mutation
-from primitives import MutationError
+from locuaz.mutation import Mutation
+from locuaz.primitives import MutationError
 
 
 def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:

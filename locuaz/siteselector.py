@@ -6,7 +6,7 @@ from pathlib import Path
 from random import shuffle
 from typing import List, Dict, Set, Final, Any, Optional, Tuple
 
-from interface import get_interfacing_residues
+from locuaz.interface import get_interfacing_residues
 from locuaz.projectutils import Branch
 from locuaz.mutation import Site
 

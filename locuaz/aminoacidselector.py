@@ -7,8 +7,8 @@ from typing import List, Dict, Set, Any, Final, Tuple, Union
 from locuaz.mutation import Mutation
 from locuaz.projectutils import Branch
 from locuaz.siteselector import Site
-from pools import BinPool, InfinitePool
-from primitives import GenerationError
+from locuaz.pools import BinPool, InfinitePool
+from locuaz.primitives import GenerationError
 
 
 class AminoAcidMemory:

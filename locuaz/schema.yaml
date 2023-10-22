@@ -173,7 +173,7 @@ creation:
       minlength: 1
       maxlength: 20
       required: True
-      default: ["DEST", "AGIMLV", "PFWY", "RNQHK"]
+      default: ["CDEST", "AGIMLV", "PFWY", "RNQHK"]
       schema:
           type: string
           minlength: 1

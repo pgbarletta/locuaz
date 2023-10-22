@@ -1,8 +1,10 @@
 from collections import defaultdict
 from copy import deepcopy
 from logging import Logger
+from pathlib import Path
 from random import choices
 from typing import List, Dict, Set, Any, Final, Tuple, Union
+import pandas as pd
 
 from locuaz.mutation import Mutation
 from locuaz.projectutils import Branch
@@ -104,27 +106,7 @@ class AminoAcidSelector:
     N_SITES: int
     bins_criteria: str
 
-    uniform: Dict[str, float] = {
-        'A': 0.05263, 'R': 0.05263, 'N': 0.05263, 'D': 0.05263, 'E': 0.05263,
-        'Q': 0.05263, 'G': 0.05263, 'H': 0.05263, 'I': 0.05263, 'L': 0.05263,
-        'K': 0.05263, 'M': 0.05263, 'F': 0.05263, 'P': 0.05263, 'S': 0.05263,
-        'T': 0.05263, 'W': 0.05263, 'Y': 0.05263, 'V': 0.05263, 'C': 0.00000}
-    # Currently not used
-    reis_barletta_full: Final[Dict[str, float]] = {
-        'A': 0.03353, 'R': 0.05076, 'N': 0.06358, 'D': 0.06073, 'E': 0.02587,
-        'Q': 0.01545, 'G': 0.07939, 'H': 0.0219, 'I': 0.03489, 'L': 0.0385,
-        'K': 0.0185, 'M': 0.00678, 'F': 0.04677, 'P': 0.0234, 'S': 0.12669,
-        'T': 0.06186, 'W': 0.05624, 'Y': 0.20396, 'V': 0.0312, 'C': 0.00000}
-    reis_barletta_cdr: Final[Dict[str, float]] = {
-        'A': 0.03579, 'R': 0.04462, 'N': 0.06788, 'D': 0.06806, 'E': 0.02621,
-        'Q': 0.01268, 'G': 0.09396, 'H': 0.02256, 'I': 0.02952, 'L': 0.0387,
-        'K': 0.01514, 'M': 0.0076, 'F': 0.05339, 'P': 0.02284, 'S': 0.12746,
-        'T': 0.06049, 'W': 0.0493, 'Y': 0.19701, 'V': 0.02678, 'C': 0.00000}
-    full_bin: Final[Tuple[str]] = ('A', 'R', 'N', 'D', 'E', 'Q', 'G', 'H', 'I',
-                                   'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y',
-                                   'V', 'C')
-
-    aa_distribution: Dict[str, float] = uniform
+    aa_distribution: Dict[str, float]
 
     memory: AminoAcidMemory
 
@@ -139,14 +121,20 @@ class AminoAcidSelector:
         self.N_BINS = len(self.bins)
 
         self.bins_criteria = creation_config["aa_bins_criteria"]
-        # TODO: move this up to cli.py and make distributions csv datafiles.
         if creation_config["aa_probability"] == "ReisBarletta":
-            self.aa_distribution = self.reis_barletta_cdr
+            # pd_reis_barletta_full = pd.read_csv("reis_barletta_full.csv")
+            # {r[1].AminoAcid: r[1].Probability for r in pd_reis_barletta_full.iterrows()}
+
+            pd_reis_barletta_cdr = pd.read_csv(Path(
+                Path(__file__).resolve().parent, "reis_barletta_cdr.csv"))
+            self.aa_distribution = {r[1].AminoAcid: r[1].Probability for r in pd_reis_barletta_cdr.iterrows()}
+
         elif creation_config["aa_probability"] == "custom":
             self.aa_distribution = creation_config["custom"]
         else:
-            # It's uniform
-            pass
+            pd_uniform = pd.read_csv(Path(
+                Path(__file__).resolve().parent, "uniform.csv"))
+            self.aa_distribution = {r[1].AminoAcid: r[1].Probability for r in pd_uniform.iterrows()}
 
     def __call__(self,
                  top_branches: Dict[str, Branch],

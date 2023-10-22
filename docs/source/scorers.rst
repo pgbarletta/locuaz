@@ -15,7 +15,7 @@ Additional requirements for specific SFs
 Assuming a scorers folder set to: ``['paths']['scorers']=home/user/my_SFs``.
 
 gmxmmpbsa
-^^^^^^^^^^^
+^^^^^^^^^
 | gmxmmpbsa directory: ``home/user/my_SFs/gmxmmpbsa``
 
 This is the only scorer that comes bundled with the protocol.

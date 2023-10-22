@@ -9,14 +9,6 @@ Get them `over here <https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQ
 or ` here`_. These weights have to be extracted to a dedicated folder and its path has to be specified in the
 input config under the ``paths`` key, on the  ``mutator`` option.
 
-locuaz.mutation module
-----------------------
-
-.. automodule:: locuaz.mutation
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 locuaz.mutators module
 ----------------------
 

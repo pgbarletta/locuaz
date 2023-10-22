@@ -1,8 +1,16 @@
 Mutation Creator
-====================
+================
+
+Mutation
+--------
+
+.. automodule:: locuaz.mutation
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 locuaz.mutationcreation
----------------------------------------
+-----------------------
 
 .. automodule:: locuaz.mutationcreation
    :members:
@@ -10,21 +18,27 @@ locuaz.mutationcreation
    :show-inheritance:
 
 
-mmpbsa
--------
+Amino Acid Selector
+-------------------
 
 .. automodule:: locuaz.aminoacidselector
    :members:
    :undoc-members:
    :show-inheritance:
 
+Site Selector
+--------------
 
 .. automodule:: locuaz.siteselector
    :members:
    :undoc-members:
    :show-inheritance:
 
+Infinite Pool
+-------------
+
 .. automodule:: locuaz.pools
    :members:
    :undoc-members:
    :show-inheritance:
+

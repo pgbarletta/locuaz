@@ -1,9 +1,9 @@
-==================
+=======
 Blocks
-==================
+=======
 
 Introduction
---------------
+------------
 
 *locuaz* has several moving parts and each of them has its role in the optimization process.
 The optimization procedure begins with the *Mutation Generator* generating a new random mutation
@@ -49,9 +49,11 @@ protocols to be run, hence, some abstractions are needed. We will call these abs
     Other programs like the :ref:`scorers:rosetta` scorer may need additional files.
     These are listed on its dedicated section.
 
-Mutation Generator
--------------------
-These blocks are the one in charge of generating the new binders. These are the currently available generators:
+Mutation Generator (deprecated)
+--------------------------------
+These blocks are the one in charge of generating the new binders.
+They have been deprecated since version ``0.7.0``.
+These are the currently available generators:
 
 SPM4
 """""
@@ -106,8 +108,18 @@ Set ``config["generation"]["generator"]`` to ``SPM4gmxmmpbsa`` use this generato
 
 Mutation Creator
 ----------------
+The Mutation Creator replaces all Mutation Generators as the block in charge of
+taking a top branch from an epoch and creating the mutations that will give rise
+to the branches of the next epoch.
 
-
+Mutation Generators were mono-blocks that the user could pick for the task.
+On the other hand, the Mutation Creator is unique, but highly configurable.
+The user can build their desired Mutation Creator out of the many building
+blocks available.
+The available options are split according to the 2 phases: the choosing of the
+site to be mutated and the choosing of the new amino acid. For more information,
+check :ref:`mutationcreator:Mutation Creator` and
+:ref:`config_creation`.
 
 Mutator
 --------

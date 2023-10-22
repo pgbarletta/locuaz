@@ -107,7 +107,9 @@
 <span class="kn">from</span> <span class="nn">locuaz.mutation</span> <span class="kn">import</span> <span class="n">Mutation</span>
 
 
-<div class="viewcode-block" id="AbstractMutationGenerator"><a class="viewcode-back" href="../../mutationgenerators.html#locuaz.abstractmutationgenerator.AbstractMutationGenerator">[docs]</a><span class="k">class</span> <span class="nc">AbstractMutationGenerator</span><span class="p">(</span><span class="n">ABC</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+<div class="viewcode-block" id="AbstractMutationGenerator"><a class="viewcode-back" href="../../mutationgenerators.html#locuaz.abstractmutationgenerator.AbstractMutationGenerator">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.7.0&quot;</span><span class="p">,</span>
+            <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Mutation Generators are replaced by Mutation Creators.&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">AbstractMutationGenerator</span><span class="p">(</span><span class="n">ABC</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>

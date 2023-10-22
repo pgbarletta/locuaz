@@ -102,14 +102,16 @@
 <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">Logger</span>
+<span class="kn">from</span> <span class="nn">deprecated.sphinx</span> <span class="kn">import</span> <span class="n">deprecated</span>
 
 <span class="kn">from</span> <span class="nn">locuaz.projectutils</span> <span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Epoch</span>
 <span class="kn">from</span> <span class="nn">locuaz.mutation</span> <span class="kn">import</span> <span class="n">Mutation</span>
 <span class="kn">from</span> <span class="nn">locuaz.interface</span> <span class="kn">import</span> <span class="n">get_interfacing_residues</span>
 <span class="kn">from</span> <span class="nn">locuaz.spm4</span> <span class="kn">import</span> <span class="n">SPM4</span>
 
-
-<div class="viewcode-block" id="SPM4i"><a class="viewcode-back" href="../../mutationgenerators.html#locuaz.spm4i.SPM4i">[docs]</a><span class="k">class</span> <span class="nc">SPM4i</span><span class="p">(</span><span class="n">SPM4</span><span class="p">):</span>
+<div class="viewcode-block" id="SPM4i"><a class="viewcode-back" href="../../mutationgenerators.html#locuaz.spm4i.SPM4i">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.7.0&quot;</span><span class="p">,</span>
+            <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Mutation Generators are replaced by Mutation Creators.&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">SPM4i</span><span class="p">(</span><span class="n">SPM4</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    overrides ``__generate_position__()``. It uses freesasa to get the interface to prevent mutations on positions</span>
 <span class="sd">    that are not in contact.</span>

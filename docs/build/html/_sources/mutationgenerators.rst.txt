@@ -1,5 +1,5 @@
-Mutation Generators
-====================
+Mutation Generators (deprecated)
+================================
 
 locuaz.abstractmutationgenerator
 ---------------------------------------

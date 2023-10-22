@@ -62,7 +62,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mutationgenerators.html">Mutation Generators (deprecated)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mutationcreator.html">Mutation Creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="scorers.html">Scorers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mutators.html">Mutators</a></li>
@@ -74,7 +74,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#config-paths"><code class="docutils literal notranslate"><span class="pre">config['paths']</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#config-main"><code class="docutils literal notranslate"><span class="pre">config['main']</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#config-protocol"><code class="docutils literal notranslate"><span class="pre">config['protocol']</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#config-generation"><code class="docutils literal notranslate"><span class="pre">config['generation']</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#config-generation-deprecated"><code class="docutils literal notranslate"><span class="pre">config['generation']</span></code> (deprecated)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#config-creation"><code class="docutils literal notranslate"><span class="pre">config['creation']</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#config-mutation"><code class="docutils literal notranslate"><span class="pre">config['mutation']</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#config-pruning"><code class="docutils literal notranslate"><span class="pre">config['pruning']</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#config-md"><code class="docutils literal notranslate"><span class="pre">config['md']</span></code></a></li>
@@ -173,14 +174,68 @@ was already optimized by a protocol run, eg: when running an unrestrained optimi
 <li><p><code class="docutils literal notranslate"><span class="pre">config['protocol']['memory_aminoacids']</span></code>: not yet implemented.</p></li>
 </ol>
 </section>
-<section id="config-generation">
-<h3><code class="docutils literal notranslate"><span class="pre">config['generation']</span></code><a class="headerlink" href="#config-generation" title="Permalink to this heading"></a></h3>
+<section id="config-generation-deprecated">
+<h3><code class="docutils literal notranslate"><span class="pre">config['generation']</span></code> (deprecated)<a class="headerlink" href="#config-generation-deprecated" title="Permalink to this heading"></a></h3>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">config['generation']['generator']</span></code>: check the currently available generators below.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">config['generation']['probe_radius']</span></code>: some generators exclude positions that are not currently on the
 interface, which is calculated by the rolling probe method
 (<a class="reference external" href="https://freesasa.github.io/doxygen/Geometry.html">freesasa</a>); the bigger the probe, the more residues that
 will be classified as being part of the interface.</p></li>
+</ol>
+</section>
+<section id="config-creation">
+<span id="id1"></span><h3><code class="docutils literal notranslate"><span class="pre">config['creation']</span></code><a class="headerlink" href="#config-creation" title="Permalink to this heading"></a></h3>
+<p><strong>Site selection options</strong></p>
+<ol class="arabic">
+<li><p><code class="docutils literal notranslate"><span class="pre">config['creation']['sites']</span></code>: number of sites to mutate. Each new branch
+will still get 1 mutation, so increasing this number will increase the number
+of new branches, if <code class="docutils literal notranslate"><span class="pre">constant_width=false</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config['creation']['sites_interfacing']</span></code>: only consider sites that are on
+the interface with the target.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config['creation']['sites_interfacing_probe_radius']</span></code>: a higher probe radius
+will increase the number of residues that are considered as being part of the
+interface.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config['creation']['sites_probability']</span></code>: set it to <code class="docutils literal notranslate"><span class="pre">uniform</span></code> if you want
+all positions to have the same chance of being chosen, or set it to <code class="docutils literal notranslate"><span class="pre">mmpbsa</span></code>
+if you’re already using the <em>mmpbsa</em> scorer and want to choose the sites that
+contribute the less to the interaction.
+Remember that to do this you need to add a section for residue decomposition
+to the <code class="docutils literal notranslate"><span class="pre">gmxmmpbsa</span></code> script file:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">/</span>
+<span class="o">&amp;</span><span class="n">decomp</span>
+<span class="n">idecomp</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dec_verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="n">print_res</span><span class="o">=</span><span class="s2">&quot;within 4&quot;</span>
+<span class="o">/</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>Check the <a class="reference internal" href="scorers.html#gmxmmpbsa"><span class="std std-ref">gmxmmpbsa</span></a> section for more info.</p>
+<p><strong>Amino acid selection options</strong></p>
+<p>These options refer to the bins in which amino acids are grouped and to their
+probabilities of being chosen.</p>
+<p>Given that it’s too computationally expensive to test all amino acids at each position,
+and that there are similarities among them, the Mutation Creator gives the possibility
+of splitting the 20 amino acids into ‘bins’ of similar amino acids that it will later
+choose from, for a more efficient sampling of the amino acid space.</p>
+<p>Once a bin is chosen, a specific amino acid has to be decided and this is where
+their probabilities play in.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">config['creation']['aa_bins']</span></code>: list of strings where each element is a bin,
+represented as string of consecutive one-letter coded amino acids.
+If you don’t want to group amino acids, just set it to 1 bin with all amino acids
+like this: <code class="docutils literal notranslate"><span class="pre">[CDESTAGIMLVPFWYRNQHK]</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config['creation']['aa_bins_criteria']</span></code>: set it to <code class="docutils literal notranslate"><span class="pre">without</span></code> so amino acids
+will be chosen from all other bins, but the one that contains the current amino
+acid, before the mutation. The opposite effect is obtained when set to <code class="docutils literal notranslate"><span class="pre">within</span></code>,
+only amino acids contained in the same bin as the current one can be chosen.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config['creation']['aa_probability']</span></code>: it can be set to either <code class="docutils literal notranslate"><span class="pre">uniform</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ReisBarletta</span></code>, to use the probabilities extracted from the Reis &amp; Barletta et. al.
+paper, and <code class="docutils literal notranslate"><span class="pre">custom</span></code>, to set your own. In this last case, you’ll also have to
+set the following option.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config['creation']['aa_probability_custom']</span></code>: a 20-element dictionary with
+the probability assigned to each amino acid.</p></li>
 </ol>
 </section>
 <section id="config-mutation">
@@ -395,7 +450,7 @@ when in doubt, given its plain-english syntax. For example, you can check whethe
 <span class="w">      </span><span class="nt">minlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
 <span class="w">      </span><span class="nt">maxlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
 <span class="w">      </span><span class="nt">required</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
-<span class="w">      </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;DEST&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;AGIMLV&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;PFWY&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;RNQHK&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;CDEST&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;AGIMLV&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;PFWY&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;RNQHK&quot;</span><span class="p p-Indicator">]</span>
 <span class="w">      </span><span class="nt">schema</span><span class="p">:</span>
 <span class="w">          </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
 <span class="w">          </span><span class="nt">minlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>

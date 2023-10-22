@@ -102,13 +102,15 @@
 <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choice</span><span class="p">,</span> <span class="n">sample</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">Logger</span>
+<span class="kn">from</span> <span class="nn">deprecated.sphinx</span> <span class="kn">import</span> <span class="n">deprecated</span>
 
 <span class="kn">from</span> <span class="nn">locuaz.projectutils</span> <span class="kn">import</span> <span class="n">Branch</span><span class="p">,</span> <span class="n">Epoch</span>
 <span class="kn">from</span> <span class="nn">locuaz.mutation</span> <span class="kn">import</span> <span class="n">Mutation</span>
 <span class="kn">from</span> <span class="nn">locuaz.abstractmutationgenerator</span> <span class="kn">import</span> <span class="n">AbstractMutationGenerator</span>
 
-
-<div class="viewcode-block" id="SPM4"><a class="viewcode-back" href="../../mutationgenerators.html#locuaz.spm4.SPM4">[docs]</a><span class="k">class</span> <span class="nc">SPM4</span><span class="p">(</span><span class="n">AbstractMutationGenerator</span><span class="p">):</span>
+<div class="viewcode-block" id="SPM4"><a class="viewcode-back" href="../../mutationgenerators.html#locuaz.spm4.SPM4">[docs]</a><span class="nd">@deprecated</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s2">&quot;0.7.0&quot;</span><span class="p">,</span>
+            <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Mutation Generators are replaced by Mutation Creators.&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">SPM4</span><span class="p">(</span><span class="n">AbstractMutationGenerator</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    SPM4 generates mutations by splitting all amino acids (except CYS) in the following categories:</span>
 <span class="sd">    negative, positive, hydrophobic and ring-containing.</span>

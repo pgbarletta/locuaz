@@ -56,13 +56,70 @@ Some other things to highlight:
 7. ``config['protocol']['failed_memory_positions']``: .
 8. ``config['protocol']['memory_aminoacids']``: not yet implemented.
 
-``config['generation']``
-^^^^^^^^^^^^^^^^^^^^^^^^
+``config['generation']`` (deprecated)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 1. ``config['generation']['generator']``: check the currently available generators below.
 2. ``config['generation']['probe_radius']``: some generators exclude positions that are not currently on the
    interface, which is calculated by the rolling probe method
    (`freesasa <https://freesasa.github.io/doxygen/Geometry.html>`_); the bigger the probe, the more residues that
    will be classified as being part of the interface.
+
+.. _config_creation:
+
+``config['creation']``
+^^^^^^^^^^^^^^^^^^^^^^^^
+**Site selection options**
+
+1. ``config['creation']['sites']``: number of sites to mutate. Each new branch
+   will still get 1 mutation, so increasing this number will increase the number
+   of new branches, if ``constant_width=false``.
+2. ``config['creation']['sites_interfacing']``: only consider sites that are on
+   the interface with the target.
+3. ``config['creation']['sites_interfacing_probe_radius']``: a higher probe radius
+   will increase the number of residues that are considered as being part of the
+   interface.
+4. ``config['creation']['sites_probability']``: set it to ``uniform`` if you want
+   all positions to have the same chance of being chosen, or set it to ``mmpbsa``
+   if you're already using the *mmpbsa* scorer and want to choose the sites that
+   contribute the less to the interaction.
+   Remember that to do this you need to add a section for residue decomposition
+   to the ``gmxmmpbsa`` script file::
+
+    /
+    &decomp
+    idecomp=2, dec_verbose=0,
+    print_res="within 4"
+    /
+
+Check the :ref:`scorers:gmxmmpbsa` section for more info.
+
+**Amino acid selection options**
+
+These options refer to the bins in which amino acids are grouped and to their
+probabilities of being chosen.
+
+Given that it's too computationally expensive to test all amino acids at each position,
+and that there are similarities among them, the Mutation Creator gives the possibility
+of splitting the 20 amino acids into 'bins' of similar amino acids that it will later
+choose from, for a more efficient sampling of the amino acid space.
+
+Once a bin is chosen, a specific amino acid has to be decided and this is where
+their probabilities play in.
+
+1. ``config['creation']['aa_bins']``: list of strings where each element is a bin,
+   represented as string of consecutive one-letter coded amino acids.
+   If you don't want to group amino acids, just set it to 1 bin with all amino acids
+   like this: ``[CDESTAGIMLVPFWYRNQHK]``
+2. ``config['creation']['aa_bins_criteria']``: set it to ``without`` so amino acids
+   will be chosen from all other bins, but the one that contains the current amino
+   acid, before the mutation. The opposite effect is obtained when set to ``within``,
+   only amino acids contained in the same bin as the current one can be chosen.
+3. ``config['creation']['aa_probability']``: it can be set to either ``uniform``,
+   ``ReisBarletta``, to use the probabilities extracted from the Reis & Barletta et. al.
+   paper, and ``custom``, to set your own. In this last case, you'll also have to
+   set the following option.
+4. ``config['creation']['aa_probability_custom']``: a 20-element dictionary with
+   the probability assigned to each amino acid.
 
 
 ``config['mutation']``

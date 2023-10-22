@@ -55,7 +55,7 @@
 <li class="toctree-l1"><a class="reference internal" href="platformflow.html">Platform flow</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Blocks</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#mutation-generator">Mutation Generator</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#mutation-generator-deprecated">Mutation Generator (deprecated)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#spm4">SPM4</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#spm4i">SPM4i</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#spm4gmxmmpbsa">SPM4gmxmmpbsa</a></li>
@@ -90,7 +90,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mutationgenerators.html">Mutation Generators (deprecated)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mutationcreator.html">Mutation Creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="scorers.html">Scorers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mutators.html">Mutators</a></li>
@@ -168,9 +168,11 @@ located inside a folder called <strong>gmxmmpbsa</strong>.</p>
 These are listed on its dedicated section.</p>
 </div>
 </section>
-<section id="mutation-generator">
-<h2>Mutation Generator<a class="headerlink" href="#mutation-generator" title="Permalink to this heading"></a></h2>
-<p>These blocks are the one in charge of generating the new binders. These are the currently available generators:</p>
+<section id="mutation-generator-deprecated">
+<h2>Mutation Generator (deprecated)<a class="headerlink" href="#mutation-generator-deprecated" title="Permalink to this heading"></a></h2>
+<p>These blocks are the one in charge of generating the new binders.
+They have been deprecated since version <code class="docutils literal notranslate"><span class="pre">0.7.0</span></code>.
+These are the currently available generators:</p>
 <section id="spm4">
 <h3>SPM4<a class="headerlink" href="#spm4" title="Permalink to this heading"></a></h3>
 <p>This is a Single Point Mutation generator. This means that it chooses a single position (from the user input
@@ -219,6 +221,17 @@ should look something like this:</p>
 </section>
 <section id="mutation-creator">
 <h2>Mutation Creator<a class="headerlink" href="#mutation-creator" title="Permalink to this heading"></a></h2>
+<p>The Mutation Creator replaces all Mutation Generators as the block in charge of
+taking a top branch from an epoch and creating the mutations that will give rise
+to the branches of the next epoch.</p>
+<p>Mutation Generators were mono-blocks that the user could pick for the task.
+On the other hand, the Mutation Creator is unique, but highly configurable.
+The user can build their desired Mutation Creator out of the many building
+blocks available.
+The available options are split according to the 2 phases: the choosing of the
+site to be mutated and the choosing of the new amino acid. For more information,
+check <a class="reference internal" href="mutationcreator.html#mutation-creator"><span class="std std-ref">Mutation Creator</span></a> and
+<a class="reference internal" href="configurationfile.html#config-creation"><span class="std std-ref">config['creation']</span></a>.</p>
 </section>
 <section id="mutator">
 <h2>Mutator<a class="headerlink" href="#mutator" title="Permalink to this heading"></a></h2>

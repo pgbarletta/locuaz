@@ -1,21 +1,30 @@
-==============
+===========
 Developing
-==============
+===========
 
 Releasing a new version
 ------------------------
 The following steps have to be completed in order to release a new version of *locuaz*:
 
-1. After commiting all changes, be sure that the release shows up on ``history.rst`` and list all fixes and additions.
+1. Make sure you have all the dependencies::
 
-2. Update the version on ``locuaz/__init__.py``:
+    pip install twine build sphinx sphinx-rtd-theme
+
+**sphinx** packages may fail to install with pip, try with mamba::
+
+    mamba install sphinx sphinx_rtd_theme
+
+
+2. After commiting all changes, be sure that the release shows up on ``history.rst``
+   and list all fixes and additions.
+
+3. Update the version on ``locuaz/__init__.py``:
 
 .. code-block:: console
 
     __version__ = "0.4.1"
 
-
-3. Update the version on ``setup.cfg``:
+and on ``setup.cfg``:
 
 .. code-block:: console
 
@@ -25,21 +34,19 @@ The following steps have to be completed in order to release a new version of *l
     author =  Patricio Barletta
     ...
 
-4. Make sure you're on the right conda environment so you can build the documentation, the project and that
-   ``twine`` doesn't report any errors on the distribution ``.tar.gaz`` nor the wheels.
-
-.. code-block:: console
+4. Make sure you're on the right conda environment so you can build the documentation,
+   the project and that ``twine`` doesn't report any errors on the distribution
+   ``.tar.gaz`` nor the wheels::
 
     sphinx-build -b html docs/source/ docs/build/html/
     pyproject-build
     twine check dist/*
 
-5. Commit ``locuaz/__init__.py``, and ``setup.cfg`` with a message along the lines of "Bump up verstion to X.X.X":
-
-.. code-block:: console
+5. Commit ``locuaz/__init__.py``, and ``setup.cfg`` with a message along the lines of
+   "Bump up version to X.X.X"::
 
     git add locuaz/__init__.py setup.cfg
-    git commit -m "Bump up verstion to 0.4.1"
+    git commit -m "Bump up version to 0.4.1"
     git push origin main
 
 6. Tag the release:
@@ -49,7 +56,8 @@ The following steps have to be completed in order to release a new version of *l
     git tag 0.4.1
     git push origin --tags
 
-7. The last step will trigger a GHAction to publish the project on pypi. Get the sha256 hash from the project's `pypi`_
+7. The last step will trigger a GHAction to publish the project on pypi.
+   Get the sha256 hash from the project's `pypi`_
 
 8. Use the sha256 to update the version on the conda recipe:
 
@@ -73,7 +81,31 @@ The following steps have to be completed in order to release a new version of *l
     conda mambabuild .
 
 10. Make a PR to the feedstock and update it following conda-forge `instructions`_
+11. Update the locuaz version on the apptainer definition file here::
 
+    pip install locuaz==0.7.0 --root-user-action=ignore
+
+And here::
+
+    %labels
+    Author Patricio Barletta
+    Version 0.7.0
+
+12. Build the container::
+
+    sudo apptainer build locuaz.sif locuaz.def
+
+13. Log into the GitHub container registry::
+
+    apptainer remote login --username pgbarletta docker://ghcr.io
+
+14. Upload the image to the GitHub registry::
+
+    apptainer push locuaz.sif
+
+Check `this`_ blog post for more info on apptainer.
+
+.. _this: https://ana.run/blog/apptainer
 
 Modifying the schema
 ---------------------

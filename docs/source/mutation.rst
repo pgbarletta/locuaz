@@ -1,8 +1,5 @@
-Mutation Creator
-================
-
 Mutation
---------
+========
 
 .. automodule:: locuaz.mutation
    :members:

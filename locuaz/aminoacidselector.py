@@ -14,6 +14,33 @@ from locuaz.primitives import GenerationError
 
 
 class AminoAcidMemory:
+    """
+    Class used to annotate the recently mutations created to avoid repeating
+    them and to guide the next mutations for a better sampling of the solution
+    space.
+
+    Parameters
+    ----------
+    top_branches : Dict[str, Branch]
+        top branches from the last epoch
+    bins : Dict[int, Set[str]]
+        Bins are numbered starting from 0 (the keys). Each bin (the values) is a
+        Set of strings, each a one-letter coded amino acid.
+    sites : List[Site]
+        sites that will be mutated.
+    Attributes
+    ----------
+    branch_bins : Dict[Tuple[str, Site], Dict[int, Set[str]]]
+        each key is a tuple of a top branch and a site were it will be mutated,
+        the associated value it's the set of bins.
+    branch_bins_indices : Dict[Tuple[str, Site], BinPool]
+        as ``branch_bins``, but the values are the indices of the bins that are
+        available for the next mutation. The BinPool will refill each time
+        it's emptied.
+    epoch_bins_indices: BinPool
+        indices of the bins that are available for the next mutation for any
+        epoch and any site. The BinPool will refill each time it's emptied.
+    """
     # Branch names + site are the keys in these 2 dicts.
     # We use them to better decide the next mutation on each branch.
     branch_bins: Dict[Tuple[str, Site], Dict[int, Set[str]]]
@@ -23,7 +50,6 @@ class AminoAcidMemory:
     def __init__(self, top_branches: Dict[str, Branch],
                  bins: Dict[int, Set[str]],
                  sites: List[Site]) -> None:
-
         self.nbins = len(bins)
         self.epoch_bins_indices = BinPool.from_size(self.nbins)
 
@@ -99,6 +125,16 @@ class AminoAcidMemory:
 
 
 class AminoAcidSelector:
+    """
+    Used to generate a Dictionary with the top branches as keys and lists of
+    mutations as values. It expects the list of ``Site``s where the mutations
+    will be carried out.
+
+    Parameters
+    ----------
+    creation_config : Dict[str, Any]
+        creation section from the input config file
+    """
     use_bins: bool
     bins: Dict[int, Set[str]]
     aa_to_bin: Dict[str, Set[int]] = {"": set()}

@@ -5,6 +5,9 @@ T = TypeVar("T")
 
 
 class InfinitePool(Generic[T]):
+    """Self-replacing set. It takes a set to initialize itself, and then it will
+    only be empty when the last element has been picked. Future accesses will
+    reset it to the original set."""
     pool: Set[T]
     reservoir: Set[T]
 
@@ -71,6 +74,8 @@ class InfinitePool(Generic[T]):
 
 
 class BinPool(InfinitePool):
+    """InfinitePool specifically tailored for ints. Used to represent the
+    indices of the amino acid bins when selecting them for mutation creation."""
 
     def __init__(self, input_set: Iterable[int]) -> None:
         super().__init__(input_set)

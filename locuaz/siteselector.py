@@ -11,6 +11,34 @@ from locuaz.projectutils import Branch
 from locuaz.mutation import Site
 
 class SiteSelector:
+    """
+    SiteSelector chooses the positions to mutate by:
+        * taking the mutating resSeq.
+        * excluding those positions that are in ``excluded_resSeqs``
+        * optionally excluding those positions that are not in the target-binder
+          interface
+        * randomly sorting the remaining position or sorting them according to
+          their contribution to the free energy of binding according to the
+          output from ``gmxmmpbsa`` so the less contributing are picked first.
+
+    Then it will return a list of ``Site``s as long as requested.
+
+    Parameters
+    ----------
+    all_resSeqs : List[List[int]]
+        positions that may be mutated. They may be grouped into different lists,
+        without this having any effect.
+    chainIDs : List[str]
+        chainIDs of the target chains that may be mutated
+    excluded_resSeqs : Set[int]
+        resSeqs of the excluded positions, probably because they've recently
+        been mutated
+    creation_config : Dict[str, Any]
+        creation section from the input config file
+    amber_numbering : bool
+        when using Tleap, the resSeq numbering scheme is continuous as opposed
+        to the strided scheme from GROMACs where each chain begins with resSeq 1
+    """
     N_SITES: int
     all_resSeqs: List[List[int]]
     chainIDs: List[str]

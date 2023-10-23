@@ -23,10 +23,25 @@ class MutationCreator(Mapping):
     consideration. This also applies to bins. If all bins were discarded and
     more mutations were asked for, the bins are reset but not the potential
     amino acids.
+
+    Parameters
+    ----------
+    top_branches : Dict[str, Branch]
+        top branches from the last epoch
+    branches : int
+        number of branches to attempt to create.
+    creation_config : Dict[str, Any]
+        creation section from the input config file
+    excluded_sites : Set[int]
+        resSeqs of the excluded positions, probably because they've recently
+        been mutated
+    amber_numbering : bool
+        when using Tleap, the resSeq numbering scheme is continuous as opposed
+        to the strided scheme from GROMACs where each chain begins with resSeq 1
+    logger : Logger
+        logger
     """
     mutations: Dict[str, List[Mutation]]
-    site_selector: SiteSelector
-    aa_selector: AminoAcidSelector
 
     def __init__(
             self,
@@ -40,15 +55,15 @@ class MutationCreator(Mapping):
     ) -> None:
         any_branch = next(iter(top_branches.values()))
 
-        self.site_selector = SiteSelector(any_branch.resSeqs,
-                                          any_branch.chainIDs,
-                                          excluded_sites,
-                                          creation_config,
-                                          amber_numbering=amber_numbering)
-        self.aa_selector = AminoAcidSelector(creation_config)
+        site_selector = SiteSelector(any_branch.resSeqs,
+                                     any_branch.chainIDs,
+                                     excluded_sites,
+                                     creation_config,
+                                     amber_numbering=amber_numbering)
+        aa_selector = AminoAcidSelector(creation_config)
 
-        sites = self.site_selector(top_branches, logger)
-        self.mutations = self.aa_selector(top_branches, branches, sites, logger)
+        sites = site_selector(top_branches, logger)
+        self.mutations = aa_selector(top_branches, branches, sites, logger)
 
     def __getitem__(self, key: str) -> Iterable[Mutation]:
         return self.mutations[key]

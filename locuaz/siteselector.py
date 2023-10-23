@@ -13,15 +13,16 @@ from locuaz.mutation import Site
 class SiteSelector:
     """
     SiteSelector chooses the positions to mutate by:
-        * taking the mutating resSeq.
-        * excluding those positions that are in ``excluded_resSeqs``
-        * optionally excluding those positions that are not in the target-binder
-          interface
-        * randomly sorting the remaining position or sorting them according to
-          their contribution to the free energy of binding according to the
-          output from ``gmxmmpbsa`` so the less contributing are picked first.
 
-    Then it will return a list of ``Site``s as long as requested.
+    * taking the mutating resSeq.
+    * excluding those positions that are in ``excluded_resSeqs``
+    * optionally excluding those positions that are not in the target-binder
+      interface
+    * randomly sorting the remaining position or sorting them according to
+      their contribution to the free energy of binding according to the
+      output from ``gmxmmpbsa`` so the less contributing are picked first.
+
+    Then it will return a list of Sites as long as requested.
 
     Parameters
     ----------

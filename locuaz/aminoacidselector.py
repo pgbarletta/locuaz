@@ -127,7 +127,7 @@ class AminoAcidMemory:
 class AminoAcidSelector:
     """
     Used to generate a Dictionary with the top branches as keys and lists of
-    mutations as values. It expects the list of ``Site``s where the mutations
+    mutations as values. It expects the list of Sites where the mutations
     will be carried out.
 
     Parameters

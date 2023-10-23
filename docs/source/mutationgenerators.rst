@@ -2,7 +2,7 @@ Mutation Generators (deprecated)
 ================================
 
 locuaz.abstractmutationgenerator
----------------------------------------
+--------------------------------
 
 .. automodule:: locuaz.abstractmutationgenerator
    :members:

@@ -62,6 +62,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="mutation.html">Mutation Creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mutationgenerators.html">Mutation Generators (deprecated)</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Mutation Creator</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-locuaz.mutationcreation">locuaz.mutationcreation</a><ul>
@@ -76,21 +77,9 @@
 <li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidMemory.branch_bins"><code class="docutils literal notranslate"><span class="pre">AminoAcidMemory.branch_bins</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidMemory.branch_bins_indices"><code class="docutils literal notranslate"><span class="pre">AminoAcidMemory.branch_bins_indices</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidMemory.epoch_bins_indices"><code class="docutils literal notranslate"><span class="pre">AminoAcidMemory.epoch_bins_indices</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidMemory.get_bin"><code class="docutils literal notranslate"><span class="pre">AminoAcidMemory.get_bin()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidMemory.remove_from_memory"><code class="docutils literal notranslate"><span class="pre">AminoAcidMemory.remove_from_memory()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidSelector"><code class="docutils literal notranslate"><span class="pre">AminoAcidSelector</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidSelector.N_BINS"><code class="docutils literal notranslate"><span class="pre">AminoAcidSelector.N_BINS</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidSelector.N_SITES"><code class="docutils literal notranslate"><span class="pre">AminoAcidSelector.N_SITES</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidSelector.aa_distribution"><code class="docutils literal notranslate"><span class="pre">AminoAcidSelector.aa_distribution</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidSelector.aa_to_bin"><code class="docutils literal notranslate"><span class="pre">AminoAcidSelector.aa_to_bin</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidSelector.bins"><code class="docutils literal notranslate"><span class="pre">AminoAcidSelector.bins</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidSelector.bins_criteria"><code class="docutils literal notranslate"><span class="pre">AminoAcidSelector.bins_criteria</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidSelector.memory"><code class="docutils literal notranslate"><span class="pre">AminoAcidSelector.memory</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidSelector.use_bins"><code class="docutils literal notranslate"><span class="pre">AminoAcidSelector.use_bins</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidSelector"><code class="docutils literal notranslate"><span class="pre">AminoAcidSelector</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-locuaz.siteselector">Site Selector</a><ul>
@@ -215,30 +204,55 @@ to the strided scheme from GROMACs where each chain begins with resSeq 1</p></li
 <dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidMemory">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">locuaz.aminoacidselector.</span></span><span class="sig-name descname"><span class="pre">AminoAcidMemory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_branches</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="misc.html#locuaz.projectutils.Branch" title="locuaz.projectutils.Branch"><span class="pre">Branch</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sites</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="mutation.html#locuaz.mutation.Site" title="locuaz.mutation.Site"><span class="pre">Site</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/locuaz/aminoacidselector.html#AminoAcidMemory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidMemory" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class used to annotate the recently mutations created to avoid repeating
+them and to guide the next mutations for a better sampling of the solution
+space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>top_branches</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="misc.html#locuaz.projectutils.Branch" title="locuaz.projectutils.Branch"><em>Branch</em></a><em>]</em>) – top branches from the last epoch</p></li>
+<li><p><strong>bins</strong> (<em>Dict</em><em>[</em><em>int</em><em>, </em><em>Set</em><em>[</em><em>str</em><em>]</em><em>]</em>) – Bins are numbered starting from 0 (the keys). Each bin (the values) is a
+Set of strings, each a one-letter coded amino acid.</p></li>
+<li><p><strong>sites</strong> (<em>List</em><em>[</em><a class="reference internal" href="mutation.html#locuaz.mutation.Site" title="locuaz.mutation.Site"><em>Site</em></a><em>]</em>) – sites that will be mutated.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidMemory.branch_bins">
-<span class="sig-name descname"><span class="pre">branch_bins</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="mutation.html#locuaz.mutation.Site" title="locuaz.mutation.Site"><span class="pre">Site</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidMemory.branch_bins" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">branch_bins</span></span><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidMemory.branch_bins" title="Permalink to this definition"></a></dt>
+<dd><p>each key is a tuple of a top branch and a site were it will be mutated,
+the associated value it’s the set of bins.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Dict[Tuple[str, <a class="reference internal" href="mutation.html#locuaz.mutation.Site" title="locuaz.mutation.Site">Site</a>], Dict[int, Set[str]]]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidMemory.branch_bins_indices">
-<span class="sig-name descname"><span class="pre">branch_bins_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="mutation.html#locuaz.mutation.Site" title="locuaz.mutation.Site"><span class="pre">Site</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#locuaz.pools.BinPool" title="locuaz.pools.BinPool"><span class="pre">BinPool</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidMemory.branch_bins_indices" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">branch_bins_indices</span></span><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidMemory.branch_bins_indices" title="Permalink to this definition"></a></dt>
+<dd><p>as <code class="docutils literal notranslate"><span class="pre">branch_bins</span></code>, but the values are the indices of the bins that are
+available for the next mutation. The BinPool will refill each time
+it’s emptied.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Dict[Tuple[str, <a class="reference internal" href="mutation.html#locuaz.mutation.Site" title="locuaz.mutation.Site">Site</a>], <a class="reference internal" href="#locuaz.pools.BinPool" title="locuaz.pools.BinPool">BinPool</a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidMemory.epoch_bins_indices">
-<span class="sig-name descname"><span class="pre">epoch_bins_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#locuaz.pools.BinPool" title="locuaz.pools.BinPool"><span class="pre">BinPool</span></a></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidMemory.epoch_bins_indices" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidMemory.get_bin">
-<span class="sig-name descname"><span class="pre">get_bin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">branch_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">site</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mutation.html#locuaz.mutation.Site" title="locuaz.mutation.Site"><span class="pre">Site</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_aa</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excluded_bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/locuaz/aminoacidselector.html#AminoAcidMemory.get_bin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidMemory.get_bin" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidMemory.remove_from_memory">
-<span class="sig-name descname"><span class="pre">remove_from_memory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">branch_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">site</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mutation.html#locuaz.mutation.Site" title="locuaz.mutation.Site"><span class="pre">Site</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aa</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/locuaz/aminoacidselector.html#AminoAcidMemory.remove_from_memory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidMemory.remove_from_memory" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">epoch_bins_indices</span></span><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidMemory.epoch_bins_indices" title="Permalink to this definition"></a></dt>
+<dd><p>indices of the bins that are available for the next mutation for any
+epoch and any site. The BinPool will refill each time it’s emptied.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#locuaz.pools.BinPool" title="locuaz.pools.BinPool">BinPool</a></p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -246,46 +260,14 @@ to the strided scheme from GROMACs where each chain begins with resSeq 1</p></li
 <dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidSelector">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">locuaz.aminoacidselector.</span></span><span class="sig-name descname"><span class="pre">AminoAcidSelector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">creation_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/locuaz/aminoacidselector.html#AminoAcidSelector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidSelector" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidSelector.N_BINS">
-<span class="sig-name descname"><span class="pre">N_BINS</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidSelector.N_BINS" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidSelector.N_SITES">
-<span class="sig-name descname"><span class="pre">N_SITES</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidSelector.N_SITES" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidSelector.aa_distribution">
-<span class="sig-name descname"><span class="pre">aa_distribution</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidSelector.aa_distribution" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidSelector.aa_to_bin">
-<span class="sig-name descname"><span class="pre">aa_to_bin</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'':</span> <span class="pre">{}}</span></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidSelector.aa_to_bin" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidSelector.bins">
-<span class="sig-name descname"><span class="pre">bins</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidSelector.bins" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidSelector.bins_criteria">
-<span class="sig-name descname"><span class="pre">bins_criteria</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidSelector.bins_criteria" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidSelector.memory">
-<span class="sig-name descname"><span class="pre">memory</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#locuaz.aminoacidselector.AminoAcidMemory" title="locuaz.aminoacidselector.AminoAcidMemory"><span class="pre">AminoAcidMemory</span></a></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidSelector.memory" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="locuaz.aminoacidselector.AminoAcidSelector.use_bins">
-<span class="sig-name descname"><span class="pre">use_bins</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#locuaz.aminoacidselector.AminoAcidSelector.use_bins" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
+<p>Used to generate a Dictionary with the top branches as keys and lists of
+mutations as values. It expects the list of Sites where the mutations
+will be carried out.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>creation_config</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – creation section from the input config file</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -295,8 +277,8 @@ to the strided scheme from GROMACs where each chain begins with resSeq 1</p></li
 <dt class="sig sig-object py" id="locuaz.siteselector.SiteSelector">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">locuaz.siteselector.</span></span><span class="sig-name descname"><span class="pre">SiteSelector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">all_resSeqs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chainIDs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excluded_resSeqs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creation_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amber_numbering</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/locuaz/siteselector.html#SiteSelector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#locuaz.siteselector.SiteSelector" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="simple">
-<dt>SiteSelector chooses the positions to mutate by:</dt><dd><ul class="simple">
+<p>SiteSelector chooses the positions to mutate by:</p>
+<ul class="simple">
 <li><p>taking the mutating resSeq.</p></li>
 <li><p>excluding those positions that are in <code class="docutils literal notranslate"><span class="pre">excluded_resSeqs</span></code></p></li>
 <li><p>optionally excluding those positions that are not in the target-binder
@@ -305,9 +287,7 @@ interface</p></li>
 their contribution to the free energy of binding according to the
 output from <code class="docutils literal notranslate"><span class="pre">gmxmmpbsa</span></code> so the less contributing are picked first.</p></li>
 </ul>
-</dd>
-</dl>
-<p>Then it will return a list of <a href="#id1"><span class="problematic" id="id2">``</span></a>Site``s as long as requested.</p>
+<p>Then it will return a list of Sites as long as requested.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

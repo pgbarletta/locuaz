@@ -160,9 +160,10 @@ In the included *gmxmmpbsa* file you will find a dedicated section to perform th
     /
 
 
-The ``&idecomp`` section needs to be present when using the ``SPM4gmxmmpbsa`` generator. Check
-:ref:`mutationgenerators:Mutation Generators` for a reference of the implementation, and
-:ref:`configurationfile:YAML configuration file` page for more details.
+The ``&idecomp`` section needs to be present when using the ``SPM4gmxmmpbsa`` generator.
+Check :ref:`Mutation Generators<mutationgenerators:Mutation Generators (deprecated)>` for a
+reference of the implementation,
+and :ref:`configurationfile:YAML configuration file` page for more details.
 
 mutation
 ^^^^^^^^

@@ -15,7 +15,6 @@ Amino Acid Selector
 
 .. automodule:: locuaz.aminoacidselector
    :members:
-   :undoc-members:
    :show-inheritance:
 
 Site Selector

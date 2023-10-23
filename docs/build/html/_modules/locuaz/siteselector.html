@@ -59,6 +59,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../mutation.html">Mutation Creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators (deprecated)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../mutationcreator.html">Mutation Creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../scorers.html">Scorers</a></li>
@@ -112,15 +113,16 @@
 <div class="viewcode-block" id="SiteSelector"><a class="viewcode-back" href="../../mutationcreator.html#locuaz.siteselector.SiteSelector">[docs]</a><span class="k">class</span> <span class="nc">SiteSelector</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    SiteSelector chooses the positions to mutate by:</span>
-<span class="sd">        * taking the mutating resSeq.</span>
-<span class="sd">        * excluding those positions that are in ``excluded_resSeqs``</span>
-<span class="sd">        * optionally excluding those positions that are not in the target-binder</span>
-<span class="sd">          interface</span>
-<span class="sd">        * randomly sorting the remaining position or sorting them according to</span>
-<span class="sd">          their contribution to the free energy of binding according to the</span>
-<span class="sd">          output from ``gmxmmpbsa`` so the less contributing are picked first.</span>
 
-<span class="sd">    Then it will return a list of ``Site``s as long as requested.</span>
+<span class="sd">    * taking the mutating resSeq.</span>
+<span class="sd">    * excluding those positions that are in ``excluded_resSeqs``</span>
+<span class="sd">    * optionally excluding those positions that are not in the target-binder</span>
+<span class="sd">      interface</span>
+<span class="sd">    * randomly sorting the remaining position or sorting them according to</span>
+<span class="sd">      their contribution to the free energy of binding according to the</span>
+<span class="sd">      output from ``gmxmmpbsa`` so the less contributing are picked first.</span>
+
+<span class="sd">    Then it will return a list of Sites as long as requested.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>

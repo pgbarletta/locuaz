@@ -65,6 +65,7 @@ delivers efficient *in-silico* optimization.
     :maxdepth: 1
     :caption: Reference
 
+    mutation
     mutationgenerators
     mutationcreator
     scorers

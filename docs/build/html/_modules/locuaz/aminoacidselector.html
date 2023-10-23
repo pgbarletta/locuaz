@@ -59,7 +59,8 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mutation.html">Mutation Creator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators (deprecated)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../mutationcreator.html">Mutation Creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../scorers.html">Scorers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../mutators.html">Mutators</a></li>
@@ -113,6 +114,33 @@
 
 
 <div class="viewcode-block" id="AminoAcidMemory"><a class="viewcode-back" href="../../mutationcreator.html#locuaz.aminoacidselector.AminoAcidMemory">[docs]</a><span class="k">class</span> <span class="nc">AminoAcidMemory</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class used to annotate the recently mutations created to avoid repeating</span>
+<span class="sd">    them and to guide the next mutations for a better sampling of the solution</span>
+<span class="sd">    space.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    top_branches : Dict[str, Branch]</span>
+<span class="sd">        top branches from the last epoch</span>
+<span class="sd">    bins : Dict[int, Set[str]]</span>
+<span class="sd">        Bins are numbered starting from 0 (the keys). Each bin (the values) is a</span>
+<span class="sd">        Set of strings, each a one-letter coded amino acid.</span>
+<span class="sd">    sites : List[Site]</span>
+<span class="sd">        sites that will be mutated.</span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    branch_bins : Dict[Tuple[str, Site], Dict[int, Set[str]]]</span>
+<span class="sd">        each key is a tuple of a top branch and a site were it will be mutated,</span>
+<span class="sd">        the associated value it&#39;s the set of bins.</span>
+<span class="sd">    branch_bins_indices : Dict[Tuple[str, Site], BinPool]</span>
+<span class="sd">        as ``branch_bins``, but the values are the indices of the bins that are</span>
+<span class="sd">        available for the next mutation. The BinPool will refill each time</span>
+<span class="sd">        it&#39;s emptied.</span>
+<span class="sd">    epoch_bins_indices: BinPool</span>
+<span class="sd">        indices of the bins that are available for the next mutation for any</span>
+<span class="sd">        epoch and any site. The BinPool will refill each time it&#39;s emptied.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Branch names + site are the keys in these 2 dicts.</span>
     <span class="c1"># We use them to better decide the next mutation on each branch.</span>
     <span class="n">branch_bins</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Site</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span>
@@ -122,7 +150,6 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_branches</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Branch</span><span class="p">],</span>
                  <span class="n">bins</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
                  <span class="n">sites</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Site</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">nbins</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">epoch_bins_indices</span> <span class="o">=</span> <span class="n">BinPool</span><span class="o">.</span><span class="n">from_size</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbins</span><span class="p">)</span>
 
@@ -133,12 +160,12 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">branch_bins</span><span class="p">[(</span><span class="n">branch_name</span><span class="p">,</span> <span class="n">site</span><span class="p">)]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">branch_bins_indices</span><span class="p">[(</span><span class="n">branch_name</span><span class="p">,</span> <span class="n">site</span><span class="p">)]</span> <span class="o">=</span> <span class="n">BinPool</span><span class="o">.</span><span class="n">from_size</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbins</span><span class="p">)</span>
 
-<div class="viewcode-block" id="AminoAcidMemory.remove_from_memory"><a class="viewcode-back" href="../../mutationcreator.html#locuaz.aminoacidselector.AminoAcidMemory.remove_from_memory">[docs]</a>    <span class="k">def</span> <span class="nf">remove_from_memory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branch_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">site</span><span class="p">:</span> <span class="n">Site</span><span class="p">,</span> <span class="n">bin_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">aa</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">remove_from_memory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branch_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">site</span><span class="p">:</span> <span class="n">Site</span><span class="p">,</span> <span class="n">bin_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">aa</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">branch_bins_indices</span><span class="p">[(</span><span class="n">branch_name</span><span class="p">,</span> <span class="n">site</span><span class="p">)]</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">bin_idx</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">epoch_bins_indices</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">bin_idx</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">branch_bins</span><span class="p">[(</span><span class="n">branch_name</span><span class="p">,</span> <span class="n">site</span><span class="p">)][</span><span class="n">bin_idx</span><span class="p">]</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">aa</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">branch_bins</span><span class="p">[(</span><span class="n">branch_name</span><span class="p">,</span> <span class="n">site</span><span class="p">)][</span><span class="n">bin_idx</span><span class="p">]</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">aa</span><span class="p">)</span>
 
-<div class="viewcode-block" id="AminoAcidMemory.get_bin"><a class="viewcode-back" href="../../mutationcreator.html#locuaz.aminoacidselector.AminoAcidMemory.get_bin">[docs]</a>    <span class="k">def</span> <span class="nf">get_bin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branch_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">site</span><span class="p">:</span> <span class="n">Site</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">get_bin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branch_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">site</span><span class="p">:</span> <span class="n">Site</span><span class="p">,</span>
                 <span class="n">old_aa</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">excluded_bins</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
@@ -151,7 +178,7 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">excluded_bins</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbins</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">GenerationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot mutate branch </span><span class="si">{</span><span class="n">branch_name</span><span class="si">}</span><span class="s2">. &quot;</span>
                                       <span class="s2">&quot;All amino acids from the available bins &quot;</span>
-                                      <span class="s2">&quot;have already been used.&quot;</span><span class="p">)</span></div>
+                                      <span class="s2">&quot;have already been used.&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__attempt_novel_bin_idx__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                                   <span class="n">branch_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -198,6 +225,16 @@
 
 
 <div class="viewcode-block" id="AminoAcidSelector"><a class="viewcode-back" href="../../mutationcreator.html#locuaz.aminoacidselector.AminoAcidSelector">[docs]</a><span class="k">class</span> <span class="nc">AminoAcidSelector</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Used to generate a Dictionary with the top branches as keys and lists of</span>
+<span class="sd">    mutations as values. It expects the list of Sites where the mutations</span>
+<span class="sd">    will be carried out.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    creation_config : Dict[str, Any]</span>
+<span class="sd">        creation section from the input config file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">use_bins</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="n">bins</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
     <span class="n">aa_to_bin</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;&quot;</span><span class="p">:</span> <span class="nb">set</span><span class="p">()}</span>

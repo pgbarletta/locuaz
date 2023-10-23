@@ -59,7 +59,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators (deprecated)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../mutationcreator.html">Mutation Creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../scorers.html">Scorers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../mutators.html">Mutators</a></li>
@@ -110,6 +110,34 @@
 <span class="kn">from</span> <span class="nn">locuaz.mutation</span> <span class="kn">import</span> <span class="n">Site</span>
 
 <div class="viewcode-block" id="SiteSelector"><a class="viewcode-back" href="../../mutationcreator.html#locuaz.siteselector.SiteSelector">[docs]</a><span class="k">class</span> <span class="nc">SiteSelector</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    SiteSelector chooses the positions to mutate by:</span>
+<span class="sd">        * taking the mutating resSeq.</span>
+<span class="sd">        * excluding those positions that are in ``excluded_resSeqs``</span>
+<span class="sd">        * optionally excluding those positions that are not in the target-binder</span>
+<span class="sd">          interface</span>
+<span class="sd">        * randomly sorting the remaining position or sorting them according to</span>
+<span class="sd">          their contribution to the free energy of binding according to the</span>
+<span class="sd">          output from ``gmxmmpbsa`` so the less contributing are picked first.</span>
+
+<span class="sd">    Then it will return a list of ``Site``s as long as requested.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    all_resSeqs : List[List[int]]</span>
+<span class="sd">        positions that may be mutated. They may be grouped into different lists,</span>
+<span class="sd">        without this having any effect.</span>
+<span class="sd">    chainIDs : List[str]</span>
+<span class="sd">        chainIDs of the target chains that may be mutated</span>
+<span class="sd">    excluded_resSeqs : Set[int]</span>
+<span class="sd">        resSeqs of the excluded positions, probably because they&#39;ve recently</span>
+<span class="sd">        been mutated</span>
+<span class="sd">    creation_config : Dict[str, Any]</span>
+<span class="sd">        creation section from the input config file</span>
+<span class="sd">    amber_numbering : bool</span>
+<span class="sd">        when using Tleap, the resSeq numbering scheme is continuous as opposed</span>
+<span class="sd">        to the strided scheme from GROMACs where each chain begins with resSeq 1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">N_SITES</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">all_resSeqs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span>
     <span class="n">chainIDs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>

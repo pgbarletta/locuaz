@@ -121,7 +121,6 @@ their probabilities play in.
 4. ``config['creation']['aa_probability_custom']``: a 20-element dictionary with
    the probability assigned to each amino acid.
 
-
 ``config['mutation']``
 ^^^^^^^^^^^^^^^^^^^^^^^^
 1. ``config['mutation']['mutator']``: check the currently available mutators below.

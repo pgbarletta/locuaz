@@ -59,7 +59,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators (deprecated)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../mutationcreator.html">Mutation Creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../scorers.html">Scorers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../mutators.html">Mutators</a></li>
@@ -101,16 +101,42 @@
 
 <span class="kn">from</span> <span class="nn">attrs</span> <span class="kn">import</span> <span class="n">define</span><span class="p">,</span> <span class="n">field</span>
 
-<div class="viewcode-block" id="Site"><a class="viewcode-back" href="../../mutators.html#locuaz.mutation.Site">[docs]</a><span class="nd">@define</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="Site"><a class="viewcode-back" href="../../mutation.html#locuaz.mutation.Site">[docs]</a><span class="nd">@define</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Site</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Site represents a site to be mutated. It&#39;s immutable and besides carrying</span>
+<span class="sd">    the chainID and the resSeq for the site, it also carries the indices that</span>
+<span class="sd">    correspond to the chainID and the resSeq in the mutating chainIDs and</span>
+<span class="sd">    mutating resSeq</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    idx_chain : Final[int]</span>
+<span class="sd">    chainID : Final[str]</span>
+<span class="sd">    idx_residue : Final[int]</span>
+<span class="sd">    resSeq : Final[int]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">idx_chain</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">chainID</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">idx_residue</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">resSeq</span><span class="p">:</span> <span class="n">Final</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Mutation"><a class="viewcode-back" href="../../mutators.html#locuaz.mutation.Mutation">[docs]</a><span class="nd">@define</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="Mutation"><a class="viewcode-back" href="../../mutation.html#locuaz.mutation.Mutation">[docs]</a><span class="nd">@define</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Mutation</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Mutation represents a Mutation. It&#39;s immutable and has the same info as Site</span>
+<span class="sd">    plus the amino acid that&#39;s currently located at that position, and the new</span>
+<span class="sd">    one to replace it. This means that, unlike Site, Mutation is tied to a</span>
+<span class="sd">    particular Branch.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    idx_chain : Final[int]</span>
+<span class="sd">    chainID : Final[str]</span>
+<span class="sd">    idx_residue : Final[int]</span>
+<span class="sd">    resSeq : Final[int]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">chainID</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">resSeq</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">old_aa</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -118,10 +144,10 @@
     <span class="n">chainID_idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">resSeq_idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">converter</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Mutation.get_mda_sel"><a class="viewcode-back" href="../../mutators.html#locuaz.mutation.Mutation.get_mda_sel">[docs]</a>    <span class="k">def</span> <span class="nf">get_mda_sel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backbone_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="Mutation.get_mda_sel"><a class="viewcode-back" href="../../mutation.html#locuaz.mutation.Mutation.get_mda_sel">[docs]</a>    <span class="k">def</span> <span class="nf">get_mda_sel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backbone_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;segid </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chainID</span><span class="si">}</span><span class="s2"> and resnum </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">resSeq</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot; and backbone&quot;</span> <span class="k">if</span> <span class="n">backbone_only</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Mutation.to_str"><a class="viewcode-back" href="../../mutators.html#locuaz.mutation.Mutation.to_str">[docs]</a>    <span class="k">def</span> <span class="nf">to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="Mutation.to_str"><a class="viewcode-back" href="../../mutation.html#locuaz.mutation.Mutation.to_str">[docs]</a>    <span class="k">def</span> <span class="nf">to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gives alternate string representation of the mutation</span>
 <span class="sd">        Returns</span>
@@ -130,7 +156,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chainID</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">old_aa</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">resSeq</span><span class="si">}{</span><span class="bp">self</span><span class="o">.</span><span class="n">new_aa</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
-<div class="viewcode-block" id="Mutation.from_site"><a class="viewcode-back" href="../../mutators.html#locuaz.mutation.Mutation.from_site">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Mutation.from_site"><a class="viewcode-back" href="../../mutation.html#locuaz.mutation.Mutation.from_site">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_site</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">site</span><span class="p">:</span> <span class="n">Site</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">old_aa</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_aa</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Mutation&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
             <span class="n">chainID</span><span class="o">=</span><span class="n">site</span><span class="o">.</span><span class="n">chainID</span><span class="p">,</span>

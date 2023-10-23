@@ -59,7 +59,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mutationgenerators.html">Mutation Generators (deprecated)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../mutationcreator.html">Mutation Creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../scorers.html">Scorers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../mutators.html">Mutators</a></li>
@@ -122,10 +122,25 @@
 <span class="sd">    consideration. This also applies to bins. If all bins were discarded and</span>
 <span class="sd">    more mutations were asked for, the bins are reset but not the potential</span>
 <span class="sd">    amino acids.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    top_branches : Dict[str, Branch]</span>
+<span class="sd">        top branches from the last epoch</span>
+<span class="sd">    branches : int</span>
+<span class="sd">        number of branches to attempt to create.</span>
+<span class="sd">    creation_config : Dict[str, Any]</span>
+<span class="sd">        creation section from the input config file</span>
+<span class="sd">    excluded_sites : Set[int]</span>
+<span class="sd">        resSeqs of the excluded positions, probably because they&#39;ve recently</span>
+<span class="sd">        been mutated</span>
+<span class="sd">    amber_numbering : bool</span>
+<span class="sd">        when using Tleap, the resSeq numbering scheme is continuous as opposed</span>
+<span class="sd">        to the strided scheme from GROMACs where each chain begins with resSeq 1</span>
+<span class="sd">    logger : Logger</span>
+<span class="sd">        logger</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">mutations</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Mutation</span><span class="p">]]</span>
-    <span class="n">site_selector</span><span class="p">:</span> <span class="n">SiteSelector</span>
-    <span class="n">aa_selector</span><span class="p">:</span> <span class="n">AminoAcidSelector</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
@@ -139,15 +154,15 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">any_branch</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">top_branches</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">site_selector</span> <span class="o">=</span> <span class="n">SiteSelector</span><span class="p">(</span><span class="n">any_branch</span><span class="o">.</span><span class="n">resSeqs</span><span class="p">,</span>
-                                          <span class="n">any_branch</span><span class="o">.</span><span class="n">chainIDs</span><span class="p">,</span>
-                                          <span class="n">excluded_sites</span><span class="p">,</span>
-                                          <span class="n">creation_config</span><span class="p">,</span>
-                                          <span class="n">amber_numbering</span><span class="o">=</span><span class="n">amber_numbering</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">aa_selector</span> <span class="o">=</span> <span class="n">AminoAcidSelector</span><span class="p">(</span><span class="n">creation_config</span><span class="p">)</span>
+        <span class="n">site_selector</span> <span class="o">=</span> <span class="n">SiteSelector</span><span class="p">(</span><span class="n">any_branch</span><span class="o">.</span><span class="n">resSeqs</span><span class="p">,</span>
+                                     <span class="n">any_branch</span><span class="o">.</span><span class="n">chainIDs</span><span class="p">,</span>
+                                     <span class="n">excluded_sites</span><span class="p">,</span>
+                                     <span class="n">creation_config</span><span class="p">,</span>
+                                     <span class="n">amber_numbering</span><span class="o">=</span><span class="n">amber_numbering</span><span class="p">)</span>
+        <span class="n">aa_selector</span> <span class="o">=</span> <span class="n">AminoAcidSelector</span><span class="p">(</span><span class="n">creation_config</span><span class="p">)</span>
 
-        <span class="n">sites</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">site_selector</span><span class="p">(</span><span class="n">top_branches</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mutations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aa_selector</span><span class="p">(</span><span class="n">top_branches</span><span class="p">,</span> <span class="n">branches</span><span class="p">,</span> <span class="n">sites</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+        <span class="n">sites</span> <span class="o">=</span> <span class="n">site_selector</span><span class="p">(</span><span class="n">top_branches</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mutations</span> <span class="o">=</span> <span class="n">aa_selector</span><span class="p">(</span><span class="n">top_branches</span><span class="p">,</span> <span class="n">branches</span><span class="p">,</span> <span class="n">sites</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Mutation</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutations</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>

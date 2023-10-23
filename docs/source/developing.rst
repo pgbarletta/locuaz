@@ -74,16 +74,14 @@ and on ``setup.cfg``:
       url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/locuaz-{{ version }}.tar.gz
       sha256: 93eed64eddba7ef6137d894aa26e3000ea51953153a26f2efeeb773990674f0a
 
-9. Make sure you can build the conda recipe locally:
-
-.. code-block:: console
+9. Make sure you can build the conda recipe locally::
 
     conda mambabuild .
 
 10. Make a PR to the feedstock and update it following conda-forge `instructions`_
 11. Update the locuaz version on the apptainer definition file here::
 
-    pip install locuaz==0.7.0 --root-user-action=ignore
+        pip install locuaz==0.7.0 --root-user-action=ignore
 
 And here::
 
@@ -93,15 +91,15 @@ And here::
 
 12. Build the container::
 
-    sudo apptainer build locuaz.sif locuaz.def
+        sudo apptainer build locuaz.sif locuaz.def
 
 13. Log into the GitHub container registry::
 
-    apptainer remote login --username pgbarletta docker://ghcr.io
+        apptainer remote login --username pgbarletta docker://ghcr.io
 
 14. Upload the image to the GitHub registry::
 
-    apptainer push locuaz.sif
+        apptainer push locuaz.sif
 
 Check `this`_ blog post for more info on apptainer.
 

@@ -61,7 +61,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="mutation.html">Mutation Creator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mutation.html">Mutation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mutationgenerators.html">Mutation Generators (deprecated)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mutationcreator.html">Mutation Creator</a></li>
 <li class="toctree-l1"><a class="reference internal" href="scorers.html">Scorers</a></li>
@@ -176,16 +176,17 @@ Get the sha256 hash from the project’s <a class="reference external" href="htt
 <span class="go">  sha256: 93eed64eddba7ef6137d894aa26e3000ea51953153a26f2efeeb773990674f0a</span>
 </pre></div>
 </div>
-<ol class="arabic simple" start="9">
-<li><p>Make sure you can build the conda recipe locally:</p></li>
-</ol>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">conda mambabuild .</span>
+<ol class="arabic" start="9">
+<li><p>Make sure you can build the conda recipe locally:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">mambabuild</span> <span class="o">.</span>
 </pre></div>
 </div>
-<ol class="arabic" start="10">
+</li>
 <li><p>Make a PR to the feedstock and update it following conda-forge <a class="reference external" href="https://conda-forge.org/docs/maintainer/updating_pkgs.html">instructions</a></p></li>
 <li><p>Update the locuaz version on the apptainer definition file here:</p>
-<p>pip install locuaz==0.7.0 –root-user-action=ignore</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">locuaz</span><span class="o">==</span><span class="mf">0.7.0</span> <span class="o">--</span><span class="n">root</span><span class="o">-</span><span class="n">user</span><span class="o">-</span><span class="n">action</span><span class="o">=</span><span class="n">ignore</span>
+</pre></div>
+</div>
 </li>
 </ol>
 <p>And here:</p>
@@ -196,13 +197,19 @@ Get the sha256 hash from the project’s <a class="reference external" href="htt
 </div>
 <ol class="arabic" start="12">
 <li><p>Build the container:</p>
-<p>sudo apptainer build locuaz.sif locuaz.def</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">apptainer</span> <span class="n">build</span> <span class="n">locuaz</span><span class="o">.</span><span class="n">sif</span> <span class="n">locuaz</span><span class="o">.</span><span class="k">def</span>
+</pre></div>
+</div>
 </li>
 <li><p>Log into the GitHub container registry:</p>
-<p>apptainer remote login –username pgbarletta docker://ghcr.io</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apptainer</span> <span class="n">remote</span> <span class="n">login</span> <span class="o">--</span><span class="n">username</span> <span class="n">pgbarletta</span> <span class="n">docker</span><span class="p">:</span><span class="o">//</span><span class="n">ghcr</span><span class="o">.</span><span class="n">io</span>
+</pre></div>
+</div>
 </li>
 <li><p>Upload the image to the GitHub registry:</p>
-<p>apptainer push locuaz.sif</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">apptainer</span> <span class="n">push</span> <span class="n">locuaz</span><span class="o">.</span><span class="n">sif</span>
+</pre></div>
+</div>
 </li>
 </ol>
 <p>Check <a class="reference external" href="https://ana.run/blog/apptainer">this</a> blog post for more info on apptainer.</p>

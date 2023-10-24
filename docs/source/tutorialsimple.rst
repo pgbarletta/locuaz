@@ -130,6 +130,11 @@ branches, since 4 new complexes were obtained from each surviving complex.
 
 generation
 ^^^^^^^^^^^
+
+.. warning::
+    Mutation Generators have been deprecated since version 0.7.0 and are slated
+    for removal in 0.8.0. Use a Mutation Creator instead.
+
 .. code-block:: console
 
     generation:
@@ -165,6 +170,72 @@ Check :ref:`Mutation Generators<mutationgenerators:Mutation Generators (deprecat
 reference of the implementation,
 and :ref:`configurationfile:YAML configuration file` page for more details.
 
+creation
+^^^^^^^^
+
+.. code-block:: console
+
+    creation:
+        sites: 1
+        sites_interfacing: true
+        sites_interfacing_probe_radius: 3.0
+        sites_probability: mmpbsa
+        aa_bins: ["CDEST", "AGIMLV", "PFWY", "RNQHK"]
+        aa_bins_criteria: without
+        aa_probability: ReisBarletta
+
+Now we begin to deal with a *locuaz* concept, :ref:`blocks:Blocks`. These are the
+moving parts of *locuaz*. The first one is the **Mutation Creator** the *block*
+that is in charge of taking the sequence of the current complex and generating a
+new sequence from it.
+
+ * ``sites``: we're only going to mutate 1 site at a time. Since each new branch
+   will only have 1 Single Point Mutation with respect to its parent branch, increasing
+   this number will effectively increase the number of new branches the Generator
+   will try to generate, though the number of branches we set above in the **protocol**
+   section (2) will ultimately decide the number of generated branches at each epoch.
+ * ``sites_interfacing``: use FreeSASA to determine the binder residues that lie
+   on the interface and only consider those for a mutation.
+ * ``sites_interfacing_probe_radius``: this parameter is only used when the Creator
+   includes interface information. Since FreeSASA is a rolling-probe method, **probe_radius**
+   allows the user to set the size of this probe. In this example we are using a
+   radius of ``3``, a rather large probe, so more residues end up being classified
+   as part of the interface.
+ * ``sites_probability``: the creator can read the energy decomposition file from
+   *gmxmmpbsa* and choose the position with the lowest contribution to the affinity
+   as the position to mutate. This eliminates all randomness from the site choosing
+   process.
+ *  ``aa_bins``: bins allow us to classify the current amino acid (AA) at the chosen
+    site, so we can later choose an AA of a different or similar kind. In this case
+    we're classifying AAs as negatively polarized or charged, hydrophobic, cyclic and
+    positively polarized or charged.
+ *  ``aa_bins_criteria``: we're asking *locuaz* to determine the bin of the current
+    AA and choose another one from any other bin.
+ *  ``aa_probability``: once the bin is chosen, each AA will have a probability of
+    being selected according to the probability of finding them in antigen-antibody
+    interface according to the Reis & Barletta `paper`_.
+
+Another word on ``sites_probability: mmpbsa``. This option forces us to choose 2
+other options, the first one being ``sites_interfacing=true``, or else the residues
+that are not part of the interface will always show up as the least contributing.
+Also, we will have to include *gmxmmpbsa* as a scorer later, or else we'll get an error.
+
+In the included *gmxmmpbsa* file you will find a dedicated section to perform this decomposition:
+
+.. code-block:: console
+
+    /
+    &decomp
+    idecomp=2, dec_verbose=0,
+    print_res="within 4"
+    /
+
+
+The ``&idecomp`` section needs to be present when setting ``sites_probability: mmpbsa``.
+Check the :ref:`configurationfile:YAML configuration file` page for more details.
+
+.. _paper: https://doi.org/10.3389/fmolb.2022.945808
+
 mutation
 ^^^^^^^^
 .. code-block:: console
@@ -185,22 +256,22 @@ Check :ref:`mutators:Mutators` for a reference of the implementation and
 :ref:`configurationfile:YAML configuration file` for more details.
 
 pruning
-^^^^^^^^
+^^^^^^^
 .. code-block:: console
 
     pruning:
         pruner: consensus
         threshold: 2
 
-In this *block*, you can set how the top *branches* from an *epoch* will be selected to pass onto the next one.
+In this *block*, you can set how the top *branches* from an *epoch* will be
+selected to pass onto the next one.
 
  * ``pruner``: the *consensus* pruner is the default one.
  * ``threshold``: the minimum number of scorers that have to improve for a *branch*
    to be considered better than its parents. Check :ref:`pruners:Pruners` for more info.
 
-
 md
-^^^^
+^^
 .. code-block:: console
 
     md:

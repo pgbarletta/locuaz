@@ -102,7 +102,7 @@ optimizing without pulling.
 .. _faq3:
 
 3\_ What is NUMA? How can I know the number of NUMA regions my machine has?
-
+---------------------------------------------------------------------------
 NUMA (Non-Unified Memory Access) it's a design idea to deal with multiple CPU
 cores and their access to memory.
 

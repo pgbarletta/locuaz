@@ -22,7 +22,7 @@ The following steps have to be completed in order to release a new version of *l
 
 .. code-block:: console
 
-    __version__ = "0.4.1"
+    __version__ = "0.7.0"
 
 and on ``setup.cfg``:
 
@@ -30,7 +30,7 @@ and on ``setup.cfg``:
 
     [metadata]
     name = locuaz
-    version = 0.4.1
+    version = 0.7.0
     author =  Patricio Barletta
     ...
 
@@ -46,14 +46,14 @@ and on ``setup.cfg``:
    "Bump up version to X.X.X"::
 
     git add locuaz/__init__.py setup.cfg
-    git commit -m "Bump up version to 0.4.1"
+    git commit -m "Bump up version to 0.7.0"
     git push origin main
 
 6. Tag the release:
 
 .. code-block:: console
 
-    git tag 0.4.1
+    git tag 0.7.0
     git push origin --tags
 
 7. The last step will trigger a GHAction to publish the project on pypi.
@@ -64,7 +64,7 @@ and on ``setup.cfg``:
 .. code-block:: console
 
     {% set name = "locuaz" %}
-    {% set version = "0.4.1" %}
+    {% set version = "0.7.0" %}
 
     package:
       name: {{ name|lower }}
@@ -99,9 +99,10 @@ And here::
 
 14. Upload the image to the GitHub registry::
 
-        apptainer push locuaz.sif
+        apptainer push locuaz.sif oras://ghcr.io/pgbarletta/locuaz.sif:0.7.0
 
-Check `this`_ blog post for more info on apptainer.
+The last line takes a while to finish. Check `this`_ blog post for more info on
+apptainer.
 
 .. _this: https://ana.run/blog/apptainer
 

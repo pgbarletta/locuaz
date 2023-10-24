@@ -14,7 +14,7 @@ class MutationCreator(Mapping):
         * choosing 1 or more positions after discarding the excluded ones and
           optionally discarding those that are not interfacing with the target.
         * optionally splits amino acids into user-defined bins. Then chooses the
-          bin of the current residue ('within') or any of the other ones ('exclude').
+          bin of the current residue ('within') or any of the other ones ('without').
         * within the potential amino acids, it chooses one of them following a
           uniform distribution ('uniform'), Reis&Barletta distribution ('ReisBarletta')
           or a custom user-defined probability ('custom')

@@ -16,9 +16,18 @@ protocol:
     memory_size: 4
     failed_memory_size: 8
 
-generation:
-    generator: SPM4gmxmmpbsa
-    probe_radius: 3
+      #generation:
+      #    generator: SPM4gmxmmpbsa
+      #    probe_radius: 3
+
+creation:
+  sites: 1
+  sites_interfacing: true
+  sites_interfacing_probe_radius: 1.4
+  sites_probability: uniform
+  aa_bins: ["CDEST", "AGIMLV", "PFWY", "RNQHK"]
+  aa_bins_criteria: without
+  aa_probability: ReisBarletta
 
 mutation:
     mutator: dlpr

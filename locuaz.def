@@ -14,7 +14,7 @@ From: nvcr.io/nvidia/cuda:11.7.0-runtime-ubuntu22.04
     . /opt/mambaforge/bin/activate 
     mamba env create -f usr_deps.yaml
     conda activate locuaz
-    pip install locuaz==0.6.3 --root-user-action=ignore
+    pip install locuaz==0.7.0 --root-user-action=ignore
     
 %runscript
     locuaz
@@ -29,7 +29,7 @@ From: nvcr.io/nvidia/cuda:11.7.0-runtime-ubuntu22.04
 
 %labels
     Author Patricio Barletta
-    Version 0.6.3
+    Version 0.7.0
 
 %help
     Apptainer container for locuaz. Check https://locuaz.readthedocs.io/en/latest/ for more info.

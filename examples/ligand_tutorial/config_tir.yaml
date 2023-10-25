@@ -12,14 +12,23 @@ main:
 
 protocol:
     epochs: 10
-    new_branches: 2
+    new_branches: 3
     constant_width: false
     memory_size: 4
     failed_memory_size: 6
 
-generation:
-    generator: SPM4i
-    probe_radius: 3
+      #generation:
+      #    generator: SPM4i
+      #    probe_radius: 3
+
+creation:
+  sites: 2
+  sites_interfacing: true
+  sites_interfacing_probe_radius: 3.0
+  sites_probability: uniform
+  aa_bins: ["CDEST", "AGIMLV", "PFWY", "RNQHK"]
+  aa_bins_criteria: without
+  aa_probability: uniform
 
 mutation:
     mutator: dlpr

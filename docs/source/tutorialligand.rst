@@ -54,7 +54,7 @@ protocol
 
     paths:
         epochs: 10
-        new_branches: 2
+        new_branches: 3
         constant_width: false
         memory_size: 4
         failed_memory_size: 6
@@ -62,6 +62,25 @@ protocol
 * ``constant_width``: when this value is set to ``false``, ``new_branches`` means
   the number of branches (new mutations) that are obtained from **each** previous branch.
   Check :ref:`platformflow:Platform DAGs` for more info.
+* We're setting ``new_branches`` to 3 because we will input 4 bins in the next section.
+
+creation
+^^^^^^^^
+
+.. code-block:: console
+
+    creation:
+        sites: 2
+        sites_interfacing: true
+        sites_interfacing_probe_radius: 3.0
+        sites_probability: uniform
+        aa_bins: ["CDEST", "AGIMLV", "PFWY", "RNQHK"]
+        aa_bins_criteria: without
+        aa_probability: uniform
+
+As we said, we're dealing with a rather small system, so we're going to mutate 2
+sites at the same time and on each branch we're going to try 3 different amino acids
+from 3 different bins so we can sample the solution space quickly.
 
 pruning
 ^^^^^^^^

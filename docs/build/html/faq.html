@@ -63,6 +63,7 @@
 but now my starting PDB has no chainID information and locuaz won’t take it.
 What can I do about it?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#my-complex-is-spreading-apart-can-i-use-gromacs-pulling-to-keep-them-together">2_ My complex is spreading apart. Can I use GROMACS pulling to keep them together?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-is-numa-how-can-i-know-the-number-of-numa-regions-my-machine-has">3_ What is NUMA? How can I know the number of NUMA regions my machine has?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#why-use-both-memory-positions-and-failed-memory-positions-at-the-same-time">4_ Why use both <code class="docutils literal notranslate"><span class="pre">memory_positions</span></code> and <code class="docutils literal notranslate"><span class="pre">failed_memory_positions</span></code> at the same time?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#what-are-the-empty-brackets-in-the-memory-positions-list">5_ What are the empty brackets in the <code class="docutils literal notranslate"><span class="pre">memory_positions</span></code> list?</a></li>
 </ul>
@@ -193,7 +194,9 @@ You can probably use this same sample file and just modify the atoms at
 once you have a somewhat better binder than can stay with its target without any
 restraints. Try optimizing for 5 epochs and then lift the restrictions to keep
 optimizing without pulling.</p>
-<p id="faq3">3_ What is NUMA? How can I know the number of NUMA regions my machine has?</p>
+</section>
+<section id="what-is-numa-how-can-i-know-the-number-of-numa-regions-my-machine-has">
+<span id="faq3"></span><h2>3_ What is NUMA? How can I know the number of NUMA regions my machine has?<a class="headerlink" href="#what-is-numa-how-can-i-know-the-number-of-numa-regions-my-machine-has" title="Permalink to this heading"></a></h2>
 <p>NUMA (Non-Unified Memory Access) it’s a design idea to deal with multiple CPU
 cores and their access to memory.</p>
 <p>For us users, it’s important to be NUMA-aware, that is, understand that some

@@ -116,10 +116,54 @@ Mutation Generators were mono-blocks that the user could pick for the task.
 On the other hand, the Mutation Creator is unique, but highly configurable.
 The user can build their desired Mutation Creator out of the many building
 blocks available.
+
 The available options are split according to the 2 phases: the choosing of the
-site to be mutated and the choosing of the new amino acid. For more information,
-check :ref:`mutationcreator:Mutation Creator` and
-:ref:`config_creation`.
+site to be mutated and the choosing of the new amino acid (AA).
+
+Site selection
+""""""""""""""
+User can choose how many positions to mutate, whether these must be in the interface,
+and the likeliness of each position of being chosen. It can be uniform or guided
+by an mmpbsa method that chooses the position that's contributing the least to the
+binding affinity.
+
+
+
+Amino acid selection
+""""""""""""""""""""
+Before selecting amino acids, the Mutation Creator selects a **bin**.
+
+Given that it's too computationally expensive to test all AAs at each position,
+and that there are similarities among them, the Mutation Creator gives the possibility
+of splitting the 20 AAs into **bin** of similar AAs that it will later
+choose from, for a more efficient sampling of the AA space.
+Once a bin is chosen, a specific AA has to be decided and this is where
+their probabilities play in.
+
+At the beginning of the optimization process, a user may choose to split the 20 AAs
+into sub-groups of similar AAs (bins) in order to substitute the "wild-type" AAs
+for very different ones. The idea would be that these substitutions give more
+information. Later on, once a good affinity has been achieved, a change of an
+alanine for an arginine, may not be the optimal, perhaps a valine would be better.
+
+That's the idea behind bins, to exclude AAs that are probably not optimal in order
+to explore the solution space more efficiently.
+
+Conclusion
+""""""""""
+It's important to note that the options from the Mutation Creator may have an impact
+in the number of branches generated.
+
+If ``constant_width=false``, the number of sites requested will multiply the number
+of new branches generated from each previous top branch. Eg: if ``branches=2``,
+``constant_width=false``, ``sites=1`` and the number of top branches from epoch
+**i** is 2, then 4 new epochs will be generated in total for epoch **i+1**, 2
+from each top branch from epoch **i**.
+
+On the other hand, if the same conditions apply, but with ``sites=2``, 8 branches
+will be generated in total, 4 from each branch, and 2 at each position.
+
+For more information, check :ref:`mutationcreator:Mutation Creator` and :ref:`config_creation`.
 
 Mutator
 --------

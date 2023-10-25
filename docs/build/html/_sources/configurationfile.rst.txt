@@ -67,7 +67,7 @@ Some other things to highlight:
 .. _config_creation:
 
 ``config['creation']``
-^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^
 **Site selection options**
 
 1. ``config['creation']['sites']``: number of sites to mutate. Each new branch
@@ -95,16 +95,8 @@ Check the :ref:`scorers:gmxmmpbsa` section for more info.
 
 **Amino acid selection options**
 
-These options refer to the bins in which amino acids are grouped and to their
-probabilities of being chosen.
-
-Given that it's too computationally expensive to test all amino acids at each position,
-and that there are similarities among them, the Mutation Creator gives the possibility
-of splitting the 20 amino acids into 'bins' of similar amino acids that it will later
-choose from, for a more efficient sampling of the amino acid space.
-
-Once a bin is chosen, a specific amino acid has to be decided and this is where
-their probabilities play in.
+These options affect the probability of each amino acid being chosen to be placed
+at the already selected site.
 
 1. ``config['creation']['aa_bins']``: list of strings where each element is a bin,
    represented as string of consecutive one-letter coded amino acids.

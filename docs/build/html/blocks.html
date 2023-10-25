@@ -61,7 +61,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#spm4gmxmmpbsa">SPM4gmxmmpbsa</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#mutation-creator">Mutation Creator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mutation-creator">Mutation Creator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#site-selection">Site selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#amino-acid-selection">Amino acid selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#conclusion">Conclusion</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#mutator">Mutator</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#dlp-mutator">dlp mutator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#dlpr-mutator">dlpr mutator</a></li>
@@ -141,7 +146,7 @@ Finally, the *Pruner</em> applies a selection criterion using the binding scores
 <p>The process is repeated iteratively to explore new sequences with potentially improved affinities
 towards their targets. This workflow is outlined in Figure 1.</p>
 <figure class="align-center" id="id1">
-<a class="reference internal image-reference" href="_images/blocks_flow.png"><img alt="workflow" src="_images/blocks_flow.png" style="width: 317.25px; height: 537.75px;" /></a>
+<a class="reference internal image-reference" href="_images/blocks_flow.png"><img alt="workflow" src="_images/blocks_flow.png" style="width: 314.25px; height: 540.0px;" /></a>
 <figcaption>
 <p><span class="caption-text">Figure 1: The protocol’s workflow with respect to its <strong>blocks</strong>.</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
 </figcaption>
@@ -228,11 +233,46 @@ to the branches of the next epoch.</p>
 <p>Mutation Generators were mono-blocks that the user could pick for the task.
 On the other hand, the Mutation Creator is unique, but highly configurable.
 The user can build their desired Mutation Creator out of the many building
-blocks available.
-The available options are split according to the 2 phases: the choosing of the
-site to be mutated and the choosing of the new amino acid. For more information,
-check <a class="reference internal" href="mutationcreator.html#mutation-creator"><span class="std std-ref">Mutation Creator</span></a> and
-<a class="reference internal" href="configurationfile.html#config-creation"><span class="std std-ref">config['creation']</span></a>.</p>
+blocks available.</p>
+<p>The available options are split according to the 2 phases: the choosing of the
+site to be mutated and the choosing of the new amino acid (AA).</p>
+<section id="site-selection">
+<h3>Site selection<a class="headerlink" href="#site-selection" title="Permalink to this heading"></a></h3>
+<p>User can choose how many positions to mutate, whether these must be in the interface,
+and the likeliness of each position of being chosen. It can be uniform or guided
+by an mmpbsa method that chooses the position that’s contributing the least to the
+binding affinity.</p>
+</section>
+<section id="amino-acid-selection">
+<h3>Amino acid selection<a class="headerlink" href="#amino-acid-selection" title="Permalink to this heading"></a></h3>
+<p>Before selecting amino acids, the Mutation Creator selects a <strong>bin</strong>.</p>
+<p>Given that it’s too computationally expensive to test all AAs at each position,
+and that there are similarities among them, the Mutation Creator gives the possibility
+of splitting the 20 AAs into <strong>bin</strong> of similar AAs that it will later
+choose from, for a more efficient sampling of the AA space.
+Once a bin is chosen, a specific AA has to be decided and this is where
+their probabilities play in.</p>
+<p>At the beginning of the optimization process, a user may choose to split the 20 AAs
+into sub-groups of similar AAs (bins) in order to substitute the “wild-type” AAs
+for very different ones. The idea would be that these substitutions give more
+information. Later on, once a good affinity has been achieved, a change of an
+alanine for an arginine, may not be the optimal, perhaps a valine would be better.</p>
+<p>That’s the idea behind bins, to exclude AAs that are probably not optimal in order
+to explore the solution space more efficiently.</p>
+</section>
+<section id="conclusion">
+<h3>Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this heading"></a></h3>
+<p>It’s important to note that the options from the Mutation Creator may have an impact
+in the number of branches generated.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">constant_width=false</span></code>, the number of sites requested will multiply the number
+of new branches generated from each previous top branch. Eg: if <code class="docutils literal notranslate"><span class="pre">branches=2</span></code>,
+<code class="docutils literal notranslate"><span class="pre">constant_width=false</span></code>, <code class="docutils literal notranslate"><span class="pre">sites=1</span></code> and the number of top branches from epoch
+<strong>i</strong> is 2, then 4 new epochs will be generated in total for epoch <strong>i+1</strong>, 2
+from each top branch from epoch <strong>i</strong>.</p>
+<p>On the other hand, if the same conditions apply, but with <code class="docutils literal notranslate"><span class="pre">sites=2</span></code>, 8 branches
+will be generated in total, 4 from each branch, and 2 at each position.</p>
+<p>For more information, check <a class="reference internal" href="mutationcreator.html#mutation-creator"><span class="std std-ref">Mutation Creator</span></a> and <a class="reference internal" href="configurationfile.html#config-creation"><span class="std std-ref">config['creation']</span></a>.</p>
+</section>
 </section>
 <section id="mutator">
 <h2>Mutator<a class="headerlink" href="#mutator" title="Permalink to this heading"></a></h2>

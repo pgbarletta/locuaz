@@ -277,10 +277,6 @@ each *branch*:
         Figure 2: the look of any *branch* folder after it has been finished. *Tleap* related files
         are highlighted.
 
-
-In the previous tutorials, this value was always ``true`` (it's default value)
-which meant that at each *epoch* will use a variable width DAG. This will make the number
-
 .. _HADDOCK: https://wenmr.science.uu.nl/haddock2.4/
 .. _ParmEd: https://github.com/ParmEd/ParmEd
 .. _acpype: https://github.com/alanwilter/acpype

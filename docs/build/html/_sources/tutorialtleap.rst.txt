@@ -150,7 +150,12 @@ In the protocol section, several important options concerning the protocol have 
   3 epochs.
 
 generation
-^^^^^^^^^^^
+^^^^^^^^^^
+
+.. warning::
+    Mutation Generators have been deprecated since version 0.7.0 and are slated
+    for removal in 0.8.0. Use a Mutation Creator instead.
+
 .. code-block:: console
 
     generation:
@@ -158,6 +163,26 @@ generation
         probe_radius: 3
 
 This time we are selecting any of the CDR residues in the interface with equal probability.
+
+creation
+^^^^^^^^
+
+.. code-block:: console
+
+    creation:
+        sites: 1
+        sites_interfacing: true
+        sites_interfacing_probe_radius: 3.0
+        sites_probability: uniform
+        aa_bins: ["CDEST", "AGIMLV", "PFWY", "RNQHK"]
+        aa_bins_criteria: without
+        aa_probability: uniform
+
+This time we set both ``sites_probability`` and ``aa_probability`` to ``uniform``.
+We don't want to force the optimization too much and get trapped in a local minimum.
+So any of the binder's ``mutating_resSeq`` thar are interfacing with the target
+can be chosen with equal probability and after that, and after a bin is chosen,
+each amino acid from the bin has equal probability of being chosen.
 
 mutation
 ^^^^^^^^
@@ -251,10 +276,6 @@ each *branch*:
 
         Figure 2: the look of any *branch* folder after it has been finished. *Tleap* related files
         are highlighted.
-
-
-In the previous tutorials, this value was always ``true`` (it's default value)
-which meant that at each *epoch* will use a variable width DAG. This will make the number
 
 .. _HADDOCK: https://wenmr.science.uu.nl/haddock2.4/
 .. _ParmEd: https://github.com/ParmEd/ParmEd

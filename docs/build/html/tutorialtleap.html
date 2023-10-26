@@ -64,6 +64,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#main">main</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#protocol">protocol</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#generation">generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creation">creation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#mutation">mutation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#pruning">pruning</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#md">md</a></li>
@@ -257,12 +258,35 @@ memories (<code class="docutils literal notranslate"><span class="pre">[]</span>
 </section>
 <section id="generation">
 <h3>generation<a class="headerlink" href="#generation" title="Permalink to this heading"></a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Mutation Generators have been deprecated since version 0.7.0 and are slated
+for removal in 0.8.0. Use a Mutation Creator instead.</p>
+</div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">generation:</span>
 <span class="go">    generator: SPM4i</span>
 <span class="go">    probe_radius: 3</span>
 </pre></div>
 </div>
 <p>This time we are selecting any of the CDR residues in the interface with equal probability.</p>
+</section>
+<section id="creation">
+<h3>creation<a class="headerlink" href="#creation" title="Permalink to this heading"></a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">creation:</span>
+<span class="go">    sites: 1</span>
+<span class="go">    sites_interfacing: true</span>
+<span class="go">    sites_interfacing_probe_radius: 3.0</span>
+<span class="go">    sites_probability: uniform</span>
+<span class="go">    aa_bins: [&quot;CDEST&quot;, &quot;AGIMLV&quot;, &quot;PFWY&quot;, &quot;RNQHK&quot;]</span>
+<span class="go">    aa_bins_criteria: without</span>
+<span class="go">    aa_probability: uniform</span>
+</pre></div>
+</div>
+<p>This time we set both <code class="docutils literal notranslate"><span class="pre">sites_probability</span></code> and <code class="docutils literal notranslate"><span class="pre">aa_probability</span></code> to <code class="docutils literal notranslate"><span class="pre">uniform</span></code>.
+We don’t want to force the optimization too much and get trapped in a local minimum.
+So any of the binder’s <code class="docutils literal notranslate"><span class="pre">mutating_resSeq</span></code> thar are interfacing with the target
+can be chosen with equal probability and after that, and after a bin is chosen,
+each amino acid from the bin has equal probability of being chosen.</p>
 </section>
 <section id="mutation">
 <h3>mutation<a class="headerlink" href="#mutation" title="Permalink to this heading"></a></h3>
@@ -356,8 +380,6 @@ each <em>branch</em>:</p>
 are highlighted.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
-<p>In the previous tutorials, this value was always <code class="docutils literal notranslate"><span class="pre">true</span></code> (it’s default value)
-which meant that at each <em>epoch</em> will use a variable width DAG. This will make the number</p>
 </section>
 </section>
 

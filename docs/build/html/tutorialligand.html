@@ -60,6 +60,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#id1">Necessary files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#the-configuration-file">The configuration file</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#protocol">protocol</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creation">creation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#pruning">pruning</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#md">md</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#scoring">scoring</a></li>
@@ -156,7 +157,7 @@ check the <a class="reference internal" href="faq.html#faq1"><span class="std st
 <h3>protocol<a class="headerlink" href="#protocol" title="Permalink to this heading"></a></h3>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">paths:</span>
 <span class="go">    epochs: 10</span>
-<span class="go">    new_branches: 2</span>
+<span class="go">    new_branches: 3</span>
 <span class="go">    constant_width: false</span>
 <span class="go">    memory_size: 4</span>
 <span class="go">    failed_memory_size: 6</span>
@@ -166,7 +167,24 @@ check the <a class="reference internal" href="faq.html#faq1"><span class="std st
 <li><p><code class="docutils literal notranslate"><span class="pre">constant_width</span></code>: when this value is set to <code class="docutils literal notranslate"><span class="pre">false</span></code>, <code class="docutils literal notranslate"><span class="pre">new_branches</span></code> means
 the number of branches (new mutations) that are obtained from <strong>each</strong> previous branch.
 Check <a class="reference internal" href="platformflow.html#platform-dags"><span class="std std-ref">Platform DAGs</span></a> for more info.</p></li>
+<li><p>We’re setting <code class="docutils literal notranslate"><span class="pre">new_branches</span></code> to 3 because we will input 4 bins in the next section.</p></li>
 </ul>
+</section>
+<section id="creation">
+<h3>creation<a class="headerlink" href="#creation" title="Permalink to this heading"></a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">creation:</span>
+<span class="go">    sites: 2</span>
+<span class="go">    sites_interfacing: true</span>
+<span class="go">    sites_interfacing_probe_radius: 3.0</span>
+<span class="go">    sites_probability: uniform</span>
+<span class="go">    aa_bins: [&quot;CDEST&quot;, &quot;AGIMLV&quot;, &quot;PFWY&quot;, &quot;RNQHK&quot;]</span>
+<span class="go">    aa_bins_criteria: without</span>
+<span class="go">    aa_probability: uniform</span>
+</pre></div>
+</div>
+<p>As we said, we’re dealing with a rather small system, so we’re going to mutate 2
+sites at the same time and on each branch we’re going to try 3 different amino acids
+from 3 different bins so we can sample the solution space quickly.</p>
 </section>
 <section id="pruning">
 <h3>pruning<a class="headerlink" href="#pruning" title="Permalink to this heading"></a></h3>
@@ -243,15 +261,19 @@ to this list of residue names, so <em>locuaz</em> doesn’t remove it from the P
 </pre></div>
 </div>
 <p>It’s educational to look at the DAG with the branch names that <em>locuaz</em> draws.
-See Figure 2.</p>
+Given the elevated branching, it’s difficult to see the whole DAG, but check
+Figure 2 for a part of it.</p>
 <figure class="align-default" id="id3">
 <img alt="iterations_dag" src="_images/ligand_iterations_dag.png" />
 <figcaption>
-<p><span class="caption-text">Figure 2: Directed Acyclic Graph (DAG) of a sample optimization against
-the tirosol molecule. Notice that 2 branches are generated from each
-previous top branch which makes the number of branches increase up to 8
-before it gets lowered to 6 because only 3 of those 8 passed onto the
-next epoch.</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Figure 2: section of the Directed Acyclic Graph (DAG) of a sample
+optimization against the tirosol molecule. We can see 3 epochs, the epoch
+0, the initial one. Then a branch from epoch 1 (the one in the middle),
+and 6 branches from epoch 2 at the bottom. The edges that go out from one
+of these bottom branches belong to the epoch 3 (not shown).
+We can see that the branch from epoch 1 was approved and moved on to be
+mutated again on 2 sites, generating 6 branches in total, of which only
+1 was approved and mutated again another 6 times.</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 </section>

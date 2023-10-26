@@ -155,14 +155,18 @@ Nothing new here, we just run the protocol with our config file::
     python /home/user/locuaz/locuaz/protocol.py config_ligand.yaml
 
 It's educational to look at the DAG with the branch names that *locuaz* draws.
-See Figure 2.
+Given the elevated branching, it's difficult to see the whole DAG, but check
+Figure 2 for a part of it.
 
 .. figure:: ./resources/ligand_iterations_dag.png
         :alt: iterations_dag
 
-        Figure 2: Directed Acyclic Graph (DAG) of a sample optimization against
-        the tirosol molecule. Notice that 2 branches are generated from each
-        previous top branch which makes the number of branches increase up to 8
-        before it gets lowered to 6 because only 3 of those 8 passed onto the
-        next epoch.
+        Figure 2: section of the Directed Acyclic Graph (DAG) of a sample
+        optimization against the tirosol molecule. We can see 3 epochs, the epoch
+        0, the initial one. Then a branch from epoch 1 (the one in the middle),
+        and 6 branches from epoch 2 at the bottom. The edges that go out from one
+        of these bottom branches belong to the epoch 3 (not shown).
+        We can see that the branch from epoch 1 was approved and moved on to be
+        mutated again on 2 sites, generating 6 branches in total, of which only
+        1 was approved and mutated again another 6 times.
 

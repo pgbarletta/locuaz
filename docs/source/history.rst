@@ -2,6 +2,11 @@
 History
 =======
 
+0.7.1 (2023-10-)
+------------------
+ * Allow mutating more than 1 site.
+ * Add pygraphviz dependency to graph the DAG.
+
 0.7.0 (2023-10-)
 ------------------
  * Added warning when 'autodockvina' scorer is used what no resname was set in

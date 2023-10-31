@@ -667,7 +667,7 @@ class WorkProject:
                         (resSeq, resname) for resSeq, resname in zip(resSeqs, resnames)
                     }
                     available_resis = {
-                        (residue.resnum, seq1(residue.resname))
+                        (residue.resnum, seq1(AA_MAP[residue.resname]))
                         for residue in chain.residues
                     }
 

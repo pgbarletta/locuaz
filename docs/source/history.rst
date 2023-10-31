@@ -6,6 +6,8 @@ History
 ------------------
  * Allow mutating more than 1 site.
  * Add pygraphviz dependency to graph the DAG.
+ * Fix input config and PDB checking when converting 3-letter code AAs into
+   1-letter code.
  * Fix error message when converting 3-letter code AAs into 1-letter code.
  * Started adding reformat with ruff.
 

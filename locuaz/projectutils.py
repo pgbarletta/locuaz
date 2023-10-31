@@ -5,6 +5,7 @@ import shutil as sh
 import time
 from collections import deque, Counter
 from collections.abc import MutableMapping
+
 # TODO: replace own pairwise with itertools' on 3.10
 # from itertools import pairwise
 from itertools import zip_longest, pairwise
@@ -77,7 +78,7 @@ class Branch:
         self.stats = {}
 
     def set_score(
-            self, sf_name: str, scores: Iterable, log: Optional[logging.Logger] = None
+        self, sf_name: str, scores: Iterable, log: Optional[logging.Logger] = None
     ) -> float:
         if not log:
             log = logging.getLogger("root")
@@ -94,7 +95,7 @@ class Branch:
         return self.mean_scores[sf_name]
 
     def set_stat(
-            self, stat_name: str, stat: NDArray[float], log: Optional[logging.Logger] = None
+        self, stat_name: str, stat: NDArray[float], log: Optional[logging.Logger] = None
     ) -> float:
         self.stats[stat_name] = stat
         avg_stat: float = np.mean(stat)
@@ -114,7 +115,9 @@ class Branch:
                 for val in result:
                     f.write(str(round(val, 3)) + "\n")
 
-    def read_scores(self, scorers: Iterable, log: Optional[logging.Logger] = None) -> bool:
+    def read_scores(
+        self, scorers: Iterable, log: Optional[logging.Logger] = None
+    ) -> bool:
         if not log:
             log = logging.getLogger("root")
         if not getattr(self, "score_dir", None):
@@ -132,7 +135,9 @@ class Branch:
                 with open(scores_fn, "r") as f:
                     self.set_score(SF, [float(linea.strip()) for linea in f], log)
             except FileNotFoundError as e:
-                log.warning(f"{self.epoch_id}-{self.branch_name} was not scored with {SF}.")
+                log.warning(
+                    f"{self.epoch_id}-{self.branch_name} was not scored with {SF}."
+                )
                 return False
         return True
 
@@ -185,7 +190,11 @@ class Branch:
         for idx, (chainID, resname) in enumerate(zip(self.chainIDs, self.resnames)):
             if idx == mutation.chainID_idx:
                 # This is the mutated chainID
-                new_resname = resname[: mutation.resSeq_idx] + mutation.new_aa + resname[mutation.resSeq_idx + 1:]
+                new_resname = (
+                    resname[: mutation.resSeq_idx]
+                    + mutation.new_aa
+                    + resname[mutation.resSeq_idx + 1 :]
+                )
             else:
                 # This one remains the same
                 new_resname = "".join([residue for residue in resname])
@@ -209,7 +218,7 @@ class Epoch(MutableMapping):
         # First, check if a "top_branches" was set from a pickle tracking file.
         if "top_branches" in config_paths:
             for top_branch_str_with_epoch_nbr in config_paths["top_branches"]:
-                top_branch_str = '-'.join(top_branch_str_with_epoch_nbr.split('-')[1:])
+                top_branch_str = "-".join(top_branch_str_with_epoch_nbr.split("-")[1:])
                 try:
                     self.top_branches[top_branch_str] = self.branches[top_branch_str]
                 except Exception as e:
@@ -229,10 +238,7 @@ class Epoch(MutableMapping):
                 # the subset present in both branches.
                 scorers = set(it.scores.keys()) & set(other_it.scores.keys())
                 count += sum(
-                    [
-                        other_it.mean_scores[SF] >= it.mean_scores[SF]
-                        for SF in scorers
-                    ]
+                    [other_it.mean_scores[SF] >= it.mean_scores[SF] for SF in scorers]
                 )
             better_branches.put((-count, it))
 
@@ -241,9 +247,7 @@ class Epoch(MutableMapping):
             # Remember, `count`, the priority, is negative.
             count, branch = better_branches.get()
             if count > prev_count:
-                assert (
-                        len(self.top_branches) > 0
-                ), f"Logical error. This can't happen."
+                assert len(self.top_branches) > 0, f"Logical error. This can't happen."
                 break
             prev_count = count
             self.top_branches[branch.branch_name] = branch
@@ -327,7 +331,6 @@ class WorkProject:
         starting_epoch = self.config["main"]["starting_epoch"]
         zero_epoch = Epoch(starting_epoch, branches={}, nvt_done=False, npt_done=False)
         for data_str in self.config["paths"]["input"]:
-
             # Check input PDB to create name and attributes for the starting branch.
             input_path = Path(data_str)
             try:
@@ -336,10 +339,14 @@ class WorkProject:
                 # Remove the working dir, so it can restart easily again.
                 sh.rmtree(Path(self.config["paths"]["work"]))
                 raise e
-            branch_name, chainIDs, resSeqs, resnames = self.__generate_branch_ID__(input_path)
+            branch_name, chainIDs, resSeqs, resnames = self.__generate_branch_ID__(
+                input_path
+            )
 
             branch_path = Path(self.dir_handle, f"{starting_epoch}-{branch_name}")
-            assert not (branch_path.is_dir() or branch_path.is_file()), f"{branch_path} exists. Wrong input path."
+            assert not (
+                branch_path.is_dir() or branch_path.is_file()
+            ), f"{branch_path} exists. Wrong input path."
             this_iter = Branch(
                 DirHandle(branch_path, make=True),
                 branch_name=branch_name,
@@ -377,7 +384,9 @@ class WorkProject:
 
     def __restart_work__(self, log: logging.Logger):
         # Restart from input branches, they should all have the same epoch number
-        epoch_nbr = int(Path(self.config["paths"]["current_branches"][0]).name.split("-")[0])
+        epoch_nbr = int(
+            Path(self.config["paths"]["current_branches"][0]).name.split("-")[0]
+        )
 
         if "previous_branches" in self.config["paths"]:
             prev_epoch = Epoch(epoch_nbr - 1, branches={}, nvt_done=True, npt_done=True)
@@ -385,7 +394,8 @@ class WorkProject:
             for branch_str in self.config["paths"]["previous_branches"]:
                 # Get `branch_name` from the input branch dir
                 branch_name, branch_path, this_iter = self.branch_from_path(
-                    Path(self.config["paths"]["work"], branch_str))
+                    Path(self.config["paths"]["work"], branch_str)
+                )
                 try:
                     # Previous branches should be fully ran.
                     this_iter.complex = GROComplex.from_complex(
@@ -436,7 +446,9 @@ class WorkProject:
         current_epoch = Epoch(epoch_nbr, branches={}, nvt_done=True, npt_done=True)
         for branch_str in self.config["paths"]["current_branches"]:
             # Get `branch_name` from the input branch dir
-            branch_name, branch_path, this_iter = self.branch_from_path(Path(self.config["paths"]["work"], branch_str))
+            branch_name, branch_path, this_iter = self.branch_from_path(
+                Path(self.config["paths"]["work"], branch_str)
+            )
             # Create complex with coordinates and topology (should be .zip)
             try:
                 cpx_name = f'npt_{self.config["main"]["name"]}'
@@ -487,7 +499,9 @@ class WorkProject:
             # Store it in the epoch.
             current_epoch[branch_name] = this_iter
 
-        current_epoch.mutated_positions = set(self.config["misc"]["epoch_mutated_positions"])
+        current_epoch.mutated_positions = set(
+            self.config["misc"]["epoch_mutated_positions"]
+        )
 
         self.new_epoch(current_epoch)
         self.project_dag = self.config["project_dag"]
@@ -498,9 +512,7 @@ class WorkProject:
         _, *name_by_chain = branch_path.name.split("-")
         branch_name = "-".join(name_by_chain)
         # `branch_name` comes from the input branch.
-        _, chainIDs, resSeqs, resnames = self.__generate_branch_ID__(
-            branch_path
-        )
+        _, chainIDs, resSeqs, resnames = self.__generate_branch_ID__(branch_path)
         this_iter = Branch(
             DirHandle(branch_path, make=False),
             branch_name=branch_name,
@@ -514,9 +526,7 @@ class WorkProject:
         _, *name_by_chain = branch_path.name.split("-")
         branch_name = "-".join(name_by_chain)
         # `branch_name` comes from the input branch.
-        _, chainIDs, resSeqs, resnames = self.__generate_branch_ID__(
-            branch_path
-        )
+        _, chainIDs, resSeqs, resnames = self.__generate_branch_ID__(branch_path)
         this_iter = Branch(
             DirHandle(branch_path, make=False),
             branch_name=branch_name,
@@ -536,27 +546,32 @@ class WorkProject:
 
     @staticmethod
     def __get_mutating_resname__(
-            pdb_path: Path, chainIDs: List, resSeqs: List
+        pdb_path: Path, chainIDs: List, resSeqs: List
     ) -> List[str]:
-
         u = mda.Universe(str(pdb_path))
         resnames = []
         for chainID, list_resSeq in zip(chainIDs, resSeqs):
             ch_resnames = []
             ch_resids = []
             cadena = u.select_atoms(f"segid {chainID}")
-            for resn, resi in {(atm.resname, atm.resnum)
-                               for atm in cadena.select_atoms(" or ".join([f"resid {res}" for res in list_resSeq]))}:
+            for resn, resi in {
+                (atm.resname, atm.resnum)
+                for atm in cadena.select_atoms(
+                    " or ".join([f"resid {res}" for res in list_resSeq])
+                )
+            }:
                 ch_resnames.append(my_seq1(resn))
                 ch_resids.append(resi)
 
             resnames.append(
-                "".join([resn_1 for resn_1 in np.array(ch_resnames)[np.argsort(ch_resids)]])
+                "".join(
+                    [resn_1 for resn_1 in np.array(ch_resnames)[np.argsort(ch_resids)]]
+                )
             )
         return resnames
 
     def __generate_branch_ID__(
-            self, input_path: Path
+        self, input_path: Path
     ) -> Tuple[str, List[str], List[List[int]], List[str]]:
         chainIDs = self.config["binder"]["mutating_chainID"]
         resSeqs = self.config["binder"]["mutating_resSeq"]
@@ -574,40 +589,57 @@ class WorkProject:
         return branch_name, chainIDs, resSeqs, resnames
 
     def __check_input_pdb__(self, input_path: Path) -> None:
-
         # Check the chainIDs:
         pdb_path = input_path / (self.config["main"]["name"] + ".pdb")
         u = mda.Universe(str(pdb_path))
         segids = [s.segid for s in u.segments]  # type: ignore
-        assert len(segids) > 2, "Too few segments in the input PDB. " \
-                                "There should be at least 3 (target+binder+solvent)."
+        assert len(segids) > 2, (
+            "Too few segments in the input PDB. "
+            "There should be at least 3 (target+binder+solvent)."
+        )
 
         chainIDs = self.config["target"]["chainID"] + self.config["binder"]["chainID"]
         for segid, chainID in zip_longest(segids, chainIDs):
             if chainID:
-                assert (segid == chainID), (f"PDBs chainIDs ({segids}) and input target-binder chainIDs "
-                                            f"({chainIDs}) from the config should have the same ordering and the "
-                                            "target chains should go first.")
+                assert segid == chainID, (
+                    f"PDBs chainIDs ({segids}) and input target-binder chainIDs "
+                    f"({chainIDs}) from the config should have the same ordering and the "
+                    "target chains should go first."
+                )
             else:
-                assert (segid == '' or segid == 'X'), (f"There're unaccounted segments. {segid} has to either be, "
-                                                       f"target or binder. If it's solvent or ions, then its segid "
-                                                       "and chainID should be empty ('') or 'X'.")
+                assert segid == "" or segid == "X", (
+                    f"There're unaccounted segments. {segid} has to either be, "
+                    f"target or binder. If it's solvent or ions, then its segid "
+                    "and chainID should be empty ('') or 'X'."
+                )
 
         # Check amino acids
         all_residues = "protein or " + " or ".join(
-            [f"segid {chainID}" for chainID in (self.config["target"]["chainID"] + self.config["binder"]["chainID"])])
+            [
+                f"segid {chainID}"
+                for chainID in (
+                    self.config["target"]["chainID"] + self.config["binder"]["chainID"]
+                )
+            ]
+        )
         prot = u.atoms.select_atoms(all_residues)  # type: ignore
         aas = {res.resname for res in prot.residues}
         all_aas = set(AA_MAP.keys())
         nonstandard_residues = aas - all_aas
         if len(nonstandard_residues) != 0:
-            warn(f"Unrecognized residues: {nonstandard_residues}. Make sure you can build "
-                 "a topology for them and that they are not necessary for scoring.")
+            warn(
+                f"Unrecognized residues: {nonstandard_residues}. Make sure you can build "
+                "a topology for them and that they are not necessary for scoring."
+            )
 
-            allowed_nonstandard_residues = set(self.config["scoring"]["allowed_nonstandard_residues"])
+            allowed_nonstandard_residues = set(
+                self.config["scoring"]["allowed_nonstandard_residues"]
+            )
             if not nonstandard_residues.issubset(allowed_nonstandard_residues):
-                warn(f"Watch out, {nonstandard_residues - allowed_nonstandard_residues} were not included as "
-                     "'allowed_nonstandard_residues', make sure you don't need them for scoring.")
+                warn(
+                    f"Watch out, {nonstandard_residues - allowed_nonstandard_residues} were not included as "
+                    "'allowed_nonstandard_residues', make sure you don't need them for scoring."
+                )
 
         # Check solvent
         solvent_sel = "resname WAT" if self.config["md"]["use_tleap"] else "resname SOL"
@@ -626,18 +658,27 @@ class WorkProject:
         resis_not_present_freesasa = set()
         correct_resis_resSeq = []
         correct_resis_resname = []
-        for chainID, resSeqs, resnames in zip(mutating_chainID, mutating_resSeq, mutating_resname):
+        for chainID, resSeqs, resnames in zip(
+            mutating_chainID, mutating_resSeq, mutating_resname
+        ):
             for chain in u.segments:  # type: ignore
                 if chain.segid == chainID:
-                    selected_resis = {(resSeq, resname) for resSeq, resname in zip(resSeqs, resnames)}
-                    available_resis = {(residue.resnum, seq1(residue.resname)) for residue in chain.residues}
+                    selected_resis = {
+                        (resSeq, resname) for resSeq, resname in zip(resSeqs, resnames)
+                    }
+                    available_resis = {
+                        (residue.resnum, seq1(residue.resname))
+                        for residue in chain.residues
+                    }
 
                     bad_resis = selected_resis - available_resis
                     resis_not_present.update(bad_resis)
                     if len(bad_resis) > 0:
-                        correct_resis = [(residue.resnum, seq1(AA_MAP[residue.resname])) for residue in chain.residues
-                                         if
-                                         residue.resnum in resSeqs]
+                        correct_resis = [
+                            (residue.resnum, seq1(AA_MAP[residue.resname]))
+                            for residue in chain.residues
+                            if residue.resnum in resSeqs
+                        ]
                         correct_resis_resSeq += [res[0] for res in correct_resis]
                         correct_resis_resname += [res[1] for res in correct_resis]
 
@@ -648,13 +689,15 @@ class WorkProject:
                 f"The following residues are not present in the input PDB: {resis_not_present}.\n"
                 f"This is the 'mutating_resname' for the input 'mutating_resSeq' "
                 f"'{correct_resis_resSeq}': {correct_resis_resname}\n"
-                "Don't just copy them, make sure your trying to mutate the right residues.")
+                "Don't just copy them, make sure your trying to mutate the right residues."
+            )
 
         if len(resis_not_present_freesasa) > 0:
             raise ValueError(
                 f"BUG: the following residues are not present according to freesasa: {resis_not_present_freesasa}.\n"
                 f"These are the (resSeq, resname) pairs for chains {mutating_chainID} "
-                f"according to freesasa: {sorted(freesasa_resis, key=lambda x: x[0])}")
+                f"according to freesasa: {sorted(freesasa_resis, key=lambda x: x[0])}"
+            )
 
         # Check residue numbering
         if self.config["md"]["use_tleap"]:
@@ -666,8 +709,8 @@ class WorkProject:
                     pre_resSeq = pre_seg.residues[-1].resnum
                     resSeq = seg.residues[0].resnum
                     assert (
-                                   resSeq - pre_resSeq
-                           ) == 1, f"Non-continuous resSeq ({pre_resSeq}, {resSeq}) between {pre_seg} and {seg}. "
+                        (resSeq - pre_resSeq) == 1
+                    ), f"Non-continuous resSeq ({pre_resSeq}, {resSeq}) between {pre_seg} and {seg}. "
                     "It should be continuous, according to Amber specifications. "
                     "'mutating_resSeq' should follow this same convention."
         else:
@@ -676,7 +719,7 @@ class WorkProject:
                 if segment.segid in chainIDs:
                     first_resSeq = segment.residues[0].resnum
                     assert (
-                            first_resSeq == 1
+                        first_resSeq == 1
                     ), f"First resSeq from chain {segment.segid} is {first_resSeq}. "
                     "It should be 1, according to GROMACS specifications. "
                     "'mutating_resSeq' should follow this same convention."
@@ -762,7 +805,6 @@ class WorkProject:
         self.__track_project__(log)
 
     def update_dags(self) -> None:
-
         for branch in self.epochs[-1].values():
             # Branch DAG:
             try:
@@ -773,7 +815,9 @@ class WorkProject:
 
             # Mutational DAG:
             try:
-                self.project_mut_dag.add_edge(branch.parent.mutation_str(), branch.mutation_str())
+                self.project_mut_dag.add_edge(
+                    branch.parent.mutation_str(), branch.mutation_str()
+                )
             except ValueError:
                 # The parent branch is on the 0 epoch and has no mutation.
                 self.project_mut_dag.add_edge("None", branch.mutation_str())
@@ -810,7 +854,11 @@ class WorkProject:
                 "project_dag": self.project_dag,
                 "project_mut_dag": self.project_mut_dag,
             }
-            assert (len(previous_branches) > 0 and len(current_branches) > 0 and len(top_branches) > 0)
+            assert (
+                len(previous_branches) > 0
+                and len(current_branches) > 0
+                and len(top_branches) > 0
+            )
 
             # Back up tracking.pkl before writing.
             track = Path(self.dir_handle, "tracking.pkl")
@@ -834,7 +882,7 @@ class WorkProject:
     def __draw_dags__(self, out_path: Path) -> None:
         # Try to set a nice plot size. The necessary width may still be underestimated, since the nodes may be
         # continually going to one side, making the necessary width higher, even if the tree-width is not that high.
-        anchos = Counter([int(node.split('-')[0]) for node in self.project_dag.nodes])
+        anchos = Counter([int(node.split("-")[0]) for node in self.project_dag.nodes])
         w = anchos.most_common()[0][1] * 5 + 4
         h = (nx.dag_longest_path_length(self.project_dag) + 1) * 4 + 2
         fig, axes = plt.subplots(1, 2, figsize=(w, h))
@@ -843,20 +891,34 @@ class WorkProject:
         # Branchs graph
         plt.sca(axes[0])
         # For a better display of the branches names.
-        label_remap = {node: node.replace('-', '\n') for node in self.project_dag.nodes}
+        label_remap = {node: node.replace("-", "\n") for node in self.project_dag.nodes}
         dag = nx.relabel_nodes(self.project_dag, label_remap)
         # Adjuste node and plot sizes, so it fits nicely, hopefully.
         one_label = next(iter(label_remap.keys()))
-        node_size = max([len(piece) for piece in one_label.split('\n')]) * 400
+        node_size = max([len(piece) for piece in one_label.split("\n")]) * 400
         # Plot
         pos = nx.drawing.nx_agraph.graphviz_layout(dag, prog="dot")
-        nx.draw(dag, pos, with_labels=True, node_size=node_size, node_color="lightblue", font_size=10)
+        nx.draw(
+            dag,
+            pos,
+            with_labels=True,
+            node_size=node_size,
+            node_color="lightblue",
+            font_size=10,
+        )
 
         # Mutations graph
         plt.sca(axes[1])
         # Plot
         pos = nx.drawing.nx_agraph.graphviz_layout(self.project_mut_dag, prog="dot")
-        nx.draw(self.project_mut_dag, pos, with_labels=True, node_size=4000, node_color="pink", font_size=10)
+        nx.draw(
+            self.project_mut_dag,
+            pos,
+            with_labels=True,
+            node_size=4000,
+            node_color="pink",
+            font_size=10,
+        )
 
         # Remove axes and save.
         axes[0].set_axis_off()

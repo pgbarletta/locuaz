@@ -635,7 +635,8 @@ class WorkProject:
                     bad_resis = selected_resis - available_resis
                     resis_not_present.update(bad_resis)
                     if len(bad_resis) > 0:
-                        correct_resis = [(residue.resnum, seq1(residue.resname)) for residue in chain.residues if
+                        correct_resis = [(residue.resnum, seq1(AA_MAP[residue.resname])) for residue in chain.residues
+                                         if
                                          residue.resnum in resSeqs]
                         correct_resis_resSeq += [res[0] for res in correct_resis]
                         correct_resis_resname += [res[1] for res in correct_resis]

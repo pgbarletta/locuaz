@@ -2,10 +2,12 @@
 History
 =======
 
-0.7.1 (2023-10-)
+0.7.1 (2023-11-)
 ------------------
  * Allow mutating more than 1 site.
  * Add pygraphviz dependency to graph the DAG.
+ * Fix error message when converting 3-letter code AAs into 1-letter code.
+ * Started adding reformat with ruff.
 
 0.7.0 (2023-10-)
 ------------------

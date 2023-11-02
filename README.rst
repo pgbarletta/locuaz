@@ -19,12 +19,17 @@ Looping Uniquely Catered Amino Acid Sequences
 Install
 --------
 
-Create a conda environment YAML file named, for example, ``usr_deps.yaml``:
+Create a conda environment YAML file named, for example, ``usr_deps.yaml``::
 
-.. include:: usr_deps.yaml
-
-   :literal:
-
+    name: locuaz
+    channels:
+      - conda-forge
+    dependencies:
+      - conda-forge::python>=3.10
+      - conda-forge::ambertools>=22.0.0
+      - conda-forge::tensorflow
+      - conda-forge::openbabel
+      - conda-forge::pygraphviz
 
 by running:
 

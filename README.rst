@@ -31,6 +31,7 @@ Create a conda environment YAML file named, for example, ``usr_deps.yaml``:
       - conda-forge::ambertools>=22.0.0
       - conda-forge::tensorflow
       - conda-forge::openbabel
+      - conda-forge::pygraphviz
 
 by running:
 

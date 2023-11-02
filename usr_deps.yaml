@@ -6,3 +6,4 @@ dependencies:
   - conda-forge::ambertools>=22.0.0
   - conda-forge::tensorflow
   - conda-forge::openbabel
+  - conda-forge::pygraphviz

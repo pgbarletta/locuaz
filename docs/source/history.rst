@@ -2,6 +2,10 @@
 History
 =======
 
+0.7.2 (2023-11-)
+------------------
+ * Fix broken install due to pygraphviz being broken on pypi.
+
 0.7.1 (2023-11-)
 ------------------
  * Allow mutating more than 1 site.

@@ -21,17 +21,10 @@ Install
 
 Create a conda environment YAML file named, for example, ``usr_deps.yaml``:
 
-.. code-block:: console
+.. include:: usr_deps.yaml
 
-    name: locuaz
-    channels:
-      - conda-forge
-    dependencies:
-      - conda-forge::python>=3.10
-      - conda-forge::ambertools>=22.0.0
-      - conda-forge::tensorflow
-      - conda-forge::openbabel
-      - conda-forge::pygraphviz
+   :literal:
+
 
 by running:
 

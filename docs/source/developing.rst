@@ -120,3 +120,10 @@ needs to be updated:
 .. _pypi: https://pypi.org/project/locuaz/#files
 .. _instructions: https://conda-forge.org/docs/maintainer/updating_pkgs.html
 
+Modifying the conda dependencies
+--------------------------------
+If at any time there's a change on the conda dependencies, the README also needs
+to be updated:
+
+1. Update ``usr_deps.yaml``
+2. Update the dependencies in ``README.rst``

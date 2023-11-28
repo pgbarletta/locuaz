@@ -86,6 +86,20 @@ pruning
 ^^^^^^^^
 .. code-block:: console
 
+    mutation:
+        mutator: dlpr
+        allowed_nonstandard_residues: [UNL]
+
+ * ``allowed_nonstandard_residues``: *locuaz* cleans up the PDBs that go into the
+   mutator program, so they don't have any non-protein residues that may cause
+   the mutator to error. We have to add our target ligand as an exception to this
+   rule so that it's included in the side-chain optimization that's performed after
+   inserting a mutation.
+
+pruning
+^^^^^^^^
+.. code-block:: console
+
     pruning:
         pruner: metropolis
         kT: 0.593

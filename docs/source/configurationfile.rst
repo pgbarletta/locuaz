@@ -118,6 +118,9 @@ at the already selected site.
 1. ``config['mutation']['mutator']``: check the currently available mutators below.
 2. ``config['mutation']['reconstruct_radius']``: when using the **dlpr** mutator, residues within this radius from
    the mutated residue will get their sidechains reoriented by `DLPacker <https://github.com/nekitmm/DLPacker>`_.
+3. ``config['mutation']['allowed_nonstandard_residues']``: if there're non-protein residues
+   and these are on the optimized interface, they need to be taken into account when
+   optimizing the sidechain of the newly mutated residue. Add their resnames here.
 
 ``config['pruning']``
 ^^^^^^^^^^^^^^^^^^^^^^^^

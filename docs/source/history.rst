@@ -2,6 +2,10 @@
 History
 =======
 
+0.7.3 (2023-11-)
+------------------
+ * Add ``allowed_nonstandard_residues`` to ``mutation`` options.
+
 0.7.2 (2023-11-)
 ------------------
  * Fix broken install due to pygraphviz being broken on pypi.

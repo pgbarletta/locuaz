@@ -16,7 +16,7 @@ class MutatorDLPacker(BaseMutator):
     weights_path: FileHandle
     lib_path: FileHandle
     charges_path: FileHandle
-    allowed_nonstandard_residues : Set[str]
+    allowed_nonstandard_residues: Set[str]
 
     def __init__(
         self,
@@ -38,7 +38,9 @@ class MutatorDLPacker(BaseMutator):
         self.weights_path = FileHandle(Path(bin_dir, "DLPacker_weights.h5"))
         self.lib_path = FileHandle(Path(bin_dir, "library.npz"))
         self.charges_path = FileHandle(Path(bin_dir, "charges.rtp"))
-        if not allowed_nonstandard_residues:
+        if allowed_nonstandard_residues:
+            self.allowed_nonstandard_residues = allowed_nonstandard_residues
+        else:
             self.allowed_nonstandard_residues = set()
 
     def __fit_pdb__(

@@ -309,6 +309,16 @@ mutation:
       min: 1.0
       max: 20.0
       default: 5.0
+    allowed_nonstandard_residues:
+      type: list
+      minlength: 0
+      maxlength: 12
+      schema:
+        type: string
+        minlength: 3
+        maxlength: 4
+      default: [ ]
+
 
 pruning:
   type: dict

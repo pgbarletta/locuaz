@@ -32,6 +32,7 @@ creation:
 
 mutation:
     mutator: dlpr
+    allowed_nonstandard_residues: [UNL]
 
 pruning:
     pruner: metropolis

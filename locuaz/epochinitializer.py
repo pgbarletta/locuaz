@@ -38,7 +38,9 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
     new_epoch = Epoch(old_epoch.id + 1, branches={})
 
     mutator = mutators[config["mutation"]["mutator"]](
-        config["paths"]["mutator"], config["mutation"]["reconstruct_radius"]
+        config["paths"]["mutator"],
+        config["mutation"]["reconstruct_radius"],
+        config["mutation"]["allowed_nonstandard_residues"],
     )
 
     if config.get("creation"):
@@ -63,7 +65,8 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
                 config["creation"],
                 excluded_sites=work_pjct.get_mem_positions(),
                 amber_numbering=config["md"]["use_tleap"],
-                logger=log)
+                logger=log,
+            )
         else:
             # TODO: Deprecate
             mutation_generator_creator = generator(
@@ -73,27 +76,32 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
                 excluded_pos=work_pjct.get_mem_positions(),
                 use_tleap=config["md"]["use_tleap"],
                 logger=log,
-                probe_radius=config["generation"]["probe_radius"])
+                probe_radius=config["generation"]["probe_radius"],
+            )
 
         actual_new_branches = sum(
-            [len(muts) for muts in mutation_generator_creator.values()])
+            [len(muts) for muts in mutation_generator_creator.values()]
+        )
         for old_branch_name, mutations in mutation_generator_creator.items():
             old_branch = old_epoch.top_branches[old_branch_name]
             for mutation in mutations:
                 try:
-                    branch = create_branch(work_pjct.name,
-                                           old_branch,
-                                           mutator=mutator,
-                                           mutation=mutation,
-                                           md_config=config["md"],
-                                           tleap_dir=Path(work_pjct.tleap_dir),
-                                           log=log)
+                    branch = create_branch(
+                        work_pjct.name,
+                        old_branch,
+                        mutator=mutator,
+                        mutation=mutation,
+                        md_config=config["md"],
+                        tleap_dir=Path(work_pjct.tleap_dir),
+                        log=log,
+                    )
                     new_epoch[branch.branch_name] = branch
                     successful_mutations += 1
                 except MutationError:
                     log.warning(
                         f"Mutator failed to mutate {old_branch=} with {mutation=}"
-                        "\nWill try again with another mutation on another branch.")
+                        "\nWill try again with another mutation on another branch."
+                    )
                     continue
             # TODO: check if this works with mutations on different positions
             memorize_mutations(work_pjct, new_epoch, mutations)
@@ -101,20 +109,24 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
             log.info(f"{actual_new_branches} out of {new_branches} branches created.")
             break
         else:
-            log.info(f"Tried to generate {actual_new_branches} new branches, "
-                     f"but only generated {successful_mutations} because of a "
-                     "Mutator error. Will try again.")
+            log.info(
+                f"Tried to generate {actual_new_branches} new branches, "
+                f"but only generated {successful_mutations} because of a "
+                "Mutator error. Will try again."
+            )
     return new_epoch
 
 
-def create_branch(name: str,
-                  old_branch: Branch,
-                  *,
-                  mutator: BaseMutator,
-                  mutation: Mutation,
-                  md_config: Dict[str, Any],
-                  tleap_dir: Path,
-                  log: Logger) -> Branch:
+def create_branch(
+    name: str,
+    old_branch: Branch,
+    *,
+    mutator: BaseMutator,
+    mutation: Mutation,
+    md_config: Dict[str, Any],
+    tleap_dir: Path,
+    log: Logger,
+) -> Branch:
     branch_name, branch_resnames = old_branch.generate_name_resname(mutation)
     epoch_id = old_branch.epoch_id + 1
     work_dir = Path(old_branch.dir_handle).parent
@@ -132,7 +144,8 @@ def create_branch(name: str,
         resnames=branch_resnames,
         resSeqs=old_branch.resSeqs,
         parent=old_branch,
-        mutation=mutation)
+        mutation=mutation,
+    )
 
     init_wt = Path(branch_path, "init_wt.pdb")
     sh.copy(old_pdb, init_wt)
@@ -147,11 +160,13 @@ def create_branch(name: str,
                 branch_path,
                 mutation=mutation,
                 selection_complex=old_branch.complex.top.selection_complex,
-                selection_wations=old_branch.complex.top.selection_not_complex)
+                selection_wations=old_branch.complex.top.selection_not_complex,
+            )
         except AssertionError as e:
             # Mutator failed. This position will still be memorized.
             log.info(
-                f"Mutation of {branch_name} failed. Will try with another one. Backing-up {branch_path} .")
+                f"Mutation of {branch_name} failed. Will try with another one. Backing-up {branch_path} ."
+            )
             print(e, file=sys.stderr)
             failed_branch_path = Path(work_dir, f"failed_{epoch_id}-{branch_name}")
             sh.move(branch_path, failed_branch_path)

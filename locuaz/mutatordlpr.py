@@ -15,12 +15,30 @@ from locuaz.mutatordlp import MutatorDLPacker
 class MutatorDLPackerReconstruct(MutatorDLPacker):
     radius: float
 
-    def __init__(self, bin_dir: Path, radius: float = 5) -> None:
-        super().__init__(bin_dir, radius)
+    def __init__(
+        self,
+        bin_dir: Path,
+        radius: float = 5,
+        allowed_nonstandard_residues: Optional[Set[str]] = None,
+    ) -> None:
+        """
+
+        Parameters
+        ----------
+        bin_dir
+        radius
+        allowed_nonstandard_residues : Optional[set]
+                Any residue not present in AA_MAP or in this set will be discarded
+                from the output PDB. Useful when mutating complexes with ligands as
+                antigens.
+        """
+        super().__init__(bin_dir, radius, allowed_nonstandard_residues)
         self.radius = radius
 
     @staticmethod
-    def __get_bridged_cys__(input_pdb: Union[PDBStructure, Path]) -> Set[Tuple[int, str, str]]:
+    def __get_bridged_cys__(
+        input_pdb: Union[PDBStructure, Path]
+    ) -> Set[Tuple[int, str, str]]:
         u = mda.Universe(str(input_pdb))
 
         from MDAnalysis.analysis import distances
@@ -46,24 +64,38 @@ class MutatorDLPackerReconstruct(MutatorDLPacker):
         return bridged_cys
 
     def __run__(
-            self, input_pdb: Union[PDBStructure, Path], mutation: Mutation
+        self, input_pdb: Union[PDBStructure, Path], mutation: Mutation
     ) -> Tuple[PDBStructure, Set[int]]:
-
         input_pdb_fn = Path(input_pdb)
 
-        dlp = DLPacker(str(input_pdb_fn),
-                       weights_path=Path(self.weights_path),
-                       lib_path=Path(self.lib_path),
-                       charges_path=Path(self.charges_path))
-        dlp.mutate_sequence((mutation.resSeq, mutation.chainID, seq3(mutation.old_aa).upper()),
-                           seq3(mutation.new_aa).upper())
+        dlp = DLPacker(
+            str(input_pdb_fn),
+            weights_path=Path(self.weights_path),
+            lib_path=Path(self.lib_path),
+            charges_path=Path(self.charges_path),
+        )
+        dlp.mutate_sequence(
+            (mutation.resSeq, mutation.chainID, seq3(mutation.old_aa).upper()),
+            seq3(mutation.new_aa).upper(),
+        )
 
         # Get the surrounding residues
-        targets = set(dlp.get_targets(target=(mutation.resSeq, mutation.chainID, seq3(mutation.new_aa).upper()), radius=self.radius))
+        targets = set(
+            dlp.get_targets(
+                target=(
+                    mutation.resSeq,
+                    mutation.chainID,
+                    seq3(mutation.new_aa).upper(),
+                ),
+                radius=self.radius,
+            )
+        )
         # Don't move any cysteines that are forming bridges
         targets.difference_update(self.__get_bridged_cys__(input_pdb_fn))
         out_path = Path(input_pdb_fn.parent, "init_mutated.pdb")
-        dlp.reconstruct_region(targets=list(targets), order='sequence', output_filename=str(out_path))
+        dlp.reconstruct_region(
+            targets=list(targets), order="sequence", output_filename=str(out_path)
+        )
 
         try:
             out_pdb = PDBStructure.from_path(out_path)
@@ -73,13 +105,13 @@ class MutatorDLPackerReconstruct(MutatorDLPacker):
         return out_pdb, targets
 
     def on_pdb(
-            self,
-            input_pdb: PDBStructure,
-            local_dir: Path,
-            *,
-            mutation: Mutation,
-            selection_complex: Optional[str] = None,
-            selection_wations: Optional[str] = None,
+        self,
+        input_pdb: PDBStructure,
+        local_dir: Path,
+        *,
+        mutation: Mutation,
+        selection_complex: Optional[str] = None,
+        selection_wations: Optional[str] = None,
     ) -> PDBStructure:
         # Get the system's box size after the NPT run, to add it later onto the
         # mutated PDB system. The PDB format has less precision for the box parameters
@@ -98,12 +130,20 @@ class MutatorDLPackerReconstruct(MutatorDLPacker):
         try:
             init_mutated_pdb, targets = self.__run__(nonwat_fix_pdb, mutation)
             excluded_res = " or ".join(
-                f"(segid {chainID} and resnum {resSeq})" for resSeq, chainID, resname in targets)
-            init_mutated_pdb = super().__fit_pdb__(init_mutated_pdb, nonwat_fix_pdb, excluded_res)
+                f"(segid {chainID} and resnum {resSeq})"
+                for resSeq, chainID, resname in targets
+            )
+            init_mutated_pdb = super().__fit_pdb__(
+                init_mutated_pdb, nonwat_fix_pdb, excluded_res
+            )
         except AssertionError as e:
             raise e
-        dry_mut_pdb_fn = super().port_mutation(mutated_pdb=init_mutated_pdb, original_pdb=nonwat_pdb,
-                                               mut=mutation, surrounding_residues=targets)
+        dry_mut_pdb_fn = super().port_mutation(
+            mutated_pdb=init_mutated_pdb,
+            original_pdb=nonwat_pdb,
+            mut=mutation,
+            surrounding_residues=targets,
+        )
         # Rejoin the mutated complex with water and ions
         overlapped_pdb_fn = Path(local_dir, "init_overlapped.pdb")
         overlapped_pdb = super().add_water(

@@ -25,28 +25,32 @@ class BaseMutator:
     """
 
     @abstractmethod
-    def __init__(self, bin_dir: Path, radius: float = 5) -> None:
+    def __init__(
+        self,
+        bin_dir: Path,
+        radius: float = 5,
+        allowed_nonstandard_residues: Optional[Set[str]] = None,
+    ) -> None:
         pass
 
     def on_pdb(
-            self,
-            input_pdb: PDBStructure,
-            local_dir: Path,
-            *,
-            mutation: Mutation,
-            selection_complex: Optional[str] = None,
-            selection_wations: Optional[str] = None,
+        self,
+        input_pdb: PDBStructure,
+        local_dir: Path,
+        *,
+        mutation: Mutation,
+        selection_complex: Optional[str] = None,
+        selection_wations: Optional[str] = None,
     ) -> PDBStructure:
         pass
 
     @staticmethod
     def split_solute_solvent(
-            pdb_in: Union[PDBStructure, Path],
-            *,
-            selection_complex: Optional[str] = None,
-            selection_wations: Optional[str] = None,
+        pdb_in: Union[PDBStructure, Path],
+        *,
+        selection_complex: Optional[str] = None,
+        selection_wations: Optional[str] = None,
     ) -> Tuple[PDBStructure, PDBStructure]:
-
         pdb_in_path = Path(pdb_in)
         u = mda.Universe(str(pdb_in_path))
 
@@ -64,20 +68,24 @@ class BaseMutator:
         else:
             u.atoms.select_atoms("not protein").write(str(wation_pdb_fn))  # type: ignore
 
-        return PDBStructure.from_path(nonwat_pdb_fn), PDBStructure.from_path(wation_pdb_fn)
+        return PDBStructure.from_path(nonwat_pdb_fn), PDBStructure.from_path(
+            wation_pdb_fn
+        )
 
-    @staticmethod
-    def fix_pdb(pdb_in: Union[Path, PDBStructure]) -> Path:
+    def fix_pdb(self, pdb_in: Union[Path, PDBStructure]) -> Path:
         """
         Uses AA_MAP to map non-standard amino acids to standard ones (eg: 'CY2' to 'CYS')
         and then removes non-amino acidic molecules (eg: 'ZN' and other ligands).
         This is to prevent mutators from choking on some proteins.
-        Args:
-            pdb_in: input dried PDB without water nor ions which may contain non-standard
-            residues and non-amino acidic molecules
-
-        Returns:
-            Path: PDB without non-amino acidic molecules and with standardized resnames
+        Parameters
+        ----------
+            pdb_in : Union[Path, PDBStructure]
+                input dried PDB without water nor ions which may contain
+                non-standard residues and non-amino acidic molecules
+        Returns
+        -------
+        the output PDB : Path
+            PDB without non-amino acidic molecules and with standardized resnames.
         """
         pdb_in_fn = Path(pdb_in)
         u = mda.Universe(str(pdb_in_fn))
@@ -86,13 +94,15 @@ class BaseMutator:
             try:
                 res.resname = AA_MAP[res.resname]
             except KeyError:
-                not_prot.append(res.resname)
+                if res.resname not in self.allowed_nonstandard_residues:
+                    # Not even an amino acid, removing it.
+                    not_prot.append(res.resname)
         not_prot_sel = " and ".join(f"not resname {res}" for res in not_prot)
 
         pdb_out_fn = Path(pdb_in_fn.parent, "init_nonwat_fix.pdb")
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            if not_prot_sel == '':
+            if not_prot_sel == "":
                 # No non-protein residues
                 u.atoms.write(str(pdb_out_fn))
             else:
@@ -102,9 +112,9 @@ class BaseMutator:
 
     @staticmethod
     def add_water(
-            solute_path: Union[Path, PDBStructure],
-            solvent_path: Union[Path, PDBStructure],
-            out_path: Path,
+        solute_path: Union[Path, PDBStructure],
+        solvent_path: Union[Path, PDBStructure],
+        out_path: Path,
     ) -> PDBStructure:
         u = mda.Universe(str(solute_path))
         v = mda.Universe(str(solvent_path))
@@ -123,9 +133,12 @@ class BaseMutator:
         return PDBStructure.from_path(out_path)
 
     @staticmethod
-    def port_mutation(mutated_pdb: Union[Path, PDBStructure], original_pdb: Union[Path, PDBStructure],
-                      mut: Mutation, surrounding_residues: Optional[Set[Tuple[int, str, str]]] = None
-                      ) -> Path:
+    def port_mutation(
+        mutated_pdb: Union[Path, PDBStructure],
+        original_pdb: Union[Path, PDBStructure],
+        mut: Mutation,
+        surrounding_residues: Optional[Set[Tuple[int, str, str]]] = None,
+    ) -> Path:
         mutated_pdb_fn = Path(mutated_pdb)
         parsero = PDBParser(QUIET=True)
         mut_pdb = parsero.get_structure("foo", file=mutated_pdb_fn)
@@ -157,8 +170,14 @@ class BaseMutator:
 
         return out_path
 
-    def assert_outfile(self, out_file: Union[str, Path, FileHandle], *, stdout: str, stderr: str,
-                       command: str) -> Path:
+    def assert_outfile(
+        self,
+        out_file: Union[str, Path, FileHandle],
+        *,
+        stdout: str,
+        stderr: str,
+        command: str,
+    ) -> Path:
         out_file_path = Path(out_file)
         assert out_file_path.is_file(), f"""{self} error. Can't parse: {out_file_path}
 from:
@@ -172,7 +191,7 @@ and stderr:
 
 
 def memorize_mutations(
-        work_pjct: WorkProject, new_epoch: Epoch, mutations: Iterable[Mutation]
+    work_pjct: WorkProject, new_epoch: Epoch, mutations: Iterable[Mutation]
 ) -> None:
     mutated_positions = [mutation.resSeq for mutation in mutations]
     new_epoch.mutated_positions = set(mutated_positions)

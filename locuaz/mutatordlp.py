@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional, Union, Set
 
 import MDAnalysis as mda
 from MDAnalysis.analysis import align
@@ -16,38 +16,68 @@ class MutatorDLPacker(BaseMutator):
     weights_path: FileHandle
     lib_path: FileHandle
     charges_path: FileHandle
+    allowed_nonstandard_residues : Set[str]
 
-    def __init__(self, bin_dir: Path, radius: float = 5) -> None:
+    def __init__(
+        self,
+        bin_dir: Path,
+        radius: float = 5,
+        allowed_nonstandard_residues: Optional[Set[str]] = None,
+    ) -> None:
+        """
+
+        Parameters
+        ----------
+        bin_dir
+        radius
+        allowed_nonstandard_residues : Optional[set]
+                Any residue not present in AA_MAP or in this set will be discarded
+                from the output PDB. Useful when mutating complexes with ligands as
+                antigens.
+        """
         self.weights_path = FileHandle(Path(bin_dir, "DLPacker_weights.h5"))
         self.lib_path = FileHandle(Path(bin_dir, "library.npz"))
         self.charges_path = FileHandle(Path(bin_dir, "charges.rtp"))
+        if not allowed_nonstandard_residues:
+            self.allowed_nonstandard_residues = set()
 
-    def __fit_pdb__(self, mutated_pdb: Union[Path, PDBStructure],
-                    wt_pdb: Union[Path, PDBStructure], excluded_selection:str) -> Path:
+    def __fit_pdb__(
+        self,
+        mutated_pdb: Union[Path, PDBStructure],
+        wt_pdb: Union[Path, PDBStructure],
+        excluded_selection: str,
+    ) -> Path:
         u = mda.Universe(str(mutated_pdb))
         v = mda.Universe(str(wt_pdb))
 
         align.alignto(u.atoms, v.atoms, select="backbone")
-        align.alignto(u.atoms, v.atoms, select=f"backbone and not ({excluded_selection})")
+        align.alignto(
+            u.atoms, v.atoms, select=f"backbone and not ({excluded_selection})"
+        )
 
         mutated_pdb_fn = Path(mutated_pdb)
-        out_pdb = Path(mutated_pdb_fn.parent, mutated_pdb_fn.stem + "_fit" + mutated_pdb_fn.suffix)
+        out_pdb = Path(
+            mutated_pdb_fn.parent, mutated_pdb_fn.stem + "_fit" + mutated_pdb_fn.suffix
+        )
         u.atoms.write(str(out_pdb))
 
         return out_pdb
 
     def __run__(
-            self, input_pdb: Union[PDBStructure, Path], mutation: Mutation
+        self, input_pdb: Union[PDBStructure, Path], mutation: Mutation
     ) -> PDBStructure:
-
         input_pdb_fn = Path(input_pdb)
 
-        dlp = DLPacker(str(input_pdb_fn),
-                       weights_path=Path(self.weights_path),
-                       lib_path=Path(self.lib_path),
-                       charges_path=Path(self.charges_path))
-        dlp.mutate_residue((mutation.resSeq, mutation.chainID, seq3(mutation.old_aa).upper()),
-                           seq3(mutation.new_aa).upper())
+        dlp = DLPacker(
+            str(input_pdb_fn),
+            weights_path=Path(self.weights_path),
+            lib_path=Path(self.lib_path),
+            charges_path=Path(self.charges_path),
+        )
+        dlp.mutate_residue(
+            (mutation.resSeq, mutation.chainID, seq3(mutation.old_aa).upper()),
+            seq3(mutation.new_aa).upper(),
+        )
 
         out_path = Path(input_pdb_fn.parent, "init_mutated.pdb")
         dlp.save_structure(str(out_path))
@@ -60,13 +90,13 @@ class MutatorDLPacker(BaseMutator):
         return out_pdb
 
     def on_pdb(
-            self,
-            input_pdb: PDBStructure,
-            local_dir: Path,
-            *,
-            mutation: Mutation,
-            selection_complex: Optional[str] = None,
-            selection_wations: Optional[str] = None,
+        self,
+        input_pdb: PDBStructure,
+        local_dir: Path,
+        *,
+        mutation: Mutation,
+        selection_complex: Optional[str] = None,
+        selection_wations: Optional[str] = None,
     ) -> PDBStructure:
         # Get the system's box size after the NPT run, to add it later onto the
         # mutated PDB system. The PDB format has less precision for the box parameters
@@ -84,10 +114,14 @@ class MutatorDLPacker(BaseMutator):
         nonwat_fix_pdb = super().fix_pdb(nonwat_pdb)
         try:
             init_mutated_pdb = self.__run__(nonwat_fix_pdb, mutation)
-            init_mutated_pdb = self.__fit_pdb__(init_mutated_pdb, nonwat_fix_pdb, mutation.get_mda_sel())
+            init_mutated_pdb = self.__fit_pdb__(
+                init_mutated_pdb, nonwat_fix_pdb, mutation.get_mda_sel()
+            )
         except AssertionError as e:
             raise e
-        dry_mut_pdb_fn = super().port_mutation(mutated_pdb=init_mutated_pdb, original_pdb=nonwat_pdb, mut=mutation)
+        dry_mut_pdb_fn = super().port_mutation(
+            mutated_pdb=init_mutated_pdb, original_pdb=nonwat_pdb, mut=mutation
+        )
         # Rejoin the mutated complex with water and ions
         overlapped_pdb_fn = Path(local_dir, "init_overlapped.pdb")
         overlapped_pdb = super().add_water(

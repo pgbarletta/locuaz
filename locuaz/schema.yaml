@@ -160,7 +160,6 @@ creation:
       type: float
       min: 0.1
       max: 4.0
-      dependencies: {sites_interfacing: True}
       default: 1.4
     sites_probability:
       type: string

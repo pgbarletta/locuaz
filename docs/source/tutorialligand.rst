@@ -82,7 +82,7 @@ As we said, we're dealing with a rather small system, so we're going to mutate 2
 sites at the same time and on each branch we're going to try 3 different amino acids
 from 3 different bins so we can sample the solution space quickly.
 
-pruning
+mutation
 ^^^^^^^^
 .. code-block:: console
 
@@ -97,7 +97,7 @@ pruning
    inserting a mutation.
 
 pruning
-^^^^^^^^
+^^^^^^^
 .. code-block:: console
 
     pruning:

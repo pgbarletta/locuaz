@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.mutatordlp &mdash; locuaz 0.7.0 documentation</title>
+  <title>locuaz.mutatordlp &mdash; locuaz 0.7.3 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.7.0
+                0.7.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -99,7 +99,7 @@
              
   <h1>Source code for locuaz.mutatordlp</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Set</span>
 
 <span class="kn">import</span> <span class="nn">MDAnalysis</span> <span class="k">as</span> <span class="nn">mda</span>
 <span class="kn">from</span> <span class="nn">MDAnalysis.analysis</span> <span class="kn">import</span> <span class="n">align</span>
@@ -116,38 +116,70 @@
     <span class="n">weights_path</span><span class="p">:</span> <span class="n">FileHandle</span>
     <span class="n">lib_path</span><span class="p">:</span> <span class="n">FileHandle</span>
     <span class="n">charges_path</span><span class="p">:</span> <span class="n">FileHandle</span>
+    <span class="n">allowed_nonstandard_residues</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bin_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">bin_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+        <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">allowed_nonstandard_residues</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        bin_dir</span>
+<span class="sd">        radius</span>
+<span class="sd">        allowed_nonstandard_residues : Optional[set]</span>
+<span class="sd">                Any residue not present in AA_MAP or in this set will be discarded</span>
+<span class="sd">                from the output PDB. Useful when mutating complexes with ligands as</span>
+<span class="sd">                antigens.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">weights_path</span> <span class="o">=</span> <span class="n">FileHandle</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">bin_dir</span><span class="p">,</span> <span class="s2">&quot;DLPacker_weights.h5&quot;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lib_path</span> <span class="o">=</span> <span class="n">FileHandle</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">bin_dir</span><span class="p">,</span> <span class="s2">&quot;library.npz&quot;</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">charges_path</span> <span class="o">=</span> <span class="n">FileHandle</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">bin_dir</span><span class="p">,</span> <span class="s2">&quot;charges.rtp&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">allowed_nonstandard_residues</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">allowed_nonstandard_residues</span> <span class="o">=</span> <span class="n">allowed_nonstandard_residues</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">allowed_nonstandard_residues</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">__fit_pdb__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mutated_pdb</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">PDBStructure</span><span class="p">],</span>
-                    <span class="n">wt_pdb</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">PDBStructure</span><span class="p">],</span> <span class="n">excluded_selection</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__fit_pdb__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">mutated_pdb</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">PDBStructure</span><span class="p">],</span>
+        <span class="n">wt_pdb</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">PDBStructure</span><span class="p">],</span>
+        <span class="n">excluded_selection</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
         <span class="n">u</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">mutated_pdb</span><span class="p">))</span>
         <span class="n">v</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">wt_pdb</span><span class="p">))</span>
 
         <span class="n">align</span><span class="o">.</span><span class="n">alignto</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">atoms</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">atoms</span><span class="p">,</span> <span class="n">select</span><span class="o">=</span><span class="s2">&quot;backbone&quot;</span><span class="p">)</span>
-        <span class="n">align</span><span class="o">.</span><span class="n">alignto</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">atoms</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">atoms</span><span class="p">,</span> <span class="n">select</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;backbone and not (</span><span class="si">{</span><span class="n">excluded_selection</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="n">align</span><span class="o">.</span><span class="n">alignto</span><span class="p">(</span>
+            <span class="n">u</span><span class="o">.</span><span class="n">atoms</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">atoms</span><span class="p">,</span> <span class="n">select</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;backbone and not (</span><span class="si">{</span><span class="n">excluded_selection</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
 
         <span class="n">mutated_pdb_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">mutated_pdb</span><span class="p">)</span>
-        <span class="n">out_pdb</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">mutated_pdb_fn</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">mutated_pdb_fn</span><span class="o">.</span><span class="n">stem</span> <span class="o">+</span> <span class="s2">&quot;_fit&quot;</span> <span class="o">+</span> <span class="n">mutated_pdb_fn</span><span class="o">.</span><span class="n">suffix</span><span class="p">)</span>
+        <span class="n">out_pdb</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
+            <span class="n">mutated_pdb_fn</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">mutated_pdb_fn</span><span class="o">.</span><span class="n">stem</span> <span class="o">+</span> <span class="s2">&quot;_fit&quot;</span> <span class="o">+</span> <span class="n">mutated_pdb_fn</span><span class="o">.</span><span class="n">suffix</span>
+        <span class="p">)</span>
         <span class="n">u</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">out_pdb</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">out_pdb</span>
 
     <span class="k">def</span> <span class="nf">__run__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">input_pdb</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PDBStructure</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">mutation</span><span class="p">:</span> <span class="n">Mutation</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">input_pdb</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PDBStructure</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">mutation</span><span class="p">:</span> <span class="n">Mutation</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PDBStructure</span><span class="p">:</span>
-
         <span class="n">input_pdb_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">input_pdb</span><span class="p">)</span>
 
-        <span class="n">dlp</span> <span class="o">=</span> <span class="n">DLPacker</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">input_pdb_fn</span><span class="p">),</span>
-                       <span class="n">weights_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weights_path</span><span class="p">),</span>
-                       <span class="n">lib_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lib_path</span><span class="p">),</span>
-                       <span class="n">charges_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charges_path</span><span class="p">))</span>
-        <span class="n">dlp</span><span class="o">.</span><span class="n">mutate_residue</span><span class="p">((</span><span class="n">mutation</span><span class="o">.</span><span class="n">resSeq</span><span class="p">,</span> <span class="n">mutation</span><span class="o">.</span><span class="n">chainID</span><span class="p">,</span> <span class="n">seq3</span><span class="p">(</span><span class="n">mutation</span><span class="o">.</span><span class="n">old_aa</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()),</span>
-                           <span class="n">seq3</span><span class="p">(</span><span class="n">mutation</span><span class="o">.</span><span class="n">new_aa</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+        <span class="n">dlp</span> <span class="o">=</span> <span class="n">DLPacker</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">input_pdb_fn</span><span class="p">),</span>
+            <span class="n">weights_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weights_path</span><span class="p">),</span>
+            <span class="n">lib_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lib_path</span><span class="p">),</span>
+            <span class="n">charges_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charges_path</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">dlp</span><span class="o">.</span><span class="n">mutate_residue</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">mutation</span><span class="o">.</span><span class="n">resSeq</span><span class="p">,</span> <span class="n">mutation</span><span class="o">.</span><span class="n">chainID</span><span class="p">,</span> <span class="n">seq3</span><span class="p">(</span><span class="n">mutation</span><span class="o">.</span><span class="n">old_aa</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()),</span>
+            <span class="n">seq3</span><span class="p">(</span><span class="n">mutation</span><span class="o">.</span><span class="n">new_aa</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span>
+        <span class="p">)</span>
 
         <span class="n">out_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">input_pdb_fn</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;init_mutated.pdb&quot;</span><span class="p">)</span>
         <span class="n">dlp</span><span class="o">.</span><span class="n">save_structure</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">out_path</span><span class="p">))</span>
@@ -160,13 +192,13 @@
         <span class="k">return</span> <span class="n">out_pdb</span>
 
 <div class="viewcode-block" id="MutatorDLPacker.on_pdb"><a class="viewcode-back" href="../../mutators.html#locuaz.mutatordlp.MutatorDLPacker.on_pdb">[docs]</a>    <span class="k">def</span> <span class="nf">on_pdb</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">input_pdb</span><span class="p">:</span> <span class="n">PDBStructure</span><span class="p">,</span>
-            <span class="n">local_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
-            <span class="o">*</span><span class="p">,</span>
-            <span class="n">mutation</span><span class="p">:</span> <span class="n">Mutation</span><span class="p">,</span>
-            <span class="n">selection_complex</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">selection_wations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">input_pdb</span><span class="p">:</span> <span class="n">PDBStructure</span><span class="p">,</span>
+        <span class="n">local_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">mutation</span><span class="p">:</span> <span class="n">Mutation</span><span class="p">,</span>
+        <span class="n">selection_complex</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">selection_wations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PDBStructure</span><span class="p">:</span>
         <span class="c1"># Get the system&#39;s box size after the NPT run, to add it later onto the</span>
         <span class="c1"># mutated PDB system. The PDB format has less precision for the box parameters</span>
@@ -184,10 +216,14 @@
         <span class="n">nonwat_fix_pdb</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">fix_pdb</span><span class="p">(</span><span class="n">nonwat_pdb</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">init_mutated_pdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__run__</span><span class="p">(</span><span class="n">nonwat_fix_pdb</span><span class="p">,</span> <span class="n">mutation</span><span class="p">)</span>
-            <span class="n">init_mutated_pdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fit_pdb__</span><span class="p">(</span><span class="n">init_mutated_pdb</span><span class="p">,</span> <span class="n">nonwat_fix_pdb</span><span class="p">,</span> <span class="n">mutation</span><span class="o">.</span><span class="n">get_mda_sel</span><span class="p">())</span>
+            <span class="n">init_mutated_pdb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fit_pdb__</span><span class="p">(</span>
+                <span class="n">init_mutated_pdb</span><span class="p">,</span> <span class="n">nonwat_fix_pdb</span><span class="p">,</span> <span class="n">mutation</span><span class="o">.</span><span class="n">get_mda_sel</span><span class="p">()</span>
+            <span class="p">)</span>
         <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">e</span>
-        <span class="n">dry_mut_pdb_fn</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">port_mutation</span><span class="p">(</span><span class="n">mutated_pdb</span><span class="o">=</span><span class="n">init_mutated_pdb</span><span class="p">,</span> <span class="n">original_pdb</span><span class="o">=</span><span class="n">nonwat_pdb</span><span class="p">,</span> <span class="n">mut</span><span class="o">=</span><span class="n">mutation</span><span class="p">)</span>
+        <span class="n">dry_mut_pdb_fn</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">port_mutation</span><span class="p">(</span>
+            <span class="n">mutated_pdb</span><span class="o">=</span><span class="n">init_mutated_pdb</span><span class="p">,</span> <span class="n">original_pdb</span><span class="o">=</span><span class="n">nonwat_pdb</span><span class="p">,</span> <span class="n">mut</span><span class="o">=</span><span class="n">mutation</span>
+        <span class="p">)</span>
         <span class="c1"># Rejoin the mutated complex with water and ions</span>
         <span class="n">overlapped_pdb_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">local_dir</span><span class="p">,</span> <span class="s2">&quot;init_overlapped.pdb&quot;</span><span class="p">)</span>
         <span class="n">overlapped_pdb</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_water</span><span class="p">(</span>

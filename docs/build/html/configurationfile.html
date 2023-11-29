@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>YAML configuration file &mdash; locuaz 0.7.1 documentation</title>
+  <title>YAML configuration file &mdash; locuaz 0.7.3 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -36,7 +36,7 @@
             locuaz
           </a>
               <div class="version">
-                0.7.1
+                0.7.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -239,6 +239,9 @@ the probability assigned to each amino acid.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">config['mutation']['mutator']</span></code>: check the currently available mutators below.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">config['mutation']['reconstruct_radius']</span></code>: when using the <strong>dlpr</strong> mutator, residues within this radius from
 the mutated residue will get their sidechains reoriented by <a class="reference external" href="https://github.com/nekitmm/DLPacker">DLPacker</a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config['mutation']['allowed_nonstandard_residues']</span></code>: if there’re non-protein residues
+and these are on the optimized interface, they need to be taken into account when
+optimizing the sidechain of the newly mutated residue. Add their resnames here.</p></li>
 </ol>
 </section>
 <section id="config-pruning">
@@ -581,6 +584,16 @@ when in doubt, given its plain-english syntax. For example, you can check whethe
 <span class="w">      </span><span class="nt">min</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0</span>
 <span class="w">      </span><span class="nt">max</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20.0</span>
 <span class="w">      </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5.0</span>
+<span class="w">    </span><span class="nt">allowed_nonstandard_residues</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">list</span>
+<span class="w">      </span><span class="nt">minlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">      </span><span class="nt">maxlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12</span>
+<span class="w">      </span><span class="nt">schema</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">string</span>
+<span class="w">        </span><span class="nt">minlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">        </span><span class="nt">maxlength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span>
+<span class="w">      </span><span class="nt">default</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="w"> </span><span class="p p-Indicator">]</span>
+
 
 <span class="nt">pruning</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dict</span>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Developing &mdash; locuaz 0.7.1 documentation</title>
+  <title>Developing &mdash; locuaz 0.7.3 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -35,7 +35,7 @@
             locuaz
           </a>
               <div class="version">
-                0.7.1
+                0.7.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -75,6 +75,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Developing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#releasing-a-new-version">Releasing a new version</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#modifying-the-schema">Modifying the schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#modifying-the-conda-dependencies">Modifying the conda dependencies</a></li>
 </ul>
 </li>
 </ul>
@@ -225,6 +226,15 @@ needs to be updated:</p>
 <li><p>The configuration files in the example folders: <code class="docutils literal notranslate"><span class="pre">/simple_tutorial/config_simple.yaml</span></code>,
 <code class="docutils literal notranslate"><span class="pre">/tleap_tutorial/config_nb.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">/ligand_tutorial/config_ligand.yaml</span></code>.
 Then, update these new config files to the onedrive.</p></li>
+</ol>
+</section>
+<section id="modifying-the-conda-dependencies">
+<h2>Modifying the conda dependencies<a class="headerlink" href="#modifying-the-conda-dependencies" title="Permalink to this heading"></a></h2>
+<p>If at any time there’s a change on the conda dependencies, the README also needs
+to be updated:</p>
+<ol class="arabic simple">
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">usr_deps.yaml</span></code></p></li>
+<li><p>Update the dependencies in <code class="docutils literal notranslate"><span class="pre">README.rst</span></code></p></li>
 </ol>
 </section>
 </section>

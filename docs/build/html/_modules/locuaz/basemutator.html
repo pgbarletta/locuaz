@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.basemutator &mdash; locuaz 0.7.0 documentation</title>
+  <title>locuaz.basemutator &mdash; locuaz 0.7.3 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.7.0
+                0.7.3
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -118,35 +118,42 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;BaseMutator offers 4 static methods to help development of new mutators: split_solute_solvent(), fix_pdb(),</span>
 <span class="sd">    port_mutation() and add_water().</span>
 <span class="sd">    A Mutator may output a PDB that has waters overlapping with the newly mutated residue.</span>
-<span class="sd">    Args:</span>
-<span class="sd">        bin_dir (Path): path to the binary file.</span>
-<span class="sd">        radius (float): radius freesasa will use to define the Ag-Ab interface. Default: 5A.</span>
-<span class="sd">    Raises:</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">        bin_dir : Path</span>
+<span class="sd">            path to the binary file.</span>
+<span class="sd">        radius : float</span>
+<span class="sd">            radius freesasa will use to define the Ag-Ab interface. Default: 5A.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bin_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">bin_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+        <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">allowed_nonstandard_residues</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="BaseMutator.on_pdb"><a class="viewcode-back" href="../../mutators.html#locuaz.basemutator.BaseMutator.on_pdb">[docs]</a>    <span class="k">def</span> <span class="nf">on_pdb</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">input_pdb</span><span class="p">:</span> <span class="n">PDBStructure</span><span class="p">,</span>
-            <span class="n">local_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
-            <span class="o">*</span><span class="p">,</span>
-            <span class="n">mutation</span><span class="p">:</span> <span class="n">Mutation</span><span class="p">,</span>
-            <span class="n">selection_complex</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">selection_wations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">input_pdb</span><span class="p">:</span> <span class="n">PDBStructure</span><span class="p">,</span>
+        <span class="n">local_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">mutation</span><span class="p">:</span> <span class="n">Mutation</span><span class="p">,</span>
+        <span class="n">selection_complex</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">selection_wations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PDBStructure</span><span class="p">:</span>
         <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="BaseMutator.split_solute_solvent"><a class="viewcode-back" href="../../mutators.html#locuaz.basemutator.BaseMutator.split_solute_solvent">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">split_solute_solvent</span><span class="p">(</span>
-            <span class="n">pdb_in</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PDBStructure</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
-            <span class="o">*</span><span class="p">,</span>
-            <span class="n">selection_complex</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">selection_wations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">pdb_in</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PDBStructure</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">selection_complex</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">selection_wations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">PDBStructure</span><span class="p">,</span> <span class="n">PDBStructure</span><span class="p">]:</span>
-
         <span class="n">pdb_in_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pdb_in</span><span class="p">)</span>
         <span class="n">u</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pdb_in_path</span><span class="p">))</span>
 
@@ -164,20 +171,26 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">u</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">select_atoms</span><span class="p">(</span><span class="s2">&quot;not protein&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">wation_pdb_fn</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
 
-        <span class="k">return</span> <span class="n">PDBStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">nonwat_pdb_fn</span><span class="p">),</span> <span class="n">PDBStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">wation_pdb_fn</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">PDBStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">nonwat_pdb_fn</span><span class="p">),</span> <span class="n">PDBStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span>
+            <span class="n">wation_pdb_fn</span>
+        <span class="p">)</span></div>
 
-<div class="viewcode-block" id="BaseMutator.fix_pdb"><a class="viewcode-back" href="../../mutators.html#locuaz.basemutator.BaseMutator.fix_pdb">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">fix_pdb</span><span class="p">(</span><span class="n">pdb_in</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">PDBStructure</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<div class="viewcode-block" id="BaseMutator.fix_pdb"><a class="viewcode-back" href="../../mutators.html#locuaz.basemutator.BaseMutator.fix_pdb">[docs]</a>    <span class="k">def</span> <span class="nf">fix_pdb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdb_in</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">PDBStructure</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Uses AA_MAP to map non-standard amino acids to standard ones (eg: &#39;CY2&#39; to &#39;CYS&#39;)</span>
 <span class="sd">        and then removes non-amino acidic molecules (eg: &#39;ZN&#39; and other ligands).</span>
 <span class="sd">        This is to prevent mutators from choking on some proteins.</span>
-<span class="sd">        Args:</span>
-<span class="sd">            pdb_in: input dried PDB without water nor ions which may contain non-standard</span>
-<span class="sd">            residues and non-amino acidic molecules</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            Path: PDB without non-amino acidic molecules and with standardized resnames</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pdb_in : Union[Path, PDBStructure]</span>
+<span class="sd">            input dried PDB without water nor ions which may contain</span>
+<span class="sd">            non-standard residues and non-amino acidic molecules</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        the output PDB : Path</span>
+<span class="sd">            PDB without non-amino acidic molecules and with standardized resnames.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">pdb_in_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pdb_in</span><span class="p">)</span>
         <span class="n">u</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pdb_in_fn</span><span class="p">))</span>
@@ -186,13 +199,15 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">res</span><span class="o">.</span><span class="n">resname</span> <span class="o">=</span> <span class="n">AA_MAP</span><span class="p">[</span><span class="n">res</span><span class="o">.</span><span class="n">resname</span><span class="p">]</span>
             <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                <span class="n">not_prot</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">resname</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">resname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">allowed_nonstandard_residues</span><span class="p">:</span>
+                    <span class="c1"># Not even an amino acid, removing it.</span>
+                    <span class="n">not_prot</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">resname</span><span class="p">)</span>
         <span class="n">not_prot_sel</span> <span class="o">=</span> <span class="s2">&quot; and &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;not resname </span><span class="si">{</span><span class="n">res</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">not_prot</span><span class="p">)</span>
 
         <span class="n">pdb_out_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pdb_in_fn</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;init_nonwat_fix.pdb&quot;</span><span class="p">)</span>
         <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">not_prot_sel</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">not_prot_sel</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
                 <span class="c1"># No non-protein residues</span>
                 <span class="n">u</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pdb_out_fn</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
@@ -202,9 +217,9 @@
 
 <div class="viewcode-block" id="BaseMutator.add_water"><a class="viewcode-back" href="../../mutators.html#locuaz.basemutator.BaseMutator.add_water">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">add_water</span><span class="p">(</span>
-            <span class="n">solute_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">PDBStructure</span><span class="p">],</span>
-            <span class="n">solvent_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">PDBStructure</span><span class="p">],</span>
-            <span class="n">out_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+        <span class="n">solute_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">PDBStructure</span><span class="p">],</span>
+        <span class="n">solvent_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">PDBStructure</span><span class="p">],</span>
+        <span class="n">out_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PDBStructure</span><span class="p">:</span>
         <span class="n">u</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">solute_path</span><span class="p">))</span>
         <span class="n">v</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">solvent_path</span><span class="p">))</span>
@@ -223,9 +238,12 @@
         <span class="k">return</span> <span class="n">PDBStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">out_path</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseMutator.port_mutation"><a class="viewcode-back" href="../../mutators.html#locuaz.basemutator.BaseMutator.port_mutation">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">port_mutation</span><span class="p">(</span><span class="n">mutated_pdb</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">PDBStructure</span><span class="p">],</span> <span class="n">original_pdb</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">PDBStructure</span><span class="p">],</span>
-                      <span class="n">mut</span><span class="p">:</span> <span class="n">Mutation</span><span class="p">,</span> <span class="n">surrounding_residues</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
-                      <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">port_mutation</span><span class="p">(</span>
+        <span class="n">mutated_pdb</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">PDBStructure</span><span class="p">],</span>
+        <span class="n">original_pdb</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="n">PDBStructure</span><span class="p">],</span>
+        <span class="n">mut</span><span class="p">:</span> <span class="n">Mutation</span><span class="p">,</span>
+        <span class="n">surrounding_residues</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
         <span class="n">mutated_pdb_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">mutated_pdb</span><span class="p">)</span>
         <span class="n">parsero</span> <span class="o">=</span> <span class="n">PDBParser</span><span class="p">(</span><span class="n">QUIET</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">mut_pdb</span> <span class="o">=</span> <span class="n">parsero</span><span class="o">.</span><span class="n">get_structure</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">mutated_pdb_fn</span><span class="p">)</span>
@@ -257,8 +275,14 @@
 
         <span class="k">return</span> <span class="n">out_path</span></div>
 
-<div class="viewcode-block" id="BaseMutator.assert_outfile"><a class="viewcode-back" href="../../mutators.html#locuaz.basemutator.BaseMutator.assert_outfile">[docs]</a>    <span class="k">def</span> <span class="nf">assert_outfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">FileHandle</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">stdout</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">stderr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                       <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<div class="viewcode-block" id="BaseMutator.assert_outfile"><a class="viewcode-back" href="../../mutators.html#locuaz.basemutator.BaseMutator.assert_outfile">[docs]</a>    <span class="k">def</span> <span class="nf">assert_outfile</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">out_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">FileHandle</span><span class="p">],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">stdout</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">stderr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
         <span class="n">out_file_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">out_file</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">out_file_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> error. Can&#39;t parse: </span><span class="si">{</span><span class="n">out_file_path</span><span class="si">}</span>
 <span class="s2">from:</span>
@@ -272,7 +296,7 @@
 
 
 <div class="viewcode-block" id="memorize_mutations"><a class="viewcode-back" href="../../mutators.html#locuaz.basemutator.memorize_mutations">[docs]</a><span class="k">def</span> <span class="nf">memorize_mutations</span><span class="p">(</span>
-        <span class="n">work_pjct</span><span class="p">:</span> <span class="n">WorkProject</span><span class="p">,</span> <span class="n">new_epoch</span><span class="p">:</span> <span class="n">Epoch</span><span class="p">,</span> <span class="n">mutations</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Mutation</span><span class="p">]</span>
+    <span class="n">work_pjct</span><span class="p">:</span> <span class="n">WorkProject</span><span class="p">,</span> <span class="n">new_epoch</span><span class="p">:</span> <span class="n">Epoch</span><span class="p">,</span> <span class="n">mutations</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Mutation</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">mutated_positions</span> <span class="o">=</span> <span class="p">[</span><span class="n">mutation</span><span class="o">.</span><span class="n">resSeq</span> <span class="k">for</span> <span class="n">mutation</span> <span class="ow">in</span> <span class="n">mutations</span><span class="p">]</span>
     <span class="n">new_epoch</span><span class="o">.</span><span class="n">mutated_positions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">mutated_positions</span><span class="p">)</span>

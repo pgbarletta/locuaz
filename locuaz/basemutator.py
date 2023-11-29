@@ -155,7 +155,11 @@ class BaseMutator:
         if surrounding_residues:
             for resSeq, chainID, resname in surrounding_residues:
                 new_segment = new_model[chainID]
-                new_aa = new_segment.child_dict[(" ", resSeq, " ")]
+                try:
+                    new_aa = new_segment.child_dict[(" ", resSeq, " ")]
+                except KeyError:
+                    # if the residue is not an amino acid, BioPDB names it this way.
+                    new_aa = new_segment.child_dict[(f"H_{resname}", resSeq, " ")]
 
                 segment = model[chainID]
                 first_resSeq = segment.child_list[0].id[1]

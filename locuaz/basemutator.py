@@ -18,10 +18,13 @@ class BaseMutator:
     """BaseMutator offers 4 static methods to help development of new mutators: split_solute_solvent(), fix_pdb(),
     port_mutation() and add_water().
     A Mutator may output a PDB that has waters overlapping with the newly mutated residue.
-    Args:
-        bin_dir (Path): path to the binary file.
-        radius (float): radius freesasa will use to define the Ag-Ab interface. Default: 5A.
-    Raises:
+    Parameters
+    ----------
+        bin_dir : Path
+            path to the binary file.
+        radius : float
+            radius freesasa will use to define the Ag-Ab interface. Default: 5A.
+
     """
 
     @abstractmethod
@@ -77,11 +80,13 @@ class BaseMutator:
         Uses AA_MAP to map non-standard amino acids to standard ones (eg: 'CY2' to 'CYS')
         and then removes non-amino acidic molecules (eg: 'ZN' and other ligands).
         This is to prevent mutators from choking on some proteins.
+
         Parameters
         ----------
-            pdb_in : Union[Path, PDBStructure]
-                input dried PDB without water nor ions which may contain
-                non-standard residues and non-amino acidic molecules
+        pdb_in : Union[Path, PDBStructure]
+            input dried PDB without water nor ions which may contain
+            non-standard residues and non-amino acidic molecules
+
         Returns
         -------
         the output PDB : Path

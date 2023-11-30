@@ -2,6 +2,10 @@
 History
 =======
 
+0.7.4.2 (2023-11-)
+------------------
+ * Fix NUMA regions.
+
 0.7.4.1 (2023-11-)
 ------------------
  * Allow more NUMA regions than GPUs available.

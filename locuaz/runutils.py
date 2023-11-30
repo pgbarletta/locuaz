@@ -387,10 +387,10 @@ def auto_md_params(
     # Leave 2 threads between each branch, for the MPI process
     omp_threads = threads_per_branch - 2
     # Get the actual number of branches we can run parallely on each GPU
-    nbranches_per_gpu = len(numa_threads) // threads_per_branch
+    nbranches_per_gpu_per_numa = len(numa_threads) // threads_per_branch
     # Get the pinoffsets for a NUMA section
     numa_pin_offsets = np.array(
-        numa_threads[0:-1:threads_per_branch][0:nbranches_per_gpu]
+        numa_threads[0:-1:threads_per_branch][0:nbranches_per_gpu_per_numa]
     )
     # And now all of them:
     numa_step = len(all_threads) // numa_regions
@@ -401,9 +401,9 @@ def auto_md_params(
     )
     # Get the actual number of branches that could be run in parallel.
     # ``nbranches_parallel`` may overestimate the actual number of branches that will be run in parallel.
-    # Eg: ``nbranches=7``, ``gpus = 4``, ``nbranches_per_gpu = 2`` will give a ``nbranches_parallel=8``.
+    # Eg: ``nbranches=7``, ``gpus = 4``, ``nbranches_per_gpu_per_numa = 2`` will give a ``nbranches_parallel=8``.
     # The first 3 GPUs will be running 2 branches at the same time, and the fourth one just one.
-    nbranches_parallel = nbranches_per_gpu * ngpus
+    nbranches_parallel = numa_regions * nbranches_per_gpu_per_numa * ngpus
     #  Finally, repeat the pin offsets in case we have to run more branches that we can run simultaneously.
     nbr_of_rounds = ceil(nbranches / nbranches_parallel)
     pin_offsets = pin_offsets * nbr_of_rounds

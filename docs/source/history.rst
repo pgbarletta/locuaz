@@ -5,6 +5,7 @@ History
 0.7.4.4 (2023-11-)
 ------------------
  * Remove ``OMP_NUM_THREADS`` environment variable.
+ * Fix auto_md_params().
 
 0.7.4.3 (2023-11-)
 ------------------

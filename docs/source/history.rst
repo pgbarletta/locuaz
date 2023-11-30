@@ -2,6 +2,10 @@
 History
 =======
 
+0.7.4.1 (2023-11-)
+------------------
+ * Allow more NUMA regions than GPUs available.
+
 0.7.4 (2023-11-)
 ------------------
  * Fix bug in creation options schema.

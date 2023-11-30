@@ -613,6 +613,6 @@ def main() -> Tuple[Dict, bool]:
             os.environ["OMP_NUM_THREADS"] = omp_procs_str
     except KeyError:
         # User asked for MPS.
-        pass
+        os.environ["OMP_NUM_THREADS"] = ""
 
     return config, starts

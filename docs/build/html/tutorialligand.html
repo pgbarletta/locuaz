@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tutorial: optimizing an antibody against a ligand &mdash; locuaz 0.7.3 documentation</title>
+  <title>Tutorial: optimizing an antibody against a ligand &mdash; locuaz 0.7.4 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -36,7 +36,7 @@
             locuaz
           </a>
               <div class="version">
-                0.7.3
+                0.7.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -156,7 +156,7 @@ check the <a class="reference internal" href="faq.html#faq1"><span class="std st
 <p>We will focus on the new options that didn’t show up on the previous tutorials.</p>
 <section id="protocol">
 <h3>protocol<a class="headerlink" href="#protocol" title="Permalink to this heading"></a></h3>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">paths:</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">protocol:</span>
 <span class="go">    epochs: 10</span>
 <span class="go">    new_branches: 3</span>
 <span class="go">    constant_width: false</span>
@@ -189,17 +189,18 @@ from 3 different bins so we can sample the solution space quickly.</p>
 </section>
 <section id="mutation">
 <h3>mutation<a class="headerlink" href="#mutation" title="Permalink to this heading"></a></h3>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">   mutation:</span>
-<span class="go">       mutator: dlpr</span>
-<span class="go">       allowed_nonstandard_residues: [UNL]</span>
-
-<span class="go">* ``allowed_nonstandard_residues``: *locuaz* cleans up the PDBs that go into the</span>
-<span class="go">  mutator program, so they don&#39;t have any non-protein residues that may cause</span>
-<span class="go">  the mutator to error. We have to add our target ligand as an exception to this</span>
-<span class="go">  rule so that it&#39;s included in the side-chain optimization that&#39;s performed after</span>
-<span class="go">  inserting a mutation.</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mutation:</span>
+<span class="go">    mutator: dlpr</span>
+<span class="go">    allowed_nonstandard_residues: [UNL]</span>
 </pre></div>
 </div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">allowed_nonstandard_residues</span></code>: <em>locuaz</em> cleans up the PDBs that go into the
+mutator program, so they don’t have any non-protein residues that may cause
+the mutator to error. We have to add our target ligand as an exception to this
+rule so that it’s included in the side-chain optimization that’s performed after
+inserting a mutation.</p></li>
+</ul>
 </section>
 <section id="pruning">
 <h3>pruning<a class="headerlink" href="#pruning" title="Permalink to this heading"></a></h3>

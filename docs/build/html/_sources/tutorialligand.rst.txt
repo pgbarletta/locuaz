@@ -52,7 +52,7 @@ protocol
 ^^^^^^^^
 .. code-block:: console
 
-    paths:
+    protocol:
         epochs: 10
         new_branches: 3
         constant_width: false
@@ -90,11 +90,11 @@ mutation
         mutator: dlpr
         allowed_nonstandard_residues: [UNL]
 
- * ``allowed_nonstandard_residues``: *locuaz* cleans up the PDBs that go into the
-   mutator program, so they don't have any non-protein residues that may cause
-   the mutator to error. We have to add our target ligand as an exception to this
-   rule so that it's included in the side-chain optimization that's performed after
-   inserting a mutation.
+* ``allowed_nonstandard_residues``: *locuaz* cleans up the PDBs that go into the
+  mutator program, so they don't have any non-protein residues that may cause
+  the mutator to error. We have to add our target ligand as an exception to this
+  rule so that it's included in the side-chain optimization that's performed after
+  inserting a mutation.
 
 pruning
 ^^^^^^^

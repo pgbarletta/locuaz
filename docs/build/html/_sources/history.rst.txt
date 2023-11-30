@@ -2,6 +2,12 @@
 History
 =======
 
+0.7.4 (2023-12-)
+------------------
+ * Fix bug in creation options schema.
+ * Fix bug ``BaseMutator.port_mutation()`` when a non standard residue is surrounding
+   the mutated residue.
+
 0.7.3 (2023-11-)
 ------------------
  * Add ``allowed_nonstandard_residues`` to ``mutation`` options.

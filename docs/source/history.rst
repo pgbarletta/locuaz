@@ -2,6 +2,10 @@
 History
 =======
 
+0.7.4.3 (2023-11-)
+------------------
+ * Force set omp threads environment variabel at each MD run.
+
 0.7.4.2 (2023-11-)
 ------------------
  * Fix NUMA regions.

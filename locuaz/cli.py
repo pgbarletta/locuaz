@@ -22,7 +22,13 @@ from locuaz.primitives import UserInputError
 
 def get_ngpus():
     try:
-        p = sp.run("nvidia-smi -L | wc -l", stdout=sp.PIPE, stderr=sp.PIPE, shell=True, text=True)
+        p = sp.run(
+            "nvidia-smi -L | wc -l",
+            stdout=sp.PIPE,
+            stderr=sp.PIPE,
+            shell=True,
+            text=True,
+        )
         ngpus = int(p.stdout)
         assert ngpus != 0
     except (ValueError, AssertionError, Exception):
@@ -67,7 +73,9 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
 
     # Check mode
     if mode != config["main"]["mode"]:
-        warn(f"Warning, CLI input {mode} doesn't match {config['main']['mode']}. Overwriting option.")
+        warn(
+            f"Warning, CLI input {mode} doesn't match {config['main']['mode']}. Overwriting option."
+        )
         config["main"]["mode"] = mode
 
     config["main"]["debug"] = debug
@@ -79,7 +87,7 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
         root_dir = Path(config["paths"]["work"]).parent
         assert root_dir.is_dir(), f"Invalid input work dir: {config['paths']['work']}"
         assert (
-                mode == "evolve"
+            mode == "evolve"
         ), "`--mode` is not set to 'evolve', a `work` folder with valid branches is needed."
 
         start = True
@@ -88,49 +96,78 @@ def validate_input(raw_config: Dict, mode: str, debug: bool) -> Tuple[Dict, bool
     if config["md"].get("use_tleap", False):
         assert "tleap" in config["paths"], f"Specify path to tleap files."
         assert (
-                get_dir_size(config["paths"]["tleap"]) < 10
+            get_dir_size(config["paths"]["tleap"]) < 10
         ), f"tleap dir is heavier than 10Mb. Choose a dir with only the necessary tleap files."
         warn(
-            "tleap script will be used. Options: 'water_type' and 'force_field' will be ignored.")
+            "tleap script will be used. Options: 'water_type' and 'force_field' will be ignored."
+        )
 
     # Check matching lengths of mutating_resSeq and mutating_resname.
-    for resnames, resSeqs in zip(config["binder"]["mutating_resname"], config["binder"]["mutating_resSeq"]):
-        assert len(resnames) == len(resSeqs), f"mutating_resname({resnames}) and mutating_resSeq ({resSeqs}) have " \
-                                              f"different lengths: {len(resnames)} and {len(resSeqs)}, respectively."
+    for resnames, resSeqs in zip(
+        config["binder"]["mutating_resname"], config["binder"]["mutating_resSeq"]
+    ):
+        assert len(resnames) == len(resSeqs), (
+            f"mutating_resname({resnames}) and mutating_resSeq ({resSeqs}) have "
+            f"different lengths: {len(resnames)} and {len(resSeqs)}, respectively."
+        )
 
     # Check creation and check gmxmmpbsa options
     # TODO: deprecate
     if config.get("creation"):
-        assert not config.get("generation"), "Cannot set 'generation' and 'creation' at the same time."
+        assert not config.get(
+            "generation"
+        ), "Cannot set 'generation' and 'creation' at the same time."
         check_mutation_generation(config)
     else:
-        warn("Mutation Generator will be deprecated in 0.8.0. "
-             "Use Mutation Creator instead.")
+        warn(
+            "Mutation Generator will be deprecated in 0.8.0. "
+            "Use Mutation Creator instead."
+        )
         # Check legacy generation and gmxmmpbsa options
         check_gmxmmpbsa_legacy(config)
 
     # Check consensus threshold and scorers
     if config["pruning"]["pruner"] == "consensus":
-        assert "consensus_threshold" in config["pruning"], "Set 'consensus_threshold' when using 'consensus' pruner."
+        assert (
+            "consensus_threshold" in config["pruning"]
+        ), "Set 'consensus_threshold' when using 'consensus' pruner."
         t = config["pruning"]["consensus_threshold"]
         n = len(config["scoring"]["scorers"])
-        assert t <= n, f"Threshold ({t}) should be equal or lower than the number of scorers ({n})"
+        assert (
+            t <= n
+        ), f"Threshold ({t}) should be equal or lower than the number of scorers ({n})"
     elif config["pruning"]["pruner"] == "metropolis":
-        assert len(config["scoring"]["scorers"]) == 1, f"Can only use 1 scoring function when pruner is 'metropolis'."
-    if "autodockvina" in config["scoring"]["scorers"] and len(config["scoring"]["allowed_nonstandard_residues"]) == 0:
-        warn("Selected 'autodockvina', but 'allowed_nonstandard_residues' is empty. "
-             "Make sure no residue is removed from the PDB files used for scoring.")
+        assert (
+            len(config["scoring"]["scorers"]) == 1
+        ), f"Can only use 1 scoring function when pruner is 'metropolis'."
+    if (
+        "autodockvina" in config["scoring"]["scorers"]
+        and len(config["scoring"]["allowed_nonstandard_residues"]) == 0
+    ):
+        warn(
+            "Selected 'autodockvina', but 'allowed_nonstandard_residues' is empty. "
+            "Make sure no residue is removed from the PDB files used for scoring."
+        )
 
     # Check MD related options
     numa_regions = config["md"]["numa_regions"]
     ngpus = get_ngpus()
     all_threads = sorted(list(os.sched_getaffinity(0)))
-    assert numa_regions < len(all_threads), \
-        f"There can't be more NUMA regions than threads available. {numa_regions=} -- {all_threads=}"
+    assert (
+        numa_regions < len(all_threads)
+    ), f"There can't be more NUMA regions than threads available. {numa_regions=} -- {all_threads=}"
     if config["md"]["mps"]:
-        p = sp.run("nvidia-cuda-mps-control -d", stdout=sp.PIPE, stderr=sp.PIPE, shell=True, text=True)
+        p = sp.run(
+            "nvidia-cuda-mps-control -d",
+            stdout=sp.PIPE,
+            stderr=sp.PIPE,
+            shell=True,
+            text=True,
+        )
         if "command not found" in p.stderr:
-            raise RuntimeError(f"Could not start the MPS server. Error msg: {p.stderr}. Aborting.")
+            raise RuntimeError(
+                f"Could not start the MPS server. Error msg: {p.stderr}. Aborting."
+            )
 
     return config, start
 
@@ -143,7 +180,7 @@ def backup_branch(it_fn: Union[str, Path]) -> None:
 
 
 def append_branches(
-        sorted_iters: PriorityQueue, branches: List, prev_epoch: int
+    sorted_iters: PriorityQueue, branches: List, prev_epoch: int
 ) -> str:
     if sorted_iters.empty():
         return ""
@@ -213,8 +250,11 @@ def is_not_epoch_0(branches: Union[List[str], List[Path]], starting_epoch: int):
     return True
 
 
-def lacks_branches(current_branches: Union[List[str], List[Path]],
-                   top_branches: Union[List[str], List[Path]], config: Dict[str, Any]) -> bool:
+def lacks_branches(
+    current_branches: Union[List[str], List[Path]],
+    top_branches: Union[List[str], List[Path]],
+    config: Dict[str, Any],
+) -> bool:
     """
     Checks the integrity of the current epoch. This prevents restart errors after the protocol was interrupted
     during the initialization of new epochs, due to missing branches or incomplete branches (branch wasn't fully
@@ -263,9 +303,16 @@ def lacks_branches(current_branches: Union[List[str], List[Path]],
             tpr_file = Path(branch_path, config["main"]["name"] + ".tpr")
 
             try:
-                assert pdb_file.is_file() and gro_file.is_file() and zip_file.is_file() and tpr_file.is_file()
+                assert (
+                    pdb_file.is_file()
+                    and gro_file.is_file()
+                    and zip_file.is_file()
+                    and tpr_file.is_file()
+                )
             except AssertionError:
-                warn(f"Branch {branch_fn} is incomplete. Will back up the whole epoch and generate it again.")
+                warn(
+                    f"Branch {branch_fn} is incomplete. Will back up the whole epoch and generate it again."
+                )
                 for branch_fn2 in current_branches:
                     backup_branch(Path(config["paths"]["work"], branch_fn2))
 
@@ -274,7 +321,9 @@ def lacks_branches(current_branches: Union[List[str], List[Path]],
     return False
 
 
-def read_key_from_tracking_file(config: Dict[str, Any], tracking: Dict[str, Any], attr: str) -> Dict[str, Any]:
+def read_key_from_tracking_file(
+    config: Dict[str, Any], tracking: Dict[str, Any], attr: str
+) -> Dict[str, Any]:
     try:
         config[attr] = tracking[attr]
     except (Exception,):
@@ -297,33 +346,45 @@ def get_tracking_files(config: Dict) -> bool:
         top_branches = get_valid_branch_dirs(tracking["top_branches"], config)
 
         if lacks_branches(current_branches, top_branches, config):
-            warn("Will ignore the tracking file. The current branches field is invalid.")
+            warn(
+                "Will ignore the tracking file. The current branches field is invalid."
+            )
             return False
 
         config["paths"]["previous_branches"] = previous_branches
         config["paths"]["current_branches"] = current_branches
         config["paths"]["top_branches"] = top_branches
-        config["misc"]["epoch_mutated_positions"] = set(tracking["epoch_mutated_positions"])
+        config["misc"]["epoch_mutated_positions"] = set(
+            tracking["epoch_mutated_positions"]
+        )
 
         if "memory_positions" in config["protocol"]:
-            warn(f"Tracking file's 'memory_positions' ignored: {tracking['memory_positions']}.\n"
-                 f"Using input config 'memory_positions' instead: {config['protocol']['memory_positions']}")
+            warn(
+                f"Tracking file's 'memory_positions' ignored: {tracking['memory_positions']}.\n"
+                f"Using input config 'memory_positions' instead: {config['protocol']['memory_positions']}"
+            )
         else:
             config["protocol"]["memory_positions"] = tracking["memory_positions"]
 
         if "failed_memory_positions" in config["protocol"]:
-            warn(f"Tracking file's 'failed_memory_positions' ignored: {tracking['failed_memory_positions']}.\n"
-                 "Using input config 'failed_memory_positions' instead: "
-                 f"{config['protocol']['failed_memory_positions']}")
+            warn(
+                f"Tracking file's 'failed_memory_positions' ignored: {tracking['failed_memory_positions']}.\n"
+                "Using input config 'failed_memory_positions' instead: "
+                f"{config['protocol']['failed_memory_positions']}"
+            )
         else:
-            config["protocol"]["failed_memory_positions"] = tracking["failed_memory_positions"]
+            config["protocol"]["failed_memory_positions"] = tracking[
+                "failed_memory_positions"
+            ]
 
         # Read options related to the DAGs
         for key in ("project_dag", "project_mut_dag", "mutations"):
             config = read_key_from_tracking_file(config, tracking, key)
 
     except (Exception,):
-        warn("Will ignore the tracking file. It is in an invalid state with respect to the working dir.")
+        warn(
+            "Will ignore the tracking file. It is in an invalid state with respect to the working dir."
+        )
         return False
 
     return True
@@ -361,24 +422,33 @@ def set_branches(config: Dict) -> Dict:
         return config
     raise ValueError("No valid branches in work_dir. Aborting.")
 
+
 # TODO: deprecate
 def check_gmxmmpbsa_legacy(config: Dict) -> None:
     if generation_config := config.get("generation"):
         if generation_config["generator"] == "SPM4gmxmmpbsa":
             if "gmxmmpbsa" not in config["scoring"]["scorers"]:
-                print(f"'gmxmmbpsa' function is necessary to use the 'SPM4mmpbsa' mutator",
-                      flush=True, file=sys.stderr)
+                print(
+                    f"'gmxmmbpsa' function is necessary to use the 'SPM4mmpbsa' mutator",
+                    flush=True,
+                    file=sys.stderr,
+                )
                 raise UserInputError
 
-            with open(Path(config["paths"]["scorers"], "gmxmmpbsa", "gmxmmpbsa"), 'r') as file:
+            with open(
+                Path(config["paths"]["scorers"], "gmxmmpbsa", "gmxmmpbsa"), "r"
+            ) as file:
                 for line in file:
                     if "idecomp" in line:
                         return
                     else:
                         continue
-                print(f"Input 'gmxmmbpsa' is not performing 'idecomp' residue decomposition. "
-                      "This is a prerequisite for the SPM4gmxmmpbsa Mutation Generator.",
-                      flush=True, file=sys.stderr)
+                print(
+                    f"Input 'gmxmmbpsa' is not performing 'idecomp' residue decomposition. "
+                    "This is a prerequisite for the SPM4gmxmmpbsa Mutation Generator.",
+                    flush=True,
+                    file=sys.stderr,
+                )
                 raise UserInputError
 
 
@@ -392,43 +462,76 @@ def check_mutation_generation(config: Dict[str, Any]) -> None:
 def check_sites_mmpbsa(config: Dict) -> None:
     if config["creation"]["sites_probability"] == "mmpbsa":
         if "gmxmmpbsa" not in config["scoring"]["scorers"]:
-            print(f"'gmxmmbpsa' function is necessary to use the mmpbsa "
-                  "probability distribution.", flush=True, file=sys.stderr)
+            print(
+                f"'gmxmmbpsa' function is necessary to use the mmpbsa "
+                "probability distribution.",
+                flush=True,
+                file=sys.stderr,
+            )
             raise UserInputError
-        with open(Path(config["paths"]["scorers"], "gmxmmpbsa", "gmxmmpbsa"), 'r') as file:
+        with open(
+            Path(config["paths"]["scorers"], "gmxmmpbsa", "gmxmmpbsa"), "r"
+        ) as file:
             for line in file:
                 if "idecomp" in line:
                     return
                 else:
                     continue
-            print(f"Input 'gmxmmbpsa' is not performing 'idecomp' residue "
-                  "decomposition. This is a prerequisite for the gmxmmpbsa "
-                  "probability distribution.", flush=True, file=sys.stderr)
+            print(
+                f"Input 'gmxmmbpsa' is not performing 'idecomp' residue "
+                "decomposition. This is a prerequisite for the gmxmmpbsa "
+                "probability distribution.",
+                flush=True,
+                file=sys.stderr,
+            )
             raise UserInputError
 
 
 def check_bins(config: Dict) -> None:
     if bins := config["creation"].get("aa_bins"):
-        bins = [ list(bin) for bin in bins ]
-        aas = {'D', 'E', 'S', 'T', 'R', 'N', 'Q', 'H', 'K', 'A', 'G',
-                      'I', 'M', 'L', 'V', 'P', 'F', 'W', 'Y', 'C'}
-        missing_aas = aas.symmetric_difference(
-            set(chain.from_iterable(bins)))
-        if len(missing_aas) != 0 and missing_aas != {'C'}:
+        bins = [list(bin) for bin in bins]
+        aas = {
+            "D",
+            "E",
+            "S",
+            "T",
+            "R",
+            "N",
+            "Q",
+            "H",
+            "K",
+            "A",
+            "G",
+            "I",
+            "M",
+            "L",
+            "V",
+            "P",
+            "F",
+            "W",
+            "Y",
+            "C",
+        }
+        missing_aas = aas.symmetric_difference(set(chain.from_iterable(bins)))
+        if len(missing_aas) != 0 and missing_aas != {"C"}:
             raise ValueError(
                 f'Invalid input "aa_bins": {bins}\n'
-                f'Missing amino acids: {missing_aas}\n'
-                f'Enter all amino acids.')
+                f"Missing amino acids: {missing_aas}\n"
+                f"Enter all amino acids."
+            )
         if len(bins) < 2 and config["creation"]["aa_bins_criteria"] == "without":
-            raise UserInputError(f"Cannot set 'aa_bins_criteria' to exclude "
-                                 "with just 1 bin.")
+            raise UserInputError(
+                f"Cannot set 'aa_bins_criteria' to exclude " "with just 1 bin."
+            )
         config["creation"]["aa_bins"] = bins
     else:
         # Cysteine is not included.
-        config["creation"]["aa_bins"] = [['D', 'E', 'S', 'T'],
-                                         ['R', 'N', 'Q', 'H', 'K'],
-                                         ['A', 'G', 'I', 'M', 'L', 'V'],
-                                         ['P', 'F', 'W', 'Y', 'C']]
+        config["creation"]["aa_bins"] = [
+            ["D", "E", "S", "T"],
+            ["R", "N", "Q", "H", "K"],
+            ["A", "G", "I", "M", "L", "V"],
+            ["P", "F", "W", "Y", "C"],
+        ]
         warn(f'Using default "aa_bins": {config["creation"]["aa_bins"]}')
 
 
@@ -438,8 +541,10 @@ def check_custom_probability(config: Dict) -> None:
         try:
             assert_almost_equal(1.0, pbbty, decimal=2)
         except AssertionError as e:
-            raise UserInputError("Probabilites from 'aa_probability_custom' "
-                                 f'must add up to 1. It adds up to: {pbbty}.') from e
+            raise UserInputError(
+                "Probabilites from 'aa_probability_custom' "
+                f"must add up to 1. It adds up to: {pbbty}."
+            ) from e
 
 
 def set_statistics(config: Dict) -> None:
@@ -559,14 +664,19 @@ def main() -> Tuple[Dict, bool]:
     """Console script for locuaz."""
     simplefilter("default")
     parser = argparse.ArgumentParser()
-    parser.add_argument("config_file", help="File containing all the necessary parameters to run the protocol")
     parser.add_argument(
-        "-m", "--mode",
+        "config_file",
+        help="File containing all the necessary parameters to run the protocol",
+    )
+    parser.add_argument(
+        "-m",
+        "--mode",
         help="Choose whether to start/restart an evolution protocol or just perform a single task.",
         default="evolve",
         type=str,
         required=False,
-        choices=("evolve", "run", "run_npt", "score"))
+        choices=("evolve", "run", "run_npt", "score"),
+    )
     parser.add_argument("--debug", help="Set/unset debug mode.", action="store_true")
     args = parser.parse_args()
 
@@ -589,7 +699,8 @@ def main() -> Tuple[Dict, bool]:
             print(
                 "Will try to get the previous branches, the current branches and the memory of the "
                 "last mutated positions from the work dir. Memory of failed mutations won't be loaded.",
-                flush=True)
+                flush=True,
+            )
             config = set_branches(config)
             config = set_empty_dags(config)
             # Set up the memory
@@ -603,15 +714,10 @@ def main() -> Tuple[Dict, bool]:
             else:
                 config["misc"]["epoch_mutated_positions"] = set()
 
-    # Set up environment
+    # Make sure OMP_NUM_THREADS doens't bother
     try:
-        omp_procs_str = str(config["md"]["omp_procs"])
-        os.environ["OMP_PLACES"] = "threads"
-        if os.environ.get("OMP_NUM_THREADS", "") != omp_procs_str:
-            warn(f"Setting 'OMP_NUM_THREADS' environment variable to input 'omp_procs' {omp_procs_str}")
-            os.environ["OMP_NUM_THREADS"] = omp_procs_str
+        del os.environ["OMP_NUM_THREADS"]
     except KeyError:
-        # User asked for MPS.
-        os.environ["OMP_NUM_THREADS"] = ""
+        pass
 
     return config, starts

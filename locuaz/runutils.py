@@ -176,8 +176,6 @@ class MDrun:
         comando_md += f" -ntmpi {self.num_threads_mpi} -ntomp {self.num_threads_omp}"
 
         try:
-            # Force set the number of OMP threads
-            os.environ["OMP_NUM_THREADS"] = str(self.num_threads_omp)
             p = sp.run(
                 comando_md,
                 stdout=sp.PIPE,

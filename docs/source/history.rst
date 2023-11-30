@@ -2,9 +2,13 @@
 History
 =======
 
+0.7.4.4 (2023-11-)
+------------------
+ * Remove ``OMP_NUM_THREADS`` environment variable.
+
 0.7.4.3 (2023-11-)
 ------------------
- * Force set omp threads environment variabel at each MD run.
+ * Force set omp threads environment variable at each MD run.
 
 0.7.4.2 (2023-11-)
 ------------------

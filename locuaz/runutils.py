@@ -242,9 +242,7 @@ def round_to_element_right(v: List[int], n: int) -> int:
 
 def numa_partition(all_threads, ngpus: int, nbranches: int, numa_regions: int) -> Tuple[List[int], int, int]:
     numa_threads = all_threads[0:len(all_threads) // numa_regions]
-    numa_ngpus = ngpus // numa_regions
-    assert numa_ngpus > 0, \
-        f"This shouldn't happen. There can't be more NUMA regions that GPUs available. {numa_regions=} -- {ngpus=}"
+    numa_ngpus = ceil(ngpus / numa_regions)
     numa_nbranches = ceil(nbranches / numa_regions)
 
     return numa_threads, numa_ngpus, numa_nbranches

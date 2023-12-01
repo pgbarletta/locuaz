@@ -2,6 +2,21 @@
 History
 =======
 
+0.7.4.5 (2023-12-)
+------------------
+ * Fix auto_md_params() again.
+ * Fix bug that would come up during an epoch initialization when top branches
+   only differ by 1 amino acid, that is in the same position that is currently
+   being mutated. If the mutation creator assigns the same amino acid to both of
+   them, identical branches would be generated.
+   This scenario is rare, but may come up during the first steps of an optimization
+   that is using little to no memory of past mutation positions and hence may
+   mutate the same position twice in a row or with few epochs in between.
+   *locuaz* allows the creator repeat amino acids for different branches since it
+   assumes that branches will differ in other positions.
+   To remediate this bug, *locuaz* will generate new mutations from other random
+   top branches to replace those branches that were repetitions.
+
 0.7.4.4 (2023-11-)
 ------------------
  * Remove ``OMP_NUM_THREADS`` environment variable.

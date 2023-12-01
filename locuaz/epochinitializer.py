@@ -103,6 +103,14 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
                         "\nWill try again with another mutation on another branch."
                     )
                     continue
+                except FileExistsError:
+                    log.warning(
+                        f"Mutator tried to mutate {old_branch=} with {mutation=} but "
+                        "this would generate a branch that's identical to a recently "
+                        " created one.\nWill try again with another mutation on "
+                        "another branch."
+                    )
+                    continue
             # TODO: check if this works with mutations on different positions
             memorize_mutations(work_pjct, new_epoch, mutations)
         if actual_new_branches == successful_mutations:

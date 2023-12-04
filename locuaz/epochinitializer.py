@@ -57,7 +57,6 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
     # Usually, this `while` would only be executed once, unless the Mutator
     # program fails to perform a mutation.
     while True:
-        # TODO: Deprecate
         if config.get("creation"):
             mutation_generator_creator = MutationCreator(
                 old_epoch.top_branches,
@@ -99,13 +98,13 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
                     successful_mutations += 1
                 except MutationError:
                     log.warning(
-                        f"Mutator failed to mutate {old_branch=} with {mutation=}"
+                        f"Mutator failed to mutate {old_branch.branch_name} with {mutation=}"
                         "\nWill try again with another mutation on another branch."
                     )
                     continue
                 except FileExistsError:
                     log.warning(
-                        f"Mutator tried to mutate {old_branch=} with {mutation=} but "
+                        f"Mutator tried to mutate {old_branch.branch_name} with {mutation=} but "
                         "this would generate a branch that's identical to a recently "
                         " created one.\nWill try again with another mutation on "
                         "another branch."
@@ -119,8 +118,7 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
         else:
             log.info(
                 f"Tried to generate {actual_new_branches} new branches, "
-                f"but only generated {successful_mutations} because of a "
-                "Mutator error. Will try again."
+                f"but only generated {successful_mutations}. Will try again."
             )
     return new_epoch
 

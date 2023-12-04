@@ -202,10 +202,8 @@ and stderr:
 def memorize_mutations(
     work_pjct: WorkProject, new_epoch: Epoch, mutations: Iterable[Mutation]
 ) -> None:
-    mutated_positions = [mutation.resSeq for mutation in mutations]
-    new_epoch.mutated_positions = set(mutated_positions)
-
     if work_pjct.has_memory:
+        mutated_positions = [mutation.resSeq for mutation in mutations]
+        new_epoch.mutated_positions = set(mutated_positions)
         work_pjct.mutated_positions.appendleft(new_epoch.mutated_positions)
-    else:
-        return
+    return

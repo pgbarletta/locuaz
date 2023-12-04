@@ -53,9 +53,12 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
     if not config["protocol"]["constant_width"]:
         new_branches *= len(old_epoch.top_branches)
 
+    # Control variables for the `while` loop.
     successful_mutations = 0
+    failed_already = False
     # Usually, this `while` would only be executed once, unless the Mutator
-    # program fails to perform a mutation.
+    # program fails to perform a mutation or two or more mutations end up generating
+    # the same branch.
     while True:
         if config.get("creation"):
             mutation_generator_creator = MutationCreator(
@@ -106,8 +109,7 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
                     log.warning(
                         f"Mutator tried to mutate {old_branch.branch_name} with {mutation=} but "
                         "this would generate a branch that's identical to a recently "
-                        " created one.\nWill try again with another mutation on "
-                        "another branch."
+                        " created one."
                     )
                     continue
             # TODO: check if this works with mutations on different positions
@@ -117,9 +119,19 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
             break
         else:
             log.info(
-                f"Tried to generate {actual_new_branches} new branches, "
-                f"but only generated {successful_mutations}. Will try again."
+                f"Tried to generate {new_branches}. Generated {actual_new_branches}"
+                f"new mutations, but only generated {successful_mutations} branches."
             )
+            if failed_already:
+                log.info("Will move ahead.")
+                break
+            else:
+                log.info(
+                    "Will try to generate the missing "
+                    f"{new_branches - successful_mutations} branches"
+                )
+                failed_already = True
+
     return new_epoch
 
 

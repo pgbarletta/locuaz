@@ -60,10 +60,11 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
     # program fails to perform a mutation or two or more mutations end up generating
     # the same branch.
     while True:
+        new_branches -= successful_mutations
         if config.get("creation"):
             mutation_generator_creator = MutationCreator(
                 old_epoch.top_branches,
-                new_branches - successful_mutations,
+                new_branches,
                 config["creation"],
                 excluded_sites=work_pjct.get_mem_positions(),
                 amber_numbering=config["md"]["use_tleap"],
@@ -73,7 +74,7 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
             # TODO: Deprecate
             mutation_generator_creator = generator(
                 old_epoch,
-                new_branches - successful_mutations,
+                new_branches,
                 excluded_aas=work_pjct.get_mem_aminoacids(),
                 excluded_pos=work_pjct.get_mem_positions(),
                 use_tleap=config["md"]["use_tleap"],
@@ -114,7 +115,11 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
                     continue
             # TODO: check if this works with mutations on different positions
             memorize_mutations(work_pjct, new_epoch, mutations)
-        if actual_new_branches == successful_mutations:
+        # Using `<=` instead of `==` because if the `while` loops runs twice,
+        # `actual_new_branches` will probably be much lower than `successful_mutations`
+        # since this last variable accumulates the successfull mutations from the
+        # 2 loop runs.
+        if actual_new_branches <= successful_mutations:
             log.info(f"{actual_new_branches} out of {new_branches} branches created.")
             break
         else:

@@ -119,16 +119,17 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
             break
         else:
             log.info(
-                f"Tried to generate {new_branches}. Generated {actual_new_branches}"
-                f"new mutations, but only generated {successful_mutations} branches."
+                f"Tried to generate {new_branches} new branches. Generated "
+                f"{actual_new_branches} new mutations, but only generated "
+                f"{successful_mutations} branches."
             )
             if failed_already:
                 log.info("Will move ahead.")
                 break
             else:
                 log.info(
-                    "Will try to generate the missing "
-                    f"{new_branches - successful_mutations} branches"
+                    f"Will try to generate the {new_branches - successful_mutations} "
+                    "missing branches."
                 )
                 failed_already = True
 

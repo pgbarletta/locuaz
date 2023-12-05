@@ -5,6 +5,8 @@ History
 0.7.4.6 (2023-12-)
 ------------------
  * Fix ``uniform.csv`` for uniform amino acid selector probability.
+ * Fix epoch initialization. If the branch creation loop fails twice, it will
+   abort branch creation and just continue with the protocol.
 
 0.7.4.5 (2023-12-)
 ------------------

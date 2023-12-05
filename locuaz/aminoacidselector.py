@@ -1,5 +1,6 @@
 from collections import defaultdict
 from copy import deepcopy
+from itertools import chain
 from logging import Logger
 from pathlib import Path
 from random import choices
@@ -168,35 +169,39 @@ class AminoAcidSelector:
         self.N_BINS = len(self.bins)
 
         self.bins_criteria = creation_config["aa_bins_criteria"]
-        self.__initialize_probabilities__(creation_config)
+        self.aa_distribution = self.__initialize_probabilities__(creation_config)
 
-    def __initialize_probabilities__(self, creation_config: Dict[str, Any]):
+    def __initialize_probabilities__(self, creation_config: Dict[str, Any]) -> Dict[str, float]:
         if creation_config["aa_probability"] == "ReisBarletta":
-            # pd_reis_barletta_full = pd.read_csv("reis_barletta_full.csv")
-            # {r[1].AminoAcid: r[1].Probability for r in pd_reis_barletta_full.iterrows()}
-
             pd_reis_barletta_cdr = pd.read_csv(
                 Path(Path(__file__).resolve().parent, "reis_barletta_cdr.csv")
             )
-            self.aa_distribution = {
+            aa_distribution = {
                 r[1].AminoAcid: r[1].Probability
                 for r in pd_reis_barletta_cdr.iterrows()
             }
-
         elif creation_config["aa_probability"] == "custom":
-            self.aa_distribution = creation_config["custom"]
+            aa_distribution = creation_config["custom"]
         else:
             pd_uniform = pd.read_csv(
                 Path(Path(__file__).resolve().parent, "uniform.csv")
             )
-            self.aa_distribution = {
+            aa_distribution = {
                 r[1].AminoAcid: r[1].Probability for r in pd_uniform.iterrows()
             }
-        diff = set(self.bins.keys()).symmetric_difference(set(self.aa_distribution.keys()))
-        if len(diff) != 0:
-            raise GenerationError("Fatal error. Amino acids from bins and distribution "
-                                  f"don't match. Different amino acids: {diff}.")
 
+        # Maybe I should do this check in cli.py
+        bins_aas = set(chain.from_iterable(self.bins.values()))
+        distro_aas = set(aa_distribution.keys())
+        diff = set(bins_aas).symmetric_difference(distro_aas)
+        if len(diff) != 0:
+            raise GenerationError(
+                "Fatal error. Amino acids from bins don't match the ones from the "
+                f" probability distribution. Bins amino acids: {bins_aas}\n"
+                f"Probability distribution amino acids: {distro_aas}\n"
+                f"Different amino acids: {diff}."
+            )
+        return aa_distribution
 
     def __call__(
         self,

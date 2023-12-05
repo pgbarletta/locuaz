@@ -171,7 +171,9 @@ class AminoAcidSelector:
         self.bins_criteria = creation_config["aa_bins_criteria"]
         self.aa_distribution = self.__initialize_probabilities__(creation_config)
 
-    def __initialize_probabilities__(self, creation_config: Dict[str, Any]) -> Dict[str, float]:
+    def __initialize_probabilities__(
+        self, creation_config: Dict[str, Any]
+    ) -> Dict[str, float]:
         if creation_config["aa_probability"] == "ReisBarletta":
             pd_reis_barletta_cdr = pd.read_csv(
                 Path(Path(__file__).resolve().parent, "reis_barletta_cdr.csv")
@@ -232,7 +234,8 @@ class AminoAcidSelector:
         old_branches_pool = InfinitePool(top_branches.keys())
         self.memory = AminoAcidMemory(top_branches, self.bins, sites)
 
-        while new_branches != 0:
+        while new_branches >= 0:
+            print(f"{new_branches}")
             branch = top_branches[old_branches_pool.pop()]
             for site in sites:
                 old_aa = branch.resnames[site.idx_chain][site.idx_residue]

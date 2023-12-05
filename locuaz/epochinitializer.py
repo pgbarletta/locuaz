@@ -116,6 +116,7 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
             memorize_mutations(work_pjct, new_epoch, mutations)
         if actual_new_branches == successful_mutations:
             log.info(f"{actual_new_branches} out of {new_branches} branches created.")
+            # successful_mutations = 0
             break
         else:
             log.info(

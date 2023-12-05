@@ -2,6 +2,10 @@
 History
 =======
 
+0.7.4.7 (2023-12-)
+------------------
+ * Fix ``uniform.csv`` for uniform amino acid selector probability.
+
 0.7.4.6 (2023-12-)
 ------------------
  * Fix ``uniform.csv`` for uniform amino acid selector probability.

@@ -217,6 +217,8 @@ class AminoAcidSelector:
 
     def __select_aa__(self, branch_name: str, site: Site, old_aa: str) -> str:
 
+        print(self.aa_distribution)
+
         if self.bins_criteria == "without":
             excluded_bins: Set[int] = set(self.aa_to_bin[old_aa])
         else:

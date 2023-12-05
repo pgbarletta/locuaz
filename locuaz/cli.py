@@ -513,15 +513,13 @@ def check_bins(config: Dict) -> None:
             "C",
         }
         missing_aas = aas.symmetric_difference(set(chain.from_iterable(bins)))
-        if len(missing_aas) != 0 and missing_aas != {"C"}:
-            raise ValueError(
-                f'Invalid input "aa_bins": {bins}\n'
-                f"Missing amino acids: {missing_aas}\n"
-                f"Enter all amino acids."
+        if len(missing_aas) != 0:
+            warn(
+                f"There are missing amino acids ({missing_aas=}) in {bins=}. Be sure this is correct."
             )
         if len(bins) < 2 and config["creation"]["aa_bins_criteria"] == "without":
             raise UserInputError(
-                f"Cannot set 'aa_bins_criteria' to exclude " "with just 1 bin."
+                f"Cannot set 'aa_bins_criteria' to exclude with just 1 bin."
             )
         config["creation"]["aa_bins"] = bins
     else:
@@ -530,7 +528,7 @@ def check_bins(config: Dict) -> None:
             ["D", "E", "S", "T"],
             ["R", "N", "Q", "H", "K"],
             ["A", "G", "I", "M", "L", "V"],
-            ["P", "F", "W", "Y", "C"],
+            ["P", "F", "W", "Y"],
         ]
         warn(f'Using default "aa_bins": {config["creation"]["aa_bins"]}')
 

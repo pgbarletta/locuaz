@@ -168,6 +168,9 @@ class AminoAcidSelector:
         self.N_BINS = len(self.bins)
 
         self.bins_criteria = creation_config["aa_bins_criteria"]
+        self.__initialize_probabilities__(creation_config)
+
+    def __initialize_probabilities__(self, creation_config: Dict[str, Any]):
         if creation_config["aa_probability"] == "ReisBarletta":
             # pd_reis_barletta_full = pd.read_csv("reis_barletta_full.csv")
             # {r[1].AminoAcid: r[1].Probability for r in pd_reis_barletta_full.iterrows()}
@@ -189,6 +192,11 @@ class AminoAcidSelector:
             self.aa_distribution = {
                 r[1].AminoAcid: r[1].Probability for r in pd_uniform.iterrows()
             }
+        diff = set(self.bins.keys()).symmetric_difference(set(self.aa_distribution.keys()))
+        if len(diff) != 0:
+            raise GenerationError("Fatal error. Amino acids from bins and distribution "
+                                  f"don't match. Different amino acids: {diff}.")
+
 
     def __call__(
         self,

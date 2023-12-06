@@ -4,7 +4,7 @@ from itertools import chain
 from logging import Logger
 from pathlib import Path
 from random import choices
-from typing import List, Dict, Set, Any, Final, Tuple, Union
+from typing import List, Dict, Set, Any, Tuple, Union
 import pandas as pd
 
 from locuaz.mutation import Mutation
@@ -235,7 +235,6 @@ class AminoAcidSelector:
         self.memory = AminoAcidMemory(top_branches, self.bins, sites)
 
         while new_branches >= 0:
-            print(f"{new_branches=}")
             branch = top_branches[old_branches_pool.pop()]
             for site in sites:
                 old_aa = branch.resnames[site.idx_chain][site.idx_residue]
@@ -246,7 +245,7 @@ class AminoAcidSelector:
                         Mutation.from_site(site, old_aa=old_aa, new_aa=new_aa)
                     )
                 except GenerationError as e:
-                    logger.warning(f"{e}")
+                    logger.warning(e)
 
                 new_branches -= 1
         return mutations

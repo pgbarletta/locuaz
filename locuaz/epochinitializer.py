@@ -117,7 +117,7 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
             memorize_mutations(work_pjct, new_epoch, mutations)
         # Using `<=` instead of `==` because if the `while` loops runs twice,
         # `actual_new_branches` will probably be much lower than `successful_mutations`
-        # since this last variable accumulates the successfull mutations from the
+        # since this last variable accumulates the successful mutations from the
         # 2 loop runs.
         if actual_new_branches <= successful_mutations:
             log.info(f"{actual_new_branches} out of {new_branches} branches created.")

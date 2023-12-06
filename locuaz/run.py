@@ -66,14 +66,14 @@ def run_min_nvt_epoch(epoch: Epoch, md_config: Dict[str, Any], md_params: Dict[s
                             maxwarn=md_config["maxwarn"])
             futuros_nvt.append(ex.submit(nvt, min_complex))
 
-            for futu_nvt in cf.as_completed(futuros_nvt):
-                if futu_nvt.exception():
-                    log.error(f"Exception while running NVT:  {futu_nvt.exception()} ")
+        for futu_nvt in cf.as_completed(futuros_nvt):
+            if futu_nvt.exception():
+                log.error(f"Exception while running NVT:  {futu_nvt.exception()} ")
 
-            _, nvt_complex = futu_nvt.result()
-            branch_name = '-'.join(nvt_complex.dir.dir_path.name.split('-')[1:])
-            epoch[branch_name].complex = nvt_complex
-            epoch.nvt_done = True
+        _, nvt_complex = futu_nvt.result()
+        branch_name = '-'.join(nvt_complex.dir.dir_path.name.split('-')[1:])
+        epoch[branch_name].complex = nvt_complex
+        epoch.nvt_done = True
 
 
 def run_npt_epoch(epoch: Epoch, md_config: Dict[str, Any], md_params: Dict[str, BranchMDParams],

@@ -4,7 +4,10 @@ History
 
 0.7.4.7 (2023-12-)
 ------------------
- * Fix ``uniform.csv`` for uniform amino acid selector probability.
+ * Mutation Creation:  fix ``uniform.csv`` for uniform amino acid selector
+   probability.
+ * Mutation Creation: don't accept amino acids with zero probability.
+ * branch creation: fix remove_overlapping_solvent's behaviour when no water is added.
 
 0.7.4.6 (2023-12-)
 ------------------

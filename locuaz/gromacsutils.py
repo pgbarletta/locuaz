@@ -439,6 +439,7 @@ def remove_overlapping_solvent(
             f"{nonoverlapped} are the same files."
         )
         sh.copy(nonoverlapped_nonwat_fn, nonoverlapped_fn)
+        fix_wat_naming(nonoverlapped_fn, nonoverlapped_out_pdb, use_tleap=use_tleap)
     else:
         log.info(
             f"Removed {nwats} water molecules within {cutoff}A from the mutated residue. "

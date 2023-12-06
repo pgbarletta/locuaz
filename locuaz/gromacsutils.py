@@ -139,7 +139,9 @@ def image_traj(
                 break
             s.residues.resids = np.array(range(1, len(s.residues) + 1))
     # Continuous resSeq
-    u.atoms.write(str(out_pdb_fn))
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        u.atoms.write(str(out_pdb_fn))
 
     # Remove temporary files
     whole_trj.unlink()

@@ -27,7 +27,9 @@ from locuaz.primitives import AA_MAP
 from locuaz.primitives import launch_biobb
 
 
-def image_traj(cpx: GROComplex, out_trj_fn: Path, use_tleap: bool = False, gmx_bin: str = "gmx") -> XtcTrajectory:
+def image_traj(
+    cpx: GROComplex, out_trj_fn: Path, use_tleap: bool = False, gmx_bin: str = "gmx"
+) -> XtcTrajectory:
     wrk_dir = out_trj_fn.parent
 
     # I have to specify `fit_selection` and `center_selection` even though I'm not
@@ -73,9 +75,11 @@ def image_traj(cpx: GROComplex, out_trj_fn: Path, use_tleap: bool = False, gmx_b
     orig_u = mda.Universe(str(cpx.tpr), str(cpx.tra))
     #### TODO: remove when mdanalysis is updated
     if orig_u.atoms.segids[0][:3] == "seg":
-        orig_u.segments.segids = np.array([segid.split("_")[-1] for segid in orig_u.segments.segids])
+        orig_u.segments.segids = np.array(
+            [segid.split("_")[-1] for segid in orig_u.segments.segids]
+        )
     #### TODO: remove when mdanalysis is updated
-    orig_u.add_TopologyAttr('chainID', orig_u.atoms.segids)
+    orig_u.add_TopologyAttr("chainID", orig_u.atoms.segids)
 
     # First, get a PDB with the same topology as `cluster_trj`.
     with warnings.catch_warnings():
@@ -131,7 +135,7 @@ def image_traj(cpx: GROComplex, out_trj_fn: Path, use_tleap: bool = False, gmx_b
     if not use_tleap:
         # Staggered resSeq
         for s in u.segments:
-            if s.segid in {'', 'X'}:
+            if s.segid in {"", "X"}:
                 break
             s.residues.resids = np.array(range(1, len(s.residues) + 1))
     # Continuous resSeq
@@ -148,12 +152,12 @@ def image_traj(cpx: GROComplex, out_trj_fn: Path, use_tleap: bool = False, gmx_b
 
 
 def write_non_overlapping_ndx(
-        pdb_path: Path,
-        ndx_fn_in: FileHandle,
-        resSeq: int,
-        *,
-        dist_threshold: float = 0.3,
-        gmx_bin: str = "gmx",
+    pdb_path: Path,
+    ndx_fn_in: FileHandle,
+    resSeq: int,
+    *,
+    dist_threshold: float = 0.3,
+    gmx_bin: str = "gmx",
 ) -> Tuple[FileHandle, int]:
     # First, get the number of waters that overlap
     ndx_fn_wat_out = str(pdb_path.parent / "overlapping.ndx")
@@ -164,7 +168,7 @@ def write_non_overlapping_ndx(
         properties={
             "binary_path": gmx_bin,
             "selection": f"(same residue as resname SOL and "
-                         f"within {dist_threshold} of (group binder and resid {resSeq}))",
+            f"within {dist_threshold} of (group binder and resid {resSeq}))",
         },
     )
     launch_biobb(select_overlapping_waters)
@@ -196,8 +200,8 @@ def write_non_overlapping_ndx(
         properties={
             "binary_path": gmx_bin,
             "selection": f"not (same residue as resname SOL and "
-                         f"within {dist_threshold} of (group binder and resid {resSeq})) "
-                         "and (not name CL) and (not name NA)",
+            f"within {dist_threshold} of (group binder and resid {resSeq})) "
+            "and (not name CL) and (not name NA)",
         },
     )
     launch_biobb(select_not_overlapping)
@@ -210,7 +214,9 @@ def write_non_overlapping_ndx(
     return ndx, wat_count
 
 
-def remove_overlapping_waters(complex: GROComplex, config: Dict, overlapped_resSeq: int) -> GROComplex:
+def remove_overlapping_waters(
+    complex: GROComplex, config: Dict, overlapped_resSeq: int
+) -> GROComplex:
     """DEPRECATED remove_overlapping_waters takes a complex and removes all the waters that
     are within a certain cutoff from `overlapped_resSeq`. Then it replaces them.
     It does a lot of gymnastics to deal with Gromacs weirdness.
@@ -327,8 +333,11 @@ def remove_overlapping_waters(complex: GROComplex, config: Dict, overlapped_resS
 
 
 def fix_gromacs_pdb(
-        pdb_in_fn: Path, pdb_out_fn: Path, *, new_chainID: Optional[str] = None,
-        allowed_nonstandard_residues: Optional[Set] = None,
+    pdb_in_fn: Path,
+    pdb_out_fn: Path,
+    *,
+    new_chainID: Optional[str] = None,
+    allowed_nonstandard_residues: Optional[Set] = None,
 ) -> Path:
     """
     uses Bio to add TER between chains, END at the end, and manually make the resSeq numbers continuous.
@@ -383,13 +392,13 @@ def fix_gromacs_pdb(
 
 
 def remove_overlapping_solvent(
-        overlapped_pdb: PDBStructure,
-        overlapped_resSeq: int,
-        nonoverlapped_out_pdb: Path,
-        log: logging.Logger,
-        *,
-        cutoff: float = 3,
-        use_tleap=False,
+    overlapped_pdb: PDBStructure,
+    overlapped_resSeq: int,
+    nonoverlapped_out_pdb: Path,
+    log: logging.Logger,
+    *,
+    cutoff: float = 3,
+    use_tleap=False,
 ) -> PDBStructure:
     """
     remove_overlapping_solvent() is overlapped with later stages. It may leave a system without ions,
@@ -405,8 +414,8 @@ def remove_overlapping_solvent(
     ).residues.atoms
     nwats_atm = len(overlapped_wat_atoms)
     assert (
-                   nwats_atm % 3
-           ) == 0, f"Invalid number of overlapped water atoms: {nwats_atm}"
+        nwats_atm % 3
+    ) == 0, f"Invalid number of overlapped water atoms: {nwats_atm}"
     nwats = len(overlapped_wat_atoms) // 3
 
     ions = u.select_atoms(

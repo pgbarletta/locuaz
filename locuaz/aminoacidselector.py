@@ -235,7 +235,7 @@ class AminoAcidSelector:
         self.memory = AminoAcidMemory(top_branches, self.bins, sites)
 
         while new_branches >= 0:
-            print(f"{new_branches}")
+            print(f"{new_branches=}")
             branch = top_branches[old_branches_pool.pop()]
             for site in sites:
                 old_aa = branch.resnames[site.idx_chain][site.idx_residue]

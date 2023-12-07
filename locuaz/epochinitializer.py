@@ -173,7 +173,10 @@ def create_branch(
 
     init_wt = Path(branch_path, "init_wt.pdb")
     sh.copy(old_pdb, init_wt)
-    log.info(f"New mutation: {mutation} on Epoch-Branch: {epoch_id}-{branch_name}")
+    log.info(
+        f"{mutation} on: {old_branch.epoch_id}-{old_branch.branch_name} "
+        f"to generate: {epoch_id}-{branch_name}"
+    )
 
     # Mutate the PDB
     with warnings.catch_warnings():

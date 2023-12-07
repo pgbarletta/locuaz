@@ -2,6 +2,14 @@
 History
 =======
 
+0.7.4.8 (2023-12-)
+------------------
+ * scoring: silence warning from writing fixed PDB in image_traj()
+ * MD runs: fix run_min_nvt_epoch(). It was serializing NVT runs instead of parallelizing them.
+ * Mutator: fix evoef2 initialization
+ * Mutation: warn if setting ``allowed_nonstandard_residues`` and using any other
+   Mutator than dlpr, since ``dlp`` may create overlaps and ``evoef2`` doesn't see ligands.
+
 0.7.4.7 (2023-12-)
 ------------------
  * Mutation Creation: fix ``uniform.csv`` for uniform amino acid selector

@@ -317,6 +317,7 @@ mutation:
         minlength: 3
         maxlength: 4
       default: [ ]
+      warn_dependency_mutator: { mutator: dlpr}
 
 
 pruning:

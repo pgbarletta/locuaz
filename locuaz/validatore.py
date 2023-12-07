@@ -20,9 +20,13 @@ class Validatore(Validator):
             if len(set_fields.intersection(constraints)) == 0:
                 self._error(field, f"Must contain any of: {constraints}")
 
-            if ("current_branches" in set_fields) and ("previous_branches" not in set_fields):
-                warn("Warning: `current_branches` is set, but `previous_branches` isn't. "
-                    "Won't be able to prune the current branches. Make sure there are enough branches.")
+            if ("current_branches" in set_fields) and (
+                "previous_branches" not in set_fields
+            ):
+                warn(
+                    "Warning: `current_branches` is set, but `previous_branches` isn't. "
+                    "Won't be able to prune the current branches. Make sure there are enough branches."
+                )
 
     def _validate_step_bigger_than(self, other, field, value):
         """_validate_step_bigger_than
@@ -122,7 +126,9 @@ class Validatore(Validator):
         {'type': 'integer'}
         """
         if threshold and value > threshold:
-            warn(f"Warning: {field} set to {value}. Make sure you have enough resources.")
+            warn(
+                f"Warning: {field} set to {value}. Make sure you have enough resources."
+            )
 
     def _validate_warn_thread_availability(self, others, field, value):
         """_validate_warn_thread_availability
@@ -284,9 +290,14 @@ class Validatore(Validator):
             specified_opts = set(self.document.keys())
             if value:
                 if len(forbidden_opts.intersection(specified_opts)) != 0:
-                    self._error(field, f" is set. The following options cannot be also set: {others}.")
+                    self._error(
+                        field,
+                        f" is set. The following options cannot be also set: {others}.",
+                    )
             elif not forbidden_opts.issubset(specified_opts):
-                self._error(field, f" is not set. The following options must be set: {others}.")
+                self._error(
+                    field, f" is not set. The following options must be set: {others}."
+                )
 
     def _validate_enforce_true(self, relationship, field, value):
         """_validate_enforce_true
@@ -297,3 +308,19 @@ class Validatore(Validator):
         for key, other_opt in relationship.items():
             if key == value and not self.document[other_opt]:
                 self._error(field, f" is set to {key}. {other_opt} must be true.")
+
+    def _validate_warn_dependency_mutator(self, relationship, field, value):
+        """_validate_warn_dependency_mutator
+
+        The rule's arguments are validated against this schema:
+        {'type': 'dict'}
+        """
+        for other_opt, other_opt_val in relationship.items():
+            allowed_nonstandard_residues_is_set = len(value) >= 0
+            not_dlpr = self.document[other_opt] != other_opt_val
+            if allowed_nonstandard_residues_is_set and not_dlpr:
+                warn(
+                    f"`allowed_nonstandard_residues` is set, you should "
+                    "probably be using `dlpr` as a mutator. evoef2 can't see "
+                    "ligands and dlp may create clashes."
+                )

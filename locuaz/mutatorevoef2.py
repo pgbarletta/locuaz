@@ -13,7 +13,7 @@ class MutatorEvoEF2(BaseMutator):
     bin_path: FileHandle
 
     def __init__(self, bin_dir: Path, radius: float = 5) -> None:
-        self.bin_path = FileHandle(Path(bin_dir, "EvoEF2"))
+        self.bin_path = FileHandle(Path(bin_dir, "evoef2"))
 
     @staticmethod
     def __evoef2_file__(mut: Mutation, local_dir: Path) -> FileHandle:

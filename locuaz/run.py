@@ -1,5 +1,4 @@
 import logging
-from pathlib import Path
 from typing import Dict, Any, Optional
 from concurrent.futures import ProcessPoolExecutor
 import concurrent.futures as cf
@@ -14,7 +13,15 @@ def run_epoch(work_pjct: WorkProject) -> None:
     epoch = work_pjct.epochs[-1]
     md_params, max_parallel_workers = get_md_params(work_pjct.config["md"], epoch)
     if not epoch.nvt_done:
-        run_min_nvt_epoch(
+        run_min_epoch(
+            epoch,
+            work_pjct.config["md"],
+            md_params,
+            max_parallel_workers,
+            work_pjct.name,
+            log,
+        )
+        run_nvt_epoch(
             epoch,
             work_pjct.config["md"],
             md_params,
@@ -44,7 +51,7 @@ def run_epoch(work_pjct: WorkProject) -> None:
         log.info(f"Skipping NPT run of epoch {epoch.id}")
 
 
-def run_min_nvt_epoch(
+def run_min_epoch(
     epoch: Epoch,
     md_config: Dict[str, Any],
     md_params: Dict[str, BranchMDParams],
@@ -55,7 +62,6 @@ def run_min_nvt_epoch(
     failed_branches: Dict[str, Mutation] = {}
     with ProcessPoolExecutor(max_workers=max_parallel_workers) as ex:
         futuros_min = {}
-        futuros_nvt = {}
         for idx, (branch_name, branch) in enumerate(epoch.items()):
             gpu_id = md_params[branch_name].gpu_id
             omp_threads = md_params[branch_name].omp_threads
@@ -68,7 +74,7 @@ def run_min_nvt_epoch(
                     f"{gpu_id=}, {omp_threads=}, {mpi_threads=}, {pinoffset=}."
                 )
 
-            min = MDrun.min(
+            mini = MDrun.min(
                 branch.dir_handle,
                 gmx_mdrun=md_config["gmx_mdrun"],
                 min_mdp=md_config["mdp_paths"]["min_mdp"],
@@ -79,7 +85,7 @@ def run_min_nvt_epoch(
                 out_name=f"min_{name}",
                 maxwarn=md_config["maxwarn"],
             )
-            futu_min = ex.submit(min, branch.complex)
+            futu_min = ex.submit(mini, branch.complex)
             futuros_min[futu_min] = (branch_name, branch.mutation)
 
         for futu_min in cf.as_completed(futuros_min):
@@ -92,12 +98,27 @@ def run_min_nvt_epoch(
 
             _, min_complex = futu_min.result()
             branch_name = "-".join(min_complex.dir.dir_path.name.split("-")[1:])
+            epoch[branch_name].complex = min_complex
+    check_report_failures(epoch, failed_branches, log)
+
+
+def run_nvt_epoch(
+    epoch: Epoch,
+    md_config: Dict[str, Any],
+    md_params: Dict[str, BranchMDParams],
+    max_parallel_workers: int,
+    name: str,
+    log: logging.Logger,
+) -> None:
+    failed_branches: Dict[str, Mutation] = {}
+    with ProcessPoolExecutor(max_workers=max_parallel_workers) as ex:
+        futuros_nvt = {}
+        for idx, (branch_name, branch) in enumerate(epoch.items()):
             gpu_id = md_params[branch_name].gpu_id
             omp_threads = md_params[branch_name].omp_threads
             mpi_threads = md_params[branch_name].mpi_threads
             pinoffset = md_params[branch_name].pinoffset
-            branch = epoch[branch_name]
-
+            # Ideally the MDrun class would do the logging, but python's logging is not thread safe.
             if log:
                 log.info(
                     f"Queuing NVT of the branch {branch_name}. "
@@ -115,7 +136,8 @@ def run_min_nvt_epoch(
                 out_name=f"nvt_{name}",
                 maxwarn=md_config["maxwarn"],
             )
-            futu_nvt = ex.submit(nvt, min_complex)
+
+            futu_nvt = ex.submit(nvt, branch.complex)
             futuros_nvt[futu_nvt] = (branch_name, branch.mutation)
 
         for futu_nvt in cf.as_completed(futuros_nvt):
@@ -129,7 +151,6 @@ def run_min_nvt_epoch(
             _, nvt_complex = futu_nvt.result()
             branch_name = "-".join(nvt_complex.dir.dir_path.name.split("-")[1:])
             epoch[branch_name].complex = nvt_complex
-
     check_report_failures(epoch, failed_branches, log)
     epoch.nvt_done = True
 
@@ -202,7 +223,10 @@ def check_report_failures(
         return
     else:
         err_str = "".join(
-            [f"{epoch.id}-{branch} with {mut}\n" for branch, mut in failed_branches.items()]
+            [
+                f"{epoch.id}-{branch} with {mut}\n"
+                for branch, mut in failed_branches.items()
+            ]
         )
         log.error("The following branches failed:\n" + err_str)
         if len(epoch) == 0:

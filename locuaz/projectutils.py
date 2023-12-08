@@ -21,6 +21,7 @@ from typing import (
     Union,
     Deque,
     Optional,
+    Any,
 )
 from warnings import warn
 from numpy.typing import NDArray
@@ -33,7 +34,7 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 from locuaz.abstractscorer import AbstractScorer
-from locuaz.complex import AbstractComplex, GROComplex
+from locuaz.complex import GROComplex
 from locuaz.fileutils import FileHandle, DirHandle, copy_to
 from locuaz.primitives import AA_MAP, my_seq1
 from locuaz.scorers import scorers
@@ -116,25 +117,22 @@ class Branch:
                     f.write(str(round(val, 3)) + "\n")
 
     def read_scores(
-        self, scorers: Iterable, log: Optional[logging.Logger] = None
+        self, scoring_functions: Iterable, log: Optional[logging.Logger] = None
     ) -> bool:
         if not log:
             log = logging.getLogger("root")
         if not getattr(self, "score_dir", None):
             try:
                 self.score_dir = DirHandle(Path(self.dir_handle, "scoring"), make=False)
-            except FileNotFoundError as e:
+            except FileNotFoundError:
                 # No scoring folder
                 return False
-                # raise FileNotFoundError(
-                #     f"read_scores(): {self.branch_name} has no scores."
-                # ) from e
-        for SF in scorers:
+        for SF in scoring_functions:
             try:
                 scores_fn = Path(self.score_dir, "scores_" + SF)
                 with open(scores_fn, "r") as f:
                     self.set_score(SF, [float(linea.strip()) for linea in f], log)
-            except FileNotFoundError as e:
+            except FileNotFoundError:
                 log.warning(
                     f"{self.epoch_id}-{self.branch_name} was not scored with {SF}."
                 )
@@ -193,7 +191,7 @@ class Branch:
                 new_resname = (
                     resname[: mutation.resSeq_idx]
                     + mutation.new_aa
-                    + resname[mutation.resSeq_idx + 1 :]
+                    + resname[mutation.resSeq_idx + 1:]
                 )
             else:
                 # This one remains the same
@@ -236,9 +234,9 @@ class Epoch(MutableMapping):
                     continue
                 # Allow the user to change scorers mid-run and only use
                 # the subset present in both branches.
-                scorers = set(it.scores.keys()) & set(other_it.scores.keys())
+                SFs = set(it.scores.keys()) & set(other_it.scores.keys())
                 count += sum(
-                    [other_it.mean_scores[SF] >= it.mean_scores[SF] for SF in scorers]
+                    [other_it.mean_scores[SF] >= it.mean_scores[SF] for SF in SFs]
                 )
             better_branches.put((-count, it))
 
@@ -288,7 +286,7 @@ class Epoch(MutableMapping):
 
 
 class WorkProject:
-    config: Dict
+    config: Dict[str, Any]
     name: str
     dir_handle: DirHandle
     epochs: List[Epoch]

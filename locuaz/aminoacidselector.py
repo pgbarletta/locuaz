@@ -233,21 +233,29 @@ class AminoAcidSelector:
         new_branches = branches
         old_branches_pool = InfinitePool(top_branches.keys())
         self.memory = AminoAcidMemory(top_branches, self.bins, sites)
+        # We'll use this set to make sure we're not creating identical branches.
+        new_branch_names: Set[str] = set()
 
-        while new_branches >= 0:
+        while new_branches > 0:
             branch = top_branches[old_branches_pool.pop()]
             for site in sites:
+                # No matter what, we'll decrease the branch counte,r so we're sure
+                # it'll end. This means we may return less new branches than asked for.
+                new_branches -= 1
                 old_aa = branch.resnames[site.idx_chain][site.idx_residue]
                 try:
                     new_aa = self.__select_aa__(branch.branch_name, site, old_aa)
-                    # Add this mutation to this branch.
-                    mutations[branch.branch_name].append(
-                        Mutation.from_site(site, old_aa=old_aa, new_aa=new_aa)
-                    )
                 except GenerationError as e:
                     logger.warning(e)
+                    continue
 
-                new_branches -= 1
+                mut = Mutation.from_site(site, old_aa=old_aa, new_aa=new_aa)
+                branch_name, _ = branch.generate_name_resname(mut)
+                if branch_name not in new_branch_names:
+                    new_branch_names.add(branch_name)
+                    # Add this mutation to this branch.
+                    mutations[branch.branch_name].append(mut)
+
         return mutations
 
     def __select_aa__(self, branch_name: str, site: Site, old_aa: str) -> str:

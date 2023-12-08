@@ -5,7 +5,7 @@ import concurrent.futures as cf
 
 from locuaz.projectutils import WorkProject, Epoch
 from locuaz.runutils import MDrun, BranchMDParams, get_md_params
-from mutation import Mutation
+from locuaz.mutation import Mutation
 
 
 def run_epoch(work_pjct: WorkProject) -> None:

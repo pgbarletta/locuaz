@@ -1,10 +1,15 @@
 import shutil as sh
 import sys
+import threading
 import warnings
 from logging import Logger
 from os import listdir
 from pathlib import Path
-from typing import Dict, Any
+from typing import List, Dict, Any
+import concurrent.futures as cf
+from multiprocessing import Lock
+
+lock = Lock()
 
 from locuaz.amberutils import fix_pdb
 from locuaz.complex import GROComplex
@@ -33,7 +38,7 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
     -------
     None
     """
-    config = work_pjct.config
+    config: Dict[str, Any] = work_pjct.config
     old_epoch = work_pjct.epochs[-1]
     new_epoch = Epoch(old_epoch.id + 1, branches={})
 
@@ -56,6 +61,8 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
     # Control variables for the `while` loop.
     successful_mutations = 0
     failed_already = False
+    # Will use this to memorize mutations performed on the epoch
+    all_mutations: List[Mutation] = []
     # Usually, this `while` would only be executed once, unless the Mutator
     # program fails to perform a mutation or two or more mutations end up generating
     # the same branch.
@@ -85,11 +92,15 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
         actual_new_branches = sum(
             [len(muts) for muts in mutation_generator_creator.values()]
         )
-        for old_branch_name, mutations in mutation_generator_creator.items():
-            old_branch = old_epoch.top_branches[old_branch_name]
-            for mutation in mutations:
-                try:
-                    branch = create_branch(
+        with cf.ProcessPoolExecutor(max_workers=config["scoring"]["nthreads"]) as ex:
+            # with cf.ProcessPoolExecutor(max_workers=1) as ex:
+            futuros_branches = {}
+            for old_branch_name, mutations in mutation_generator_creator.items():
+                all_mutations.extend(mutations)
+                old_branch = old_epoch.top_branches[old_branch_name]
+                for mutation in mutations:
+                    futu_branch = ex.submit(
+                        create_branch,
                         work_pjct.name,
                         old_branch,
                         mutator=mutator,
@@ -98,46 +109,54 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
                         tleap_dir=Path(work_pjct.tleap_dir),
                         log=log,
                     )
+                    futuros_branches[futu_branch] = (old_branch.branch_name, mutation)
+            for futu_branch in cf.as_completed(futuros_branches):
+                old_branch_name, mutation = futuros_branches[futu_branch]
+                try:
+                    branch = futu_branch.result()
                     new_epoch[branch.branch_name] = branch
                     successful_mutations += 1
                 except MutationError:
                     log.warning(
-                        f"Mutator failed to mutate {old_branch.branch_name} with {mutation=}"
+                        f"Mutator failed to mutate {old_branch_name} with {mutation=}"
                         "\nWill try again with another mutation on another branch."
                     )
                     continue
                 except FileExistsError:
                     log.warning(
-                        f"Mutator tried to mutate {old_branch.branch_name} with {mutation=} but "
+                        f"Mutator tried to mutate {old_branch_name} with {mutation=} but "
                         "this would generate a branch that's identical to a recently "
                         " created one."
                     )
                     continue
-            # TODO: check if this works with mutations on different positions
-            memorize_mutations(work_pjct, new_epoch, mutations)
-        # Using `<=` instead of `==` because if the `while` loops runs twice,
-        # `actual_new_branches` will probably be much lower than `successful_mutations`
-        # since this last variable accumulates the successful mutations from the
-        # 2 loop runs.
-        if actual_new_branches <= successful_mutations:
-            log.info(f"{actual_new_branches} out of {new_branches} branches created.")
-            break
-        else:
-            log.info(
-                f"Tried to generate {new_branches} new branches. Generated "
-                f"{actual_new_branches} new mutations, but only generated "
-                f"{successful_mutations} branches."
-            )
-            if failed_already:
-                log.info("Will move ahead.")
+                except Exception as e:
+                    raise e
+            # Using `<=` instead of `==` because if the `while` loops runs twice,
+            # `actual_new_branches` will probably be much lower than `successful_mutations`
+            # since this last variable accumulates the successful mutations from the
+            # 2 loop runs.
+            if actual_new_branches <= successful_mutations:
+                log.info(
+                    f"{actual_new_branches} out of {new_branches} branches created."
+                )
                 break
             else:
                 log.info(
-                    f"Will try to generate the {new_branches - successful_mutations} "
-                    "missing branches."
+                    f"Tried to generate {new_branches} new branches. Generated "
+                    f"{actual_new_branches} new mutations, but only generated "
+                    f"{successful_mutations} branches."
                 )
-                failed_already = True
-
+                if failed_already:
+                    log.info("Will move ahead.")
+                    break
+                else:
+                    log.info(
+                        f"Will try to generate the {new_branches - successful_mutations} "
+                        "missing branches."
+                    )
+                    failed_already = True
+    # TODO: check if this works with mutations on different positions
+    memorize_mutations(work_pjct, new_epoch, all_mutations)
     return new_epoch
 
 
@@ -157,7 +176,8 @@ def create_branch(
     branch_path = Path(work_dir, f"{epoch_id}-{branch_name}")
 
     if md_config["use_tleap"]:
-        old_pdb = fix_old_pdb_numbering(old_branch)
+        with lock:
+            old_pdb = fix_old_pdb_numbering(old_branch)
     else:
         old_pdb = old_branch.complex.pdb
 
@@ -172,7 +192,8 @@ def create_branch(
     )
 
     init_wt = Path(branch_path, "init_wt.pdb")
-    sh.copy(old_pdb, init_wt)
+    with lock:
+        sh.copy(old_pdb, init_wt)
     log.info(
         f"{mutation} on: {old_branch.epoch_id}-{old_branch.branch_name} "
         f"to generate: {epoch_id}-{branch_name}"

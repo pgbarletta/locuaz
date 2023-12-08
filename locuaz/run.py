@@ -192,7 +192,7 @@ def run_npt_epoch(
                 restraints=md_config.get("npt_restraints"),
             )
             futu_npt = ex.submit(npt, branch.complex)
-            futuros_npt[futu_npt] = branch_name
+            futuros_npt[futu_npt] = (branch_name, branch.mutation)
 
         for futu_npt in cf.as_completed(futuros_npt):
             branch_name, mutation = futuros_npt[futu_npt]

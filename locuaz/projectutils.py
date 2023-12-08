@@ -63,10 +63,10 @@ class Branch:
     mutation: Optional[Mutation] = field(kw_only=True, default=None)
     epoch_id: int = field(converter=int, init=False)
     complex: GROComplex = field(init=False)
-    score_dir: DirHandle = field(converter=DirHandle, init=False)  # type: ignore
-    scores: Dict[str, tuple] = field(init=False)
-    mean_scores: Dict[str, float] = field(init=False)
-    stats: Dict[str, NDArray] = field(init=False)
+    score_dir: Optional[DirHandle] = field(init=False, default=None)
+    scores: Optional[Dict[str, tuple]] = field(init=False, default=None)
+    mean_scores: Optional[Dict[str, float]] = field(init=False, default=None)
+    stats: Optional[Dict[str, NDArray]] = field(init=False, default=None)
     outside_box: bool = field(init=False, default=False)
 
     def __attrs_post_init__(self) -> None:

@@ -2,6 +2,13 @@
 History
 =======
 
+0.7.5 (2023-12-)
+------------------
+ * MD runs: add tolerance to failed MDs and better login when a run fails.
+ * MD runs: only run NVT after all MIN are done. MD issues were coming up due to
+   the asynchronicity of these 2 steps.
+ * epoch initialization: make branch creation parallel.
+
 0.7.4.8 (2023-12-)
 ------------------
  * scoring: silence warning from writing fixed PDB in image_traj()

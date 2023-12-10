@@ -5,7 +5,7 @@ import warnings
 from logging import Logger
 from os import listdir
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import concurrent.futures as cf
 from multiprocessing import Lock
 
@@ -106,7 +106,7 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
                         mutator=mutator,
                         mutation=mutation,
                         md_config=config["md"],
-                        tleap_dir=Path(work_pjct.tleap_dir),
+                        tleap_dir=work_pjct.tleap_dir,
                         log=log,
                     )
                     futuros_branches[futu_branch] = (old_branch.branch_name, mutation)
@@ -167,7 +167,7 @@ def create_branch(
     mutator: BaseMutator,
     mutation: Mutation,
     md_config: Dict[str, Any],
-    tleap_dir: Path,
+    tleap_dir: Optional[DirHandle],
     log: Logger,
 ) -> Branch:
     branch_name, branch_resnames = old_branch.generate_name_resname(mutation)
@@ -230,7 +230,7 @@ def create_branch(
 
     # Copy tleap files, if necessary
     if md_config["use_tleap"]:
-        for file in listdir(tleap_dir):
+        for file in listdir(Path(tleap_dir)):
             sh.copy(Path(tleap_dir, file), Path(new_branch.dir_handle))
 
     new_branch.complex = GROComplex.from_pdb(

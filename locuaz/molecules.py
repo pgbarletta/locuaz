@@ -195,7 +195,7 @@ def get_tpr(
     gmx_bin: str = "gmx",
 ) -> TPRFile:
     """
-    get_tpr(): build a quick tpr, useful for simple runs asa call to genion and not for MD.
+    get_tpr(): build a quick tpr, useful for simple runs.
     Args:
         gro:
         top:

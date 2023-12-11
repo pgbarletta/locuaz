@@ -1,6 +1,5 @@
 import shutil as sh
 import sys
-import threading
 import warnings
 from logging import Logger
 from os import listdir
@@ -8,8 +7,6 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional
 import concurrent.futures as cf
 from multiprocessing import Lock
-
-lock = Lock()
 
 from locuaz.amberutils import fix_pdb
 from locuaz.complex import GROComplex
@@ -23,6 +20,8 @@ from locuaz.mutators import mutators
 from locuaz.projectutils import WorkProject, Epoch, Branch
 from locuaz.mutation import Mutation
 from locuaz.primitives import MutationError
+
+lock = Lock()
 
 
 def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
@@ -93,7 +92,6 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
             [len(muts) for muts in mutation_generator_creator.values()]
         )
         with cf.ProcessPoolExecutor(max_workers=config["scoring"]["nthreads"]) as ex:
-            # with cf.ProcessPoolExecutor(max_workers=1) as ex:
             futuros_branches = {}
             for old_branch_name, mutations in mutation_generator_creator.items():
                 all_mutations.extend(mutations)

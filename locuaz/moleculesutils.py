@@ -14,6 +14,8 @@ from locuaz.amberutils import create_tleap_script, fix_pdb, run_tleap, amb_to_gm
 from locuaz.molecules import PDBStructure, GROStructure, ZipTopology, get_tpr
 from locuaz.primitives import launch_biobb
 
+from multiprocessing import Lock
+lock = Lock()
 
 def get_gro_ziptop_from_pdb(
         *,
@@ -69,7 +71,8 @@ def get_gro_ziptop_from_pdb(
         output_top_zip_path=str(pre_ion_top_fn),
         properties=props,
     )
-    launch_biobb(pdb_to_gro_zip)
+    with lock:
+        launch_biobb(pdb_to_gro_zip)
 
     gro_fn = local_dir / f"{name}.gro"
     top_fn = local_dir / f"{name}.zip"

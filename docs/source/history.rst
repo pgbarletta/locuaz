@@ -2,6 +2,11 @@
 History
 =======
 
+0.7.5.1 (2023-12-)
+------------------
+ * epoch initialization: fix broken initialization when tleap wasn't being used
+   by adding locks around pdb2gmx call, which apparently can't be parallelized.
+
 0.7.5 (2023-12-)
 ------------------
  * MD runs: add tolerance to failed MDs and better login when a run fails.

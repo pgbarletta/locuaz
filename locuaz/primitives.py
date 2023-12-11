@@ -49,6 +49,7 @@ class PriorityDeque(Generic[T], Sequence, Iterable):
     to decide between pairs that have the same priorities. In this class, that's
     left to bisect, since we don't care about sorting stability.
     """
+
     def __init__(self, maxsize: int):
         self.maxsize: int = maxsize
         self.priorities: List[int] = []
@@ -58,8 +59,10 @@ class PriorityDeque(Generic[T], Sequence, Iterable):
         try:
             idx = bisect.bisect(self.priorities, int(pair[0]))
         except ValueError:
-            raise(f"{pair[0]} is a {type(pair[0])}. Input must be a tuple with"
-                  "an int as first element.")
+            raise (
+                f"{pair[0]} is a {type(pair[0])}. Input must be a tuple with"
+                "an int as first element."
+            )
         self.priorities.insert(idx, pair[0])
         self.elements.insert(idx, pair[1])
         if len(self.elements) > self.maxsize:
@@ -85,25 +88,32 @@ class PriorityDeque(Generic[T], Sequence, Iterable):
 class GromacsError(Exception):
     pass
 
+
 class MutationError(Exception):
     pass
 
+
 class GenerationError(Exception):
     pass
+
 
 class UserInputError(Exception):
     pass
 
 
-def launch_biobb(biobb_obj, *, can_write_console_log: bool = False, backup_dict: Optional[Path] = None) -> None:
+def launch_biobb(
+    biobb_obj,
+    *,
+    can_write_console_log: bool = False,
+    backup_dict: Optional[Path] = None,
+) -> None:
     """
 
-    :param biobb_obj:
-    :type biobb_obj:
-    :param can_write_console_log:
-    :type can_write_console_log:
-    :param backup_dict:
-    :type backup_dict:
+    Parameters
+    ----------
+    biobb_obj
+    can_write_console_log
+    backup_dict
     """
     biobb_obj.can_write_console_log = can_write_console_log
     err = biobb_obj.launch()
@@ -150,10 +160,14 @@ def ext(name: str, suffix: str) -> str:
 
 def my_seq1(resn_3: str) -> str:
     resn_1 = seq1(resn_3)
-    if resn_1 == 'X':
+    if resn_1 == "X":
         try:
             resn_1 = seq1(AA_MAP[resn_3])
-            warn(f"Converted non-standard residue {resn_3} from 3-letter code to 1-letter: {resn_1}.")
+            warn(
+                f"Converted non-standard residue {resn_3} from 3-letter code to 1-letter: {resn_1}."
+            )
         except KeyError:
-            warn(f"Could not convert non-standard residue {resn_3} from 3-letter code to 1-letter. Setting it to 'X'.")
+            warn(
+                f"Could not convert non-standard residue {resn_3} from 3-letter code to 1-letter. Setting it to 'X'."
+            )
     return resn_1

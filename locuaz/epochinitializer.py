@@ -101,6 +101,7 @@ def initialize_new_epoch(work_pjct: WorkProject, log: Logger) -> Epoch:
                         create_branch,
                         work_pjct.name,
                         old_branch,
+                        epoch_id = new_epoch.id,
                         mutator=mutator,
                         mutation=mutation,
                         md_config=config["md"],
@@ -162,14 +163,31 @@ def create_branch(
     name: str,
     old_branch: Branch,
     *,
+    epoch_id: int,
     mutator: BaseMutator,
     mutation: Mutation,
     md_config: Dict[str, Any],
     tleap_dir: Optional[DirHandle],
     log: Logger,
 ) -> Branch:
+    """
+    Can run parallely without issues by using a module-level lock.
+    Parameters
+    ----------
+    name
+    old_branch
+    epoch_id
+    mutator
+    mutation
+    md_config
+    tleap_dir
+    log
+
+    Returns
+    -------
+
+    """
     branch_name, branch_resnames = old_branch.generate_name_resname(mutation)
-    epoch_id = old_branch.epoch_id + 1
     work_dir = Path(old_branch.dir_handle).parent
     branch_path = Path(work_dir, f"{epoch_id}-{branch_name}")
 

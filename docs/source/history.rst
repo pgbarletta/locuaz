@@ -2,6 +2,10 @@
 History
 =======
 
+0.7.5.2 (2023-12-)
+------------------
+ * Fix wrong epoch id on branches when using roundrobin pruner.
+
 0.7.5.1 (2023-12-)
 ------------------
  * epoch initialization: fix broken initialization when tleap wasn't being used

@@ -96,7 +96,7 @@ class Branch:
         return self.mean_scores[sf_name]
 
     def set_stat(
-        self, stat_name: str, stat: NDArray[float], log: Optional[logging.Logger] = None
+        self, stat_name: str, stat: NDArray, log: Optional[logging.Logger] = None
     ) -> float:
         self.stats[stat_name] = stat
         avg_stat: float = np.mean(stat)

@@ -13,6 +13,8 @@ History
    the following molecules. Added a new method ``get_pdb()`` that can use biobb
    or MDAnalysis to build the PDB. This will be a temporary fix until GROMACS
    changes its behaviour, or a permanent one (much more likely).
+* Fix ``schema.yaml`` to allow for resnames shorter than 3 letters when setting
+   ``allowed_nonstandard_residues``.
 
 0.7.5.1 (2023-12-)
 ------------------

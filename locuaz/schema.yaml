@@ -314,7 +314,7 @@ mutation:
       maxlength: 12
       schema:
         type: string
-        minlength: 3
+        minlength: 2
         maxlength: 4
       default: [ ]
       warn_dependency_mutator: { mutator: dlpr}
@@ -553,7 +553,7 @@ scoring:
       maxlength: 12
       schema:
         type: string
-        minlength: 3
+        minlength: 2
         maxlength: 4
       default: [ ]
 statistics:

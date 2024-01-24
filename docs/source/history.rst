@@ -5,6 +5,8 @@ History
 0.7.5.2 (2023-12-)
 ------------------
  * Fix wrong epoch id on branches when using roundrobin pruner.
+ * Fix ``get_interface_surface()`` when 'CYX' residues are present. When
+   collecting resnames from freesasa, use AA_MAP to turn 'CYX' into 'CYS'.
 
 0.7.5.1 (2023-12-)
 ------------------

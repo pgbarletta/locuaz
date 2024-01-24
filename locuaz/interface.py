@@ -7,6 +7,7 @@ import freesasa
 import MDAnalysis as mda
 from Bio.SeqUtils import seq1
 
+from locuaz.primitives import AA_MAP
 from locuaz.molecules import PDBStructure
 from locuaz.fileutils import FileHandle
 
@@ -79,7 +80,7 @@ def get_interfacing_residues(pdb_input: Union[PDBStructure, FileHandle, Path],
 def get_freesasa_residues(pdb_input: Union[PDBStructure, FileHandle, Path], chainIDs: List[str]) -> Set[int]:
     pdb_path = Path(pdb_input)
     u = mda.Universe(str(pdb_path))
-    temp_pdb = Path(pdb_path.parent, "temp.pdb")
+    temp_pdb = Path(pdb_path.parent, "temp_for_freesasa.pdb")
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         u.select_atoms("not resname SOL and not resname WAT").write(str(temp_pdb))
@@ -92,7 +93,7 @@ def get_freesasa_residues(pdb_input: Union[PDBStructure, FileHandle, Path], chai
                                        "chain-groups": ''.join(set(chainIDs))})
     capture_warnings.reset()
 
-    freesasa_resis = {(int(structs[1].residueNumber(i)), seq1(structs[1].residueName(i))) for i in
+    freesasa_resis = {(int(structs[1].residueNumber(i)), seq1(AA_MAP[structs[1].residueName(i)])) for i in
                       range(structs[1].nAtoms())}
     temp_pdb.unlink()
 

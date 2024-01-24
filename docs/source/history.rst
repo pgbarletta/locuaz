@@ -15,6 +15,7 @@ History
    changes its behaviour, or a permanent one (much more likely).
 * Fix ``schema.yaml`` to allow for resnames shorter than 3 letters when setting
    ``allowed_nonstandard_residues``.
+* Fix ``fixup_top()`` better error reporting .
 
 0.7.5.1 (2023-12-)
 ------------------

@@ -239,7 +239,14 @@ def fixup_top(top_path: Path,
         if mol_name_old in solvent or mol_name_old in ions:
             mol = mol_name_old
         else:
-            mol = chainIDs.popleft()
+            try:
+                mol = chainIDs.popleft()
+            except Exception as e:
+                raise RuntimeError(f"Error while formatting parmed's GROMACS topology.\n"
+                f"Check {local_dir / norestr_name} at the bottom.\n"
+                "The number of chains parmed found do not match the ones from your "
+                "config file. This is probably a bug, report it.") from e
+
             # mol(chainID) should be just a char, but just in case:
             mol_text[2] = f"{mol}{3: >{21 - len(mol)}}" "\n"
 

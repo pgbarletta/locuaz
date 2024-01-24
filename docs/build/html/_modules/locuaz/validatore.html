@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.validatore &mdash; locuaz 0.7.3 documentation</title>
+  <title>locuaz.validatore &mdash; locuaz 0.7.5.2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.7.3
+                0.7.5.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -120,9 +120,13 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">set_fields</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">constraints</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_error</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Must contain any of: </span><span class="si">{</span><span class="n">constraints</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;current_branches&quot;</span> <span class="ow">in</span> <span class="n">set_fields</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="s2">&quot;previous_branches&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">set_fields</span><span class="p">):</span>
-                <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Warning: `current_branches` is set, but `previous_branches` isn&#39;t. &quot;</span>
-                    <span class="s2">&quot;Won&#39;t be able to prune the current branches. Make sure there are enough branches.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;current_branches&quot;</span> <span class="ow">in</span> <span class="n">set_fields</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="s2">&quot;previous_branches&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">set_fields</span>
+            <span class="p">):</span>
+                <span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">&quot;Warning: `current_branches` is set, but `previous_branches` isn&#39;t. &quot;</span>
+                    <span class="s2">&quot;Won&#39;t be able to prune the current branches. Make sure there are enough branches.&quot;</span>
+                <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_validate_step_bigger_than</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;_validate_step_bigger_than</span>
@@ -222,7 +226,9 @@
 <span class="sd">        {&#39;type&#39;: &#39;integer&#39;}</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">threshold</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">:</span>
-            <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> set to </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">. Make sure you have enough resources.&quot;</span><span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Warning: </span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2"> set to </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">. Make sure you have enough resources.&quot;</span>
+            <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_validate_warn_thread_availability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">others</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;_validate_warn_thread_availability</span>
@@ -384,9 +390,14 @@
             <span class="n">specified_opts</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">document</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
             <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">forbidden_opts</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">specified_opts</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_error</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot; is set. The following options cannot be also set: </span><span class="si">{</span><span class="n">others</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_error</span><span class="p">(</span>
+                        <span class="n">field</span><span class="p">,</span>
+                        <span class="sa">f</span><span class="s2">&quot; is set. The following options cannot be also set: </span><span class="si">{</span><span class="n">others</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
             <span class="k">elif</span> <span class="ow">not</span> <span class="n">forbidden_opts</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">specified_opts</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_error</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot; is not set. The following options must be set: </span><span class="si">{</span><span class="n">others</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_error</span><span class="p">(</span>
+                    <span class="n">field</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot; is not set. The following options must be set: </span><span class="si">{</span><span class="n">others</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_validate_enforce_true</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">relationship</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;_validate_enforce_true</span>
@@ -396,7 +407,23 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">other_opt</span> <span class="ow">in</span> <span class="n">relationship</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="n">value</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">document</span><span class="p">[</span><span class="n">other_opt</span><span class="p">]:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_error</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot; is set to </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">other_opt</span><span class="si">}</span><span class="s2"> must be true.&quot;</span><span class="p">)</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_error</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot; is set to </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="n">other_opt</span><span class="si">}</span><span class="s2"> must be true.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_validate_warn_dependency_mutator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">relationship</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;_validate_warn_dependency_mutator</span>
+
+<span class="sd">        The rule&#39;s arguments are validated against this schema:</span>
+<span class="sd">        {&#39;type&#39;: &#39;dict&#39;}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">other_opt</span><span class="p">,</span> <span class="n">other_opt_val</span> <span class="ow">in</span> <span class="n">relationship</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">allowed_nonstandard_residues_is_set</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+            <span class="n">not_dlpr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">document</span><span class="p">[</span><span class="n">other_opt</span><span class="p">]</span> <span class="o">!=</span> <span class="n">other_opt_val</span>
+            <span class="k">if</span> <span class="n">allowed_nonstandard_residues_is_set</span> <span class="ow">and</span> <span class="n">not_dlpr</span><span class="p">:</span>
+                <span class="n">warn</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;`allowed_nonstandard_residues` is set, you should &quot;</span>
+                    <span class="s2">&quot;probably be using `dlpr` as a mutator. evoef2 can&#39;t see &quot;</span>
+                    <span class="s2">&quot;ligands and dlp may create clashes.&quot;</span>
+                <span class="p">)</span></div>
 </pre></div>
 
            </div>

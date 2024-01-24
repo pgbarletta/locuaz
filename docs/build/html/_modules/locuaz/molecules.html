@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.molecules &mdash; locuaz 0.7.3 documentation</title>
+  <title>locuaz.molecules &mdash; locuaz 0.7.5.2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.7.3
+                0.7.5.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -98,7 +98,8 @@
            <div itemprop="articleBody">
              
   <h1>Source code for locuaz.molecules</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span>
+<span></span><span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span>
 <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">singledispatch</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
@@ -295,7 +296,7 @@
     <span class="n">gmx_bin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gmx&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TPRFile</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    get_tpr(): build a quick tpr, useful for simple runs asa call to genion and not for MD.</span>
+<span class="sd">    get_tpr(): build a quick tpr, useful for simple runs.</span>
 <span class="sd">    Args:</span>
 <span class="sd">        gro:</span>
 <span class="sd">        top:</span>
@@ -321,21 +322,47 @@
     <span class="o">*</span><span class="p">,</span>
     <span class="n">gro</span><span class="p">:</span> <span class="n">GROStructure</span><span class="p">,</span>
     <span class="n">top</span><span class="p">:</span> <span class="n">ZipTopology</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mda&quot;</span><span class="p">,</span>
+    <span class="n">gmx_bin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gmx&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">PDBStructure</span><span class="p">,</span> <span class="n">TPRFile</span><span class="p">]:</span>
+    <span class="n">tpr</span> <span class="o">=</span> <span class="n">get_tpr</span><span class="p">(</span><span class="n">gro</span><span class="o">=</span><span class="n">gro</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="n">top</span><span class="p">,</span> <span class="n">gmx_bin</span><span class="o">=</span><span class="n">gmx_bin</span><span class="p">)</span>
+    <span class="n">pdb</span> <span class="o">=</span> <span class="n">get_pdb</span><span class="p">(</span><span class="n">gro</span><span class="o">=</span><span class="n">gro</span><span class="p">,</span> <span class="n">tpr</span><span class="o">=</span><span class="n">tpr</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">gmx_bin</span><span class="o">=</span><span class="n">gmx_bin</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pdb</span><span class="p">,</span> <span class="n">tpr</span></div>
+
+
+<div class="viewcode-block" id="get_pdb"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.get_pdb">[docs]</a><span class="k">def</span> <span class="nf">get_pdb</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">gro</span><span class="p">:</span> <span class="n">GROStructure</span><span class="p">,</span>
+    <span class="n">tpr</span><span class="p">:</span> <span class="n">TPRFile</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mda&quot;</span><span class="p">,</span>
     <span class="n">gmx_bin</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gmx&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">PDBStructure</span><span class="p">,</span> <span class="n">TPRFile</span><span class="p">]:</span>
 
-    <span class="n">tpr</span> <span class="o">=</span> <span class="n">get_tpr</span><span class="p">(</span><span class="n">gro</span><span class="o">=</span><span class="n">gro</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="n">top</span><span class="p">,</span> <span class="n">gmx_bin</span><span class="o">=</span><span class="n">gmx_bin</span><span class="p">)</span>
+    <span class="n">pdb_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">gro</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="p">(</span><span class="n">gro</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.pdb&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;biobb&quot;</span><span class="p">:</span>
+        <span class="n">trjconv</span> <span class="o">=</span> <span class="n">GMXTrjConvStr</span><span class="p">(</span>
+            <span class="n">input_structure_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">gro</span><span class="p">),</span>
+            <span class="n">input_top_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tpr</span><span class="p">),</span>
+            <span class="n">output_str_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">pdb_fn</span><span class="p">),</span>
+            <span class="n">properties</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;binary_path&quot;</span><span class="p">:</span> <span class="n">gmx_bin</span><span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">launch_biobb</span><span class="p">(</span><span class="n">trjconv</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">mda</span><span class="o">.</span><span class="n">Universe</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">tpr</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">gro</span><span class="p">))</span>
+        <span class="c1">#### TODO: remove when mdanalysis is updated</span>
+        <span class="k">if</span> <span class="n">u</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">segids</span><span class="p">[</span><span class="mi">0</span><span class="p">][:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;seg&quot;</span><span class="p">:</span>
+            <span class="n">u</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">segids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">segid</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">segid</span> <span class="ow">in</span> <span class="n">u</span><span class="o">.</span><span class="n">segments</span><span class="o">.</span><span class="n">segids</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="n">u</span><span class="o">.</span><span class="n">add_TopologyAttr</span><span class="p">(</span><span class="s2">&quot;chainID&quot;</span><span class="p">,</span> <span class="n">u</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">segids</span><span class="p">)</span>
+        <span class="c1">#### TODO: remove when mdanalysis is updated</span>
 
-    <span class="n">pdb_fn</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">gro</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">gro</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.pdb&quot;</span><span class="p">)</span>
-    <span class="n">trjconv</span> <span class="o">=</span> <span class="n">GMXTrjConvStr</span><span class="p">(</span>
-        <span class="n">input_structure_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">gro</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="p">),</span>
-        <span class="n">input_top_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tpr</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">path</span><span class="p">),</span>
-        <span class="n">output_str_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">pdb_fn</span><span class="p">),</span>
-        <span class="n">properties</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;binary_path&quot;</span><span class="p">:</span> <span class="n">gmx_bin</span><span class="p">},</span>
-    <span class="p">)</span>
-    <span class="n">launch_biobb</span><span class="p">(</span><span class="n">trjconv</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+            <span class="n">u</span><span class="o">.</span><span class="n">atoms</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">pdb_fn</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">PDBStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">pdb_fn</span><span class="p">),</span> <span class="n">tpr</span></div>
+    <span class="k">return</span> <span class="n">PDBStructure</span><span class="o">.</span><span class="n">from_path</span><span class="p">(</span><span class="n">pdb_fn</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="fix_pdb_gro"><a class="viewcode-back" href="../../misc.html#locuaz.molecules.fix_pdb_gro">[docs]</a><span class="k">def</span> <span class="nf">fix_pdb_gro</span><span class="p">(</span>

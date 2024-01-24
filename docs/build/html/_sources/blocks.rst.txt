@@ -114,11 +114,12 @@ to the branches of the next epoch.
 
 Mutation Generators were mono-blocks that the user could pick for the task.
 On the other hand, the Mutation Creator is unique, but highly configurable.
-The user can build their desired Mutation Creator out of the many building
-blocks available.
+The user can build their desired Mutation Creator out of the many options
+available.
 
-The available options are split according to the 2 phases: the choosing of the
-site to be mutated and the choosing of the new amino acid (AA).
+The available options are split according to the 2 phases of the generation of a
+new mutation: the choosing of the site to be mutated and the choosing of the new
+amino acid (AA).
 
 Site selection
 """"""""""""""
@@ -126,8 +127,6 @@ User can choose how many positions to mutate, whether these must be in the inter
 and the likeliness of each position of being chosen. It can be uniform or guided
 by an mmpbsa method that chooses the position that's contributing the least to the
 binding affinity.
-
-
 
 Amino acid selection
 """"""""""""""""""""

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.primitives &mdash; locuaz 0.7.3 documentation</title>
+  <title>locuaz.primitives &mdash; locuaz 0.7.5.2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.7.3
+                0.7.5.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -149,6 +149,7 @@
 <span class="sd">    to decide between pairs that have the same priorities. In this class, that&#39;s</span>
 <span class="sd">    left to bisect, since we don&#39;t care about sorting stability.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">maxsize</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">maxsize</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">maxsize</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">priorities</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -158,8 +159,10 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">idx</span> <span class="o">=</span> <span class="n">bisect</span><span class="o">.</span><span class="n">bisect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">priorities</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="k">raise</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> is a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s2">. Input must be a tuple with&quot;</span>
-                  <span class="s2">&quot;an int as first element.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> is a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s2">. Input must be a tuple with&quot;</span>
+                <span class="s2">&quot;an int as first element.&quot;</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">priorities</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxsize</span><span class="p">:</span>
@@ -185,25 +188,32 @@
 <div class="viewcode-block" id="GromacsError"><a class="viewcode-back" href="../../misc.html#locuaz.primitives.GromacsError">[docs]</a><span class="k">class</span> <span class="nc">GromacsError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
+
 <div class="viewcode-block" id="MutationError"><a class="viewcode-back" href="../../misc.html#locuaz.primitives.MutationError">[docs]</a><span class="k">class</span> <span class="nc">MutationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
+
 <div class="viewcode-block" id="GenerationError"><a class="viewcode-back" href="../../misc.html#locuaz.primitives.GenerationError">[docs]</a><span class="k">class</span> <span class="nc">GenerationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span></div>
+
 
 <div class="viewcode-block" id="UserInputError"><a class="viewcode-back" href="../../misc.html#locuaz.primitives.UserInputError">[docs]</a><span class="k">class</span> <span class="nc">UserInputError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="launch_biobb"><a class="viewcode-back" href="../../misc.html#locuaz.primitives.launch_biobb">[docs]</a><span class="k">def</span> <span class="nf">launch_biobb</span><span class="p">(</span><span class="n">biobb_obj</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">can_write_console_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">backup_dict</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="launch_biobb"><a class="viewcode-back" href="../../misc.html#locuaz.primitives.launch_biobb">[docs]</a><span class="k">def</span> <span class="nf">launch_biobb</span><span class="p">(</span>
+    <span class="n">biobb_obj</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">can_write_console_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">backup_dict</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 
-<span class="sd">    :param biobb_obj:</span>
-<span class="sd">    :type biobb_obj:</span>
-<span class="sd">    :param can_write_console_log:</span>
-<span class="sd">    :type can_write_console_log:</span>
-<span class="sd">    :param backup_dict:</span>
-<span class="sd">    :type backup_dict:</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    biobb_obj</span>
+<span class="sd">    can_write_console_log</span>
+<span class="sd">    backup_dict</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">biobb_obj</span><span class="o">.</span><span class="n">can_write_console_log</span> <span class="o">=</span> <span class="n">can_write_console_log</span>
     <span class="n">err</span> <span class="o">=</span> <span class="n">biobb_obj</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span>
@@ -250,12 +260,16 @@
 
 <div class="viewcode-block" id="my_seq1"><a class="viewcode-back" href="../../misc.html#locuaz.primitives.my_seq1">[docs]</a><span class="k">def</span> <span class="nf">my_seq1</span><span class="p">(</span><span class="n">resn_3</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">resn_1</span> <span class="o">=</span> <span class="n">seq1</span><span class="p">(</span><span class="n">resn_3</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">resn_1</span> <span class="o">==</span> <span class="s1">&#39;X&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">resn_1</span> <span class="o">==</span> <span class="s2">&quot;X&quot;</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">resn_1</span> <span class="o">=</span> <span class="n">seq1</span><span class="p">(</span><span class="n">AA_MAP</span><span class="p">[</span><span class="n">resn_3</span><span class="p">])</span>
-            <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Converted non-standard residue </span><span class="si">{</span><span class="n">resn_3</span><span class="si">}</span><span class="s2"> from 3-letter code to 1-letter: </span><span class="si">{</span><span class="n">resn_1</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Converted non-standard residue </span><span class="si">{</span><span class="n">resn_3</span><span class="si">}</span><span class="s2"> from 3-letter code to 1-letter: </span><span class="si">{</span><span class="n">resn_1</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not convert non-standard residue </span><span class="si">{</span><span class="n">resn_3</span><span class="si">}</span><span class="s2"> from 3-letter code to 1-letter. Setting it to &#39;X&#39;.&quot;</span><span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Could not convert non-standard residue </span><span class="si">{</span><span class="n">resn_3</span><span class="si">}</span><span class="s2"> from 3-letter code to 1-letter. Setting it to &#39;X&#39;.&quot;</span>
+            <span class="p">)</span>
     <span class="k">return</span> <span class="n">resn_1</span></div>
 </pre></div>
 

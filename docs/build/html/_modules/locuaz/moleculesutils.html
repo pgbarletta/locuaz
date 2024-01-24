@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.moleculesutils &mdash; locuaz 0.7.3 documentation</title>
+  <title>locuaz.moleculesutils &mdash; locuaz 0.7.5.2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.7.3
+                0.7.5.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -114,6 +114,8 @@
 <span class="kn">from</span> <span class="nn">locuaz.molecules</span> <span class="kn">import</span> <span class="n">PDBStructure</span><span class="p">,</span> <span class="n">GROStructure</span><span class="p">,</span> <span class="n">ZipTopology</span><span class="p">,</span> <span class="n">get_tpr</span>
 <span class="kn">from</span> <span class="nn">locuaz.primitives</span> <span class="kn">import</span> <span class="n">launch_biobb</span>
 
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Lock</span>
+<span class="n">lock</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">()</span>
 
 <div class="viewcode-block" id="get_gro_ziptop_from_pdb"><a class="viewcode-back" href="../../misc.html#locuaz.moleculesutils.get_gro_ziptop_from_pdb">[docs]</a><span class="k">def</span> <span class="nf">get_gro_ziptop_from_pdb</span><span class="p">(</span>
         <span class="o">*</span><span class="p">,</span>
@@ -169,7 +171,8 @@
         <span class="n">output_top_zip_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">pre_ion_top_fn</span><span class="p">),</span>
         <span class="n">properties</span><span class="o">=</span><span class="n">props</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">launch_biobb</span><span class="p">(</span><span class="n">pdb_to_gro_zip</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
+        <span class="n">launch_biobb</span><span class="p">(</span><span class="n">pdb_to_gro_zip</span><span class="p">)</span>
 
     <span class="n">gro_fn</span> <span class="o">=</span> <span class="n">local_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.gro&quot;</span>
     <span class="n">top_fn</span> <span class="o">=</span> <span class="n">local_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.zip&quot;</span>

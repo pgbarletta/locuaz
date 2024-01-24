@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.cli &mdash; locuaz 0.7.3 documentation</title>
+  <title>locuaz.cli &mdash; locuaz 0.7.5.2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.7.3
+                0.7.5.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -122,7 +122,13 @@
 
 <div class="viewcode-block" id="get_ngpus"><a class="viewcode-back" href="../../misc.html#locuaz.cli.get_ngpus">[docs]</a><span class="k">def</span> <span class="nf">get_ngpus</span><span class="p">():</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;nvidia-smi -L | wc -l&quot;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="s2">&quot;nvidia-smi -L | wc -l&quot;</span><span class="p">,</span>
+            <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+            <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+            <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">ngpus</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">ngpus</span> <span class="o">!=</span> <span class="mi">0</span>
     <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">AssertionError</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
@@ -167,7 +173,9 @@
 
     <span class="c1"># Check mode</span>
     <span class="k">if</span> <span class="n">mode</span> <span class="o">!=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;mode&quot;</span><span class="p">]:</span>
-        <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning, CLI input </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2"> doesn&#39;t match </span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;main&#39;</span><span class="p">][</span><span class="s1">&#39;mode&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">. Overwriting option.&quot;</span><span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Warning, CLI input </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2"> doesn&#39;t match </span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;main&#39;</span><span class="p">][</span><span class="s1">&#39;mode&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">. Overwriting option.&quot;</span>
+        <span class="p">)</span>
         <span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mode</span>
 
     <span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;debug&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">debug</span>
@@ -179,7 +187,7 @@
         <span class="n">root_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;work&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">parent</span>
         <span class="k">assert</span> <span class="n">root_dir</span><span class="o">.</span><span class="n">is_dir</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">&quot;Invalid input work dir: </span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;paths&#39;</span><span class="p">][</span><span class="s1">&#39;work&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">assert</span> <span class="p">(</span>
-                <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;evolve&quot;</span>
+            <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;evolve&quot;</span>
         <span class="p">),</span> <span class="s2">&quot;`--mode` is not set to &#39;evolve&#39;, a `work` folder with valid branches is needed.&quot;</span>
 
         <span class="n">start</span> <span class="o">=</span> <span class="kc">True</span>
@@ -188,50 +196,78 @@
     <span class="k">if</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;md&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;use_tleap&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
         <span class="k">assert</span> <span class="s2">&quot;tleap&quot;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;Specify path to tleap files.&quot;</span>
         <span class="k">assert</span> <span class="p">(</span>
-                <span class="n">get_dir_size</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;tleap&quot;</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">10</span>
+            <span class="n">get_dir_size</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;tleap&quot;</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">10</span>
         <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;tleap dir is heavier than 10Mb. Choose a dir with only the necessary tleap files.&quot;</span>
         <span class="n">warn</span><span class="p">(</span>
-            <span class="s2">&quot;tleap script will be used. Options: &#39;water_type&#39; and &#39;force_field&#39; will be ignored.&quot;</span><span class="p">)</span>
+            <span class="s2">&quot;tleap script will be used. Options: &#39;water_type&#39; and &#39;force_field&#39; will be ignored.&quot;</span>
+        <span class="p">)</span>
 
     <span class="c1"># Check matching lengths of mutating_resSeq and mutating_resname.</span>
-    <span class="k">for</span> <span class="n">resnames</span><span class="p">,</span> <span class="n">resSeqs</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;binder&quot;</span><span class="p">][</span><span class="s2">&quot;mutating_resname&quot;</span><span class="p">],</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;binder&quot;</span><span class="p">][</span><span class="s2">&quot;mutating_resSeq&quot;</span><span class="p">]):</span>
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">resnames</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">resSeqs</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;mutating_resname(</span><span class="si">{</span><span class="n">resnames</span><span class="si">}</span><span class="s2">) and mutating_resSeq (</span><span class="si">{</span><span class="n">resSeqs</span><span class="si">}</span><span class="s2">) have &quot;</span> \
-                                              <span class="sa">f</span><span class="s2">&quot;different lengths: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">resnames</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">resSeqs</span><span class="p">)</span><span class="si">}</span><span class="s2">, respectively.&quot;</span>
+    <span class="k">for</span> <span class="n">resnames</span><span class="p">,</span> <span class="n">resSeqs</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;binder&quot;</span><span class="p">][</span><span class="s2">&quot;mutating_resname&quot;</span><span class="p">],</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;binder&quot;</span><span class="p">][</span><span class="s2">&quot;mutating_resSeq&quot;</span><span class="p">]</span>
+    <span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">resnames</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">resSeqs</span><span class="p">),</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;mutating_resname(</span><span class="si">{</span><span class="n">resnames</span><span class="si">}</span><span class="s2">) and mutating_resSeq (</span><span class="si">{</span><span class="n">resSeqs</span><span class="si">}</span><span class="s2">) have &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;different lengths: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">resnames</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">resSeqs</span><span class="p">)</span><span class="si">}</span><span class="s2">, respectively.&quot;</span>
+        <span class="p">)</span>
 
     <span class="c1"># Check creation and check gmxmmpbsa options</span>
     <span class="c1"># TODO: deprecate</span>
     <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;creation&quot;</span><span class="p">):</span>
-        <span class="k">assert</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;generation&quot;</span><span class="p">),</span> <span class="s2">&quot;Cannot set &#39;generation&#39; and &#39;creation&#39; at the same time.&quot;</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;generation&quot;</span>
+        <span class="p">),</span> <span class="s2">&quot;Cannot set &#39;generation&#39; and &#39;creation&#39; at the same time.&quot;</span>
         <span class="n">check_mutation_generation</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Mutation Generator will be deprecated in 0.8.0. &quot;</span>
-             <span class="s2">&quot;Use Mutation Creator instead.&quot;</span><span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Mutation Generator will be deprecated in 0.8.0. &quot;</span>
+            <span class="s2">&quot;Use Mutation Creator instead.&quot;</span>
+        <span class="p">)</span>
         <span class="c1"># Check legacy generation and gmxmmpbsa options</span>
         <span class="n">check_gmxmmpbsa_legacy</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 
     <span class="c1"># Check consensus threshold and scorers</span>
     <span class="k">if</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;pruning&quot;</span><span class="p">][</span><span class="s2">&quot;pruner&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;consensus&quot;</span><span class="p">:</span>
-        <span class="k">assert</span> <span class="s2">&quot;consensus_threshold&quot;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;pruning&quot;</span><span class="p">],</span> <span class="s2">&quot;Set &#39;consensus_threshold&#39; when using &#39;consensus&#39; pruner.&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="s2">&quot;consensus_threshold&quot;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;pruning&quot;</span><span class="p">]</span>
+        <span class="p">),</span> <span class="s2">&quot;Set &#39;consensus_threshold&#39; when using &#39;consensus&#39; pruner.&quot;</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;pruning&quot;</span><span class="p">][</span><span class="s2">&quot;consensus_threshold&quot;</span><span class="p">]</span>
         <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;scoring&quot;</span><span class="p">][</span><span class="s2">&quot;scorers&quot;</span><span class="p">])</span>
-        <span class="k">assert</span> <span class="n">t</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Threshold (</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">) should be equal or lower than the number of scorers (</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">t</span> <span class="o">&lt;=</span> <span class="n">n</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Threshold (</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">) should be equal or lower than the number of scorers (</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">)&quot;</span>
     <span class="k">elif</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;pruning&quot;</span><span class="p">][</span><span class="s2">&quot;pruner&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;metropolis&quot;</span><span class="p">:</span>
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;scoring&quot;</span><span class="p">][</span><span class="s2">&quot;scorers&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Can only use 1 scoring function when pruner is &#39;metropolis&#39;.&quot;</span>
-    <span class="k">if</span> <span class="s2">&quot;autodockvina&quot;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;scoring&quot;</span><span class="p">][</span><span class="s2">&quot;scorers&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;scoring&quot;</span><span class="p">][</span><span class="s2">&quot;allowed_nonstandard_residues&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Selected &#39;autodockvina&#39;, but &#39;allowed_nonstandard_residues&#39; is empty. &quot;</span>
-             <span class="s2">&quot;Make sure no residue is removed from the PDB files used for scoring.&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;scoring&quot;</span><span class="p">][</span><span class="s2">&quot;scorers&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Can only use 1 scoring function when pruner is &#39;metropolis&#39;.&quot;</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="s2">&quot;autodockvina&quot;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;scoring&quot;</span><span class="p">][</span><span class="s2">&quot;scorers&quot;</span><span class="p">]</span>
+        <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;scoring&quot;</span><span class="p">][</span><span class="s2">&quot;allowed_nonstandard_residues&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="p">):</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Selected &#39;autodockvina&#39;, but &#39;allowed_nonstandard_residues&#39; is empty. &quot;</span>
+            <span class="s2">&quot;Make sure no residue is removed from the PDB files used for scoring.&quot;</span>
+        <span class="p">)</span>
 
     <span class="c1"># Check MD related options</span>
     <span class="n">numa_regions</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;md&quot;</span><span class="p">][</span><span class="s2">&quot;numa_regions&quot;</span><span class="p">]</span>
     <span class="n">ngpus</span> <span class="o">=</span> <span class="n">get_ngpus</span><span class="p">()</span>
-    <span class="k">assert</span> <span class="n">numa_regions</span> <span class="o">&lt;=</span> <span class="n">ngpus</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;There can&#39;t be more NUMA regions that GPUs available. </span><span class="si">{</span><span class="n">numa_regions</span><span class="si">=}</span><span class="s2"> -- </span><span class="si">{</span><span class="n">ngpus</span><span class="si">=}</span><span class="s2">&quot;</span>
     <span class="n">all_threads</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sched_getaffinity</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
-    <span class="k">assert</span> <span class="n">numa_regions</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_threads</span><span class="p">),</span> \
-        <span class="sa">f</span><span class="s2">&quot;There can&#39;t be more NUMA regions than threads available. </span><span class="si">{</span><span class="n">numa_regions</span><span class="si">=}</span><span class="s2"> -- </span><span class="si">{</span><span class="n">all_threads</span><span class="si">=}</span><span class="s2">&quot;</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="n">numa_regions</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_threads</span><span class="p">)</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;There can&#39;t be more NUMA regions than threads available. </span><span class="si">{</span><span class="n">numa_regions</span><span class="si">=}</span><span class="s2"> -- </span><span class="si">{</span><span class="n">all_threads</span><span class="si">=}</span><span class="s2">&quot;</span>
     <span class="k">if</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;md&quot;</span><span class="p">][</span><span class="s2">&quot;mps&quot;</span><span class="p">]:</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;nvidia-cuda-mps-control -d&quot;</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="s2">&quot;nvidia-cuda-mps-control -d&quot;</span><span class="p">,</span>
+            <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+            <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+            <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="s2">&quot;command not found&quot;</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">stderr</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not start the MPS server. Error msg: </span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">stderr</span><span class="si">}</span><span class="s2">. Aborting.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Could not start the MPS server. Error msg: </span><span class="si">{</span><span class="n">p</span><span class="o">.</span><span class="n">stderr</span><span class="si">}</span><span class="s2">. Aborting.&quot;</span>
+            <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">config</span><span class="p">,</span> <span class="n">start</span></div>
 
@@ -244,7 +280,7 @@
 
 
 <div class="viewcode-block" id="append_branches"><a class="viewcode-back" href="../../misc.html#locuaz.cli.append_branches">[docs]</a><span class="k">def</span> <span class="nf">append_branches</span><span class="p">(</span>
-        <span class="n">sorted_iters</span><span class="p">:</span> <span class="n">PriorityQueue</span><span class="p">,</span> <span class="n">branches</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">prev_epoch</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">sorted_iters</span><span class="p">:</span> <span class="n">PriorityQueue</span><span class="p">,</span> <span class="n">branches</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">prev_epoch</span><span class="p">:</span> <span class="nb">int</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">sorted_iters</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
         <span class="k">return</span> <span class="s2">&quot;&quot;</span>
@@ -314,8 +350,11 @@
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="lacks_branches"><a class="viewcode-back" href="../../misc.html#locuaz.cli.lacks_branches">[docs]</a><span class="k">def</span> <span class="nf">lacks_branches</span><span class="p">(</span><span class="n">current_branches</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]],</span>
-                   <span class="n">top_branches</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]],</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="lacks_branches"><a class="viewcode-back" href="../../misc.html#locuaz.cli.lacks_branches">[docs]</a><span class="k">def</span> <span class="nf">lacks_branches</span><span class="p">(</span>
+    <span class="n">current_branches</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]],</span>
+    <span class="n">top_branches</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]],</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks the integrity of the current epoch. This prevents restart errors after the protocol was interrupted</span>
 <span class="sd">    during the initialization of new epochs, due to missing branches or incomplete branches (branch wasn&#39;t fully</span>
@@ -364,9 +403,16 @@
             <span class="n">tpr_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">branch_path</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;main&quot;</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.tpr&quot;</span><span class="p">)</span>
 
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">assert</span> <span class="n">pdb_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">gro_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">zip_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">tpr_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span>
+                <span class="k">assert</span> <span class="p">(</span>
+                    <span class="n">pdb_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span>
+                    <span class="ow">and</span> <span class="n">gro_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span>
+                    <span class="ow">and</span> <span class="n">zip_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span>
+                    <span class="ow">and</span> <span class="n">tpr_file</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span>
+                <span class="p">)</span>
             <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
-                <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Branch </span><span class="si">{</span><span class="n">branch_fn</span><span class="si">}</span><span class="s2"> is incomplete. Will back up the whole epoch and generate it again.&quot;</span><span class="p">)</span>
+                <span class="n">warn</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Branch </span><span class="si">{</span><span class="n">branch_fn</span><span class="si">}</span><span class="s2"> is incomplete. Will back up the whole epoch and generate it again.&quot;</span>
+                <span class="p">)</span>
                 <span class="k">for</span> <span class="n">branch_fn2</span> <span class="ow">in</span> <span class="n">current_branches</span><span class="p">:</span>
                     <span class="n">backup_branch</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;work&quot;</span><span class="p">],</span> <span class="n">branch_fn2</span><span class="p">))</span>
 
@@ -375,7 +421,9 @@
     <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="read_key_from_tracking_file"><a class="viewcode-back" href="../../misc.html#locuaz.cli.read_key_from_tracking_file">[docs]</a><span class="k">def</span> <span class="nf">read_key_from_tracking_file</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">tracking</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<div class="viewcode-block" id="read_key_from_tracking_file"><a class="viewcode-back" href="../../misc.html#locuaz.cli.read_key_from_tracking_file">[docs]</a><span class="k">def</span> <span class="nf">read_key_from_tracking_file</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">tracking</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">config</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">tracking</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
     <span class="k">except</span> <span class="p">(</span><span class="ne">Exception</span><span class="p">,):</span>
@@ -398,33 +446,45 @@
         <span class="n">top_branches</span> <span class="o">=</span> <span class="n">get_valid_branch_dirs</span><span class="p">(</span><span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;top_branches&quot;</span><span class="p">],</span> <span class="n">config</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">lacks_branches</span><span class="p">(</span><span class="n">current_branches</span><span class="p">,</span> <span class="n">top_branches</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
-            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Will ignore the tracking file. The current branches field is invalid.&quot;</span><span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Will ignore the tracking file. The current branches field is invalid.&quot;</span>
+            <span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;previous_branches&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">previous_branches</span>
         <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;current_branches&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">current_branches</span>
         <span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;top_branches&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">top_branches</span>
-        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;misc&quot;</span><span class="p">][</span><span class="s2">&quot;epoch_mutated_positions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;epoch_mutated_positions&quot;</span><span class="p">])</span>
+        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;misc&quot;</span><span class="p">][</span><span class="s2">&quot;epoch_mutated_positions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+            <span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;epoch_mutated_positions&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="s2">&quot;memory_positions&quot;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">]:</span>
-            <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tracking file&#39;s &#39;memory_positions&#39; ignored: </span><span class="si">{</span><span class="n">tracking</span><span class="p">[</span><span class="s1">&#39;memory_positions&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
-                 <span class="sa">f</span><span class="s2">&quot;Using input config &#39;memory_positions&#39; instead: </span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">][</span><span class="s1">&#39;memory_positions&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Tracking file&#39;s &#39;memory_positions&#39; ignored: </span><span class="si">{</span><span class="n">tracking</span><span class="p">[</span><span class="s1">&#39;memory_positions&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Using input config &#39;memory_positions&#39; instead: </span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">][</span><span class="s1">&#39;memory_positions&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;memory_positions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;memory_positions&quot;</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="s2">&quot;failed_memory_positions&quot;</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">]:</span>
-            <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tracking file&#39;s &#39;failed_memory_positions&#39; ignored: </span><span class="si">{</span><span class="n">tracking</span><span class="p">[</span><span class="s1">&#39;failed_memory_positions&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
-                 <span class="s2">&quot;Using input config &#39;failed_memory_positions&#39; instead: &quot;</span>
-                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">][</span><span class="s1">&#39;failed_memory_positions&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Tracking file&#39;s &#39;failed_memory_positions&#39; ignored: </span><span class="si">{</span><span class="n">tracking</span><span class="p">[</span><span class="s1">&#39;failed_memory_positions&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;Using input config &#39;failed_memory_positions&#39; instead: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;protocol&#39;</span><span class="p">][</span><span class="s1">&#39;failed_memory_positions&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;failed_memory_positions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tracking</span><span class="p">[</span><span class="s2">&quot;failed_memory_positions&quot;</span><span class="p">]</span>
+            <span class="n">config</span><span class="p">[</span><span class="s2">&quot;protocol&quot;</span><span class="p">][</span><span class="s2">&quot;failed_memory_positions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tracking</span><span class="p">[</span>
+                <span class="s2">&quot;failed_memory_positions&quot;</span>
+            <span class="p">]</span>
 
         <span class="c1"># Read options related to the DAGs</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;project_dag&quot;</span><span class="p">,</span> <span class="s2">&quot;project_mut_dag&quot;</span><span class="p">,</span> <span class="s2">&quot;mutations&quot;</span><span class="p">):</span>
             <span class="n">config</span> <span class="o">=</span> <span class="n">read_key_from_tracking_file</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">tracking</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
 
     <span class="k">except</span> <span class="p">(</span><span class="ne">Exception</span><span class="p">,):</span>
-        <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Will ignore the tracking file. It is in an invalid state with respect to the working dir.&quot;</span><span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;Will ignore the tracking file. It is in an invalid state with respect to the working dir.&quot;</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">return</span> <span class="kc">True</span></div>
@@ -462,24 +522,33 @@
         <span class="k">return</span> <span class="n">config</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No valid branches in work_dir. Aborting.&quot;</span><span class="p">)</span></div>
 
+
 <span class="c1"># TODO: deprecate</span>
 <div class="viewcode-block" id="check_gmxmmpbsa_legacy"><a class="viewcode-back" href="../../misc.html#locuaz.cli.check_gmxmmpbsa_legacy">[docs]</a><span class="k">def</span> <span class="nf">check_gmxmmpbsa_legacy</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">generation_config</span> <span class="o">:=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;generation&quot;</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">generation_config</span><span class="p">[</span><span class="s2">&quot;generator&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;SPM4gmxmmpbsa&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="s2">&quot;gmxmmpbsa&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;scoring&quot;</span><span class="p">][</span><span class="s2">&quot;scorers&quot;</span><span class="p">]:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;gmxmmbpsa&#39; function is necessary to use the &#39;SPM4mmpbsa&#39; mutator&quot;</span><span class="p">,</span>
-                      <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;&#39;gmxmmbpsa&#39; function is necessary to use the &#39;SPM4mmpbsa&#39; mutator&quot;</span><span class="p">,</span>
+                    <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
+                <span class="p">)</span>
                 <span class="k">raise</span> <span class="n">UserInputError</span>
 
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;scorers&quot;</span><span class="p">],</span> <span class="s2">&quot;gmxmmpbsa&quot;</span><span class="p">,</span> <span class="s2">&quot;gmxmmpbsa&quot;</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+                <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;scorers&quot;</span><span class="p">],</span> <span class="s2">&quot;gmxmmpbsa&quot;</span><span class="p">,</span> <span class="s2">&quot;gmxmmpbsa&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span>
+            <span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
                     <span class="k">if</span> <span class="s2">&quot;idecomp&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                         <span class="k">return</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">continue</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Input &#39;gmxmmbpsa&#39; is not performing &#39;idecomp&#39; residue decomposition. &quot;</span>
-                      <span class="s2">&quot;This is a prerequisite for the SPM4gmxmmpbsa Mutation Generator.&quot;</span><span class="p">,</span>
-                      <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Input &#39;gmxmmbpsa&#39; is not performing &#39;idecomp&#39; residue decomposition. &quot;</span>
+                    <span class="s2">&quot;This is a prerequisite for the SPM4gmxmmpbsa Mutation Generator.&quot;</span><span class="p">,</span>
+                    <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
+                <span class="p">)</span>
                 <span class="k">raise</span> <span class="n">UserInputError</span></div>
 
 
@@ -493,43 +562,74 @@
 <div class="viewcode-block" id="check_sites_mmpbsa"><a class="viewcode-back" href="../../misc.html#locuaz.cli.check_sites_mmpbsa">[docs]</a><span class="k">def</span> <span class="nf">check_sites_mmpbsa</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;creation&quot;</span><span class="p">][</span><span class="s2">&quot;sites_probability&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;mmpbsa&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="s2">&quot;gmxmmpbsa&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;scoring&quot;</span><span class="p">][</span><span class="s2">&quot;scorers&quot;</span><span class="p">]:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;gmxmmbpsa&#39; function is necessary to use the mmpbsa &quot;</span>
-                  <span class="s2">&quot;probability distribution.&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;&#39;gmxmmbpsa&#39; function is necessary to use the mmpbsa &quot;</span>
+                <span class="s2">&quot;probability distribution.&quot;</span><span class="p">,</span>
+                <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="k">raise</span> <span class="n">UserInputError</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;scorers&quot;</span><span class="p">],</span> <span class="s2">&quot;gmxmmpbsa&quot;</span><span class="p">,</span> <span class="s2">&quot;gmxmmpbsa&quot;</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+            <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;paths&quot;</span><span class="p">][</span><span class="s2">&quot;scorers&quot;</span><span class="p">],</span> <span class="s2">&quot;gmxmmpbsa&quot;</span><span class="p">,</span> <span class="s2">&quot;gmxmmpbsa&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
                 <span class="k">if</span> <span class="s2">&quot;idecomp&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                     <span class="k">return</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">continue</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Input &#39;gmxmmbpsa&#39; is not performing &#39;idecomp&#39; residue &quot;</span>
-                  <span class="s2">&quot;decomposition. This is a prerequisite for the gmxmmpbsa &quot;</span>
-                  <span class="s2">&quot;probability distribution.&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Input &#39;gmxmmbpsa&#39; is not performing &#39;idecomp&#39; residue &quot;</span>
+                <span class="s2">&quot;decomposition. This is a prerequisite for the gmxmmpbsa &quot;</span>
+                <span class="s2">&quot;probability distribution.&quot;</span><span class="p">,</span>
+                <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="k">raise</span> <span class="n">UserInputError</span></div>
 
 
 <div class="viewcode-block" id="check_bins"><a class="viewcode-back" href="../../misc.html#locuaz.cli.check_bins">[docs]</a><span class="k">def</span> <span class="nf">check_bins</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">bins</span> <span class="o">:=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;creation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;aa_bins&quot;</span><span class="p">):</span>
-        <span class="n">bins</span> <span class="o">=</span> <span class="p">[</span> <span class="nb">list</span><span class="p">(</span><span class="nb">bin</span><span class="p">)</span> <span class="k">for</span> <span class="nb">bin</span> <span class="ow">in</span> <span class="n">bins</span> <span class="p">]</span>
-        <span class="n">aas</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="s1">&#39;Q&#39;</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">,</span>
-                      <span class="s1">&#39;I&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;V&#39;</span><span class="p">,</span> <span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;W&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">}</span>
-        <span class="n">missing_aas</span> <span class="o">=</span> <span class="n">aas</span><span class="o">.</span><span class="n">symmetric_difference</span><span class="p">(</span>
-            <span class="nb">set</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">bins</span><span class="p">)))</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">missing_aas</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">missing_aas</span> <span class="o">!=</span> <span class="p">{</span><span class="s1">&#39;C&#39;</span><span class="p">}:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">&#39;Invalid input &quot;aa_bins&quot;: </span><span class="si">{</span><span class="n">bins</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
-                <span class="sa">f</span><span class="s1">&#39;Missing amino acids: </span><span class="si">{</span><span class="n">missing_aas</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
-                <span class="sa">f</span><span class="s1">&#39;Enter all amino acids.&#39;</span><span class="p">)</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="nb">bin</span><span class="p">)</span> <span class="k">for</span> <span class="nb">bin</span> <span class="ow">in</span> <span class="n">bins</span><span class="p">]</span>
+        <span class="n">aas</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;D&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;E&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;S&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;T&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;R&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;N&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Q&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;H&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;K&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;A&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;G&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;I&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;M&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;L&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;V&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;P&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;F&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;W&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;C&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">missing_aas</span> <span class="o">=</span> <span class="n">aas</span><span class="o">.</span><span class="n">symmetric_difference</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">bins</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">missing_aas</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;There are missing amino acids (</span><span class="si">{</span><span class="n">missing_aas</span><span class="si">=}</span><span class="s2">) in </span><span class="si">{</span><span class="n">bins</span><span class="si">=}</span><span class="s2">. Be sure this is correct.&quot;</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;creation&quot;</span><span class="p">][</span><span class="s2">&quot;aa_bins_criteria&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;without&quot;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">UserInputError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot set &#39;aa_bins_criteria&#39; to exclude &quot;</span>
-                                 <span class="s2">&quot;with just 1 bin.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">UserInputError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Cannot set &#39;aa_bins_criteria&#39; to exclude with just 1 bin.&quot;</span>
+            <span class="p">)</span>
         <span class="n">config</span><span class="p">[</span><span class="s2">&quot;creation&quot;</span><span class="p">][</span><span class="s2">&quot;aa_bins&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bins</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Cysteine is not included.</span>
-        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;creation&quot;</span><span class="p">][</span><span class="s2">&quot;aa_bins&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="s1">&#39;S&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">],</span>
-                                         <span class="p">[</span><span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="s1">&#39;Q&#39;</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">],</span>
-                                         <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">,</span> <span class="s1">&#39;I&#39;</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;V&#39;</span><span class="p">],</span>
-                                         <span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;W&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">]]</span>
+        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;creation&quot;</span><span class="p">][</span><span class="s2">&quot;aa_bins&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">[</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;S&quot;</span><span class="p">,</span> <span class="s2">&quot;T&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="s2">&quot;R&quot;</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="s2">&quot;Q&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;K&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;G&quot;</span><span class="p">,</span> <span class="s2">&quot;I&quot;</span><span class="p">,</span> <span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;V&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="s2">&quot;W&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">],</span>
+        <span class="p">]</span>
         <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Using default &quot;aa_bins&quot;: </span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;creation&quot;</span><span class="p">][</span><span class="s2">&quot;aa_bins&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
 
@@ -539,8 +639,10 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">assert_almost_equal</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">pbbty</span><span class="p">,</span> <span class="n">decimal</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">UserInputError</span><span class="p">(</span><span class="s2">&quot;Probabilites from &#39;aa_probability_custom&#39; &quot;</span>
-                                 <span class="sa">f</span><span class="s1">&#39;must add up to 1. It adds up to: </span><span class="si">{</span><span class="n">pbbty</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span></div>
+            <span class="k">raise</span> <span class="n">UserInputError</span><span class="p">(</span>
+                <span class="s2">&quot;Probabilites from &#39;aa_probability_custom&#39; &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;must add up to 1. It adds up to: </span><span class="si">{</span><span class="n">pbbty</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span></div>
 
 
 <div class="viewcode-block" id="set_statistics"><a class="viewcode-back" href="../../misc.html#locuaz.cli.set_statistics">[docs]</a><span class="k">def</span> <span class="nf">set_statistics</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -660,14 +762,19 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Console script for locuaz.&quot;&quot;&quot;</span>
     <span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;config_file&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;File containing all the necessary parameters to run the protocol&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;--mode&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;config_file&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;File containing all the necessary parameters to run the protocol&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-m&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--mode&quot;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Choose whether to start/restart an evolution protocol or just perform a single task.&quot;</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="s2">&quot;evolve&quot;</span><span class="p">,</span>
         <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;evolve&quot;</span><span class="p">,</span> <span class="s2">&quot;run&quot;</span><span class="p">,</span> <span class="s2">&quot;run_npt&quot;</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="p">))</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;evolve&quot;</span><span class="p">,</span> <span class="s2">&quot;run&quot;</span><span class="p">,</span> <span class="s2">&quot;run_npt&quot;</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--debug&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Set/unset debug mode.&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">)</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 
@@ -690,7 +797,8 @@
             <span class="nb">print</span><span class="p">(</span>
                 <span class="s2">&quot;Will try to get the previous branches, the current branches and the memory of the &quot;</span>
                 <span class="s2">&quot;last mutated positions from the work dir. Memory of failed mutations won&#39;t be loaded.&quot;</span><span class="p">,</span>
-                <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="n">config</span> <span class="o">=</span> <span class="n">set_branches</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
             <span class="n">config</span> <span class="o">=</span> <span class="n">set_empty_dags</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
             <span class="c1"># Set up the memory</span>
@@ -704,15 +812,10 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">config</span><span class="p">[</span><span class="s2">&quot;misc&quot;</span><span class="p">][</span><span class="s2">&quot;epoch_mutated_positions&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
-    <span class="c1"># Set up environment</span>
+    <span class="c1"># Make sure OMP_NUM_THREADS doens&#39;t bother</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">omp_procs_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;md&quot;</span><span class="p">][</span><span class="s2">&quot;omp_procs&quot;</span><span class="p">])</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;OMP_PLACES&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;threads&quot;</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;OMP_NUM_THREADS&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="n">omp_procs_str</span><span class="p">:</span>
-            <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Setting &#39;OMP_NUM_THREADS&#39; environment variable to input &#39;omp_procs&#39; </span><span class="si">{</span><span class="n">omp_procs_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;OMP_NUM_THREADS&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">omp_procs_str</span>
+        <span class="k">del</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;OMP_NUM_THREADS&quot;</span><span class="p">]</span>
     <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-        <span class="c1"># User asked for MPS.</span>
         <span class="k">pass</span>
 
     <span class="k">return</span> <span class="n">config</span><span class="p">,</span> <span class="n">starts</span></div>

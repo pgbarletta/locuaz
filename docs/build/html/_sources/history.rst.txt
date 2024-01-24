@@ -2,11 +2,92 @@
 History
 =======
 
-0.7.4 (2023-12-)
+0.7.5.2 (2024-1-)
+------------------
+ * Fix wrong epoch id on branches when using roundrobin pruner.
+ * Fix ``get_interface_surface()`` when 'CYX' residues are present. When
+   collecting resnames from freesasa, use AA_MAP to turn 'CYX' into 'CYS'.
+* Fix ``get_pdb_tpr()`` when an ion is assigned its own chainID.
+  'trjconv', instead of reading the chainIDs from the .tpr file, generates them
+  by itself, leaving the ion without its chainID and misnaming the chainIDs of
+  the following molecules. Added a new method ``get_pdb()`` that can use biobb
+  or MDAnalysis to build the PDB. This will be a temporary fix until GROMACS
+  changes its behaviour, or a permanent one (much more likely).
+* Fix ``schema.yaml`` to allow for resnames shorter than 3 letters when setting
+   ``allowed_nonstandard_residues``.
+* Fix ``fixup_top()`` better error reporting .
+
+0.7.5.1 (2023-12-)
+------------------
+ * epoch initialization: fix broken initialization when tleap wasn't being used
+   by adding locks around pdb2gmx call, which apparently can't be parallelized.
+
+0.7.5 (2023-12-)
+------------------
+ * MD runs: add tolerance to failed MDs and better login when a run fails.
+ * MD runs: only run NVT after all MIN are done. MD issues were coming up due to
+   the asynchronicity of these 2 steps.
+ * epoch initialization: make branch creation parallel.
+
+0.7.4.8 (2023-12-)
+------------------
+ * scoring: silence warning from writing fixed PDB in image_traj()
+ * MD runs: fix run_min_nvt_epoch(). It was serializing NVT runs instead of parallelizing them.
+ * Mutator: fix evoef2 initialization
+ * Mutation: warn if setting ``allowed_nonstandard_residues`` and using any other
+   Mutator than dlpr, since ``dlp`` may create overlaps and ``evoef2`` doesn't see ligands.
+
+0.7.4.7 (2023-12-)
+------------------
+ * Mutation Creation: fix ``uniform.csv`` for uniform amino acid selector
+   probability.
+ * Mutation Creation: don't accept amino acids with zero probability.
+ * branch creation: fix remove_overlapping_solvent's behaviour when no water is added.
+
+0.7.4.6 (2023-12-)
+------------------
+ * Fix ``uniform.csv`` for uniform amino acid selector probability.
+ * Fix epoch initialization. If the branch creation loop fails twice, it will
+   abort branch creation and just continue with the protocol.
+
+0.7.4.5 (2023-12-)
+------------------
+ * Fix auto_md_params() again.
+ * Fix bug that would come up during an epoch initialization when top branches
+   only differ by 1 amino acid, that is in the same position that is currently
+   being mutated. If the mutation creator assigns the same amino acid to both of
+   them, identical branches would be generated.
+   This scenario is rare, but may come up during the first steps of an optimization
+   that is using little to no memory of past mutation positions and hence may
+   mutate the same position twice in a row or with few epochs in between.
+   *locuaz* allows the creator repeat amino acids for different branches since it
+   assumes that branches will differ in other positions.
+   To remediate this bug, *locuaz* will generate new mutations from other random
+   top branches to replace those branches that were repetitions.
+
+0.7.4.4 (2023-11-)
+------------------
+ * Remove ``OMP_NUM_THREADS`` environment variable.
+ * Fix auto_md_params().
+
+0.7.4.3 (2023-11-)
+------------------
+ * Force set omp threads environment variable at each MD run.
+
+0.7.4.2 (2023-11-)
+------------------
+ * Fix NUMA regions.
+
+0.7.4.1 (2023-11-)
+------------------
+ * Allow more NUMA regions than GPUs available.
+
+0.7.4 (2023-11-)
 ------------------
  * Fix bug in creation options schema.
  * Fix bug ``BaseMutator.port_mutation()`` when a non standard residue is surrounding
    the mutated residue.
+ * Fix bug when host sets ``OMP_NUM_THREADS`` environment variable and ``mps=true``.
 
 0.7.3 (2023-11-)
 ------------------

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.aminoacidselector &mdash; locuaz 0.7.3 documentation</title>
+  <title>locuaz.aminoacidselector &mdash; locuaz 0.7.5.2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.7.3
+                0.7.5.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -100,10 +100,11 @@
   <h1>Source code for locuaz.aminoacidselector</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
 <span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">Logger</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">choices</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Final</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="kn">from</span> <span class="nn">locuaz.mutation</span> <span class="kn">import</span> <span class="n">Mutation</span>
@@ -141,15 +142,19 @@
 <span class="sd">        indices of the bins that are available for the next mutation for any</span>
 <span class="sd">        epoch and any site. The BinPool will refill each time it&#39;s emptied.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># Branch names + site are the keys in these 2 dicts.</span>
     <span class="c1"># We use them to better decide the next mutation on each branch.</span>
     <span class="n">branch_bins</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Site</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span>
     <span class="n">branch_bins_indices</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Site</span><span class="p">],</span> <span class="n">BinPool</span><span class="p">]</span>
     <span class="n">epoch_bins_indices</span><span class="p">:</span> <span class="n">BinPool</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_branches</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Branch</span><span class="p">],</span>
-                 <span class="n">bins</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
-                 <span class="n">sites</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Site</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">top_branches</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Branch</span><span class="p">],</span>
+        <span class="n">bins</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+        <span class="n">sites</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Site</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nbins</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">epoch_bins_indices</span> <span class="o">=</span> <span class="n">BinPool</span><span class="o">.</span><span class="n">from_size</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbins</span><span class="p">)</span>
 
@@ -158,32 +163,38 @@
         <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="n">sites</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">branch_name</span> <span class="ow">in</span> <span class="n">top_branches</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">branch_bins</span><span class="p">[(</span><span class="n">branch_name</span><span class="p">,</span> <span class="n">site</span><span class="p">)]</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">branch_bins_indices</span><span class="p">[(</span><span class="n">branch_name</span><span class="p">,</span> <span class="n">site</span><span class="p">)]</span> <span class="o">=</span> <span class="n">BinPool</span><span class="o">.</span><span class="n">from_size</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbins</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">branch_bins_indices</span><span class="p">[(</span><span class="n">branch_name</span><span class="p">,</span> <span class="n">site</span><span class="p">)]</span> <span class="o">=</span> <span class="n">BinPool</span><span class="o">.</span><span class="n">from_size</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">nbins</span>
+                <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">remove_from_memory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branch_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">site</span><span class="p">:</span> <span class="n">Site</span><span class="p">,</span> <span class="n">bin_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">aa</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">remove_from_memory</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">branch_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">site</span><span class="p">:</span> <span class="n">Site</span><span class="p">,</span> <span class="n">bin_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">aa</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">branch_bins_indices</span><span class="p">[(</span><span class="n">branch_name</span><span class="p">,</span> <span class="n">site</span><span class="p">)]</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">bin_idx</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">epoch_bins_indices</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">bin_idx</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">branch_bins</span><span class="p">[(</span><span class="n">branch_name</span><span class="p">,</span> <span class="n">site</span><span class="p">)][</span><span class="n">bin_idx</span><span class="p">]</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">aa</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">get_bin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branch_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">site</span><span class="p">:</span> <span class="n">Site</span><span class="p">,</span>
-                <span class="n">old_aa</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">excluded_bins</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-
+    <span class="k">def</span> <span class="nf">get_bin</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">branch_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">site</span><span class="p">:</span> <span class="n">Site</span><span class="p">,</span> <span class="n">old_aa</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">excluded_bins</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">bin_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__attempt_novel_bin_idx__</span><span class="p">(</span><span class="n">branch_name</span><span class="p">,</span> <span class="n">site</span><span class="p">,</span> <span class="n">excluded_bins</span><span class="p">)</span>
             <span class="n">bin_aas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">branch_bins</span><span class="p">[(</span><span class="n">branch_name</span><span class="p">,</span> <span class="n">site</span><span class="p">)][</span><span class="n">bin_idx</span><span class="p">]</span>
+
             <span class="n">bin_aas</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">old_aa</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bin_aas</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">bin_idx</span>
             <span class="n">excluded_bins</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bin_idx</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">excluded_bins</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbins</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">GenerationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot mutate branch </span><span class="si">{</span><span class="n">branch_name</span><span class="si">}</span><span class="s2">. &quot;</span>
-                                      <span class="s2">&quot;All amino acids from the available bins &quot;</span>
-                                      <span class="s2">&quot;have already been used.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">GenerationError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Cannot mutate branch </span><span class="si">{</span><span class="n">branch_name</span><span class="si">}</span><span class="s2">. &quot;</span>
+                    <span class="s2">&quot;All amino acids from the available bins &quot;</span>
+                    <span class="s2">&quot;have already been used.&quot;</span>
+                <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__attempt_novel_bin_idx__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                                  <span class="n">branch_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                                  <span class="n">site</span><span class="p">:</span> <span class="n">Site</span><span class="p">,</span>
-                                  <span class="n">excluded_bins</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__attempt_novel_bin_idx__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">branch_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">site</span><span class="p">:</span> <span class="n">Site</span><span class="p">,</span> <span class="n">excluded_bins</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Tries to pick a random bin number that&#39;s available both in the branch</span>
 <span class="sd">        and the epoch bin pools and isn&#39;t excluded.</span>
@@ -235,6 +246,7 @@
 <span class="sd">    creation_config : Dict[str, Any]</span>
 <span class="sd">        creation section from the input config file</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">use_bins</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="n">bins</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
     <span class="n">aa_to_bin</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;&quot;</span><span class="p">:</span> <span class="nb">set</span><span class="p">()}</span>
@@ -257,26 +269,49 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">N_BINS</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bins</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">bins_criteria</span> <span class="o">=</span> <span class="n">creation_config</span><span class="p">[</span><span class="s2">&quot;aa_bins_criteria&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aa_distribution</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__initialize_probabilities__</span><span class="p">(</span><span class="n">creation_config</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__initialize_probabilities__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">creation_config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">creation_config</span><span class="p">[</span><span class="s2">&quot;aa_probability&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;ReisBarletta&quot;</span><span class="p">:</span>
-            <span class="c1"># pd_reis_barletta_full = pd.read_csv(&quot;reis_barletta_full.csv&quot;)</span>
-            <span class="c1"># {r[1].AminoAcid: r[1].Probability for r in pd_reis_barletta_full.iterrows()}</span>
-
-            <span class="n">pd_reis_barletta_cdr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span>
-                <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;reis_barletta_cdr.csv&quot;</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">aa_distribution</span> <span class="o">=</span> <span class="p">{</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">AminoAcid</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">Probability</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">pd_reis_barletta_cdr</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()}</span>
-
+            <span class="n">pd_reis_barletta_cdr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+                <span class="n">Path</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;reis_barletta_cdr.csv&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">aa_distribution</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">AminoAcid</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">Probability</span>
+                <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">pd_reis_barletta_cdr</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span>
+            <span class="p">}</span>
         <span class="k">elif</span> <span class="n">creation_config</span><span class="p">[</span><span class="s2">&quot;aa_probability&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;custom&quot;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">aa_distribution</span> <span class="o">=</span> <span class="n">creation_config</span><span class="p">[</span><span class="s2">&quot;custom&quot;</span><span class="p">]</span>
+            <span class="n">aa_distribution</span> <span class="o">=</span> <span class="n">creation_config</span><span class="p">[</span><span class="s2">&quot;custom&quot;</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">pd_uniform</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span>
-                <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;uniform.csv&quot;</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">aa_distribution</span> <span class="o">=</span> <span class="p">{</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">AminoAcid</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">Probability</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">pd_uniform</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()}</span>
+            <span class="n">pd_uniform</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+                <span class="n">Path</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="s2">&quot;uniform.csv&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">aa_distribution</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">AminoAcid</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">Probability</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">pd_uniform</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()</span>
+            <span class="p">}</span>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">top_branches</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Branch</span><span class="p">],</span>
-                 <span class="n">branches</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-                 <span class="n">sites</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Site</span><span class="p">],</span>
-                 <span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Mutation</span><span class="p">]]:</span>
+        <span class="c1"># Maybe I should do this check in cli.py</span>
+        <span class="n">bins_aas</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bins</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="n">distro_aas</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">aa_distribution</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">bins_aas</span><span class="p">)</span><span class="o">.</span><span class="n">symmetric_difference</span><span class="p">(</span><span class="n">distro_aas</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">GenerationError</span><span class="p">(</span>
+                <span class="s2">&quot;Fatal error. Amino acids from bins don&#39;t match the ones from the &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot; probability distribution. Bins amino acids: </span><span class="si">{</span><span class="n">bins_aas</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Probability distribution amino acids: </span><span class="si">{</span><span class="n">distro_aas</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Different amino acids: </span><span class="si">{</span><span class="n">diff</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">aa_distribution</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">top_branches</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Branch</span><span class="p">],</span>
+        <span class="n">branches</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">sites</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Site</span><span class="p">],</span>
+        <span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Mutation</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate mutations according to user input (bins, probability of</span>
 <span class="sd">        choosing each amino acid, etc...).</span>
@@ -298,49 +333,61 @@
         <span class="n">new_branches</span> <span class="o">=</span> <span class="n">branches</span>
         <span class="n">old_branches_pool</span> <span class="o">=</span> <span class="n">InfinitePool</span><span class="p">(</span><span class="n">top_branches</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">memory</span> <span class="o">=</span> <span class="n">AminoAcidMemory</span><span class="p">(</span><span class="n">top_branches</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bins</span><span class="p">,</span> <span class="n">sites</span><span class="p">)</span>
+        <span class="c1"># We&#39;ll use this set to make sure we&#39;re not creating identical branches.</span>
+        <span class="n">new_branch_names</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
-        <span class="k">while</span> <span class="n">new_branches</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">while</span> <span class="n">new_branches</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">branch</span> <span class="o">=</span> <span class="n">top_branches</span><span class="p">[</span><span class="n">old_branches_pool</span><span class="o">.</span><span class="n">pop</span><span class="p">()]</span>
             <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="n">sites</span><span class="p">:</span>
+                <span class="c1"># No matter what, we&#39;ll decrease the branch counte,r so we&#39;re sure</span>
+                <span class="c1"># it&#39;ll end. This means we may return less new branches than asked for.</span>
+                <span class="n">new_branches</span> <span class="o">-=</span> <span class="mi">1</span>
                 <span class="n">old_aa</span> <span class="o">=</span> <span class="n">branch</span><span class="o">.</span><span class="n">resnames</span><span class="p">[</span><span class="n">site</span><span class="o">.</span><span class="n">idx_chain</span><span class="p">][</span><span class="n">site</span><span class="o">.</span><span class="n">idx_residue</span><span class="p">]</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">new_aa</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__select_aa__</span><span class="p">(</span><span class="n">branch</span><span class="o">.</span><span class="n">branch_name</span><span class="p">,</span> <span class="n">site</span><span class="p">,</span> <span class="n">old_aa</span><span class="p">)</span>
-                    <span class="c1"># Add this mutation to this branch.</span>
-                    <span class="n">mutations</span><span class="p">[</span><span class="n">branch</span><span class="o">.</span><span class="n">branch_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Mutation</span><span class="o">.</span><span class="n">from_site</span><span class="p">(</span>
-                        <span class="n">site</span><span class="p">,</span> <span class="n">old_aa</span><span class="o">=</span><span class="n">old_aa</span><span class="p">,</span> <span class="n">new_aa</span><span class="o">=</span><span class="n">new_aa</span><span class="p">)</span>
-                    <span class="p">)</span>
                 <span class="k">except</span> <span class="n">GenerationError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                    <span class="k">continue</span>
 
-                <span class="n">new_branches</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="n">mut</span> <span class="o">=</span> <span class="n">Mutation</span><span class="o">.</span><span class="n">from_site</span><span class="p">(</span><span class="n">site</span><span class="p">,</span> <span class="n">old_aa</span><span class="o">=</span><span class="n">old_aa</span><span class="p">,</span> <span class="n">new_aa</span><span class="o">=</span><span class="n">new_aa</span><span class="p">)</span>
+                <span class="n">branch_name</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">branch</span><span class="o">.</span><span class="n">generate_name_resname</span><span class="p">(</span><span class="n">mut</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">branch_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new_branch_names</span><span class="p">:</span>
+                    <span class="n">new_branch_names</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">branch_name</span><span class="p">)</span>
+                    <span class="c1"># Add this mutation to this branch.</span>
+                    <span class="n">mutations</span><span class="p">[</span><span class="n">branch</span><span class="o">.</span><span class="n">branch_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mut</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">mutations</span>
 
     <span class="k">def</span> <span class="nf">__select_aa__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branch_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">site</span><span class="p">:</span> <span class="n">Site</span><span class="p">,</span> <span class="n">old_aa</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bins_criteria</span> <span class="o">==</span> <span class="s2">&quot;without&quot;</span><span class="p">:</span>
             <span class="n">excluded_bins</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aa_to_bin</span><span class="p">[</span><span class="n">old_aa</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># &#39;within&#39;. All bins but the one that corresponds to the aa are excluded.</span>
-            <span class="n">excluded_bins</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bins</span><span class="p">)))</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">aa_to_bin</span><span class="p">[</span><span class="n">old_aa</span><span class="p">]</span>
+            <span class="n">excluded_bins</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="nb">set</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bins</span><span class="p">)))</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">aa_to_bin</span><span class="p">[</span><span class="n">old_aa</span><span class="p">]</span>
+            <span class="p">)</span>
 
         <span class="n">bin_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="o">.</span><span class="n">get_bin</span><span class="p">(</span><span class="n">branch_name</span><span class="p">,</span> <span class="n">site</span><span class="p">,</span> <span class="n">old_aa</span><span class="p">,</span> <span class="n">excluded_bins</span><span class="p">)</span>
         <span class="c1"># Normalize the probabilities of the AAs in the bin, so they add up to 1</span>
-        <span class="n">bin_aas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_norm_bin__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aa_distribution</span><span class="p">,</span>
-                                        <span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="o">.</span><span class="n">branch_bins</span><span class="p">[(</span><span class="n">branch_name</span><span class="p">,</span> <span class="n">site</span><span class="p">)][</span><span class="n">bin_idx</span><span class="p">])</span>
+        <span class="n">bin_aas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_norm_bin__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">aa_distribution</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="o">.</span><span class="n">branch_bins</span><span class="p">[(</span><span class="n">branch_name</span><span class="p">,</span> <span class="n">site</span><span class="p">)][</span><span class="n">bin_idx</span><span class="p">]</span>
+        <span class="p">)</span>
         <span class="n">new_aa</span> <span class="o">=</span> <span class="n">choices</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">bin_aas</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="nb">list</span><span class="p">(</span><span class="n">bin_aas</span><span class="o">.</span><span class="n">values</span><span class="p">()))[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">memory</span><span class="o">.</span><span class="n">remove_from_memory</span><span class="p">(</span><span class="n">branch_name</span><span class="p">,</span> <span class="n">site</span><span class="p">,</span> <span class="n">bin_idx</span><span class="p">,</span> <span class="n">new_aa</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">new_aa</span>
 
-    <span class="k">def</span> <span class="nf">__get_norm_bin__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                         <span class="n">distro</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">],</span>
-                         <span class="n">aa_bin</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">__get_norm_bin__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">distro</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">],</span> <span class="n">aa_bin</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__norm_distribution__</span><span class="p">(</span>
-            <span class="p">{</span><span class="n">aa</span><span class="p">:</span> <span class="n">prob</span> <span class="k">for</span> <span class="n">aa</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">distro</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">aa</span> <span class="ow">in</span> <span class="n">aa_bin</span><span class="p">})</span>
+            <span class="p">{</span><span class="n">aa</span><span class="p">:</span> <span class="n">prob</span> <span class="k">for</span> <span class="n">aa</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">distro</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">aa</span> <span class="ow">in</span> <span class="n">aa_bin</span><span class="p">}</span>
+        <span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">__norm_distribution__</span><span class="p">(</span><span class="n">distro</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span>
-                              <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">__norm_distribution__</span><span class="p">(</span>
+        <span class="n">distro</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">float</span><span class="p">]:</span>
         <span class="n">tot</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">distro</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">aa</span><span class="p">:</span> <span class="n">prob</span> <span class="o">/</span> <span class="n">tot</span> <span class="k">for</span> <span class="n">aa</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">distro</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
 </pre></div>

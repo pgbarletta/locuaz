@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>locuaz.basemutator &mdash; locuaz 0.7.4 documentation</title>
+  <title>locuaz.basemutator &mdash; locuaz 0.7.5.2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -33,7 +33,7 @@
             locuaz
           </a>
               <div class="version">
-                0.7.4
+                0.7.5.2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -302,13 +302,10 @@
 <div class="viewcode-block" id="memorize_mutations"><a class="viewcode-back" href="../../mutators.html#locuaz.basemutator.memorize_mutations">[docs]</a><span class="k">def</span> <span class="nf">memorize_mutations</span><span class="p">(</span>
     <span class="n">work_pjct</span><span class="p">:</span> <span class="n">WorkProject</span><span class="p">,</span> <span class="n">new_epoch</span><span class="p">:</span> <span class="n">Epoch</span><span class="p">,</span> <span class="n">mutations</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Mutation</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">mutated_positions</span> <span class="o">=</span> <span class="p">[</span><span class="n">mutation</span><span class="o">.</span><span class="n">resSeq</span> <span class="k">for</span> <span class="n">mutation</span> <span class="ow">in</span> <span class="n">mutations</span><span class="p">]</span>
-    <span class="n">new_epoch</span><span class="o">.</span><span class="n">mutated_positions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">mutated_positions</span><span class="p">)</span>
-
     <span class="k">if</span> <span class="n">work_pjct</span><span class="o">.</span><span class="n">has_memory</span><span class="p">:</span>
+        <span class="n">new_epoch</span><span class="o">.</span><span class="n">mutated_positions</span> <span class="o">=</span> <span class="p">{</span><span class="n">mutation</span><span class="o">.</span><span class="n">resSeq</span> <span class="k">for</span> <span class="n">mutation</span> <span class="ow">in</span> <span class="n">mutations</span><span class="p">}</span>
         <span class="n">work_pjct</span><span class="o">.</span><span class="n">mutated_positions</span><span class="o">.</span><span class="n">appendleft</span><span class="p">(</span><span class="n">new_epoch</span><span class="o">.</span><span class="n">mutated_positions</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span></div>
+    <span class="k">return</span></div>
 </pre></div>
 
            </div>

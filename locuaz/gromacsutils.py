@@ -78,8 +78,8 @@ def image_traj(
         orig_u.segments.segids = np.array(
             [segid.split("_")[-1] for segid in orig_u.segments.segids]
         )
-    #### TODO: remove when mdanalysis is updated
     orig_u.add_TopologyAttr("chainID", orig_u.atoms.segids)
+    #### TODO: remove when mdanalysis is updated
 
     # First, get a PDB with the same topology as `cluster_trj`.
     with warnings.catch_warnings():

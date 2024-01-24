@@ -1,3 +1,4 @@
+import warnings
 from abc import ABCMeta
 from collections.abc import Iterable
 from functools import singledispatch
@@ -221,21 +222,47 @@ def get_pdb_tpr(
     *,
     gro: GROStructure,
     top: ZipTopology,
+    method: str = "mda",
+    gmx_bin: str = "gmx",
+) -> Tuple[PDBStructure, TPRFile]:
+    tpr = get_tpr(gro=gro, top=top, gmx_bin=gmx_bin)
+    pdb = get_pdb(gro=gro, tpr=tpr, method=method, gmx_bin=gmx_bin)
+
+    return pdb, tpr
+
+
+def get_pdb(
+    *,
+    gro: GROStructure,
+    tpr: TPRFile,
+    method: str = "mda",
     gmx_bin: str = "gmx",
 ) -> Tuple[PDBStructure, TPRFile]:
 
-    tpr = get_tpr(gro=gro, top=top, gmx_bin=gmx_bin)
+    pdb_fn = Path(gro).parent / (gro.name + ".pdb")
+    if method == "biobb":
+        trjconv = GMXTrjConvStr(
+            input_structure_path=str(gro),
+            input_top_path=str(tpr),
+            output_str_path=str(pdb_fn),
+            properties={"binary_path": gmx_bin},
+        )
+        launch_biobb(trjconv)
+    else:
+        u = mda.Universe(str(tpr), str(gro))
+        #### TODO: remove when mdanalysis is updated
+        if u.atoms.segids[0][:3] == "seg":
+            u.segments.segids = np.array(
+                [segid.split("_")[-1] for segid in u.segments.segids]
+            )
+        u.add_TopologyAttr("chainID", u.atoms.segids)
+        #### TODO: remove when mdanalysis is updated
 
-    pdb_fn = Path(gro.file.path.parent) / (gro.name + ".pdb")
-    trjconv = GMXTrjConvStr(
-        input_structure_path=str(gro.file.path),
-        input_top_path=str(tpr.file.path),
-        output_str_path=str(pdb_fn),
-        properties={"binary_path": gmx_bin},
-    )
-    launch_biobb(trjconv)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            u.atoms.write(pdb_fn)
 
-    return PDBStructure.from_path(pdb_fn), tpr
+    return PDBStructure.from_path(pdb_fn)
 
 
 def fix_pdb_gro(

@@ -7,6 +7,12 @@ History
  * Fix wrong epoch id on branches when using roundrobin pruner.
  * Fix ``get_interface_surface()`` when 'CYX' residues are present. When
    collecting resnames from freesasa, use AA_MAP to turn 'CYX' into 'CYS'.
+* Fix ``get_pdb_tpr()`` when an ion is assigned its own chainID.
+   'trjconv', instead of reading the chainIDs from the .tpr file, generates them
+   by itself, leaving the ion without its chainID and misnaming the chainIDs of
+   the following molecules. Added a new method ``get_pdb()`` that can use biobb
+   or MDAnalysis to build the PDB. This will be a temporary fix until GROMACS
+   changes its behaviour, or a permanent one (much more likely).
 
 0.7.5.1 (2023-12-)
 ------------------

@@ -15,7 +15,7 @@ from biobb_gromacs.gromacs.grompp import Grompp
 
 from locuaz.complex import AbstractComplex, GROComplex
 from locuaz.fileutils import DirHandle, FileHandle
-from locuaz.molecules import ZipTopology, copy_mol_to
+from locuaz.molecules import ZipTopology, copy_mol_to, get_pdb, TPRFile, GROStructure
 from locuaz.moleculesutils import set_posres
 from locuaz.fixbox import fix_box_cpx
 from locuaz.primitives import launch_biobb, GromacsError
@@ -220,16 +220,9 @@ class MDrun:
             run_pdb = Path(self.dir, f"{self.out_name}.pdb")
             all_atoms_in_box, _ = fix_box_cpx(new_complex, run_pdb)
         else:
-            # Convert output .gro to PDB.
-            run_pdb = Path(self.dir) / (self.out_name + ".pdb")
-            props = {"binary_path": "gmx", "selection": "System"}
-            gro_to_pdb = GMXTrjConvStr(
-                input_structure_path=str(run_gro),
-                input_top_path=str(run_tpr),
-                output_str_path=str(run_pdb),
-                properties=props,
-            )
-            launch_biobb(gro_to_pdb, backup_dict=Path(self.dir))
+            # Just get the PDB, no imaging.
+            get_pdb(gro=GROStructure(run_gro), tpr=TPRFile(run_tpr), method="mda")
+
 
         # Build the new complex
         new_complex = type(complex).from_complex(

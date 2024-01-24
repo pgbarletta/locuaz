@@ -175,7 +175,7 @@ class GROComplex(AbstractComplex):
             )
             raise e
 
-        pdb, tpr = get_pdb_tpr(gro=gro, top=top, gmx_bin=gmx_bin)
+        pdb, tpr = get_pdb_tpr(gro=gro, top=top, method="mda")
         try:
             traj = XtcTrajectory.from_path(input_dir / (name + ".xtc"))
         except FileNotFoundError as e:

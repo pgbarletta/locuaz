@@ -2,7 +2,7 @@
 History
 =======
 
-0.7.5.2 (2023-12-)
+0.7.5.2 (2024-1-)
 ------------------
  * Fix wrong epoch id on branches when using roundrobin pruner.
  * Fix ``get_interface_surface()`` when 'CYX' residues are present. When

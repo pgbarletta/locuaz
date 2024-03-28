@@ -57,6 +57,23 @@ Get them `here <https://drive.google.com/file/d/1J4fV9aAr2nssrWN8mQ7Ui-9PVQseE0L
 or `here`_. These weights have to be extracted to a dedicated folder and its path has to be specified in the
 input config under the ``paths`` key, on the  ``mutator`` option. Check the `docs`_ for more info.
 
+
+Running
+-------
+
+After that, running *locauz* is as simple as:
+
+```
+# Activate your environment
+mamba activate locuaz
+# Point locuaz to your config file
+locuaz config.yaml
+```
+
+Check the `tutorials`_ for info on how to write this config file.
+
+.. _tutorials: https://locuaz.readthedocs.io/en/latest/tutorialsimple.html
+
 Citing
 -------
 

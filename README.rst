@@ -63,14 +63,13 @@ Running
 
 After that, running *locauz* is as simple as:
 
-```
 
-# Activate your environment
-mamba activate locuaz
-# Point locuaz to your config file
-locuaz config.yaml
+.. code-block:: console
 
-```
+    # Activate your environment
+    mamba activate locuaz
+    # Point locuaz to your config file
+    locuaz config.yaml
 
 Check the `tutorials`_ for info on how to write this config file.
 

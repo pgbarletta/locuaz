@@ -1,4 +1,4 @@
-LOCUAZ optimization protocol
+locuaz optimization protocol
 ======================================
 
 .. image:: https://img.shields.io/pypi/v/locuaz.svg
@@ -10,7 +10,7 @@ LOCUAZ optimization protocol
 
 .. image:: https://img.shields.io/badge/cite-locuaz-red
         :target: citing.html
-        :alt: Cite LOCUAZ
+        :alt: Cite locuaz
 
 .. image:: https://img.shields.io/badge/license-MIT-yellow
         :target: citing.html

@@ -10,6 +10,8 @@ locuaz
         :target: https://locuaz.readthedocs.io/en/latest/?version=latest
         :alt: Documentation Status
 
+.. image:: https://zenodo.org/badge/502907107.svg
+        :target: https://zenodo.org/doi/10.5281/zenodo.10937388
 
 Looping Uniquely Catered Amino Acid Sequences
 

@@ -6,7 +6,7 @@ Frequently Asked Questions
 
 1\_ |q1|
 --------
-*tleap* is a bit of an old piece of software and it seems that back then chainID
+*tleap* is a bit of an old piece of software, and it seems that back then chainID
 info wasn't very important. If you write out a PDB file along with your *prmtop*
 and *rst7* files when building your topology, you'll see that the PDB has no
 chainID info and neither does the topology.
@@ -155,3 +155,22 @@ Place them after the desired positions::
 
 This means that positions 2, 3, 4, 6, 7 and 8 won't be mutated on the first epoch,
 but will be eligible for mutation right after.
+
+6\_ ``AssertionError: No valid branches in input.``
+----------------------------------------------------------------
+
+If you're trying to start an optimization and you're getting this error, most
+likely you've selected an already existing ``work`` dir. You have to let *locuaz*
+create a dir on its own::
+
+    paths:
+        work: /leonardo/home/userexternal/pbarlett/non_existent_folder
+
+If the ``work`` dir already exists, *locuaz* will try to restart an optimization
+from it and then fail when it can't recognize its contents.
+
+6\_ ``AssertionError: Too few segments in the input PDB. There should be at least 3 (target+binder+solvent).``
+----------------------------------------------------------------------------------------------------------------------------
+If you're trying to start an optimization and you're getting this error, you
+probably have a starting PDB without chainID info.
+If you created your system with ``tleap``, check |q1|

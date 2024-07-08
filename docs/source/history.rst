@@ -2,7 +2,12 @@
 History
 =======
 
-0.7.5.3 (2024-1-)
+0.7.5.4 (2024-7-)
+------------------
+ * Fix bug in mutation creation with custom probability for amino acids.
+ * Improved docs.
+
+0.7.5.3 (2024-4-)
 ------------------
  * Fix install. Add networkx missing dependency.
 

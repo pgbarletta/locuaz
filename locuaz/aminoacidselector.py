@@ -183,7 +183,7 @@ class AminoAcidSelector:
                 for r in pd_reis_barletta_cdr.iterrows()
             }
         elif creation_config["aa_probability"] == "custom":
-            aa_distribution = creation_config["custom"]
+            aa_distribution = creation_config["aa_probability_custom"]
         else:
             pd_uniform = pd.read_csv(
                 Path(Path(__file__).resolve().parent, "uniform.csv")

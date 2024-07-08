@@ -47,9 +47,10 @@ def get_dir_size(folder: Path) -> float:
 
 
 def get_raw_config(config_path: str):
-    assert config_path.is_file(), f"Can't find {config_path}"
+    config_path_fn = Path(config_path)
+    assert config_path_fn.is_file(), f"Can't find {config_path}"
     try:
-        with open(Path(config_path), "r") as file:
+        with open(config_path_fn, "r") as file:
             raw_config = yaml.load(file, yaml.SafeLoader)
     except Exception as e:
         raise ValueError(

@@ -156,7 +156,7 @@ Place them after the desired positions::
 This means that positions 2, 3, 4, 6, 7 and 8 won't be mutated on the first epoch,
 but will be eligible for mutation right after.
 
-6\_ I'm getting ``AssertionError: No valid branches in input.``
+6\_ ``AssertionError: No valid branches in input.``
 ----------------------------------------------------------------
 
 If you're trying to start an optimization and you're getting this error, most
@@ -169,7 +169,7 @@ create a dir on its own::
 If the ``work`` dir already exists, *locuaz* will try to restart an optimization
 from it and then fail when it can't recognize its contents.
 
-6\_ I'm getting ``AssertionError: Too few segments in the input PDB. There should be at least 3 (target+binder+solvent)..``
+6\_ ``AssertionError: Too few segments in the input PDB. There should be at least 3 (target+binder+solvent).``
 ----------------------------------------------------------------------------------------------------------------------------
 If you're trying to start an optimization and you're getting this error, you
 probably have a starting PDB without chainID info.

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Frequently Asked Questions &mdash; locuaz 0.7.5.3 documentation</title>
+  <title>Frequently Asked Questions &mdash; locuaz 0.7.5.4 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -36,7 +36,7 @@
             locuaz
           </a>
               <div class="version">
-                0.7.5.3
+                0.7.5.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -66,8 +66,8 @@ What can I do about it?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#what-is-numa-how-can-i-know-the-number-of-numa-regions-my-machine-has">3_ What is NUMA? How can I know the number of NUMA regions my machine has?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#why-use-both-memory-positions-and-failed-memory-positions-at-the-same-time">4_ Why use both <code class="docutils literal notranslate"><span class="pre">memory_positions</span></code> and <code class="docutils literal notranslate"><span class="pre">failed_memory_positions</span></code> at the same time?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#what-are-the-empty-brackets-in-the-memory-positions-list">5_ What are the empty brackets in the <code class="docutils literal notranslate"><span class="pre">memory_positions</span></code> list?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#i-m-getting-assertionerror-no-valid-branches-in-input">6_ I’m getting <code class="docutils literal notranslate"><span class="pre">AssertionError:</span> <span class="pre">No</span> <span class="pre">valid</span> <span class="pre">branches</span> <span class="pre">in</span> <span class="pre">input.</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#i-m-getting-assertionerror-too-few-segments-in-the-input-pdb-there-should-be-at-least-3-target-binder-solvent">6_ I’m getting <code class="docutils literal notranslate"><span class="pre">AssertionError:</span> <span class="pre">Too</span> <span class="pre">few</span> <span class="pre">segments</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">input</span> <span class="pre">PDB.</span> <span class="pre">There</span> <span class="pre">should</span> <span class="pre">be</span> <span class="pre">at</span> <span class="pre">least</span> <span class="pre">3</span> <span class="pre">(target+binder+solvent)..</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#assertionerror-no-valid-branches-in-input">6_ <code class="docutils literal notranslate"><span class="pre">AssertionError:</span> <span class="pre">No</span> <span class="pre">valid</span> <span class="pre">branches</span> <span class="pre">in</span> <span class="pre">input.</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#assertionerror-too-few-segments-in-the-input-pdb-there-should-be-at-least-3-target-binder-solvent">6_ <code class="docutils literal notranslate"><span class="pre">AssertionError:</span> <span class="pre">Too</span> <span class="pre">few</span> <span class="pre">segments</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">input</span> <span class="pre">PDB.</span> <span class="pre">There</span> <span class="pre">should</span> <span class="pre">be</span> <span class="pre">at</span> <span class="pre">least</span> <span class="pre">3</span> <span class="pre">(target+binder+solvent).</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -241,8 +241,8 @@ Place them after the desired positions:</p>
 <p>This means that positions 2, 3, 4, 6, 7 and 8 won’t be mutated on the first epoch,
 but will be eligible for mutation right after.</p>
 </section>
-<section id="i-m-getting-assertionerror-no-valid-branches-in-input">
-<h2>6_ I’m getting <code class="docutils literal notranslate"><span class="pre">AssertionError:</span> <span class="pre">No</span> <span class="pre">valid</span> <span class="pre">branches</span> <span class="pre">in</span> <span class="pre">input.</span></code><a class="headerlink" href="#i-m-getting-assertionerror-no-valid-branches-in-input" title="Permalink to this heading"></a></h2>
+<section id="assertionerror-no-valid-branches-in-input">
+<h2>6_ <code class="docutils literal notranslate"><span class="pre">AssertionError:</span> <span class="pre">No</span> <span class="pre">valid</span> <span class="pre">branches</span> <span class="pre">in</span> <span class="pre">input.</span></code><a class="headerlink" href="#assertionerror-no-valid-branches-in-input" title="Permalink to this heading"></a></h2>
 <p>If you’re trying to start an optimization and you’re getting this error, most
 likely you’ve selected an already existing <code class="docutils literal notranslate"><span class="pre">work</span></code> dir. You have to let <em>locuaz</em>
 create a dir on its own:</p>
@@ -253,8 +253,8 @@ create a dir on its own:</p>
 <p>If the <code class="docutils literal notranslate"><span class="pre">work</span></code> dir already exists, <em>locuaz</em> will try to restart an optimization
 from it and then fail when it can’t recognize its contents.</p>
 </section>
-<section id="i-m-getting-assertionerror-too-few-segments-in-the-input-pdb-there-should-be-at-least-3-target-binder-solvent">
-<h2>6_ I’m getting <code class="docutils literal notranslate"><span class="pre">AssertionError:</span> <span class="pre">Too</span> <span class="pre">few</span> <span class="pre">segments</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">input</span> <span class="pre">PDB.</span> <span class="pre">There</span> <span class="pre">should</span> <span class="pre">be</span> <span class="pre">at</span> <span class="pre">least</span> <span class="pre">3</span> <span class="pre">(target+binder+solvent)..</span></code><a class="headerlink" href="#i-m-getting-assertionerror-too-few-segments-in-the-input-pdb-there-should-be-at-least-3-target-binder-solvent" title="Permalink to this heading"></a></h2>
+<section id="assertionerror-too-few-segments-in-the-input-pdb-there-should-be-at-least-3-target-binder-solvent">
+<h2>6_ <code class="docutils literal notranslate"><span class="pre">AssertionError:</span> <span class="pre">Too</span> <span class="pre">few</span> <span class="pre">segments</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">input</span> <span class="pre">PDB.</span> <span class="pre">There</span> <span class="pre">should</span> <span class="pre">be</span> <span class="pre">at</span> <span class="pre">least</span> <span class="pre">3</span> <span class="pre">(target+binder+solvent).</span></code><a class="headerlink" href="#assertionerror-too-few-segments-in-the-input-pdb-there-should-be-at-least-3-target-binder-solvent" title="Permalink to this heading"></a></h2>
 <p>If you’re trying to start an optimization and you’re getting this error, you
 probably have a starting PDB without chainID info.
 If you created your system with <code class="docutils literal notranslate"><span class="pre">tleap</span></code>, check I used tleap to build my initial system

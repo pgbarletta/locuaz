@@ -1,6 +1,6 @@
-==========================================
-Tutorial: running a simple optimization
-==========================================
+================================================================
+Tutorial: running a simple optimization with GROMACS topologies
+================================================================
 
 To recap from the :ref:`platform flow page<platformflow:Introduction>`, locuaz iteratively
 performs mutations on the selected residues of the binder, followed by minimization and

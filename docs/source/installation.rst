@@ -13,7 +13,7 @@ Prerequisites
 
 We recommend using `Miniforge <https://github.com/conda-forge/miniforge>`_ instead of pure conda,
 since it's much faster. We used to recommend miniforge but it's been
-`discontinued <https://conda-forge.org/news/2024/07/29/sunsetting-mambaforge/>`_
+`discontinued <https://conda-forge.org/news/2024/07/29/sunsetting-mambaforge/>`_.
 
 Stable release
 --------------

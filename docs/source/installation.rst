@@ -11,7 +11,7 @@ In all cases a :ref:`installation:Post-installation` step is required.
 Prerequisites
 ---------------
 
-We recommend using `Mambaforge <https://github.com/conda-forge/miniforge>`_ instead of pure conda,
+We recommend using `Miniforge <https://github.com/conda-forge/miniforge>`_ instead of pure conda,
 since it's much faster
 
 Stable release

@@ -169,7 +169,7 @@ create a dir on its own::
 If the ``work`` dir already exists, *locuaz* will try to restart an optimization
 from it and then fail when it can't recognize its contents.
 
-6\_ ``AssertionError: Too few segments in the input PDB. There should be at least 3 (target+binder+solvent).``
+7\_ ``AssertionError: Too few segments in the input PDB. There should be at least 3 (target+binder+solvent).``
 ----------------------------------------------------------------------------------------------------------------------------
 If you're trying to start an optimization and you're getting this error, you
 probably have a starting PDB without chainID info.
